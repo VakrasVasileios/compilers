@@ -1,10 +1,7 @@
-
 %{
     #include <string>
     #include <stdlib.h>
-    #include <iostream>
-
-    #define log(str) std::cout << str << std::endl   
+    #include <iostream>  
 
     #ifdef _cplusplus
         static int yyinput(void);
@@ -12,55 +9,74 @@
         static int input(void);
     #endif
 
-    #define YY_DECL int yylex()
+    #define YY_DECL int alpha_yylex(void* yylval)
     using namespace std;
+
+    #define logtoken(tok) cout << yylineno << ": #" << tokenno << "\t\"" << yytext << "\"  " << tok << endl
+    //#define logtoken(tok) cout << tok->numline << ": #" << tok->numToken << "\t\"" << tok->content << "\"  " << tok->type << endl
+ 
+    unsigned int tokenno = 0;
+
+    struct alpha_token_t {
+        unsigned int            numline;
+        unsigned int            numToken;
+        string                  content;
+        string                  type;
+        struct alpha_token_t    *alpha_yylex;
+    };
 %}
 
+/*Flex options*/
 %option header-file="./scanner.h"
 %option noyywrap
-/* enable c++ scanner class generation */
-%option c++
-%option nodefault
-%option debug
 %option yylineno
 
-delim           [ \t\n]
-ws              {delim}+
-letter          [a-zA-Z]
-digit           [0-9]
-real            {digit}+.{digit}+
-string          \"[^n"]*\"
-underscore      [_]
-id              {letter}({letter}|{digit}|{underscore})* 
+/*Flex macros*/
+IDENT           [a-zA-Z][a-zA-Z_0-9]*
+INTCONST        [0-9]+
+DOUBLECONST     {INTCONST}.{INTCONST}
+SPACE           [\r\n \t\v]
 
-number  {num1}|{num2}
-num1            [-+]?{digit}+\.?([eE][-+]?{digit}+)?
-num2            [-+]?{digit}*\.{digit}+([eE][-+]?{digit}+)?
+/*Flex rules*/
 %%
-{id}        { log(yytext); } 
 
+{IDENT}         {   ++tokenno;              //TODO
+                    logtoken("IDENT");      
+                }
 
-"<"         { log("less than"); }
+{INTCONST}      {                           //TODO
+                    ++tokenno;
+                    logtoken("INTCONST");
+                }
 
+{DOUBLECONST}   {                           //TODO
+                    ++tokenno;
+                    logtoken("DOUBLECONST");
+                }
+                    
+"/*"            {
+    
+}
 
-{number} { int num = atoi(yytext); log(num); } 
-{string} {cout << "string " << YYText() << '\n';}
+"\""    {
 
-<<EOF>>     { yyterminate(); }
+}
+
 %%
+
 
 void
 al(int argc, char** argv) {
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file %s\n", argv[1]);
-            return 1;
+            return;
         }
     }
     else
         yyin = stdin;
 
-    yylex();
+    alpha_yylex(NULL);
 }
 
 int main(int argc, char** argv) {
