@@ -12,4 +12,4 @@ scanner: $(TARGET).cpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm -rf $(TARGET)
+	rm -rf $(TARGET) $(TARGET).h $(TARGET).cpp
