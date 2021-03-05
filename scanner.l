@@ -29,7 +29,7 @@ SPACE           [\r \t\v]
 NEWLINE         [\n]
 OPERATOR        (\+|\-|\*|\/|\=|\>|\<|\>\=|\<\=|\&|\||\%|\!\=|\^|\(|\)|\=\=|\+\+|\-\-)
 SINGLELCOMMENT  \/\/
-MULTILCOMMENT   \/\*
+MULTILCOMMENT   (\/\*)
 
 /*Flex rules*/
 %%
@@ -57,8 +57,13 @@ MULTILCOMMENT   \/\*
 {STRING}            {
                         string str;
                         int c = yyinput();
+                        int line = yylineno;
 
-                        while(c != '\"' && c != EOF) {
+                        while(c != '\"') {
+                            if (c == EOF) {
+                                cout << "Unclosed string error!" << endl;
+                                return 1;
+                            }
                             if (c == '\\') {
                                 c = yyinput();
                                 switch(c) {
@@ -83,16 +88,13 @@ MULTILCOMMENT   \/\*
                                         break;
                                 }
                             }
-                            else if (c == '\n')
-                                ++yylineno;
                             else
                                 str += (char)c;
                             c = yyinput();
                         }
 
                         ++tokenno;
-                        
-                        tokenList.push_back(new token(yylineno, tokenno, str, "STRING"));
+                        tokenList.push_back(new token(line, tokenno, str, "STRING"));
                     }                    
 
 {PUNCTUATIONMARK}   {
@@ -110,68 +112,47 @@ MULTILCOMMENT   \/\*
                     }
 
 {SINGLELCOMMENT}    {
-                        string comment;
-                        int c = yyinput();
+                        int c = 1;
+                        
+                        ++tokenno;
+                        tokenList.push_back(new token(yylineno, tokenno, "", "SINGLELCOMMENT"));
 
                         while(c != '\n' && c != EOF) {
-                            comment += (char)c;
                             c = yyinput();
                         }
-
-                        ++tokenno;
-
-                        tokenList.push_back(new token(yylineno, tokenno, comment, "SINGLELCOMMENT"));
                     }
 
 {MULTILCOMMENT}     {
-                        string comment;
-                        int c = yyinput();
+                        int c = 1;
                         int depth = 1;
+                        int line = yylineno;
+                        
+                        ++tokenno;
+                        tokenList.push_back(new token(line, tokenno, "", "MULTILCOMMENT"));
 
-                        while(c != EOF) {       //TODO
+                        while(c != NULL) {
+                            if (c == EOF) {
+                                cout << "Unclosed multiline comment error!" <<endl;
+                                return 1;
+                            }
                             if(c == '/') {
                                 c = yyinput();
-                                switch(c) {
-                                    case '*' :
-                                        comment += '/';
-                                        comment += (char)c;
-                                        ++depth;
-                                        break;
-                                    default:
-                                        comment += '/';
-                                        comment += (char)c;
-                                        break;
+                                if (c == '*') {
+                                    ++tokenno;
+                                    tokenList.push_back(new token(yylineno, tokenno, "", "NESTEDCOMMENT"));
+                                    ++depth;
                                 }
                             }
                             else if(c == '*') {
                                 c = yyinput();
-                                switch(c) {
-                                    case '/':
-                                        --depth;
-                                        if (depth != 0) {
-                                            comment += '*';
-                                            comment += '/';
-                                        }
-                                        break;
-                                    default:
-                                        comment += (char)c;
-                                        break;    
+                                if(c == '/'){
+                                    --depth;
+                                    if (depth == 0) break;
                                 }
                             }
-                            else if (c == '\n') {
-                                ++yylineno;
-                            }
-                            else {
-                                comment += (char)c;
-                            }
                             
-                            if (depth == 0)
-                                break;
                             c = yyinput();
                         }
-
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, comment, "MULTILCOMMENT"));
                     }                  
 
 <<EOF>>             { return 0; }
