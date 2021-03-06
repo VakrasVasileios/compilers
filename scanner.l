@@ -30,6 +30,7 @@ NEWLINE         [\n]
 OPERATOR        (\+|\-|\*|\/|\=|\>|\<|\>\=|\<\=|\&|\||\%|\!\=|\^|\(|\)|\=\=|\+\+|\-\-)
 SINGLELCOMMENT  \/\/
 MULTILCOMMENT   (\/\*)
+ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 
 /*Flex rules*/
 %%
@@ -56,12 +57,12 @@ MULTILCOMMENT   (\/\*)
 
 {STRING}            {
                         string str;
-                        int c = yyinput();
                         int line = yylineno;
+                        int c = yyinput();
 
                         while(c != '\"') {
-                            if (c == EOF) {
-                                cout << "Unclosed string error!" << endl;
+                            if (c == EOF || c == NULL) {
+                                cout << line << ": Unclosed string error!" << endl;
                                 return 1;
                             }
                             if (c == '\\') {
@@ -81,6 +82,9 @@ MULTILCOMMENT   (\/\*)
                                         break;
                                     case '\\':
                                         str += '\\';
+                                        break;
+                                    case '\"':
+                                        str += '\"';
                                         break;
                                     default:
                                         str += '\\';
@@ -123,16 +127,16 @@ MULTILCOMMENT   (\/\*)
                     }
 
 {MULTILCOMMENT}     {
-                        int c = 1;
                         int depth = 1;
                         int line = yylineno;
+                        int c = yyinput();
                         
                         ++tokenno;
                         tokenList.push_back(new token(line, tokenno, "", "MULTILCOMMENT"));
 
-                        while(c != NULL) {
-                            if (c == EOF) {
-                                cout << "Unclosed multiline comment error!" <<endl;
+                        while(1) {
+                            if (c == EOF || c == NULL) {
+                                cout << line << ": Unclosed multiline comment error!" <<endl;
                                 return 1;
                             }
                             if(c == '/') {
@@ -141,6 +145,7 @@ MULTILCOMMENT   (\/\*)
                                     ++tokenno;
                                     tokenList.push_back(new token(yylineno, tokenno, "", "NESTEDCOMMENT"));
                                     ++depth;
+                                    c = yyinput();
                                 }
                             }
                             else if(c == '*') {
@@ -148,12 +153,22 @@ MULTILCOMMENT   (\/\*)
                                 if(c == '/'){
                                     --depth;
                                     if (depth == 0) break;
+                                    c = yyinput();
                                 }
                             }
-                            
-                            c = yyinput();
+                            else {
+                                c = yyinput();
+                            }
                         }
-                    }                  
+                    }
+{ILLEGALCHARS}      {
+                        /* TO BE enabled in phase 2
+                        cout << yylineno << ": Undefined character error!" << endl;
+                        return 1;
+                        */
+                        ++tokenno;
+                        tokenList.push_back(new token(yylineno, tokenno, yytext, "ILLEGALCHARS"));
+                    }
 
 <<EOF>>             { return 0; }
 
