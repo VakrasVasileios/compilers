@@ -1,21 +1,30 @@
 FLEXTRGT = scanner
-#YACCTRGT = parser
+YACCTRGT = parser
 CC = g++
 CFLAGS = -std=c++11
-SRC += $(FLEXTRGT).cpp #$(YACCTRGT).cpp
-OBJ = $(SRC:.cpp=.o)
+BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
+BLDHEADERS = $(BLDSRC:.cpp=.hpp)
+OBJ = $(BLDSRC:.cpp=.o)
+dYACC = -v
 
-all: flex scanner
+ifdef dYACC
+YFLAG += $(dYACC)
+endif
+
+YFLAG += --yacc --defines
+
+
+all: yacc flex scanner
 .PHONY: all
 
-#yacc: $(YACCTRGT).y
-#	bison --yacc --defines --output=$(YACCTRGT).cpp $<
+yacc: $(YACCTRGT).y
+	bison $(YFLAG) --output=$(YACCTRGT).cpp $<
 
 flex: $(FLEXTRGT).l
 	flex --outfile=$(FLEXTRGT).cpp $<
 
-scanner: $(SRC)
-	$(CC) $(CFLAGS) -o calc $<
+scanner: $(BLDSRC)
+	$(CC) $(CFLAGS) -o $@ $(BLDSRC)
 
 clean:
-	rm -rf $(FLEXTRGT) $(FLEXTRGT).h $(OBJ) $(SRC)
+	rm -rf $(FLEXTRGT) $(BLDHEADERS) $(OBJ) $(BLDSRC) *.output
