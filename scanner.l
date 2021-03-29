@@ -22,12 +22,12 @@
 KEYWORD         (if|else|while|for|function|return|break|continue|and|not|or|local|true|false|nil)
 IDENT           [a-zA-Z][a-zA-Z_0-9]*
 INTCONST        [0-9]+
-DOUBLECONST     {INTCONST}.{INTCONST}
+DOUBLECONST     {INTCONST}\.{INTCONST}
 STRING          \"
 PUNCTUATIONMARK (\{|\}|\[|\]|\(|\)|\;|\,|\:|\:\:|\.|\.\.)
 SPACE           [\r \t\v]
 NEWLINE         [\n]
-OPERATOR        (\+|\-|\*|\/|\=|\>|\<|\>\=|\<\=|\&|\||\%|\!\=|\^|\(|\)|\=\=|\+\+|\-\-)
+OPERATOR        (\+|\-|\*|\/|\=|\>|\<|\>\=|\<\=|\%|\!\=|\^|\(|\)|\=\=|\+\+|\-\-)
 SINGLELCOMMENT  \/\/
 MULTILCOMMENT   (\/\*)
 ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
@@ -62,7 +62,7 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 
                         while(c != '\"') {
                             if (c == EOF || c == NULL) {
-                                cout << line << ": Unclosed string error!" << endl;
+                                fprintf(stderr, "\tUnclosed string at line: %d\n", line);
                                 return 1;
                             }
                             if (c == '\\') {
@@ -87,9 +87,8 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                                         str += '\"';
                                         break;
                                     default:
-                                        str += '\\';
-                                        str += c;
-                                        break;
+                                        fprintf(stderr, "\tIllegal escape character at line: %d\n", line);
+                                        return 1;
                                 }
                             }
                             else
@@ -130,13 +129,20 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                         int depth = 1;
                         int line = yylineno;
                         int c = yyinput();
+                        int count = 1;
                         
                         ++tokenno;
                         tokenList.push_back(new token(line, tokenno, "", "MULTILCOMMENT"));
 
                         while(1) {
                             if (c == EOF || c == NULL) {
-                                cout << line << ": Unclosed multiline comment error!" <<endl;
+                                fprintf(stderr, "\tUnclosed multiline comment at line: %d\n", line);
+                                // Remove the comment, along with it's nested ones from the list
+                                auto iter = tokenList.end();
+                                for (; count > 0; count--) {
+                                    delete *(--iter);
+                                    tokenList.erase(iter);
+                                }
                                 return 1;
                             }
                             if(c == '/') {
@@ -144,6 +150,7 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                                 if (c == '*') {
                                     ++tokenno;
                                     tokenList.push_back(new token(yylineno, tokenno, "", "NESTEDCOMMENT"));
+                                    ++count;
                                     ++depth;
                                     c = yyinput();
                                 }
@@ -162,12 +169,8 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                         }
                     }
 {ILLEGALCHARS}      {
-                        /* TO BE enabled in phase 2
-                        cout << yylineno << ": Undefined character error!" << endl;
-                        return 1;
-                        */
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, yytext, "ILLEGALCHARS"));
+                    fprintf(stderr, "\tIllegal character at line: %d\n", yylineno);
+                    return 1;
                     }
 
 <<EOF>>             { return 0; }
