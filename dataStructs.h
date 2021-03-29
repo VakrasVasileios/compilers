@@ -1,10 +1,10 @@
+#ifndef DATASTRUCTS
+#define DATASTRUCTS
+
 #include <string>
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
-
-#ifndef DATASTRUCTS
-#define DATASTRUCTS
 
 #define logtoken(token) std::cout << token->numline << ": #" << token->numToken << "\t\"" << token->content << "\"  " << token->type << std::endl
 
