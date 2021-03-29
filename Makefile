@@ -1,15 +1,21 @@
-TARGET=scanner
-CC=g++
-CFLAGS=-std=c++11
+FLEXTRGT = scanner
+#YACCTRGT = parser
+CC = g++
+CFLAGS = -std=c++11
+SRC += $(FLEXTRGT).cpp #$(YACCTRGT).cpp
+OBJ = $(SRC:.cpp=.o)
 
 all: flex scanner
 .PHONY: all
 
-flex: $(TARGET).l
-	flex --outfile=$(TARGET).cpp $<
+#yacc: $(YACCTRGT).y
+#	bison --yacc --defines --output=$(YACCTRGT).cpp $<
 
-scanner: $(TARGET).cpp
-	$(CC) $(CFLAGS) -o $@ $<
+flex: $(FLEXTRGT).l
+	flex --outfile=$(FLEXTRGT).cpp $<
+
+scanner: $(SRC)
+	$(CC) $(CFLAGS) -o calc $<
 
 clean:
-	rm -rf $(TARGET) $(TARGET).h $(TARGET).cpp
+	rm -rf $(FLEXTRGT) $(FLEXTRGT).h $(OBJ) $(SRC)
