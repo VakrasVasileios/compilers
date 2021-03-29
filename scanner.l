@@ -1,4 +1,5 @@
 %{
+    #include "parser.hpp"
     #include "dataStructs.h"
 
     #ifdef _cplusplus
@@ -7,14 +8,14 @@
         static int input(void);
     #endif
 
-    #define YY_DECL int alpha_yylex(void* yylval)
+    #define YY_DECL int yylex(void)
     using namespace std;
 
     unsigned int tokenno = 0;
 %}
 
 /*Flex options*/
-%option header-file="./scanner.h"
+%option header-file="./scanner.hpp"
 %option noyywrap
 %option yylineno
 
@@ -176,7 +177,7 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 <<EOF>>             { return 0; }
 
 %%
-
+/*
 void
 al(int argc, char** argv) {
     if (argc > 1) {
@@ -199,3 +200,4 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+*/
