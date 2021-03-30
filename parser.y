@@ -2,6 +2,8 @@
     #include <stdio.h>
     #include <string>
     #include <iostream>
+    #include "UnionManager.h"
+    
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
 
