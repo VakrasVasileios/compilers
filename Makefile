@@ -2,6 +2,7 @@ FLEXTRGT = scanner
 YACCTRGT = parser
 CC = g++
 CFLAGS = -std=c++11
+SRC += UnionManager.cpp
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ = $(BLDSRC:.cpp=.o)
@@ -24,7 +25,7 @@ flex: $(FLEXTRGT).l
 	flex --outfile=$(FLEXTRGT).cpp $<
 
 scanner: $(BLDSRC)
-	$(CC) $(CFLAGS) -o $@ $(BLDSRC)
+	$(CC) $(CFLAGS) -o $@ $(BLDSRC) $(SRC)
 
 clean:
 	rm -rf $(FLEXTRGT) $(BLDHEADERS) $(OBJ) $(BLDSRC) *.output
