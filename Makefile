@@ -5,7 +5,7 @@ CFLAGS = -std=c++11
 SRC += UnionManager.cpp
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
-OBJ = $(BLDSRC:.cpp=.o)
+OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
 dYACC = -v
 
 ifdef dYACC
