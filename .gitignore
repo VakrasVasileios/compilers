@@ -1,5 +1,7 @@
 .vscode
 
+*.output
+
 # Prerequisites
 *.d
 
