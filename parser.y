@@ -20,11 +20,162 @@
 
 %start program
 
+%token EQUAL NOTEQUAL COLONCOLON DOTDOT GEQL LEQL MINUSMINUS PLUSPLUS
+%token local id function if else for while break continue nil true false return
+%token <stringValue>    STRING
+%token <intValue>       INTNUM
+%token <doubleValue>    DOUBLENUM
+
+%right      '='
+%left       or
+%left       and
+%nonassoc   EQUAL NOTEQUAL
+%nonassoc   '>' GEQL '<' LEQL
+%left       '-' '+'
+%left       '*' '/' '%'
+%nonassoc   UMINUS
+%right      not MINUSMINUS PLUSPLUS 
+%left       '.' DOTDOT
+%left       '[' ']'
+%left       '(' ')'
+
+%type <stringValue>     id
 
 %%
 
-program:
-        ;
+program:      stmt
+            | stmt program
+            ;
+
+stmt:         expr';'
+            | ifstmt
+            | whilestmt
+            | forstmt
+            | returnstmt
+            | break';'
+            | continue';'
+            | block
+            | funcdef
+            | ';'
+            ;
+
+expr:         assignexpr
+            | expr '+' expr
+            | expr '-' expr
+            | expr '*' expr
+            | expr '/' expr
+            | expr '%' expr
+            | expr '>' expr
+            | expr GEQL expr
+            | expr '<' expr
+            | expr LEQL expr
+            | expr EQUAL expr
+            | expr NOTEQUAL expr
+            | expr and expr
+            | expr or expr
+            | term 
+            ;
+            
+term:         '('expr')'
+            | '-'expr %prec UMINUS
+            | not expr
+            | PLUSPLUS lvalue
+            | lvalue PLUSPLUS
+            | MINUSMINUS lvalue
+            | lvalue MINUSMINUS
+            | primary
+            ;
+
+assignexpr:   lvalue'='expr
+            ;
+
+primary:      lvalue
+            | call
+            | objectdef
+            | '('funcdef')'
+            | const
+            ;
+
+lvalue:       id
+            | local id
+            | COLONCOLON id
+            | member
+            ;
+
+member:       lvalue'.'id
+            | lvalue'['expr']'
+            | call'.'id
+            | call'['expr']'
+            ;
+            
+call:        call'('elist')'
+            | lvalue callsuffix
+            | '('funcdef')''('elist')'
+            ;
+            
+callsuffix:   normcall
+            | methodcall
+            ;
+
+normcall:     '('elist')'
+            ;
+
+methodcall:   DOTDOT id '('elist')'
+            ;
+
+multelist:    ','expr multelist
+            |
+            ;
+elist:        '['expr multelist']'
+            ;
+
+objectdef:    '['elist']'
+            | '['indexed']'
+            ;
+
+multindexed:  ','indexedelem multindexed
+            |
+            ;
+
+indexed:      '['indexedelem multindexed']'
+            ;
+
+indexedelem:  '{' expr':'expr '}'
+            ;
+
+block:        '{' stmt program '}'
+            ;
+
+funcdef:      function '('idlist')' block
+            | function id '('idlist')' block
+            ;
+
+const:        INTNUM | DOUBLENUM | STRING | nil | true | false
+            ;
+
+multid:       ','id multid
+            |
+            ;
+
+idlist:       '['id multid']'
+            ;
+
+elsestmt:     else stmt
+            |
+            ;
+
+ifstmt:       if'('expr')' stmt elsestmt
+            ;
+
+whilestmt:    while '(' expr ')' stmt
+            ;
+
+forstmt:      for '('elist';' expr';' elist')' stmt
+            ;
+
+returnstmt:   return';'
+            | return expr';'
+            ;
 
 %%
 
@@ -41,8 +192,9 @@ int main(int argc, char** argv) {
             return 1;
         }
     }
-    else 
+    else {
         yyin = stdin;
+    }
 
     yyparse();
 
