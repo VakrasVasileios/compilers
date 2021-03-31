@@ -3,7 +3,7 @@
 
 class UnionManager {
 public:
-    static auto     GetInstance(void)   { return instance; }
+    static auto     GetInstance(void) -> UnionManager { return instance; }
     
     void            IncreaseScope(void) { ++current_scope; }
     void            DecreaseScope(void) { --current_scope; }
