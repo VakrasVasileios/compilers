@@ -1,6 +1,8 @@
 %{
     #include "parser.hpp"
     #include "dataStructs.h"
+    #include <string>
+    #include <string.h>
 
     #ifdef _cplusplus
         static int yyinput(void);
@@ -25,10 +27,10 @@ IDENT           [a-zA-Z][a-zA-Z_0-9]*
 INTCONST        [0-9]+
 DOUBLECONST     {INTCONST}\.{INTCONST}
 STRING          \"
-PUNCTUATIONMARK (\{|\}|\[|\]|\(|\)|\;|\,|\:|\:\:|\.|\.\.)
+PUNCTUATIONMARK (\{|\}|\[|\]|\(|\)|\;|\,|\:|\.)
 SPACE           [\r \t\v]
 NEWLINE         [\n]
-OPERATOR        (\+|\-|\*|\/|\=|\>|\<|\>\=|\<\=|\%|\!\=|\^|\(|\)|\=\=|\+\+|\-\-)
+OPERATOR        \+|\-|\*|\/|\=|\>|\<|\%|\^|\(|\)
 SINGLELCOMMENT  \/\/
 MULTILCOMMENT   (\/\*)
 ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
@@ -37,23 +39,28 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 %%
 
 {KEYWORD}           {
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, string(yytext), "KEYWORD"));
+                        string str = string(yytext);
+                        yylval.stringValue = str.c_str();
+                        return str.c_str();
                     }
 
 {IDENT}             {
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, string(yytext), "IDENT"));
+                        string str = string(yytext);
+                        yylval.stringValue = str.c_str();
+                        return str.c_str();
                     }
 
 {INTCONST}          {
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, string(yytext), "INTCONST"));
+                        int intConst = atoi(yytext);
+                        yyval.intValue = intConst;
+                        return intConst;
+                        
                     }
 
 {DOUBLECONST}       {
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, string(yytext), "DOUBLECONST"));
+                        double doubleConst = atof(yytext);
+                        yylval.doubleValue = doubleConst;
+                        return doubleConst;
                     }
 
 {STRING}            {
@@ -97,29 +104,33 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                             c = yyinput();
                         }
 
-                        ++tokenno;
-                        tokenList.push_back(new token(line, tokenno, str, "STRING"));
+                        yytext.stringValue = str.c_str();
+                        return str.c_str();
                     }                    
 
 {PUNCTUATIONMARK}   {
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, string(yytext), "PUNCTUATIONMARK"));   
+                        return yytext; 
                     }
+"::"                { return COLONCOLON; }
+".."                { return DOTDOT;     }
 
 {SPACE}             {}
 
 {NEWLINE}           {}
 
 {OPERATOR}          {
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, string(yytext), "OPERATOR"));
+                        return yytext;
                     }
+                    
+">="                { return GEQL;       }
+"<="                { return LEQL;       }
+"=="                { return EQUAL;      }
+"!="                { return NOTEQUAL;   }
+"++"                { return PLUSPLUS;   }
+"--"                { return MINUSMINUS; }
 
 {SINGLELCOMMENT}    {
                         int c = 1;
-                        
-                        ++tokenno;
-                        tokenList.push_back(new token(yylineno, tokenno, "", "SINGLELCOMMENT"));
 
                         while(c != '\n' && c != EOF) {
                             c = yyinput();
@@ -131,26 +142,15 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                         int line = yylineno;
                         int c = yyinput();
                         int count = 1;
-                        
-                        ++tokenno;
-                        tokenList.push_back(new token(line, tokenno, "", "MULTILCOMMENT"));
 
                         while(1) {
                             if (c == EOF || c == NULL) {
                                 fprintf(stderr, "\tUnclosed multiline comment at line: %d\n", line);
-                                // Remove the comment, along with it's nested ones from the list
-                                auto iter = tokenList.end();
-                                for (; count > 0; count--) {
-                                    delete *(--iter);
-                                    tokenList.erase(iter);
-                                }
                                 return 1;
                             }
                             if(c == '/') {
                                 c = yyinput();
                                 if (c == '*') {
-                                    ++tokenno;
-                                    tokenList.push_back(new token(yylineno, tokenno, "", "NESTEDCOMMENT"));
                                     ++count;
                                     ++depth;
                                     c = yyinput();
@@ -169,9 +169,10 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                             }
                         }
                     }
+                    
 {ILLEGALCHARS}      {
-                    fprintf(stderr, "\tIllegal character at line: %d\n", yylineno);
-                    return 1;
+                        fprintf(stderr, "\tIllegal character at line: %d\n", yylineno);
+                        return 1;
                     }
 
 <<EOF>>             { return 0; }
