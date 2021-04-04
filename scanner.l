@@ -22,7 +22,6 @@
 %option yylineno
 
 /*Flex macros*/
-KEYWORD         (if|else|while|for|function|return|break|continue|and|not|or|local|true|false|nil)
 IDENT           [a-zA-Z][a-zA-Z_0-9]*
 INTCONST        [0-9]+
 DOUBLECONST     {INTCONST}\.{INTCONST}
@@ -38,29 +37,39 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 /*Flex rules*/
 %%
 
-{KEYWORD}           {
-                        string str = string(yytext);
-                        yylval.stringValue = str.c_str();
-                        return str.c_str();
-                    }
+
+"or"                { return OR; }
+"not"               { return NOT; }
+"and"               { return AND; }
+"local"             { return LOCAL; }
+"true"              { return TRUE; }
+"false"             { return FALSE; }
+"nil"               { return NIL; }
+"if"                { return IF; }
+"else"              { return ELSE; }
+"while"             { return WHILE; }
+"for"               { return FOR; }
+"function"          { return FUNCTION; }                       
+"return"            { return RETURN; }
+"break"             { return BREAK; }
+"continue"          { return CONTINUE; }
 
 {IDENT}             {
-                        string str = string(yytext);
-                        yylval.stringValue = str.c_str();
-                        return str.c_str();
+                        yylval.stringValue = yytext;
+                        return ID;
                     }
 
 {INTCONST}          {
                         int intConst = atoi(yytext);
-                        yyval.intValue = intConst;
-                        return intConst;
+                        yylval.intValue = intConst;
+                        return INTNUM;
                         
                     }
 
 {DOUBLECONST}       {
                         double doubleConst = atof(yytext);
                         yylval.doubleValue = doubleConst;
-                        return doubleConst;
+                        return DOUBLENUM;
                     }
 
 {STRING}            {
@@ -104,12 +113,12 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                             c = yyinput();
                         }
 
-                        yytext.stringValue = str.c_str();
-                        return str.c_str();
+                        yylval.stringValue = const_cast<char*>(str.c_str());
+                        return STRING;
                     }                    
 
 {PUNCTUATIONMARK}   {
-                        return yytext; 
+                        return *yytext; 
                     }
 "::"                { return COLONCOLON; }
 ".."                { return DOTDOT;     }
@@ -119,7 +128,7 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 {NEWLINE}           {}
 
 {OPERATOR}          {
-                        return yytext;
+                        return *yytext;
                     }
                     
 ">="                { return GEQL;       }
