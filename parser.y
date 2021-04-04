@@ -143,7 +143,7 @@ indexed:      '['indexedelem multindexed']'
 indexedelem:  '{' expr':'expr '}'
             ;
 
-block:        '{' stmt program '}'
+block:        '{'{ manager.IncreaseScope(); } stmt program '}' { manager.DecreaseScope(); }
             ;
 
 funcdef:      FUNCTION '('idlist')' block
