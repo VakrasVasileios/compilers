@@ -2,7 +2,7 @@
     #include <stdio.h>
     #include <string>
     #include <iostream>
-    #include "UnionManager.h"
+    #include "include/UnionManager.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -10,6 +10,8 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+    UnionManager manager;
+
 %}
 
 %union {
@@ -21,25 +23,23 @@
 %start program
 
 %token EQUAL NOTEQUAL COLONCOLON DOTDOT GEQL LEQL MINUSMINUS PLUSPLUS
-%token local id function if else for while break continue nil true false return
+%token LOCAL ID FUNCTION IF ELSE FOR WHILE BREAK CONTINUE NIL TRUE FALSE RETURN
 %token <stringValue>    STRING
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
 %right      '='
-%left       or
-%left       and
+%left       OR
+%left       AND
 %nonassoc   EQUAL NOTEQUAL
 %nonassoc   '>' GEQL '<' LEQL
 %left       '-' '+'
 %left       '*' '/' '%'
 %nonassoc   UMINUS
-%right      not MINUSMINUS PLUSPLUS 
+%right      NOT MINUSMINUS PLUSPLUS 
 %left       '.' DOTDOT
 %left       '[' ']'
 %left       '(' ')'
-
-%type <stringValue>     id
 
 %%
 
@@ -52,8 +52,8 @@ stmt:         expr';'
             | whilestmt
             | forstmt
             | returnstmt
-            | break';'
-            | continue';'
+            | BREAK';'
+            | CONTINUE';'
             | block
             | funcdef
             | ';'
@@ -71,14 +71,14 @@ expr:         assignexpr
             | expr LEQL expr
             | expr EQUAL expr
             | expr NOTEQUAL expr
-            | expr and expr
-            | expr or expr
-            | term 
+            | expr AND expr
+            | expr OR expr
+            | term
             ;
             
 term:         '('expr')'
             | '-'expr %prec UMINUS
-            | not expr
+            | NOT expr
             | PLUSPLUS lvalue
             | lvalue PLUSPLUS
             | MINUSMINUS lvalue
@@ -96,15 +96,15 @@ primary:      lvalue
             | const
             ;
 
-lvalue:       id
-            | local id
-            | COLONCOLON id
+lvalue:       ID
+            | LOCAL ID
+            | COLONCOLON ID
             | member
             ;
 
-member:       lvalue'.'id
+member:       lvalue'.'ID
             | lvalue'['expr']'
-            | call'.'id
+            | call'.'ID
             | call'['expr']'
             ;
             
@@ -120,7 +120,7 @@ callsuffix:   normcall
 normcall:     '('elist')'
             ;
 
-methodcall:   DOTDOT id '('elist')'
+methodcall:   DOTDOT ID '('elist')'
             ;
 
 multelist:    ','expr multelist
@@ -146,35 +146,35 @@ indexedelem:  '{' expr':'expr '}'
 block:        '{' stmt program '}'
             ;
 
-funcdef:      function '('idlist')' block
-            | function id '('idlist')' block
+funcdef:      FUNCTION '('idlist')' block
+            | FUNCTION ID '('idlist')' block
             ;
 
-const:        INTNUM | DOUBLENUM | STRING | nil | true | false
+const:        INTNUM | DOUBLENUM | STRING | NIL | TRUE | FALSE
             ;
 
-multid:       ','id multid
+multid:       ','ID multid
             |
             ;
 
-idlist:       '['id multid']'
+idlist:       '['ID multid']'
             ;
 
-elsestmt:     else stmt
+ifstmt:       IF'('expr')' stmt elsestmt
+            ;
+
+elsestmt:     ELSE stmt
             |
             ;
 
-ifstmt:       if'('expr')' stmt elsestmt
+whilestmt:    WHILE '(' expr ')' stmt
             ;
 
-whilestmt:    while '(' expr ')' stmt
+forstmt:      FOR '('elist';' expr';' elist')' stmt
             ;
 
-forstmt:      for '('elist';' expr';' elist')' stmt
-            ;
-
-returnstmt:   return';'
-            | return expr';'
+returnstmt:   RETURN';'
+            | RETURN expr';'
             ;
 
 %%
