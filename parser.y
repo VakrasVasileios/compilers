@@ -23,8 +23,8 @@
 %start program
 
 %token EQUAL NOTEQUAL COLONCOLON DOTDOT GEQL LEQL MINUSMINUS PLUSPLUS
-%token LOCAL ID FUNCTION IF ELSE FOR WHILE BREAK CONTINUE NIL TRUE FALSE RETURN
-%token <stringValue>    STRING
+%token LOCAL FUNCTION IF ELSE FOR WHILE BREAK CONTINUE NIL TRUE FALSE RETURN
+%token <stringValue>    STRING ID
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
@@ -43,138 +43,145 @@
 
 %%
 
-program:      stmt
-            | stmt program
+program:      stmt                  { std::cout << "stmt" << std::endl;}
+            | stmt program          { std::cout << "stmt program" << std::endl;}
             ;
 
-stmt:         expr';'
-            | ifstmt
-            | whilestmt
-            | forstmt
-            | returnstmt
-            | BREAK';'
-            | CONTINUE';'
-            | block
-            | funcdef
-            | ';'
+stmt:         expr';'               { std::cout << "expr;" << std::endl;}
+            | ifstmt                { std::cout << "ifstmt"<< std::endl;}
+            | whilestmt             { std::cout << "whilestmt" << std::endl;}
+            | forstmt               { std::cout << "forstmt" << std::endl;}
+            | returnstmt            { std::cout << "returnstmt" << std::endl;}
+            | BREAK';'              { std::cout << "break;" << std::endl;}
+            | CONTINUE';'           { std::cout << "continue;" << std::endl;}
+            | block                 { std::cout << "block" << std::endl;}
+            | funcdef               { std::cout << "funcdef" << std::endl;}
+            | ';'                   { std::cout << ";" << std::endl;}
             ;
 
-expr:         assignexpr
-            | expr '+' expr
-            | expr '-' expr
-            | expr '*' expr
-            | expr '/' expr
-            | expr '%' expr
-            | expr '>' expr
-            | expr GEQL expr
-            | expr '<' expr
-            | expr LEQL expr
-            | expr EQUAL expr
-            | expr NOTEQUAL expr
-            | expr AND expr
-            | expr OR expr
-            | term
+expr:         assignexpr            { std::cout << "assignexpr" << std::endl;}
+            | expr '+' expr         { std::cout << "expr + expr" << std::endl; }
+            | expr '-' expr         { std::cout << "expr - expr" << std::endl; }
+            | expr '*' expr         { std::cout << "expr * expr" << std::endl; }
+            | expr '/' expr         { std::cout << "expr / expr" << std::endl; }
+            | expr '%' expr         { std::cout << "expr % expr" << std::endl; }
+            | expr '>' expr         { std::cout << "expr > expr" << std::endl; }
+            | expr GEQL expr        { std::cout << "expr >= expr" << std::endl;}
+            | expr '<' expr         { std::cout << "expr + expr" << std::endl; }
+            | expr LEQL expr        { std::cout << "expr <= expr" << std::endl;}
+            | expr EQUAL expr       { std::cout << "expr == expr" << std::endl;}
+            | expr NOTEQUAL expr    { std::cout << "expr != expr" << std::endl;}
+            | expr AND expr         { std::cout << "expr and expr" << std::endl; }
+            | expr OR expr          { std::cout << "expr or expr" << std::endl; }
+            | term                  { std::cout << "term" << std::endl;}
+            ;            
+term:         '('expr')'            { std::cout << "(expr)" << std::endl; }
+            | '-'expr %prec UMINUS  { std::cout << "-expr %prec UMINUS" << std::endl; }
+            | NOT expr              { std::cout << "not expr" << std::endl; }
+            | PLUSPLUS lvalue       { std::cout << "++ lvalue" << std::endl; }
+            | lvalue PLUSPLUS       { std::cout << "lvalue ++" << std::endl; }
+            | MINUSMINUS lvalue     { std::cout << "-- lvaule" << std::endl; }
+            | lvalue MINUSMINUS     { std::cout << "lvalue --" << std::endl; }
+            | primary               { std::cout << "primary" << std::endl; }
+            ;
+
+assignexpr:   lvalue'='expr         { std::cout << "lvalue = expr" << std::endl; }
+            ;
+
+primary:      lvalue                { std::cout << "lvalue" << std::endl; }
+            | call                  { std::cout << "call" << std::endl; }
+            | objectdef             { std::cout << "objectdef" << std::endl; }
+            | '('funcdef')'         { std::cout << "(funcdef)" << std::endl; }
+            | const                 { std::cout << "const" << std::endl; }
+            ;
+
+lvalue:       ID                    { std::cout << "id" << std::endl; }
+            | LOCAL ID              { std::cout << "local id" << std::endl; }
+            | COLONCOLON ID         { std::cout << "::id" << std::endl; }
+            | member                { std::cout << "member" << std::endl; }
+            ;   
+
+member:       lvalue'.'ID           { std::cout << "lvalue.id" << std::endl; }
+            | lvalue '['expr']'     { std::cout << "lvalue expr" << std::endl; }
+            | call'.'ID             { std::cout << "call.id" << std::endl; }
+            | call '['expr']'       { std::cout << "call expr" << std::endl; }
             ;
             
-term:         '('expr')'
-            | '-'expr %prec UMINUS
-            | NOT expr
-            | PLUSPLUS lvalue
-            | lvalue PLUSPLUS
-            | MINUSMINUS lvalue
-            | lvalue MINUSMINUS
-            | primary
-            ;
-
-assignexpr:   lvalue'='expr
-            ;
-
-primary:      lvalue
-            | call
-            | objectdef
-            | '('funcdef')'
-            | const
-            ;
-
-lvalue:       ID
-            | LOCAL ID
-            | COLONCOLON ID
-            | member
-            ;
-
-member:       lvalue'.'ID
-            | lvalue'['expr']'
-            | call'.'ID
-            | call'['expr']'
+call:        call'('elist')'        { std::cout << "call(elist)" << std::endl; }
+            | lvalue callsuffix     { std::cout << "lvalue callsuffix" << std::endl; }
+            | '('funcdef')''('elist')'  { std::cout << "(funcdef)(elist)" << std::endl; }
             ;
             
-call:        call'('elist')'
-            | lvalue callsuffix
-            | '('funcdef')''('elist')'
-            ;
-            
-callsuffix:   normcall
-            | methodcall
+callsuffix:   normcall              { std::cout << "normcall" << std::endl; }
+            | methodcall            { std::cout << "methodcall" << std::endl; }
             ;
 
-normcall:     '('elist')'
+normcall:     '('elist')'           { std::cout << "(elist)" << std::endl; }
             ;
 
-methodcall:   DOTDOT ID '('elist')'
+methodcall:   DOTDOT ID '('elist')' { std::cout << "..id (elist)" << std::endl; }
             ;
 
-multelist:    ','expr multelist
+multelist:    ','expr multelist     { std::cout << ",expr multelist" << std::endl; }
             |
             ;
-elist:        '['expr multelist']'
-            ;
-
-objectdef:    '['elist']'
-            | '['indexed']'
-            ;
-
-multindexed:  ','indexedelem multindexed
+elist:        expr multelist        { std::cout << "expr multelist" << std::endl; }
             |
             ;
 
-indexed:      '['indexedelem multindexed']'
+objectdef:    '[' elist ']'         { std::cout << "[elist]" << std::endl; }
+            | '[' indexed ']'       { std::cout << "[indexed]" << std::endl; }
             ;
 
-indexedelem:  '{' expr':'expr '}'
-            ;
-
-block:        '{' stmt program '}'
-            ;
-
-funcdef:      FUNCTION '('idlist')' block
-            | FUNCTION ID '('idlist')' block
-            ;
-
-const:        INTNUM | DOUBLENUM | STRING | NIL | TRUE | FALSE
-            ;
-
-multid:       ','ID multid
+multindexed:  ','indexedelem multindexed { std::cout << ", indexedelem multidexed" << std::endl; }
             |
             ;
 
-idlist:       '['ID multid']'
+indexed:      indexedelem multindexed    { std::cout << "indexedelem multidexed" << std::endl; }
             ;
 
-ifstmt:       IF'('expr')' stmt elsestmt
+indexedelem:  '{' expr':'expr '}'   { std::cout << "{ expr : expr }" << std::endl; }
             ;
 
-elsestmt:     ELSE stmt
+block:        '{' program '}'  { std::cout << "{ program }" << std::endl; }
+            | '{' '}'          { std::cout << "{}" << std::endl;}
+            ;
+
+funcdef:      FUNCTION '('idlist')' block { std::cout << "function (idlist) block " << std::endl; }
+            | FUNCTION ID '('idlist')' block { std::cout << "function id (idlist) block" << std::endl; }
+            ;
+
+const:        INTNUM                { std::cout << "INTNUM" << std::endl; }
+            | DOUBLENUM             { std::cout << "DOUBLENUM" << std::endl;}
+            | STRING                { std::cout << "STRING" << std::endl; }
+            | NIL                   { std::cout << "NIL" << std::endl; }
+            | TRUE                  { std::cout << "TRUE" << std::endl; }
+            | FALSE                 { std::cout << "FALSE" << std::endl; }
+            ;
+
+multid:       ','ID multid          { std::cout << ", id multid" << std::endl;}
             |
             ;
 
-whilestmt:    WHILE '(' expr ')' stmt
+idlist:       ID multid             { std::cout << "id multid" << std::endl; }
+            |
             ;
 
-forstmt:      FOR '('elist';' expr';' elist')' stmt
+ifstmt:       IF'('expr')' stmt elsestmt { std::cout << "if (expr) stmt elsestmt" << std::endl; }
             ;
 
-returnstmt:   RETURN';'
-            | RETURN expr';'
+elsestmt:     ELSE stmt { std::cout << "else stmt" << std::endl; }
+            |
+            ;
+
+whilestmt:    WHILE '(' expr ')' stmt { std::cout << "WHILE (expr) stmt" << std::endl; }
+            ;
+
+forstmt:      FOR '('elist';' expr';' elist')' stmt { std::cout << "FOR ( elist ; expr ; elist ) stmt" << std::endl; }
+            ;
+
+returnstmt:   RETURN';'  { std::cout << "RETURN;" << std::endl; }
+            | RETURN expr';' { std::cout << "RETURN expr;" << std::endl; }
             ;
 
 %%
