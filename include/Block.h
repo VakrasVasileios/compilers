@@ -1,18 +1,19 @@
 #include <map>
-#include <list>
 #include <string>
+#include "Variable.h"
 
 #ifndef BLOCK
 #define BLOCK
 
 struct Block {
-    std::list<std::string>  ids;    //mallon prepei na ginei map gt prepei na kratame kai to type
-    unsigned int            scope;
-    bool                    isActive;
+    std::map<const std::string, Variable>  ids;
     Block() = default;
-    Block(std::list<std::string> _ids, unsigned int _scope, bool _isActive) : ids(_ids), scope(_scope), isActive(_isActive) {};
+    Block(std::map<const std::string, Variable> _ids) : ids(_ids) {};
 
-    std::list<std::string>::iterator     FindId(const std::string& _id);
+    void    SetIDVisibility(const std::string& _id, bool _visible);
+    void    SetVisibilityAll(bool _visible);
+
+    void    logBlock(void);
 };
 
 #endif
