@@ -1,4 +1,5 @@
 #include <list>
+#include <stack>
 #include "Block.h"
 
 #ifndef BLOCK_LIST
@@ -6,13 +7,14 @@
 
 class BlockList : public std::list<Block> {
 public:
-    Block*  GetActiveBlock(void);
+    void        ResetVisibility(void);
+    auto        LookUp(const std::string& _id) -> std::pair<const std::string, Variable>*;
+    void        SetIDVisibility(const std::string& _id, bool _visi);
+    void        SetCurrentBlockVisibility(bool _visible);
 
-    void    ReActivateBlock(void);
-    void    DeactivateBlock(void);
+    Block*      GetCurrentBlock(void)   { return &*(--end()); }
 
-private:
-    Block* block;
+    void        logBlockList(void);
 };
 
 #endif
