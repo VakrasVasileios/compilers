@@ -7,8 +7,10 @@
 
 class SymbolTable : public std::vector<BlockList> {
 public:
-    void    DeactivateLowerScopes(int curr_scope);
-    void    ReActivateLowerScopes(int curr_scope);
+    SymbolTable() = default;
+    ~SymbolTable() = default;
+
+    void        logSymbolTable(void);
 };
 
 #endif

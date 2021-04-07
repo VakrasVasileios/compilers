@@ -1,21 +1,11 @@
 #include "../include/SymbolTable.h"
+#include <iostream>
 
 void
-SymbolTable::DeactivateLowerScopes(int curr_scope) {
-    auto iter = begin();
-    int i = 1;
-    for (; i < curr_scope; i++) {
-        ++iter;
-        (*iter).DeactivateBlock();
-    }
-}
-
-void
-SymbolTable::ReActivateLowerScopes(int curr_scope) {
-    auto iter = begin();
-    int i = 1;
-    for (; i < curr_scope; i++) {
-        ++iter;
-        (*iter).ReActivateBlock();
+SymbolTable::logSymbolTable(void) {
+    for (int i = 0; i < (*this).size(); i++){
+        std::cout << std::endl;
+        std::cout << "-----------    Scope #" << i << "    -----------" << std::endl;
+        (*this)[i].logBlockList();
     }
 }
