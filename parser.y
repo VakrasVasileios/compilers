@@ -11,6 +11,8 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+
+    static bool isMethodCall = false;
 %}
 
 %union {                                                    
@@ -48,7 +50,7 @@ program:      stmt                  { dlog("program -> stmt");}
             | stmt program          { dlog("program -> stmt program");}
             ;
 
-stmt:         expr ';'              { AddStashedLvalues(); dlog("stmt -> expr;");}
+stmt:         expr ';'              { isMethodCall=false; AddStashedLvalues(); dlog("stmt -> expr;");}
             | ifstmt                { dlog("stmt -> ifstmt");}
             | whilestmt             { dlog("stmt -> whilestmt");}
             | forstmt               { dlog("stmt -> forstmt");}
@@ -109,7 +111,7 @@ member:       lvalue '.' ID           { $$=$3; dlog("member -> lvalue.id"); }
             ;
             
 call:         call '(' elist ')'        { dlog("call -> call(elist)"); }
-            | lvalue {if(Lookup($1, LIB_FUNC) == nullptr && Lookup($1, USER_FUNC) == nullptr) std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;} callsuffix         { dlog("call -> lvalue callsuffix"); }
+            | lvalue callsuffix  { if(!isMethodCall) { if(Lookup($1, LIB_FUNC) == nullptr && Lookup($1, USER_FUNC) == nullptr) std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;}dlog("call -> lvalue callsuffix"); }
             | '(' funcdef ')' '(' elist ')'  { dlog("call -> (funcdef)(elist)"); }
             ;
             
@@ -120,7 +122,7 @@ callsuffix:   normcall              { dlog("callsuffix -> normcall"); }
 normcall:     '(' elist ')'           { dlog("normcall -> (elist)"); }
             ;
 
-methodcall:   DOTDOT ID { if(Lookup($2, LIB_FUNC) == nullptr && Lookup($2, USER_FUNC) == nullptr) std::cout << "No function with that name in line: " << yylineno << std::endl;} '(' elist ')' { dlog("methodcall -> ..id(elist)"); }
+methodcall:   DOTDOT ID '(' elist ')' { isMethodCall=true; dlog("methodcall -> ..id(elist)"); }
             ;
 
 multelist:    ',' expr multelist    { dlog("multelist -> ,expr multelist"); }
