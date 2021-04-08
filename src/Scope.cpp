@@ -7,7 +7,9 @@ static unsigned int    current_scope = 0;
 static unsigned int    anonymous_func_num = 0;
 static unsigned int    loopDepth = 0;
 
-std::list<std::pair<std::string, unsigned int> > argList;
+std::list<std::pair<std::string, unsigned int> >    argList;
+
+std::list<std::pair<std::string, Variable> >        lvaluesList;
 
 SymbolTable  symTable;
 ScopeStack   scopeStack;
@@ -58,6 +60,7 @@ DecreaseScope(void) {
     current_scope--;
 }
 
+
 std::pair<const std::string, Variable>*
 Lookup(const char* id, type_t type) {
     for (auto block : scopeStack) {
@@ -68,6 +71,28 @@ Lookup(const char* id, type_t type) {
     }
     return nullptr;
 }
+
+/*
+std::pair<const std::string, Variable>*
+Lookup(const char* id, type_t type) {
+    if (type != LIB_FUNC || type != GLOBAL_VAR) {  //if id is a user function or local variable
+        auto iter = scopeStack.end();
+        for (; iter != scopeStack.begin(); --iter) {
+            auto ret = (*iter)->ids.find(id);
+            if (ret != (*iter)->ids.end() && ((*ret).second.isVisible && (*ret).second.type == type)) {
+                return &*ret;
+            }
+        }
+    }
+    else {                                         //if id is a library function or global variable
+        auto ret = (*scopeStack.begin())->ids.find(id);
+        if (ret != (*scopeStack.begin())->ids.end() && ((*ret).second.isVisible && (*ret).second.type == type)) {
+            return &*ret;
+        }
+    }
+
+    return nullptr;
+}*/
 
 void
 AddVariable(const char* id, unsigned int line, type_t type) {
@@ -159,6 +184,20 @@ AddFormalArgs(void) {
         scopeStack.Top()->ids.insert({ (*iter).first, Variable(FORMAL_ARG, true, (*iter).second, current_scope) });
     }
     CleanArgs();
+}
+
+void
+StashLvalue(const char* id, unsigned int line, type_t type) {
+    std::pair<const std::string, Variable> v = std::pair<const std::string, Variable>(std::string(id), Variable(type, true, line, current_scope));
+    lvaluesList.push_back(v);
+}
+
+void
+AddStashedLvalues(void) {
+    for (auto iter : lvaluesList) {
+        AddVariable(iter.first.c_str(), iter.second.line, iter.second.type);
+    }
+    lvaluesList.clear();
 }
 
 unsigned int
