@@ -86,7 +86,7 @@ term:         '(' expr ')'          { dlog("term -> (expr)"); }
             | primary               { dlog("term -> primary"); }
             ;
 
-assignexpr:   lvalue '=' expr       { dlog("assignexpr -> lvalue = expr"); }
+assignexpr:   lvalue {AddStashedLvalues();} '=' expr  { dlog("assignexpr -> lvalue = expr"); }
             ;
 
 primary:      lvalue                { dlog("primary -> lvalue"); }
@@ -96,9 +96,9 @@ primary:      lvalue                { dlog("primary -> lvalue"); }
             | const                 { dlog("primary -> const"); }
             ;
 
-lvalue:       ID                    { $$=$1; if(GetScope() == 0){AddVariable($1, yylineno, GLOBAL_VAR);}else{AddVariable($1, yylineno, LOCAL_VAR);} dlog("lvalue -> id"); }
-            | LOCAL ID              { $$=$2; AddVariable($2,yylineno, LOCAL_VAR); dlog("lvalue -> local id"); }
-            | COLONCOLON ID         { $$=$2; if(Lookup($2, GLOBAL_VAR) == nullptr) std::cout << "No global variable" << std::endl; dlog("lvalue -> ::id"); }
+lvalue:       ID                    { $$=$1; if(GetScope() == 0)StashLvalue($1, yylineno, GLOBAL_VAR); else StashLvalue($1, yylineno, LOCAL_VAR); dlog("lvalue -> id"); }
+            | LOCAL ID              { $$=$2; StashLvalue($2, yylineno, LOCAL_VAR); dlog("lvalue -> local id"); }
+            | COLONCOLON ID         { $$=$2; if (Lookup($2, GLOBAL_VAR) == nullptr) std::cout << "No global variable with id: "<< $2 << ", i line: " << yylineno << std::endl; dlog("lvalue -> ::id"); }
             | member                { dlog("lvalue -> member"); }
             ;
 
