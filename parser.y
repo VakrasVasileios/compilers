@@ -3,6 +3,7 @@
     #include <string>
     #include <iostream>
     #include "include/Scope.h"
+    #include "include/DebugLog.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -26,6 +27,8 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
+%type <stringValue> lvalue member
+
 %right      '='
 %left       OR
 %left       AND
@@ -41,145 +44,145 @@
 
 %%
 
-program:      stmt                  { std::cout << "stmt" << std::endl;}
-            | stmt program          { std::cout << "stmt program" << std::endl;}
+program:      stmt                  { dlog("program -> stmt");}
+            | stmt program          { dlog("program -> stmt program");}
             ;
 
-stmt:         expr ';'               { std::cout << "expr;" << std::endl;}
-            | ifstmt                { std::cout << "ifstmt"<< std::endl;}
-            | whilestmt             { std::cout << "whilestmt" << std::endl;}
-            | forstmt               { std::cout << "forstmt" << std::endl;}
-            | returnstmt            { std::cout << "returnstmt" << std::endl;}
-            | BREAK ';'              { std::cout << "break;" << std::endl;}
-            | CONTINUE ';'           { std::cout << "continue;" << std::endl;}
-            | block                 { std::cout << "block" << std::endl;}
-            | funcdef               { std::cout << "funcdef" << std::endl;}
-            | ';'                   { std::cout << ";" << std::endl;}
+stmt:         expr ';'              { dlog("stmt -> expr;");}
+            | ifstmt                { dlog("stmt -> ifstmt");}
+            | whilestmt             { dlog("stmt -> whilestmt");}
+            | forstmt               { dlog("stmt -> forstmt");}
+            | returnstmt            { dlog("stmt -> returnstmt");}
+            | BREAK ';'             { if(GetLoopDepth() == 0) std::cout << "Error, invalid keyword BREAK outside of loop, in line: "<< yylineno << std::endl; dlog("stmt -> break;");}
+            | CONTINUE ';'          { if(GetLoopDepth() == 0) std::cout << "Error, invalid keyword CONTINUE outside of loop in line: "<< yylineno << std::endl; dlog("stmt -> continue;");}
+            | block                 { dlog("stmt -> block");}
+            | funcdef               { dlog("stmt -> funcdef");}
+            | ';'                   { dlog("stmt -> ;");}
             ;
 
-expr:         assignexpr            { std::cout << "assignexpr" << std::endl;}
-            | expr '+' expr         { std::cout << "expr + expr" << std::endl; }
-            | expr '-' expr         { std::cout << "expr - expr" << std::endl; }
-            | expr '*' expr         { std::cout << "expr * expr" << std::endl; }
-            | expr '/' expr         { std::cout << "expr / expr" << std::endl; }
-            | expr '%' expr         { std::cout << "expr % expr" << std::endl; }
-            | expr '>' expr         { std::cout << "expr > expr" << std::endl; }
-            | expr GEQL expr        { std::cout << "expr >= expr" << std::endl;}
-            | expr '<' expr         { std::cout << "expr + expr" << std::endl; }
-            | expr LEQL expr        { std::cout << "expr <= expr" << std::endl;}
-            | expr EQUAL expr       { std::cout << "expr == expr" << std::endl;}
-            | expr NOTEQUAL expr    { std::cout << "expr != expr" << std::endl;}
-            | expr AND expr         { std::cout << "expr and expr" << std::endl; }
-            | expr OR expr          { std::cout << "expr or expr" << std::endl; }
-            | term                  { std::cout << "term" << std::endl;}
+expr:         assignexpr            { dlog("expr -> assignexpr");}
+            | expr '+' expr         { dlog("expr -> expr + expr"); }
+            | expr '-' expr         { dlog("expr -> expr - expr"); }
+            | expr '*' expr         { dlog("expr -> expr * expr"); }
+            | expr '/' expr         { dlog("expr -> expr / expr"); }
+            | expr '%' expr         { dlog("expr -> expr % expr"); }
+            | expr '>' expr         { dlog("expr -> expr > expr"); }
+            | expr GEQL expr        { dlog("expr -> expr >= expr");}
+            | expr '<' expr         { dlog("expr -> expr + expr"); }
+            | expr LEQL expr        { dlog("expr -> expr <= expr");}
+            | expr EQUAL expr       { dlog("expr -> expr == expr");}
+            | expr NOTEQUAL expr    { dlog("expr -> expr != expr");}
+            | expr AND expr         { dlog("expr -> expr and expr"); }
+            | expr OR expr          { dlog("expr -> expr or expr"); }
+            | term                  { dlog("expr -> term");}
             ;            
-term:         '(' expr ')'          { std::cout << "(expr)" << std::endl; }
-            | '-' expr %prec UMINUS { std::cout << "-expr %prec UMINUS" << std::endl; }
-            | NOT expr              { std::cout << "not expr" << std::endl; }
-            | PLUSPLUS lvalue       { std::cout << "++ lvalue" << std::endl; }
-            | lvalue PLUSPLUS       { std::cout << "lvalue ++" << std::endl; }
-            | MINUSMINUS lvalue     { std::cout << "-- lvaule" << std::endl; }
-            | lvalue MINUSMINUS     { std::cout << "lvalue --" << std::endl; }
-            | primary               { std::cout << "primary" << std::endl; }
+term:         '(' expr ')'          { dlog("term -> (expr)"); }
+            | '-' expr %prec UMINUS { dlog("term -> -expr"); }
+            | NOT expr              { dlog("term -> not expr"); }
+            | PLUSPLUS lvalue       { dlog("term -> ++lvalue"); }
+            | lvalue PLUSPLUS       { dlog("term -> lvalue++"); }
+            | MINUSMINUS lvalue     { dlog("term -> --lvaule"); }
+            | lvalue MINUSMINUS     { dlog("term -> lvalue--"); }
+            | primary               { dlog("term -> primary"); }
             ;
 
-assignexpr:   lvalue '=' expr       { std::cout << "lvalue = expr" << std::endl; }
+assignexpr:   lvalue '=' expr       { dlog("assignexpr -> lvalue = expr"); }
             ;
 
-primary:      lvalue                { std::cout << "lvalue" << std::endl; }
-            | call                  { std::cout << "call" << std::endl; }
-            | objectdef             { std::cout << "objectdef" << std::endl; }
-            | '(' funcdef ')'       { std::cout << "(funcdef)" << std::endl; }
-            | const                 { std::cout << "const" << std::endl; }
+primary:      lvalue                { dlog("primary -> lvalue"); }
+            | call                  { dlog("primary -> call"); }
+            | objectdef             { dlog("primary -> objectdef"); }
+            | '(' funcdef ')'       { dlog("primary -> (funcdef)"); }
+            | const                 { dlog("primary -> const"); }
             ;
 
-lvalue:       ID                    { AddVariable($1, yylineno); std::cout << "id" << std::endl; }
-            | LOCAL ID              { AddVariable($2, yylineno); std::cout << "local id" << std::endl; }
-            | COLONCOLON ID         { if (Lookup($2) == nullptr) std::cout << "No global variable" << std::endl; std::cout << "::id" << std::endl; }
-            | member                { std::cout << "member" << std::endl; }
-            ;   
+lvalue:       ID                    { $$=$1; if(GetScope() == 0){AddVariable($1, yylineno, GLOBAL_VAR);}else{AddVariable($1, yylineno, LOCAL_VAR);} dlog("lvalue -> id"); }
+            | LOCAL ID              { $$=$2; AddVariable($2,yylineno, LOCAL_VAR); dlog("lvalue -> local id"); }
+            | COLONCOLON ID         { $$=$2; if(Lookup($2, GLOBAL_VAR) == nullptr) std::cout << "No global variable" << std::endl; dlog("lvalue -> ::id"); }
+            | member                { dlog("lvalue -> member"); }
+            ;
 
-member:       lvalue '.' ID           { std::cout << "lvalue.id" << std::endl; }
-            | lvalue '[' expr ']'     { std::cout << "lvalue expr" << std::endl; }
-            | call '.' ID             { std::cout << "call.id" << std::endl; }
-            | call '[' expr ']'       { std::cout << "call expr" << std::endl; }
+member:       lvalue '.' ID           { $$=$3; dlog("member -> lvalue.id"); }
+            | lvalue '[' expr ']'     { dlog("member -> lvalue[expr]"); }
+            | call '.' ID             { $$=$3; dlog("member -> call.id"); }
+            | call '[' expr ']'       { dlog("member -> call[expr]"); }
             ;
             
-call:        call '(' elist ')'        { std::cout << "call(elist)" << std::endl; }
-            | lvalue callsuffix     { std::cout << "lvalue callsuffix" << std::endl; }
-            | '(' funcdef ')' '(' elist ')'  { std::cout << "(funcdef)(elist)" << std::endl; }
+call:         call '(' elist ')'        { dlog("call -> call(elist)"); }
+            | lvalue callsuffix         { dlog("call -> lvalue callsuffix"); }
+            | '(' funcdef ')' '(' elist ')'  { dlog("call -> (funcdef)(elist)"); }
             ;
             
-callsuffix:   normcall              { std::cout << "normcall" << std::endl; }
-            | methodcall            { std::cout << "methodcall" << std::endl; }
+callsuffix:   normcall              { dlog("callsuffix -> normcall"); }
+            | methodcall            { dlog("callsuffix -> methodcall"); }
             ;
 
-normcall:     '(' elist ')'           { std::cout << "(elist)" << std::endl; }
+normcall:     '(' elist ')'           { dlog("normcall -> (elist)"); }
             ;
 
-methodcall:   DOTDOT ID '(' elist ')' { std::cout << "..id (elist)" << std::endl; }
+methodcall:   DOTDOT ID '(' elist ')' { if(Lookup($2, LIB_FUNC) == nullptr && Lookup($2, USER_FUNC) == nullptr) std::cout << "No function with that name in line: " << yylineno << std::endl; dlog("methodcall -> ..id(elist)"); }
             ;
 
-multelist:    ',' expr multelist     { std::cout << ",expr multelist" << std::endl; }
+multelist:    ',' expr multelist    { dlog("multelist -> ,expr multelist"); }
             |
             ;
-elist:        expr multelist        { std::cout << "expr multelist" << std::endl; }
-            |
-            ;
-
-objectdef:    '[' elist ']'         { std::cout << "[elist]" << std::endl; }
-            | '[' indexed ']'       { std::cout << "[indexed]" << std::endl; }
-            ;
-
-multindexed:  ',' indexedelem multindexed { std::cout << ", indexedelem multidexed" << std::endl; }
+elist:        expr multelist        { dlog("elist -> expr multelist"); }
             |
             ;
 
-indexed:      indexedelem multindexed    { std::cout << "indexedelem multidexed" << std::endl; }
+objectdef:    '[' elist ']'         { dlog("objectdef -> [elist]"); }
+            | '[' indexed ']'       { dlog("objectdef -> [indexed]"); }
             ;
 
-indexedelem:  '{' expr ':' expr '}'   { std::cout << "{ expr : expr }" << std::endl; }
-            ;
-
-block:        '{' {IncreaseScope();AddFormalArgs();} program '}'  { DecreaseScope(); std::cout << "{ program }" << std::endl; }
-            | '{' {IncreaseScope();AddFormalArgs();} '}'          { DecreaseScope(); std::cout << "{}" << std::endl;}
-            ;
-
-funcdef:      FUNCTION {AddAnonymousFunction(yylineno);} '(' idlist ')' {HideLowerScopes();}  block {EnableLowerScopes(); std::cout << "function (idlist) block " << std::endl; }
-            | FUNCTION ID {AddFunction($2, yylineno);} '(' idlist ')' {HideLowerScopes();} block {EnableLowerScopes(); std::cout << "function id (idlist) block" << std::endl; }
-            ;
-
-const:        INTNUM                { std::cout << "INTNUM" << std::endl; }
-            | DOUBLENUM             { std::cout << "DOUBLENUM" << std::endl;}
-            | STRING                { std::cout << "STRING" << std::endl; }
-            | NIL                   { std::cout << "NIL" << std::endl; }
-            | TRUE                  { std::cout << "TRUE" << std::endl; }
-            | FALSE                 { std::cout << "FALSE" << std::endl; }
-            ;
-
-multid:       ',' ID {GetArgList().push_back({std::string($2), yylineno});} multid { std::cout << ", id multid" << std::endl;}
+multindexed:  ',' indexedelem multindexed { dlog("multindexed -> , indexedelem multidexed"); }
             |
             ;
 
-idlist:       ID {GetArgList().push_back({std::string($1), yylineno});} multid { std::cout << "id multid" << std::endl; }
+indexed:      indexedelem multindexed    { dlog("indexed -> indexedelem multidexed"); }
+            ;
+
+indexedelem:  '{' expr ':' expr '}'   { dlog("indexedelem -> { expr : expr }"); }
+            ;
+
+block:        '{' {IncreaseScope();AddFormalArgs();} program '}'  { DecreaseScope(); dlog("block -> { program }"); }
+            | '{' {IncreaseScope();AddFormalArgs();} '}'          { DecreaseScope(); dlog("block -> {}");}
+            ;
+
+funcdef:      FUNCTION {AddAnonymousFunction(yylineno);} '(' idlist ')' {HideLowerScopes();}  block {EnableLowerScopes(); dlog("funcdef -> function (idlist) block "); }
+            | FUNCTION ID {AddFunction($2, yylineno);} '(' idlist ')' {HideLowerScopes();} block {EnableLowerScopes(); dlog("funcdef -> function id (idlist) block"); }
+            ;
+
+const:        INTNUM                { dlog("const -> INTNUM"); }
+            | DOUBLENUM             { dlog("const -> DOUBLENUM");}
+            | STRING                { dlog("const -> STRING"); }
+            | NIL                   { dlog("const -> NIL"); }
+            | TRUE                  { dlog ("const -> TRUE"); }
+            | FALSE                 { dlog ("const -> FALSE"); }
+            ;
+
+multid:       ',' ID {GetArgList().push_back({std::string($2), yylineno});} multid { dlog("multid -> , id multid");}
             |
             ;
 
-ifstmt:       IF '(' expr ')' stmt elsestmt { std::cout << "if (expr) stmt elsestmt" << std::endl; }
-            ;
-
-elsestmt:     ELSE stmt { std::cout << "else stmt" << std::endl; }
+idlist:       ID {GetArgList().push_back({std::string($1), yylineno});} multid { dlog("idlist -> id multid"); }
             |
             ;
 
-whilestmt:    WHILE '(' expr ')' stmt { std::cout << "WHILE (expr) stmt" << std::endl; }
+ifstmt:       IF '(' expr ')' stmt elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
             ;
 
-forstmt:      FOR '(' elist ';' expr ';' elist ')' stmt { std::cout << "FOR ( elist ; expr ; elist ) stmt" << std::endl; }
+elsestmt:     ELSE stmt { dlog("elsestmt -> else stmt"); }
+            |
             ;
 
-returnstmt:   RETURN ';'  { std::cout << "RETURN;" << std::endl; }
-            | RETURN expr ';' { std::cout << "RETURN expr;" << std::endl; }
+whilestmt:    WHILE { IncreaseLoopDepth(); } '(' expr ')' stmt { DecreaseLoopDepth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
+            ;
+
+forstmt:      FOR { IncreaseLoopDepth(); } '(' elist ';' expr ';' elist ')' stmt { DecreaseLoopDepth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
+            ;
+
+returnstmt:   RETURN ';'  { dlog("returnstmt -> RETURN;"); }
+            | RETURN expr ';' { dlog("returnstmt -> RETURN expr;"); }
             ;
 
 %%
