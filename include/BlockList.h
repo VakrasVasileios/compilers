@@ -8,10 +8,12 @@
 class BlockList : public std::list<Block> {
 public:
     void        ResetVisibility(void);
-    auto        LookUp(const std::string& _id) -> std::pair<const std::string, Variable>*;
     void        SetIDVisibility(const std::string& _id, bool _visi);
+
     void        SetCurrentBlockVisibility(bool _visible);
 
+    auto        LookUp(const std::string& _id) -> std::pair<const std::string, Variable>*;
+ 
     Block*      GetCurrentBlock(void)   { return &*(--end()); }
 
     void        logBlockList(void);
