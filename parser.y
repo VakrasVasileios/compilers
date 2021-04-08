@@ -48,7 +48,7 @@ program:      stmt                  { dlog("program -> stmt");}
             | stmt program          { dlog("program -> stmt program");}
             ;
 
-stmt:         expr ';'              { dlog("stmt -> expr;");}
+stmt:         expr ';'              { AddStashedLvalues(); dlog("stmt -> expr;");}
             | ifstmt                { dlog("stmt -> ifstmt");}
             | whilestmt             { dlog("stmt -> whilestmt");}
             | forstmt               { dlog("stmt -> forstmt");}
@@ -96,9 +96,9 @@ primary:      lvalue                { dlog("primary -> lvalue"); }
             | const                 { dlog("primary -> const"); }
             ;
 
-lvalue:       ID                    { $$=$1; if(GetScope() == 0) StashLvalue($1, yylineno, GLOBAL_VAR); else StashLvalue($1, yylineno, LOCAL_VAR); dlog("lvalue -> id"); }
-            | LOCAL ID              { $$=$2; StashLvalue($2, yylineno, LOCAL_VAR); dlog("lvalue -> local id"); }
-            | COLONCOLON ID         { $$=$2; if (Lookup($2, GLOBAL_VAR) == nullptr) std::cout << "No global variable with id: "<< $2 << ", i line: " << yylineno << std::endl; dlog("lvalue -> ::id"); }
+lvalue:       ID                    { $$=$1; StashLvalue($1, yylineno); dlog("lvalue -> id"); }
+            | LOCAL ID              { $$=$2; StashLvalue($2, yylineno); dlog("lvalue -> local id"); }
+            | COLONCOLON ID         { $$=$2; if (Lookup($2, GLOBAL_VAR) == nullptr && Lookup($2, USER_FUNC) == nullptr && Lookup($2, LIB_FUNC) == nullptr) std::cout << "No global variable with id: "<< $2 << ", in line: " << yylineno << std::endl; dlog("lvalue -> ::id"); }
             | member                { dlog("lvalue -> member"); }
             ;
 
@@ -135,8 +135,8 @@ objectdef:    '[' elist ']'         { dlog("objectdef -> [elist]"); }
             | '[' indexed ']'       { dlog("objectdef -> [indexed]"); }
             ;
 
-multindexed:  ',' indexedelem multindexed { dlog("multindexed -> , indexedelem multidexed"); }
-            |                       { dlog("elsestmt -> EMPTY"); }
+multindexed:  ',' indexedelem multindexed   { dlog("multindexed -> , indexedelem multidexed"); }
+            |                               { dlog("elsestmt -> EMPTY"); }
             ;
 
 indexed:      indexedelem multindexed    { dlog("indexed -> indexedelem multidexed"); }
@@ -169,21 +169,21 @@ idlist:       ID {GetArgList().push_back({std::string($1), yylineno});} multid {
             | {dlog("idlist -> EMPTY");}
             ;
 
-ifstmt:       IF '(' expr ')' stmt elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
+ifstmt:       IF '(' expr ')' {CleanLvaluesStash();} stmt {CleanLvaluesStash();} elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
             ;
 
-elsestmt:     ELSE stmt { dlog("elsestmt -> else stmt"); }
+elsestmt:     ELSE stmt { CleanLvaluesStash(); dlog("elsestmt -> else stmt"); }
             | {dlog("elsestmt -> EMPTY");}
             ;
 
-whilestmt:    WHILE { IncreaseLoopDepth();} '(' expr ')' stmt { DecreaseLoopDepth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
+whilestmt:    WHILE { IncreaseLoopDepth();} '(' expr ')' {CleanLvaluesStash();} stmt { DecreaseLoopDepth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
             ;
 
-forstmt:      FOR { IncreaseLoopDepth();} '(' elist ';' expr ';' elist ')' stmt { DecreaseLoopDepth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
+forstmt:      FOR { IncreaseLoopDepth();} '(' elist ';' expr ';' elist ')' {CleanLvaluesStash();} stmt { DecreaseLoopDepth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
             ;
 
-returnstmt:   RETURN ';'  { dlog("returnstmt -> RETURN;"); }
-            | RETURN expr ';' { dlog("returnstmt -> RETURN expr;"); }
+returnstmt:   RETURN {CleanLvaluesStash();} ';'  { dlog("returnstmt -> RETURN;"); }
+            | RETURN {CleanLvaluesStash();} expr ';' { dlog("returnstmt -> RETURN expr;"); }
             ;
 
 %%

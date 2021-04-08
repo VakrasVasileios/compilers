@@ -25,8 +25,9 @@ void    EnableLowerScopesAndCleanArgs(void);
 
 void    AddFormalArgs(void);
 
-void    StashLvalue(const char* id, unsigned int line, type_t type);
+void    StashLvalue(const char* id, unsigned int line);
 void    AddStashedLvalues(void);
+void    CleanLvaluesStash(void);
 
 std::list<std::pair<std::string, unsigned int> >& GetArgList(void);
 std::list<std::pair<std::string, unsigned int> >& GetLvaluesList(void);
