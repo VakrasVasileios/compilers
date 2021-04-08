@@ -25,8 +25,13 @@ void    EnableLowerScopesAndCleanArgs(void);
 
 void    AddFormalArgs(void);
 
+void    StashLvalue(const char* id, unsigned int line, type_t type);
+void    AddStashedLvalues(void);
+
 std::list<std::pair<std::string, unsigned int> >& GetArgList(void);
-SymbolTable&            GetSymbolTable(void);
+std::list<std::pair<std::string, unsigned int> >& GetLvaluesList(void);
+
+SymbolTable&    GetSymbolTable(void);
 
 unsigned int    GetScope(void);
 unsigned int    GetLoopDepth(void);
