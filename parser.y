@@ -60,22 +60,22 @@ stmt:         expr ';'              { dlog("stmt -> expr;");}
             | ';'                   { dlog("stmt -> ;");}
             ;
 
-expr:         assignexpr            { dlog("expr -> assignexpr");}
+expr:         assignexpr            { dlog("expr -> assignexpr"); }
             | expr '+' expr         { dlog("expr -> expr + expr"); }
             | expr '-' expr         { dlog("expr -> expr - expr"); }
             | expr '*' expr         { dlog("expr -> expr * expr"); }
             | expr '/' expr         { dlog("expr -> expr / expr"); }
             | expr '%' expr         { dlog("expr -> expr % expr"); }
             | expr '>' expr         { dlog("expr -> expr > expr"); }
-            | expr GEQL expr        { dlog("expr -> expr >= expr");}
+            | expr GEQL expr        { dlog("expr -> expr >= expr"); }
             | expr '<' expr         { dlog("expr -> expr + expr"); }
-            | expr LEQL expr        { dlog("expr -> expr <= expr");}
-            | expr EQUAL expr       { dlog("expr -> expr == expr");}
-            | expr NOTEQUAL expr    { dlog("expr -> expr != expr");}
+            | expr LEQL expr        { dlog("expr -> expr <= expr"); }
+            | expr EQUAL expr       { dlog("expr -> expr == expr"); }
+            | expr NOTEQUAL expr    { dlog("expr -> expr != expr"); }
             | expr AND expr         { dlog("expr -> expr and expr"); }
             | expr OR expr          { dlog("expr -> expr or expr"); }
-            | term                  { dlog("expr -> term");}
-            ;            
+            | term                  { dlog("expr -> term"); }
+            ;
 term:         '(' expr ')'          { dlog("term -> (expr)"); }
             | '-' expr %prec UMINUS { dlog("term -> -expr"); }
             | NOT expr              { dlog("term -> not expr"); }
@@ -96,7 +96,7 @@ primary:      lvalue                { dlog("primary -> lvalue"); }
             | const                 { dlog("primary -> const"); }
             ;
 
-lvalue:       ID                    { $$=$1; if(GetScope() == 0)StashLvalue($1, yylineno, GLOBAL_VAR); else StashLvalue($1, yylineno, LOCAL_VAR); dlog("lvalue -> id"); }
+lvalue:       ID                    { $$=$1; if(GetScope() == 0) StashLvalue($1, yylineno, GLOBAL_VAR); else StashLvalue($1, yylineno, LOCAL_VAR); dlog("lvalue -> id"); }
             | LOCAL ID              { $$=$2; StashLvalue($2, yylineno, LOCAL_VAR); dlog("lvalue -> local id"); }
             | COLONCOLON ID         { $$=$2; if (Lookup($2, GLOBAL_VAR) == nullptr) std::cout << "No global variable with id: "<< $2 << ", i line: " << yylineno << std::endl; dlog("lvalue -> ::id"); }
             | member                { dlog("lvalue -> member"); }
@@ -109,7 +109,7 @@ member:       lvalue '.' ID           { $$=$3; dlog("member -> lvalue.id"); }
             ;
             
 call:         call '(' elist ')'        { dlog("call -> call(elist)"); }
-            | lvalue callsuffix         { dlog("call -> lvalue callsuffix"); }
+            | lvalue {if(Lookup($1, LIB_FUNC) == nullptr && Lookup($1, USER_FUNC) == nullptr) std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;} callsuffix         { dlog("call -> lvalue callsuffix"); }
             | '(' funcdef ')' '(' elist ')'  { dlog("call -> (funcdef)(elist)"); }
             ;
             
@@ -120,12 +120,13 @@ callsuffix:   normcall              { dlog("callsuffix -> normcall"); }
 normcall:     '(' elist ')'           { dlog("normcall -> (elist)"); }
             ;
 
-methodcall:   DOTDOT ID '(' elist ')' { if(Lookup($2, LIB_FUNC) == nullptr && Lookup($2, USER_FUNC) == nullptr) std::cout << "No function with that name in line: " << yylineno << std::endl; dlog("methodcall -> ..id(elist)"); }
+methodcall:   DOTDOT ID { if(Lookup($2, LIB_FUNC) == nullptr && Lookup($2, USER_FUNC) == nullptr) std::cout << "No function with that name in line: " << yylineno << std::endl;} '(' elist ')' { dlog("methodcall -> ..id(elist)"); }
             ;
 
 multelist:    ',' expr multelist    { dlog("multelist -> ,expr multelist"); }
-            |
+            |                       { dlog("multelist -> EMPTY"); }
             ;
+
 elist:        expr multelist        { dlog("elist -> expr multelist"); }
             |
             ;
@@ -161,24 +162,24 @@ const:        INTNUM                { dlog("const -> INTNUM"); }
             ;
 
 multid:       ',' ID {GetArgList().push_back({std::string($2), yylineno});} multid { dlog("multid -> , id multid");}
-            |
+            | {dlog("multid -> EMPTY");}
             ;
 
 idlist:       ID {GetArgList().push_back({std::string($1), yylineno});} multid { dlog("idlist -> id multid"); }
-            |
+            | {dlog("idlist -> EMPTY");}
             ;
 
 ifstmt:       IF '(' expr ')' stmt elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
             ;
 
 elsestmt:     ELSE stmt { dlog("elsestmt -> else stmt"); }
-            |
+            | {dlog("elsestmt -> EMPTY");}
             ;
 
-whilestmt:    WHILE { IncreaseLoopDepth(); } '(' expr ')' stmt { DecreaseLoopDepth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
+whilestmt:    WHILE { IncreaseLoopDepth();} '(' expr ')' stmt { DecreaseLoopDepth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
             ;
 
-forstmt:      FOR { IncreaseLoopDepth(); } '(' elist ';' expr ';' elist ')' stmt { DecreaseLoopDepth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
+forstmt:      FOR { IncreaseLoopDepth();} '(' elist ';' expr ';' elist ')' stmt { DecreaseLoopDepth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
             ;
 
 returnstmt:   RETURN ';'  { dlog("returnstmt -> RETURN;"); }
