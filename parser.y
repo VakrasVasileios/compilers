@@ -128,7 +128,7 @@ multelist:    ',' expr multelist    { dlog("multelist -> ,expr multelist"); }
             ;
 
 elist:        expr multelist        { dlog("elist -> expr multelist"); }
-            |
+            |                       { dlog("elist -> EMPTY"); }
             ;
 
 objectdef:    '[' elist ']'         { dlog("objectdef -> [elist]"); }
@@ -136,7 +136,7 @@ objectdef:    '[' elist ']'         { dlog("objectdef -> [elist]"); }
             ;
 
 multindexed:  ',' indexedelem multindexed { dlog("multindexed -> , indexedelem multidexed"); }
-            |
+            |                       { dlog("elsestmt -> EMPTY"); }
             ;
 
 indexed:      indexedelem multindexed    { dlog("indexed -> indexedelem multidexed"); }

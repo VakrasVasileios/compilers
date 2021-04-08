@@ -55,7 +55,7 @@ ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
 "continue"          { return CONTINUE; }
 
 {IDENT}             {
-                        yylval.stringValue = yytext;
+                        yylval.stringValue = strdup(yytext);
                         return ID;
                     }
 
@@ -118,7 +118,7 @@ ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
                     }                    
 
 {PUNCTUATIONMARK}   {
-                        return *yytext; 
+                        return *yytext;
                     }
 "::"                { return COLONCOLON; }
 ".."                { return DOTDOT;     }
