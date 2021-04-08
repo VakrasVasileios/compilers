@@ -3,8 +3,9 @@
 
 #define global_scope 0
 
-unsigned int current_scope = 0;
-unsigned int anonymous_func_num = 0;
+static unsigned int    current_scope = 0;
+static unsigned int    anonymous_func_num = 0;
+static unsigned int    loopDepth = 0;
 
 std::list<std::pair<std::string, unsigned int> > argList;
 
@@ -58,21 +59,10 @@ DecreaseScope(void) {
 }
 
 std::pair<const std::string, Variable>*
-Lookup(const char* id) {
+Lookup(const char* id, type_t type) {
     for (auto block : scopeStack) {
         auto ret = block->ids.find(id);
-        if (ret != block->ids.end()) {
-            return &*ret;
-        }
-    }
-    return nullptr;
-}
-
-std::pair<const std::string, Variable>*
-LookupUpToGlobal(const char* id) {
-    for (auto iter = scopeStack.begin(); iter != scopeStack.end(); ++iter) {
-        auto ret = (*iter)->ids.find(id);
-        if (ret != (*iter)->ids.end()) {
+        if (ret != block->ids.end() && ((*ret).second.isVisible && (*ret).second.type == type)) {
             return &*ret;
         }
     }
@@ -80,18 +70,15 @@ LookupUpToGlobal(const char* id) {
 }
 
 void
-AddVariable(const char* id, unsigned int line) {
-    auto v = Lookup(id);
-    if (v == nullptr) {
-        if (current_scope != global_scope)
-            v = new std::pair<const std::string, Variable>(std::string(id), Variable(LOCAL_VAR, true, line, current_scope));
-        else
-            v = new std::pair<const std::string, Variable>(std::string(id), Variable(GLOBAL_VAR, true, line, current_scope));
-        scopeStack.Top()->ids.insert(*v);
-    }
-    else if (v->second.isVisible && (v->second.type == LIB_FUNC || v->second.type == USER_FUNC)) {
-        std::cout << "Error id already in use as a function!" << std::endl;
+AddVariable(const char* id, unsigned int line, type_t type) {
+    std::pair<const std::string, Variable>* v = nullptr;
+    if ((v = Lookup(id, LIB_FUNC)) != nullptr || (v = Lookup(id, USER_FUNC)) != nullptr) {
+        std::cout << "Error id already in use as a function, in line: " << v->second.line << std::endl;
         return;
+    }
+    else if ((v = Lookup(id, type)) == nullptr) {
+        v = new std::pair<const std::string, Variable>(std::string(id), Variable(type, true, line, current_scope));
+        scopeStack.Top()->ids.insert(*v);
     }
     else {
         scopeStack.Top()->ids.insert(*v);
@@ -101,19 +88,17 @@ AddVariable(const char* id, unsigned int line) {
 void
 AddFunction(const char* id, unsigned int line) {
     std::pair<const std::string, Variable>* v = nullptr;
-    if (std::string(id).rfind("$") != std::string::npos) // check if function about to be added is anonymous
-        v = Lookup(id);
-    if (v == nullptr) {
+    if (std::string(id).rfind("$") != std::string::npos) { // check if function about to be added is anonymous
         v = new std::pair<const std::string, Variable>(std::string(id), Variable(USER_FUNC, true, line, current_scope));
         scopeStack.Top()->ids.insert(*v);
         return;
     }
-    else if (v->second.isVisible && (v->second.type == GLOBAL_VAR || v->second.type == LOCAL_VAR)) {
-        std::cout << "Error id already in use as a variable!" << std::endl;
+    if ((v = Lookup(id, GLOBAL_VAR)) != nullptr || (v = Lookup(id, LOCAL_VAR)) != nullptr) {
+        std::cout << "Error id already in use as a variable, in line: " << v->second.line << std::endl;
         return;
     }
-    else if (v->second.isVisible && v->second.type == LIB_FUNC) {
-        std::cout << "Error id already in use as a library function!" << std::endl;
+    else if ((v = Lookup(id, LIB_FUNC)) != nullptr) {
+        std::cout << "Error id already in use as a library function, in line: " << v->second.line << std::endl;
         return;
     }
     else {
@@ -158,6 +143,11 @@ EnableLowerScopes(void) {
 }
 
 void
+CleanArgs(void) {
+    argList.clear();
+}
+
+void
 EnableLowerScopesAndCleanArgs(void) {
     EnableLowerScopes();
     CleanArgs();
@@ -171,7 +161,14 @@ AddFormalArgs(void) {
     CleanArgs();
 }
 
+unsigned int
+GetScope(void) { return current_scope; }
+
+unsigned int
+GetLoopDepth(void) { return loopDepth; }
+
 void
-CleanArgs(void) {
-    argList.clear();
-}
+IncreaseLoopDepth(void) { ++loopDepth; }
+
+void
+DecreaseLoopDepth(void) { --loopDepth; }
