@@ -98,7 +98,7 @@ void
 AddVariable(const char* id, unsigned int line, type_t type) {
     std::pair<const std::string, Variable>* v = nullptr;
     if ((v = Lookup(id, LIB_FUNC)) != nullptr || (v = Lookup(id, USER_FUNC)) != nullptr) {
-        std::cout << "Error id already in use as a function, in line: " << v->second.line << std::endl;
+        std::cout << "Error " << '\"'<< id <<'\"' << " already in use as a function, in line: " << v->second.line << std::endl;
         return;
     }
     else if ((v = Lookup(id, type)) == nullptr) {
@@ -119,11 +119,11 @@ AddFunction(const char* id, unsigned int line) {
         return;
     }
     if ((v = Lookup(id, GLOBAL_VAR)) != nullptr || (v = Lookup(id, LOCAL_VAR)) != nullptr) {
-        std::cout << "Error id already in use as a variable, in line: " << v->second.line << std::endl;
+        std::cout << "Error " << '\"'<< id <<'\"' << " already in use as a variable, in line: " << v->second.line << std::endl;
         return;
     }
     else if ((v = Lookup(id, LIB_FUNC)) != nullptr) {
-        std::cout << "Error id already in use as a library function, in line: " << v->second.line << std::endl;
+        std::cout << "Error " << '\"'<< id <<'\"' << " already in use as a library function, in line: " << v->second.line << std::endl;
         return;
     }
     else {
@@ -187,9 +187,12 @@ AddFormalArgs(void) {
 }
 
 void
-StashLvalue(const char* id, unsigned int line, type_t type) {
-    std::pair<const std::string, Variable> v = std::pair<const std::string, Variable>(std::string(id), Variable(type, true, line, current_scope));
-    lvaluesList.push_back(v);
+StashLvalue(const char* id, unsigned int line) {
+    if (Lookup(id, USER_FUNC) == nullptr && Lookup(id, LIB_FUNC) == nullptr) {
+        type_t type = current_scope == 0 ? GLOBAL_VAR : LOCAL_VAR;
+        std::pair<const std::string, Variable> v = std::pair<const std::string, Variable>(std::string(id), Variable(type, true, line, current_scope));
+        lvaluesList.push_back(v);
+    }
 }
 
 void
@@ -197,6 +200,11 @@ AddStashedLvalues(void) {
     for (auto iter : lvaluesList) {
         AddVariable(iter.first.c_str(), iter.second.line, iter.second.type);
     }
+    CleanLvaluesStash();
+}
+
+void
+CleanLvaluesStash(void) {
     lvaluesList.clear();
 }
 
