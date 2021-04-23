@@ -1,4 +1,5 @@
 #include "include/id/Id.h"
+#include <string.h>
 
 #ifndef SYMBOLTABLEENTRY
 #define SYMBOLTABLEENTRY
@@ -36,6 +37,8 @@ class SymbolTableEntry {
         const SymbolType    type;
         const Id            id;
         bool                active;
+
+        std::string         typeToString(SymbolType type) const;
     public:
         /*
         The Parameterized Constructor of this SymbolTableEntry. Sets this SymbolTableEntry type, id and activeness.
