@@ -43,7 +43,7 @@ class SymbolTableEntry {
         /*
         The Parameterized Constructor of this SymbolTableEntry. Sets this SymbolTableEntry type, id and activeness.
         */
-        SymbolTableEntry(SymbolType type, Id id, bool active) : type(type), id(id), active(active) {};
+        SymbolTableEntry(SymbolType type, Id id) : type(type), id(id), active(true) {};
         /*
         The Default Destructor of this SymbolTableEntry.
         */
