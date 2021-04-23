@@ -7,7 +7,7 @@ BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
 dYACC = -v
-#myLog = -DELOG
+myLog += -D LOG
 
 ifdef dYACC
 YFLAG += $(dYACC)
