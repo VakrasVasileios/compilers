@@ -21,11 +21,11 @@ class FunctionEntry : public SymbolTableEntry {
         /*
         The Default FunctionEntry Destructor.
         */
-        virtual                     ~FunctionEntry() = default;
+        virtual                             ~FunctionEntry() = default;
         /*
         Returns this FunctionEntry formal arguments.
         */
-        std::list<FormalVariableEntry>   getFormalArguments() const; 
+        std::list<FormalVariableEntry>      getFormalArguments() const; 
 };
 
 #endif
