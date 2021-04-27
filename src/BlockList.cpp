@@ -1,22 +1,22 @@
 // #include "../include/BlockList.h"
 
 // void
-// BlockList::ResetVisibility(void) {
-//     BlockList::GetCurrentBlock()->SetVisibilityAll(true);
+// BlockList::resetVisibility(void) {
+//     BlockList::getCurrentBlock()->setVisibilityAll(true);
 // }
 
 // void
-// BlockList::SetCurrentBlockVisibility(bool _visible) {
-//     BlockList::GetCurrentBlock()->SetVisibilityAll(_visible);
+// BlockList::setCurrentBlockVisibility(bool visible) {
+//     BlockList::getCurrentBlock()->setVisibilityAll(visible);
 // }
 
 // auto
-// BlockList::LookUp(const std::string& _id) -> std::pair<const std::string, Variable>* {
+// BlockList::lookUp(const std::string name) {
 //     auto iter = begin();
 //     for (; iter != end(); iter++) {
-//         auto lkp = (*iter).ids.find(_id);
-//         if (lkp != (*iter).ids.end()) {
-//             return &*lkp;
+//         auto lkp = (*iter).entries.find(name);
+//         if (lkp != (*iter).entries.end()) {
+//             return &(*lkp);
 //         }
 //     }
 //     return nullptr;

@@ -1,20 +1,20 @@
 // #include <list>
 // #include <stack>
-// #include "Block.h"
+// #include "symbol_table/block/Block.h"
 
 // #ifndef BLOCK_LIST
 // #define BLOCK_LIST
 
 // class BlockList : public std::list<Block> {
 // public:
-//     void        ResetVisibility(void);
-//     void        SetIDVisibility(const std::string& _id, bool _visi);
+//     void        resetVisibility(void);
+//     void        setSymbolTableEntryVisibility(const SymbolTableEntry& symbolTableEntry, bool visible);
 
-//     void        SetCurrentBlockVisibility(bool _visible);
+//     void        setCurrentBlockVisibility(bool visible);
 
-//     auto        LookUp(const std::string& _id) -> std::pair<const std::string, Variable>*;
+//     auto        lookUp(const std::string name);
  
-//     Block*      GetCurrentBlock(void)   { return &*(--end()); }
+//     Block*      getCurrentBlock(void)   { return &*(--end()); }
 
 //     void        logBlockList(void);
 // };

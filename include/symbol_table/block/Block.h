@@ -1,5 +1,6 @@
 #include "../symbol_table_entry/SymbolTableEntry.h"
 #include <list>
+#include <map>
 
 #ifndef BLOCK
 #define BLOCK
@@ -22,7 +23,7 @@ class Block final {
         /*
         Returns the list of all symbol table entries of this Block.
         */
-        std::list<SymbolTableEntry>   getSymbolTableEntries() const;  
+        std::list<SymbolTableEntry>     getSymbolTableEntries() const;  
         /*
         Adds a symbol table entry to this Block.
         */
@@ -30,12 +31,12 @@ class Block final {
 };
 
 // struct Block {
-//     std::map<const std::string, Variable>  ids;
+//     std::map<const std::string, SymbolTableEntry>  entries;
 //     Block() = default;
-//     Block(std::map<const std::string, Variable> _ids) : ids(_ids) {};
+//     Block(std::map<const std::string, SymbolTableEntry> entries) : entries(entries) {};
 
-//     void    SetIDVisibility(const std::string& _id, bool _visible);
-//     void    SetVisibilityAll(bool _visible);
+//     void    setSymbolTableEntryVisibility(const std::string name, bool visible);
+//     void    setVisibilityAll(bool visible);
 
 //     void    logBlock(void);
 // };

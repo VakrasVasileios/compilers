@@ -14,6 +14,10 @@ class FunctionEntry : public SymbolTableEntry {
         const std::list<FormalVariableEntry> formalArguments;
     public:
         /*
+        The Parameterized FunctionEntry Constructor.
+        */
+        FunctionEntry(SymbolType type, Function function) : SymbolTableEntry(type, function) {};
+        /*
         The Parameterized FunctionEntry Constructor. Sets this FunctionEntry formal arguments.
         */
         FunctionEntry(SymbolType type, Function function, std::list<FormalVariableEntry> formalArguments) : 

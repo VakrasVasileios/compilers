@@ -7,36 +7,36 @@
 #include "ScopeStack.h"
 #include "SymbolTable.h"
 
-void    Init(void);
+void    init(void);
 
-void    IncreaseScope(void);
-void    DecreaseScope(void);
+void    increaseScope(void);
+void    decreaseScope(void);
 
-auto    Lookup(const char* id, type_t type) -> std::pair<const std::string, Variable>*;
+auto    lookup(const char* id, SymbolType type);
 
-void    AddVariable(const char* id, unsigned int line, type_t type);
-void    AddFunction(const char* id, unsigned int line);
-void    AddAnonymousFunction(unsigned int line);
+void    addVariable(const char* id, unsigned int line, SymbolType type);
+void    addFunction(const char* id, unsigned int line);
+void    addAnonymousFunction(unsigned int line);
 
-void    HideLowerScopes(void);
-void    HideLowerScopesExceptArgs(void);
-void    EnableLowerScopes(void);
-void    EnableLowerScopesAndCleanArgs(void);
+void    hideLowerScopes(void);
+void    hideLowerScopesExceptArgs(void);
+void    enableLowerScopes(void);
+void    enableLowerScopesAndCleanArgs(void);
 
-void    AddFormalArgs(void);
+void    addFormalArgs(void);
 
-void    StashLvalue(const char* id, unsigned int line);
-void    AddStashedLvalues(void);
-void    CleanLvaluesStash(void);
+void    stashLvalue(const char* id, unsigned int line);
+void    addStashedLvalues(void);
+void    cleanLvaluesStash(void);
 
-std::list<std::pair<std::string, unsigned int> >& GetArgList(void);
-std::list<std::pair<std::string, unsigned int> >& GetLvaluesList(void);
+std::list<std::pair<std::string, unsigned int> >& getArgList(void);
+std::list<std::pair<std::string, unsigned int> >& getLvaluesList(void);
 
-SymbolTable&    GetSymbolTable(void);
+SymbolTable&    getSymbolTable(void);
 
-unsigned int    GetScope(void);
-unsigned int    GetLoopDepth(void);
-void            IncreaseLoopDepth(void);
-void            DecreaseLoopDepth(void);
+unsigned int    getScope(void);
+unsigned int    getLoopDepth(void);
+void            increaseLoopDepth(void);
+void            decreaseLoopDepth(void);
 
 #endif

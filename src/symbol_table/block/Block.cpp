@@ -11,23 +11,28 @@ Block:: addSymbolTableEntry(SymbolTableEntry entry) {
     this->symbolTableEntries.push_back(entry);
 }
 
+
+
+
+
+
 // void    
-// Block::SetIDVisibility(const std::string& _id, bool _visible) {
-//     auto iter = ids.find(_id);
-//     if (iter != ids.end()) {
-//         (*iter).second.isVisible = _visible;
+// Block::setSymbolTableEntryVisibility(const std::string name, bool visible) {
+//     auto iter = entries.find(name);
+//     if (iter != entries.end()) {
+//         (*iter).second.setActive(visible);
 //     }
 // }
 
 // void
-// Block::SetVisibilityAll(bool _visible) {
-//     for (auto iter : ids)
-//         iter.second.isVisible = _visible;
+// Block::setVisibilityAll(bool visible) {
+//     for (auto iter : entries)
+//         iter.second.setActive(visible);
 // }
 
 // void
 // Block::logBlock(void) {
-//     for (auto iter : ids) {
-//         std::cout << '\"' << iter.first << '\"' << " " << iter.second << std::endl;
+//     for (auto iter : entries) {
+//         std::cout << iter.second << std::endl;
 //     }
 // }

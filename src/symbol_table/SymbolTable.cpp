@@ -1,9 +1,11 @@
 #include "SymbolTable.h"
 
-// void
-// SymbolTable:: Insert(int scope, SymbolTableEntry entry){
-//     this->blocksMap[scope].top().addSymbolTableEntry(entry);
-// }
+void
+SymbolTable:: insert(int scope, SymbolTableEntry entry){
+    this->blocksTable[scope].back().addSymbolTableEntry(entry);
+}
+
+
 
 // SymbolTableEntry
 // SymbolTable:: LookUp(SymbolTableEntry entry) {
@@ -26,4 +28,13 @@
 // void
 // SymbolTable:: Hide(int scope) {
 
+// }
+
+// void
+// SymbolTable::logSymbolTable(void) {
+//     for (int i = 0; i < (*this).size(); i++){
+//         std::cout << std::endl;
+//         std::cout << "-----------    Scope #" << i << "    -----------" << std::endl;
+//         (*this)[i].logBlockList();
+//     }
 // }
