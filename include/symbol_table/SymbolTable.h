@@ -1,11 +1,8 @@
-#include <map>
-#include <stack>
-#include <vector>
-#include "../BlockList.h"
-#include "../block/Block.h"
+#ifndef SYMBOL_TABLE_H
+#define SYMBOL_TABLE_H
 
-#ifndef SYMBOL_TABLE
-#define SYMBOL_TABLE
+#include <vector>
+#include "../block/Block.h"
 
 // /*
 // Provides a symbol table for keeping lists of blocks.

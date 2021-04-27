@@ -1,8 +1,8 @@
+#ifndef GLOBALVARIABLEENTRY_H
+#define GLOBALVARIABLEENTRY_H
+
 #include "include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
 #include "include/id/Variable.h"
-
-#ifndef GLOBALVARIABLEENTRY
-#define GLOBALVARIABLEENTRY
 
 /*
 Provides a global variable entry.

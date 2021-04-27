@@ -1,8 +1,8 @@
+#ifndef SYMBOLTABLEENTRY_H
+#define SYMBOLTABLEENTRY_H
+
 #include "include/id/Id.h"
 #include <string.h>
-
-#ifndef SYMBOLTABLEENTRY
-#define SYMBOLTABLEENTRY
 
 /* 
 Provides a type for a symbol table entry.

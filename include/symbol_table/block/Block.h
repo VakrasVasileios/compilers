@@ -1,9 +1,9 @@
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #include "../symbol_table_entry/SymbolTableEntry.h"
 #include <list>
 #include <map>
-
-#ifndef BLOCK
-#define BLOCK
 
 /*
 Provides a block containing symbol table entries.

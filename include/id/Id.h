@@ -1,8 +1,8 @@
+#ifndef ID_H
+#define ID_H
+
 #include <string>
 #include <iostream>
-
-#ifndef ID
-#define ID
 
 /* 
 Provides an abstract id.

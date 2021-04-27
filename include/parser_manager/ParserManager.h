@@ -1,11 +1,11 @@
+#ifndef PARSERMANAGER_H
+#define PARSERMANAGER_H
+
 #include "../symbol_table/symbol_table_entry/function_entry/LibraryFunctionEntry.h"
 #include "../symbol_table/symbol_table_entry/function_entry/UserFunctionEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/LocalVariableEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/GlobalVariableEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
-
-#ifndef PARSERMANAGER_H
-#define PARSERMANAGER_H
 
 /*
 Inserts the library functions to the symbol table.

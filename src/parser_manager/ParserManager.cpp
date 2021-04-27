@@ -28,12 +28,12 @@ void insert_library_functions() {
     symbolTable.insert(global_scope, LibraryFunctionEntry(Function("sin", LIB_FUNC_LINE, global_scope)));
 }
 
-void increase_scope() {
-    current_scope++;
+void increase_scope() { //TODO
+
 }
 
-void decrease_scope() {
-    current_scope--;
+void decrease_scope() { //TODO
+
 }
 
 void set_method_call(bool methodcall) {
@@ -54,4 +54,60 @@ void decrease_loop_depth() {
 
 unsigned int get_loop_depth() {
     return loopDepth;
+}
+
+void hide_lower_scopes() { //TODO
+
+}
+
+void enable_lower_scopes() { //TODO
+
+}
+
+bool lookup_library_function(const char* name) { //TODO
+
+}
+
+bool lookup_user_function(const char* name) { //TODO
+
+}
+
+bool lookup_local_variable(const char* name) { //TODO
+
+}
+
+bool lookup_global_variable(const char* name) { //TODO
+
+}
+
+bool lookup_formal_variable(const char* name) { //TODO
+
+}
+
+void insert_user_function(const char* name, unsigned int line) { //TODO
+
+}
+
+void insert_user_function(unsigned int line) { //TODO
+
+}
+
+void push_stashed_lvalues() { //TODO
+
+}
+
+void stash_lvalue(const char* name, unsigned int line) { //TODO
+
+}
+
+void reset_lvalues_stash() { //TODO
+
+}
+
+void stash_formal_argument(const char* name, unsigned int line) { //TODO
+
+}
+
+void log_symbol_table() { //TODO
+
 }

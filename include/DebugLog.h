@@ -1,7 +1,7 @@
-#include <iostream>
+#ifndef DEBUG_LOG_H
+#define DEBUG_LOG_H
 
-#ifndef DEBUG_LOG
-#define DEBUG_LOG
+#include <iostream>
 
 #ifdef DELOG
     #define dlog(message) std::cout << message << std::endl

@@ -1,7 +1,7 @@
-#include "include/id/Id.h"
+#ifndef FUNCTION_H
+#define FUNCTION_H
 
-#ifndef FUNCTION
-#define FUNCTION
+#include "include/id/Id.h"
 
 /*
 Provides a function id.
