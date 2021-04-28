@@ -1,7 +1,7 @@
-#include "FunctionEntry.h"
+#ifndef LIBRARYFUNCTIONENTRY_H
+#define LIBRARYFUNCTIONENTRY_H
 
-#ifndef LIBRARYFUNCTIONENTRY
-#define LIBRARYFUNCTIONENTRY
+#include "FunctionEntry.h"
 
 /*
 Provides a library function entry.

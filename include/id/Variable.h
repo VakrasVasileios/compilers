@@ -1,5 +1,5 @@
-#ifndef VARIABLE
-#define VARIABLE
+#ifndef VARIABLE_H
+#define VARIABLE_H
 
 #include "Id.h"
 

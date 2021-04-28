@@ -1,10 +1,10 @@
+#ifndef FUNCTIONENTRY_H
+#define FUNCTIONENTRY_H
+
 #include "../SymbolTableEntry.h"
 #include "../variable_entry/FormalVariableEntry.h"
 #include "../../../id/Function.h"
 #include <list>
-
-#ifndef FUNCTIONENTRY
-#define FUNCTIONENTRY
 
 /*
 Provides an abstract function symbol table entry.

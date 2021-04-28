@@ -1,7 +1,7 @@
-#include "FunctionEntry.h"
+#ifndef USERFUNCTIONENTRY_H
+#define USERFUNCTIONENTRY_H
 
-#ifndef USERFUNCTIONENTRY
-#define USERFUNCTIONENTRY
+#include "FunctionEntry.h"
 
 /*
 Provides a user function entry.
