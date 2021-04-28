@@ -46,7 +46,7 @@
 
 %%
 
-program:      stmts                 { dlog("program -> stmts");}
+program:      stmts                 { dlog("program -> stmts"); }
             ;
 
 stmts:        stmt stmts            { dlog("stmts -> stmt stmts"); }
@@ -54,16 +54,16 @@ stmts:        stmt stmts            { dlog("stmts -> stmt stmts"); }
             |                       { dlog("stmts -> EMPTY"); }
             ;
 
-stmt:         expr ';'              { isMethodCall=false; AddStashedLvalues(); dlog("stmt -> expr;");}
-            | ifstmt                { dlog("stmt -> ifstmt");}
-            | whilestmt             { dlog("stmt -> whilestmt");}
-            | forstmt               { dlog("stmt -> forstmt");}
-            | returnstmt            { dlog("stmt -> returnstmt");}
-            | BREAK ';'             { if(GetLoopDepth() == 0) std::cout << "Error, invalid keyword BREAK outside of loop, in line: "<< yylineno << std::endl; dlog("stmt -> break;");}
-            | CONTINUE ';'          { if(GetLoopDepth() == 0) std::cout << "Error, invalid keyword CONTINUE outside of loop in line: "<< yylineno << std::endl; dlog("stmt -> continue;");}
-            | block                 { dlog("stmt -> block");}
-            | funcdef               { dlog("stmt -> funcdef");}
-            | ';'                   { dlog("stmt -> ;");}
+stmt:         expr ';'              { isMethodCall=false; AddStashedLvalues(); dlog("stmt -> expr;"); }
+            | ifstmt                { dlog("stmt -> ifstmt"); }
+            | whilestmt             { dlog("stmt -> whilestmt"); }
+            | forstmt               { dlog("stmt -> forstmt"); }
+            | returnstmt            { dlog("stmt -> returnstmt"); }
+            | BREAK ';'             { if(GetLoopDepth() == 0) std::cout << "Error, invalid keyword BREAK outside of loop, in line: "<< yylineno << std::endl; dlog("stmt -> break;"); }
+            | CONTINUE ';'          { if(GetLoopDepth() == 0) std::cout << "Error, invalid keyword CONTINUE outside of loop in line: "<< yylineno << std::endl; dlog("stmt -> continue;"); }
+            | block                 { dlog("stmt -> block"); }
+            | funcdef               { dlog("stmt -> funcdef"); }
+            | ';'                   { dlog("stmt -> ;"); }
             ;
 
 expr:         assignexpr            { dlog("expr -> assignexpr"); }
@@ -151,8 +151,7 @@ indexed:      indexedelem multindexed    { dlog("indexed -> indexedelem multidex
 indexedelem:  '{' expr ':' expr '}'   { dlog("indexedelem -> { expr : expr }"); }
             ;
 
-block:        '{' {IncreaseScope();AddFormalArgs();} program '}'  { DecreaseScope(); dlog("block -> { program }"); }
-            | '{' {IncreaseScope();AddFormalArgs();} '}'          { DecreaseScope(); dlog("block -> {}");}
+block:        '{' {IncreaseScope();AddFormalArgs();} stmts '}'      { DecreaseScope(); dlog("block -> { program }"); }
             ;
 
 funcdef:      FUNCTION {AddAnonymousFunction(yylineno);} '(' idlist ')' {HideLowerScopes();}  block {EnableLowerScopes(); dlog("funcdef -> function (idlist) block "); }
@@ -160,26 +159,26 @@ funcdef:      FUNCTION {AddAnonymousFunction(yylineno);} '(' idlist ')' {HideLow
             ;
 
 const:        INTNUM                { dlog("const -> INTNUM"); }
-            | DOUBLENUM             { dlog("const -> DOUBLENUM");}
+            | DOUBLENUM             { dlog("const -> DOUBLENUM"); }
             | STRING                { dlog("const -> STRING"); }
             | NIL                   { dlog("const -> NIL"); }
             | TRUE                  { dlog ("const -> TRUE"); }
             | FALSE                 { dlog ("const -> FALSE"); }
             ;
 
-multid:       ',' ID {GetArgList().push_back({std::string($2), yylineno});} multid { dlog("multid -> , id multid");}
-            | {dlog("multid -> EMPTY");}
+multid:       ',' ID {GetArgList().push_back({std::string($2), yylineno});} multid { dlog("multid -> , id multid"); }
+            | {dlog("multid -> EMPTY"); }
             ;
 
 idlist:       ID {GetArgList().push_back({std::string($1), yylineno});} multid { dlog("idlist -> id multid"); }
-            | {dlog("idlist -> EMPTY");}
+            | {dlog("idlist -> EMPTY"); }
             ;
 
 ifstmt:       IF '(' expr ')' {CleanLvaluesStash();} stmt {CleanLvaluesStash();} elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
             ;
 
 elsestmt:     ELSE stmt { CleanLvaluesStash(); dlog("elsestmt -> else stmt"); }
-            | {dlog("elsestmt -> EMPTY");}
+            |           { dlog("elsestmt -> EMPTY"); }
             ;
 
 whilestmt:    WHILE { IncreaseLoopDepth();} '(' expr ')' {CleanLvaluesStash();} stmt { DecreaseLoopDepth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
