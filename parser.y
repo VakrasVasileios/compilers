@@ -210,7 +210,7 @@ int main(int argc, char** argv) {
         yyin = stdin;
     }
 
-    insert_library_functions();
+    init_library_functions();
 
     yyparse();
 
