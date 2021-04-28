@@ -46,8 +46,12 @@
 
 %%
 
-program:      stmt                  { dlog("program -> stmt");}
-            | stmt program          { dlog("program -> stmt program");}
+program:      stmts                 { dlog("program -> stmts");}
+            ;
+
+stmts:        stmt stmts            { dlog("stmts -> stmt stmts"); }
+            | stmt                  { dlog("stmts -> stmt"); }
+            |                       { dlog("stmts -> EMPTY"); }
             ;
 
 stmt:         expr ';'              { isMethodCall=false; AddStashedLvalues(); dlog("stmt -> expr;");}
