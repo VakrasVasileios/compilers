@@ -2,7 +2,7 @@ FLEXTRGT = scanner
 YACCTRGT = parser
 CC = g++
 CFLAGS = -std=c++11
-SRC += src/*.cpp
+SRC += src/id/*.cpp src/parser_manager/*.cpp src/symbol_table/*.cpp src/symbol_table/block/*.cpp src/symbol_table/symbol_table_entry/*.cpp
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
