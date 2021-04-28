@@ -1,7 +1,7 @@
 #ifndef SYMBOLTABLEENTRY_H
 #define SYMBOLTABLEENTRY_H
 
-#include "include/id/Id.h"
+#include "../../id/Id.h"
 #include <string.h>
 
 /* 

@@ -1,4 +1,4 @@
-#include "include/symbol_table/symbol_table_entry/function_entry/FunctionEntry.h"
+#include "FunctionEntry.h"
 
 #ifndef LIBRARYFUNCTIONENTRY
 #define LIBRARYFUNCTIONENTRY

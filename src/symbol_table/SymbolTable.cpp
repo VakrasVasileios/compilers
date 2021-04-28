@@ -1,4 +1,4 @@
-#include "SymbolTable.h"
+#include "../../include/symbol_table/SymbolTable.h"
 
 void
 SymbolTable:: insert(int scope, SymbolTableEntry entry){

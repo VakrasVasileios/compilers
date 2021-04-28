@@ -1,7 +1,7 @@
 #ifndef VARIABLE
 #define VARIABLE
 
-#include "include/id/Id.h"
+#include "Id.h"
 
 /*
 Provides a variable id.

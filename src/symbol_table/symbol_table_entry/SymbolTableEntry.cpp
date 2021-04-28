@@ -1,4 +1,4 @@
-#include "SymbolTableEntry.h"
+#include "../../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
 #include <assert.h>
 
 std::string

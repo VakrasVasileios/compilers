@@ -2,7 +2,7 @@
 #define SYMBOL_TABLE_H
 
 #include <vector>
-#include "../block/Block.h"
+#include "block/Block.h"
 
 // /*
 // Provides a symbol table for keeping lists of blocks.

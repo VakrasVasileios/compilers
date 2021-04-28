@@ -1,6 +1,6 @@
-#include "include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
-#include "include/symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
-#include "include/id/Function.h"
+#include "../SymbolTableEntry.h"
+#include "../variable_entry/FormalVariableEntry.h"
+#include "../../../id/Function.h"
 #include <list>
 
 #ifndef FUNCTIONENTRY

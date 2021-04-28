@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Block.h"
+#include "../../../include/symbol_table/block/Block.h"
 
 std::list<SymbolTableEntry>
 Block:: getSymbolTableEntries() const {
