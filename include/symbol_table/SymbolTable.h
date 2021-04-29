@@ -16,9 +16,13 @@ class SymbolTable final {
         */
         SymbolTable() = default;
         /*
+        Inserts a block, at the end of a block list, on a scope to this SymbolTable.
+        */
+        void                pushBlock(unsigned int scope, Block block);
+        /*
         Inserts an entry on a scope to this SymbolTable.
         */
-        void                insert(int scope, SymbolTableEntry entry);
+        void                insert(unsigned int scope, SymbolTableEntry entry);
         /*
         Searches for an entry on this SymbolTable. Returns entry if it's found, else null
         */
@@ -26,7 +30,7 @@ class SymbolTable final {
         /*
         Hides all the entries on a scope on this SymbolTable.
         */
-        void                hide(int scope);
+        void                hide(unsigned int scope);
 };
 
 // class SymbolTable : public std::vector<BlockList> {

@@ -10,7 +10,7 @@
 /*
 Inserts the library functions to the symbol table.
 */
-void            init_library_functions();
+void            insert_library_functions();
 /*
 Increases the current scope.
 */

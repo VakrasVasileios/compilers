@@ -13,7 +13,8 @@ unsigned int loopDepth = 0;
 
 SymbolTable symbolTable;
 
-void init_library_functions() {
+void insert_library_functions() {
+    symbolTable.pushBlock(global_scope, Block());
     symbolTable.insert(global_scope, LibraryFunctionEntry(Function("print", LIB_FUNC_LINE, global_scope)));
     symbolTable.insert(global_scope, LibraryFunctionEntry(Function("input", LIB_FUNC_LINE, global_scope)));
     symbolTable.insert(global_scope, LibraryFunctionEntry(Function("objectmemberkeys", LIB_FUNC_LINE, global_scope)));
