@@ -101,6 +101,8 @@ void            stash_lvalue(const char* name, unsigned int line);
 Cleans the lvalues stash.
 */
 void            reset_lvalues_stash();
+
+void            push_stashed_formal_arguments(void);
 /*
 Stashes a formal argument, with a name, at a line, in order for it to be pushed to the symbol table.
 */
