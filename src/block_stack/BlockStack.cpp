@@ -24,10 +24,21 @@ BlockStack:: Lookup(const char* name) {
         --iter;
         auto b = (*iter)->getSymbolTableEntries();
         for (auto i : b) {
-            if (i.getId().getName().c_str() == name)
+            if (i.getId().c_str() == name)
                 return &i; 
         }
     } while (iter != blockStack.begin());
+
+    return nullptr;
+}
+
+SymbolTableEntry*   LookupGlobal(const char* name) {
+    auto iter = blockStack.begin();
+    auto b = (*iter)->getSymbolTableEntries();
+    for (auto i : b) {
+        if (i.getId().c_str() == name)
+            return &i; 
+    }
 
     return nullptr;
 }

@@ -24,9 +24,19 @@ SymbolTableEntry:: getType() const {
     return type;
 }
 
-Id
+std::string
 SymbolTableEntry:: getId() const {
     return id;
+}
+
+unsigned int
+SymbolTableEntry:: getLine() const {
+    return line;
+}
+
+unsigned int
+SymbolTableEntry:: getScope() const {
+    return scope;
 }
 
 bool
@@ -41,5 +51,8 @@ SymbolTableEntry:: setActive(bool active) {
 
 std::ostream&
 operator<<(std::ostream& os, const SymbolTableEntry symbolTableEntry) {
-    return os << "[" << symbolTableEntry.typeToString(symbolTableEntry.getType()) << "]" << " " << symbolTableEntry.getId();
+    return os << "\"" << symbolTableEntry.getId() << "\""
+              << " [" << symbolTableEntry.typeToString(symbolTableEntry.getType()) << "]"
+              << " (line: " << symbolTableEntry.getLine() << ")" 
+              << " (scope " << symbolTableEntry.getScope() << ")";
 }

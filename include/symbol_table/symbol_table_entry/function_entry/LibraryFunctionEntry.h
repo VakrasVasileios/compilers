@@ -11,11 +11,12 @@ class LibraryFunctionEntry final : public FunctionEntry {
         /*
         The Parameterized Constructor of this LibraryFunctionEntry.
         */
-        LibraryFunctionEntry(Function function) : FunctionEntry(LIB_FUNC, function) {};
+        LibraryFunctionEntry(std::string id, unsigned int line, unsigned int scope) : FunctionEntry(LIB_FUNC, id, line, scope) {};
         /*
         The Parameterized Constructor of this LibraryFunctionEntry. Sets this LibraryFunctionEntry formal arguments.
         */
-        LibraryFunctionEntry(Function function, std::list<FormalVariableEntry> formalArguments) : FunctionEntry(LIB_FUNC, function, formalArguments) {};
+        LibraryFunctionEntry(std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry> formalArguments) :
+            FunctionEntry(LIB_FUNC, id, line, scope) {};
 };
 
 #endif

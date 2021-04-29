@@ -26,7 +26,11 @@ void            set_method_call(bool methodcall);
 /*
 Returns wether the state is a method call.
 */
-bool            is_method_call();
+bool            is_method_call(void);
+
+bool            set_valid_return(bool _validReturn);
+
+bool            is_valid_return(void);
 /*
 Increases the loop depth.
 */

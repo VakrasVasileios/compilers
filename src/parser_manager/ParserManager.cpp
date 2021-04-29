@@ -1,8 +1,8 @@
 #include "../../include/parser_manager/ParserManager.h"
 #include "../../include/symbol_table/SymbolTable.h"
-#include "../../include/id/Function.h"
 #include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
 #include "../../include/block_stack/BlockStack.h"
+#include <string>
 
 #define LIB_FUNC_LINE -1
 
@@ -10,6 +10,7 @@ const unsigned int global_scope = 0;
 unsigned int current_scope = 0;
 
 bool methodCall = false;
+bool validReturn = false;
 
 unsigned int loopDepth = 0;
 
@@ -22,18 +23,18 @@ BlockStack  blockStack;
 void init_library_functions() {
     symbolTable.insert(current_scope, Block());
     blockStack.pushBlock(getCurrent_Block());
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("print", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("input", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("objectmemberkeys", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("objecttotalmembers", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("objectcopy", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("totalarguments", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("argument", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("typeof", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("strtonum", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("sqrt", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("cos", LIB_FUNC_LINE, global_scope)));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry(Function("sin", LIB_FUNC_LINE, global_scope)));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("objecttotalmembers", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("objectcopy", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("totalarguments", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("argument", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("typeof", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("strtonum", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
 }
 
 Block* getCurrent_Block() {
@@ -59,6 +60,14 @@ bool is_method_call() {
     return methodCall;
 }
 
+void set_valid_return(bool _validReturn) {
+    validReturn = _validReturn;
+}
+
+bool is_valid_return(void) {
+    return validReturn;
+}
+
 void increase_loop_depth() {
     loopDepth++;
 }
@@ -80,31 +89,31 @@ void enable_lower_scopes() {
 }
 
 bool lookup_library_function(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(LIB_FUNC, std::string(name))
-    if(r_value == nullptr)
+    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    if(r_value == nullptr || r_value->getType() != LIB_FUNC)
         return false;
     else
         return true;
 }
 
 bool lookup_user_function(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(USER_FUNC, std::string(name))
-    if(r_value == nullptr)
+    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    if(r_value == nullptr || r_value->getType() != USER_FUNC)
         return false;
     else
         return true;
 }
 
 bool lookup_local_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(LOCAL_VAR, std::string(name))
-    if(r_value == nullptr)
+    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    if(r_value == nullptr || r_value->getType() != LOCAL_VAR)
         return false;
     else
         return true;
 }
 
 bool lookup_global_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(GLOBAL_VAR, std::string(name))
+    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
     if(r_value == nullptr)
         return false;
     else
@@ -112,21 +121,21 @@ bool lookup_global_variable(const char* name) {
 }
 
 bool lookup_formal_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(FORMAL_VAR, std::string(name))
-    if(r_value == nullptr)
+    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    if(r_value == nullptr || r_value->getType() != FORMAL_VAR)
         return false;
     else
         return true;
 }
 
 void insert_user_function(const char* name, unsigned int line) {
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(Function(std::string(name), line, global_scope))));
+    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(std::string(name), line, current_scope));
 }
 
 void insert_user_function(unsigned int line) {
     std::string an = "$";
     an += anonymusFuncsCounter;
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(Function(an, line, global_scope));
+    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope));
 }
 
 void push_stashed_lvalues() { //TODO

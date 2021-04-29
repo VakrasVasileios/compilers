@@ -30,6 +30,8 @@ class Block final {
         void                            addSymbolTableEntry(SymbolTableEntry entry);
 
         void                            hide();
+
+        friend std::ostream&    operator<<(std::ostream& os, const SymbolTable symbolTable);
 };
 
 // struct Block {

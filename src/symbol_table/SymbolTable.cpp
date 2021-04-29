@@ -5,6 +5,15 @@ SymbolTable:: getBlocksTable() const {
     return blocksTable;
 }
 
+std::ostream&
+operator<<(std::ostream& os, const SymbolTable symbolTable) {
+    //     for (int i = 0; i < (*this).size(); i++){
+//         std::cout << std::endl;
+//         std::cout << "-----------    Scope #" << i << "    -----------" << std::endl;
+//         (*this)[i].logBlockList();
+//     }
+}
+
 // void
 // SymbolTable:: insert(unsigned int scope, SymbolTableEntry entry){
 //     this->blocksTable[scope].back().addSymbolTableEntry(entry);

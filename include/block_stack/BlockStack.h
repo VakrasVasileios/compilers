@@ -36,6 +36,10 @@ class BlockStack {
         */
         SymbolTableEntry*   Lookup(const char* name);
         /*
+        Searches for a symbol table entry across the global scope of this BlockStack.
+        */
+        SymbolTableEntry*   LookupGlobal(const char* name);
+        /*
         Hides all the entries, of the blocks of this BlockStack, at the lower scopes down to the global scope.
         */
         void                hideLowerScopes();

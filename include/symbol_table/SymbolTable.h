@@ -23,6 +23,8 @@ class SymbolTable final {
         Inserts a block on a scope to this SymbolTable.
         */
         void                insert(unsigned int scope, Block block);
+
+        friend std::ostream&    operator<<(std::ostream& os, const SymbolTable symbolTable);
 };
 
 // class SymbolTable : public std::vector<BlockList> {
