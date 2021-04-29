@@ -1,7 +1,12 @@
 #include "../../include/symbol_table/SymbolTable.h"
 
 void
-SymbolTable:: insert(int scope, SymbolTableEntry entry){
+SymbolTable:: pushBlock(unsigned int scope, Block block) {    
+    this->blocksTable[scope].push_back(block);//
+}
+
+void
+SymbolTable:: insert(unsigned int scope, SymbolTableEntry entry){
     this->blocksTable[scope].back().addSymbolTableEntry(entry);
 }
 
