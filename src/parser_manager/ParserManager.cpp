@@ -25,6 +25,10 @@ BlockStack  blockStack;
 
 std::list<FormalVariableEntry> stashedFormalArguments;
 
+Block* getCurrent_Block() {
+    return &*(--symbolTable.getBlocksTable()[current_scope].end()); //end() points to nullptr
+}
+
 void init_library_functions() {
     symbolTable.insert(current_scope, Block());
     blockStack.pushBlock(getCurrent_Block());
@@ -40,10 +44,6 @@ void init_library_functions() {
     blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
     blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
     blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
-}
-
-Block* getCurrent_Block() {
-    return &*(--symbolTable.getBlocksTable(current_scope).end()); //end() points to nullptr
 }
 
 void increase_scope() {
@@ -94,7 +94,7 @@ void enable_lower_scopes() {
 }
 
 bool lookup_library_function(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    SymbolTableEntry *r_value = blockStack.Lookup(name);
     if(r_value == nullptr || r_value->getType() != LIB_FUNC)
         return false;
     else
@@ -102,7 +102,7 @@ bool lookup_library_function(const char* name) {
 }
 
 bool lookup_user_function(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    SymbolTableEntry *r_value = blockStack.Lookup(name);
     if(r_value == nullptr || r_value->getType() != USER_FUNC)
         return false;
     else
@@ -110,7 +110,7 @@ bool lookup_user_function(const char* name) {
 }
 
 bool lookup_local_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    SymbolTableEntry *r_value = blockStack.Lookup(name);
     if(r_value == nullptr || r_value->getType() != LOCAL_VAR)
         return false;
     else
@@ -118,7 +118,7 @@ bool lookup_local_variable(const char* name) {
 }
 
 bool lookup_global_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    SymbolTableEntry *r_value = blockStack.Lookup(name);
     if(r_value == nullptr)
         return false;
     else
@@ -126,7 +126,7 @@ bool lookup_global_variable(const char* name) {
 }
 
 bool lookup_formal_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
+    SymbolTableEntry *r_value = blockStack.Lookup(name);
     if(r_value == nullptr || r_value->getType() != FORMAL_VAR)
         return false;
     else
@@ -134,13 +134,13 @@ bool lookup_formal_variable(const char* name) {
 }
 
 void insert_user_function(const char* name, unsigned int line) {
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(std::string(name), line, current_scope, stashedFormalArguments);
+    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(name, line, current_scope, stashedFormalArguments));
 }
 
 void insert_user_function(unsigned int line) {
     std::string an = "$";
     an += anonymusFuncsCounter;
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope, stashedFormalArguments);
+    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope, stashedFormalArguments));
 }
 
 void push_stashed_lvalues() { //TODO
@@ -163,7 +163,7 @@ void push_stashed_formal_arguments(void) {
 }
 
 void stash_formal_argument(const char* name, unsigned int line) {
-    stashedFormalArguments.push_back(FormalVariableEntry(std::string(name), line, current_scope + 1));
+    stashedFormalArguments.push_back(FormalVariableEntry(name, line, current_scope + 1));
 }
 
 void log_symbol_table() {

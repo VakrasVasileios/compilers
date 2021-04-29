@@ -30,7 +30,7 @@ bool            is_method_call(void);
 /*
 Flags the validity of a possible return.
 */
-bool            set_valid_return(bool _validReturn);
+void            set_valid_return(bool _validReturn);
 /*
 Gets the validity flag of a possible return.
 */
