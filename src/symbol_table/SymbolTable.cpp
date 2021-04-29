@@ -1,16 +1,19 @@
 #include "../../include/symbol_table/SymbolTable.h"
 
-void
-SymbolTable:: pushBlock(unsigned int scope, Block block) {    
-    this->blocksTable[scope].push_back(block);//
+std::vector<std::list<Block> >
+SymbolTable:: getBlocksTable() const {
+    return blocksTable;
 }
 
-void
-SymbolTable:: insert(unsigned int scope, SymbolTableEntry entry){
-    this->blocksTable[scope].back().addSymbolTableEntry(entry);
-}
+// void
+// SymbolTable:: insert(unsigned int scope, SymbolTableEntry entry){
+//     this->blocksTable[scope].back().addSymbolTableEntry(entry);
+// }
 
+// SymbolTableEntry*
+// SymbolTable:: lookup(std::string name) {
 
+// }
 
 // SymbolTableEntry
 // SymbolTable:: LookUp(SymbolTableEntry entry) {

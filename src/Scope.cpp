@@ -60,7 +60,6 @@
 //     current_scope--;
 // }
 
-
 // std::pair<const std::string, Variable>*
 // Lookup(const char* id, type_t type) {
 //     for (auto block : scopeStack) {
