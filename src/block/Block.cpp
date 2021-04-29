@@ -19,7 +19,15 @@ Block:: hide() {
     }
 }
 
-
+std::ostream&
+operator<<(std::ostream& os, const Block block) {
+    for (auto entry : block.getSymbolTableEntries())
+    {
+        os << entry << "\n";
+    }
+    
+    return os;
+}
 
 // void    
 // Block::setSymbolTableEntryVisibility(const std::string name, bool visible) {

@@ -2,7 +2,9 @@
 #include "../../include/symbol_table/SymbolTable.h"
 #include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
 #include "../../include/block_stack/BlockStack.h"
+#include "../../include/symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
 #include <string>
+#include <iostream>
 
 #define LIB_FUNC_LINE -1
 
@@ -19,6 +21,8 @@ unsigned int anonymusFuncsCounter = 0;
 SymbolTable symbolTable;
 
 BlockStack  blockStack;
+
+std::list<FormalVariableEntry> stashedFormalArguments;
 
 void init_library_functions() {
     symbolTable.insert(current_scope, Block());
@@ -129,13 +133,15 @@ bool lookup_formal_variable(const char* name) {
 }
 
 void insert_user_function(const char* name, unsigned int line) {
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(std::string(name), line, current_scope));
+    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(std::string(name), line, current_scope), stashedFormalArguments);
+    stashedFormalArguments.clear();
 }
 
 void insert_user_function(unsigned int line) {
     std::string an = "$";
     an += anonymusFuncsCounter;
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope));
+    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope), stashedFormalArguments);
+    stashedFormalArguments.clear();
 }
 
 void push_stashed_lvalues() { //TODO
@@ -151,9 +157,9 @@ void reset_lvalues_stash() { //TODO
 }
 
 void stash_formal_argument(const char* name, unsigned int line) { //TODO
-
+    stashedFormalArguments.insert(FormalVariableEntry(std::string(name), line, current_scope+1));
 }
 
-void log_symbol_table() { //TODO
-
+void log_symbol_table() {
+    std::cout << symbolTable << std::endl;
 }

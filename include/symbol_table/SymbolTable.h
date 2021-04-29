@@ -18,21 +18,13 @@ class SymbolTable final {
         /*
         Returns this SymbolTable table of blocks.
         */
-        std::vector<std::list<Block> > getBlocksTable() const;
+        std::vector<std::list<Block> >  getBlocksTable() const;
         /*
         Inserts a block on a scope to this SymbolTable.
         */
-        void                insert(unsigned int scope, Block block);
+        void                            insert(unsigned int scope, Block block);
 
-        friend std::ostream&    operator<<(std::ostream& os, const SymbolTable symbolTable);
+        friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbolTable);
 };
-
-// class SymbolTable : public std::vector<BlockList> {
-// public:
-//     SymbolTable() = default;
-//     ~SymbolTable() = default;
-
-//     void        logSymbolTable(void);
-// };
 
 #endif

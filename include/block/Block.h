@@ -31,7 +31,7 @@ class Block final {
 
         void                            hide();
 
-        friend std::ostream&    operator<<(std::ostream& os, const SymbolTable symbolTable);
+        friend std::ostream&    operator<<(std::ostream& os, const Block block);
 };
 
 // struct Block {
