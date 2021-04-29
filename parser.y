@@ -49,7 +49,6 @@ program:      stmts                 { dlog("program -> stmts"); }
             ;
 
 stmts:        stmt stmts            { dlog("stmts -> stmt stmts"); }
-            | stmt                  { dlog("stmts -> stmt"); }
             |                       { dlog("stmts -> EMPTY"); }
             ;
 
@@ -210,7 +209,7 @@ int main(int argc, char** argv) {
         yyin = stdin;
     }
 
-    //insert_library_functions();
+    //init_library_functions();
 
     yyparse();
 
