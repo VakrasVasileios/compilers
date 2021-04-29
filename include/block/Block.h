@@ -29,7 +29,7 @@ class Block final {
         */
         void                            addSymbolTableEntry(SymbolTableEntry entry);
         /*
-        Hides all the symbol table entries of this Block,
+        Hides all the symbol table entries of this Block.
         */
         void                            hide();
 
