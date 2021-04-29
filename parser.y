@@ -11,6 +11,8 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+
+    #define     log_error(message)  std::cout << "\033[1;31m" << message << ", in line: " << yyylineno << "\033[0m" << std::endl
 %}
 
 %union {                                                    
@@ -57,8 +59,8 @@ stmt:         expr ';'              { !is_method_call(); push_stashed_lvalues();
             | whilestmt             { dlog("stmt -> whilestmt");}
             | forstmt               { dlog("stmt -> forstmt");}
             | returnstmt            { dlog("stmt -> returnstmt");}
-            | BREAK ';'             { if(get_loop_depth() == 0) std::cout << "Error, invalid keyword BREAK outside of loop, in line: "<< yylineno << std::endl; dlog("stmt -> break;");}
-            | CONTINUE ';'          { if(get_loop_depth() == 0) std::cout << "Error, invalid keyword CONTINUE outside of loop in line: "<< yylineno << std::endl; dlog("stmt -> continue;");}
+            | BREAK ';'             { if(get_loop_depth() == 0) log_error("Error, invalid keyword BREAK outside of loop"); dlog("stmt -> break;");}
+            | CONTINUE ';'          { if(get_loop_depth() == 0) log_error("Error, invalid keyword CONTINUE outside of loop"); dlog("stmt -> continue;");}
             | block                 { dlog("stmt -> block");}
             | funcdef               { dlog("stmt -> funcdef");}
             | ';'                   { dlog("stmt -> ;");}
@@ -113,7 +115,7 @@ member:       lvalue '.' ID         { $$=$3; dlog("member -> lvalue.id"); }
             ;
             
 call:         call '(' elist ')'    { dlog("call -> call(elist)"); }
-            | lvalue callsuffix     { if(!is_method_call()) { if(!lookup_library_function($1) && !lookup_user_function($1)) std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;}dlog("call -> lvalue callsuffix"); }
+            | lvalue callsuffix     { if(!is_method_call()) { if(!lookup_library_function($1) && !lookup_user_function($1)) std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;} dlog("call -> lvalue callsuffix"); }
             | '(' funcdef ')' '(' elist ')'  { dlog("call -> (funcdef)(elist)"); }
             ;
             
@@ -152,8 +154,8 @@ indexedelem:  '{' expr ':' expr '}'   { dlog("indexedelem -> { expr : expr }"); 
 block:        '{' {increase_scope();} stmts '}'  { decrease_scope(); dlog("block -> { program }"); }
             ;
 
-funcdef:      FUNCTION {insert_user_function(yylineno);} '(' idlist ')' {hide_lower_scopes();}  block {enable_lower_scopes(); dlog("funcdef -> function (idlist) block "); }
-            | FUNCTION ID {insert_user_function($2, yylineno);} '(' idlist ')' {hide_lower_scopes();} block {enable_lower_scopes(); dlog("funcdef -> function id (idlist) block"); }
+funcdef:      FUNCTION {insert_user_function(yylineno);} '(' idlist ')' {hide_lower_scopes();set_valid_return(true);}  block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function (idlist) block "); }
+            | FUNCTION ID {insert_user_function($2, yylineno);} '(' idlist ')' {hide_lower_scopes();set_valid_return(true);} block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function id (idlist) block"); }
             ;
 
 const:        INTNUM                { dlog("const -> INTNUM"); }
@@ -185,8 +187,8 @@ whilestmt:    WHILE { increase_loop_depth();} '(' expr ')' {reset_lvalues_stash(
 forstmt:      FOR { increase_loop_depth();} '(' elist ';' expr ';' elist ')' {reset_lvalues_stash();} stmt { decrease_loop_depth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
             ;
 
-returnstmt:   RETURN {reset_lvalues_stash();} ';'  { dlog("returnstmt -> RETURN;"); }
-            | RETURN {reset_lvalues_stash();} expr ';' { dlog("returnstmt -> RETURN expr;"); }
+returnstmt:   RETURN {reset_lvalues_stash(); if (!is_valid_return()) log_error("Invalid return, used outside a function block");} ';'  { dlog("returnstmt -> RETURN;"); }
+            | RETURN {reset_lvalues_stash(); if (!is_valid_return()) log_error("Invalid return, used outside a function block");} expr ';' { dlog("returnstmt -> RETURN expr;"); }
             ;
 
 %%
@@ -209,7 +211,7 @@ int main(int argc, char** argv) {
         yyin = stdin;
     }
 
-    //init_library_functions();
+    init_library_functions();
 
     yyparse();
 
