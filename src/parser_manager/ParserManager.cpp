@@ -21,9 +21,10 @@ unsigned int anonymusFuncsCounter = 0;
 
 SymbolTable symbolTable;
 
-std::list<Block*>  blockList;
+std::list<Block*>  blockList; //End element always holds a reference to the new block thats pushed to the symbol table.
+                                // Den 8a einai panta to back block sto symbolTable[current_scope]??
 
-std::list<FormalVariableEntry> stashedFormalArguments; //End element always holds a reference to the new block thats pushed to the symbol table.
+std::list<FormalVariableEntry> stashedFormalArguments;
 
 void init_library_functions() {
     increase_scope();
@@ -166,13 +167,13 @@ bool lookup_formal_variable(const char* name) {
 }
 
 void insert_user_function(const char* name, unsigned int line) {
-    blockList.top()->addSymbolTableEntry(UserFunctionEntry(name, line, current_scope, stashedFormalArguments)); /////??????????????????????????????? TA BAZOYME 2 FORES.
+    (*--blockList.end())->addSymbolTableEntry(UserFunctionEntry(name, line, current_scope, stashedFormalArguments)); /////??????????????????????????????? TA BAZOYME 2 FORES.
 }
 
 void insert_user_function(unsigned int line) {
     std::string an = "$";
     an += anonymusFuncsCounter;
-    blockList.top()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope, stashedFormalArguments)); /////??????????????????????????????? TA BAZOYME 2 FORES.
+    (*--blockList.end())->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope, stashedFormalArguments)); /////??????????????????????????????? TA BAZOYME 2 FORES.
 }
 
 void push_stashed_lvalues() { //TODO?
@@ -189,7 +190,7 @@ void reset_lvalues_stash() { //TODO?
 
 void push_stashed_formal_arguments(void) { /////??????????????????????????????? TA BAZOYME 2 FORES.
     for (auto i : stashedFormalArguments) {
-        blockList.top()->addSymbolTableEntry(i);
+        (*--blockList.end())->addSymbolTableEntry(i);
     }
     stashedFormalArguments.clear();
 }
