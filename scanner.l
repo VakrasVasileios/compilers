@@ -1,6 +1,6 @@
 %{
     #include "parser.hpp"
-    #include "include/dataStructs.h"
+    #include "include/scanner_data_structs/dataStructs.h"
     #include <string>
     #include <string.h>
 

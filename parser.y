@@ -3,7 +3,7 @@
     #include <string>
     #include <iostream>
     #include "include/parser_manager/ParserManager.h"
-    #include "include/DebugLog.h"
+    #include "include/parser_log/DebugLog.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -151,7 +151,7 @@ indexed:      indexedelem multindexed    { dlog("indexed -> indexedelem multidex
 indexedelem:  '{' expr ':' expr '}'   { dlog("indexedelem -> { expr : expr }"); }
             ;
 
-block:        '{' {increase_scope();} stmts '}'  { decrease_scope(); dlog("block -> { program }"); }
+block:        '{' {increase_scope();push_stashed_formal_arguments();} stmts '}'  { decrease_scope(); dlog("block -> { stmts }"); }
             ;
 
 funcdef:      FUNCTION {insert_user_function(yylineno);} '(' idlist ')' {hide_lower_scopes();set_valid_return(true);}  block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function (idlist) block "); }
@@ -201,6 +201,8 @@ int yyerror(std::string yaccProvidedMessage) {
 
 #ifndef TESTING
 int main(int argc, char** argv) {    
+    init_library_functions();
+
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -210,8 +212,6 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-
-    init_library_functions();
 
     yyparse();
 
