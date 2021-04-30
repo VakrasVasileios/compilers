@@ -26,7 +26,6 @@ std::list<Block*>  programStack;
 std::list<FormalVariableEntry> stashedFormalArguments;
 
 void init_library_functions() {
-    increase_scope();
     (*--programStack.end())->addSymbolTableEntry(LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
     (*--programStack.end())->addSymbolTableEntry(LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
     (*--programStack.end())->addSymbolTableEntry(LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
@@ -100,16 +99,20 @@ void enable_lower_scopes() {
     }
 }
 
-// SymbolTableEntry*   LookupGlobal(const char* name) { ????
-//     auto iter = blockStack.begin();
-//     auto b = (*iter)->getSymbolTableEntries();
-//     for (auto i : b) {
-//         if (i.getId().c_str() == name)
-//             return &i; 
-//     }
+bool scope_is_global() {
+    return current_scope == global_scope;
+}
 
-//     return nullptr;
-// }
+SymbolTableEntry*   LookupGlobal(const char* name) {
+    auto iter = programStack.begin();
+    auto b = (*iter)->getSymbolTableEntries();
+    for (auto i : b) {
+        if (i.getId().c_str() == name && i.isActive())
+            return &i;
+    }
+
+    return nullptr;
+}
 
 SymbolTableEntry* lookup(const char* name) {
     auto iter = programStack.end();
@@ -117,7 +120,7 @@ SymbolTableEntry* lookup(const char* name) {
         --iter;
         auto b = (*iter)->getSymbolTableEntries();
         for (auto i : b) {
-            if (i.getId().c_str() == name)
+            if (i.getId().c_str() == name && i.isActive())
                 return &i; 
         }
     } while (iter != programStack.begin());
@@ -125,66 +128,41 @@ SymbolTableEntry* lookup(const char* name) {
     return nullptr;
 }
 
-bool lookup_library_function(const char* name) {
-    SymbolTableEntry *r_value = lookup(name);
-    if(r_value == nullptr || r_value->getType() != LIB_FUNC)
-        return false;
-    else
-        return true;
+bool is_library_function(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == LIB_FUNC;
 }
 
-bool lookup_user_function(const char* name) {
-    SymbolTableEntry *r_value = lookup(name);
-    if(r_value == nullptr || r_value->getType() != USER_FUNC)
-        return false;
-    else
-        return true;
+bool is_user_function(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == USER_FUNC;
 }
 
-bool lookup_local_variable(const char* name) {
-    SymbolTableEntry *r_value = lookup(name);
-    if(r_value == nullptr || r_value->getType() != LOCAL_VAR)
-        return false;
-    else
-        return true;
+bool is_formal_variable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == FORMAL_VAR;
 }
 
-bool lookup_global_variable(const char* name) {
-    SymbolTableEntry *r_value = lookup(name);
-    if(r_value == nullptr)
-        return false;
-    else
-        return true;
-}
+bool is_global_variable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == GLOBAL_VAR;
+} 
 
-bool lookup_formal_variable(const char* name) {
-    SymbolTableEntry *r_value = lookup(name);
-    if(r_value == nullptr || r_value->getType() != FORMAL_VAR)
-        return false;
-    else
-        return true;
+bool is_local_variable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == LOCAL_VAR;
 }
 
 void insert_user_function(const char* name, unsigned int line) {
     (*--programStack.end())->addSymbolTableEntry(UserFunctionEntry(name, line, current_scope, stashedFormalArguments)); 
 }
 
+void insert_variable_local(const char* name, unsigned int line) {
+    (*--programStack.end())->addSymbolTableEntry(LocalVariableEntry(name, line, current_scope)); 
+}
+void insert_variable_global(const char* name, unsigned int line) {
+    (*--programStack.end())->addSymbolTableEntry(GlobalVariableEntry(name, line, current_scope)); 
+}
+
 void insert_user_function(unsigned int line) {
     std::string an = "$";
     an += anonymusFuncsCounter;
     (*--programStack.end())->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope, stashedFormalArguments)); 
-}
-
-void push_stashed_lvalues() { //TODO?
-
-}
-
-void stash_lvalue(const char* name, unsigned int line) { //TODO?
-
-}
-
-void reset_lvalues_stash() { //TODO?
-
 }
 
 void push_stashed_formal_arguments(void) { 
