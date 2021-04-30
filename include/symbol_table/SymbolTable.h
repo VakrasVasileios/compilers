@@ -2,11 +2,11 @@
 #define SYMBOL_TABLE_H
 
 #include <vector>
-#include "block/Block.h"
+#include "../block/Block.h"
 
-// /*
-// Provides a symbol table for keeping lists of blocks.
-// */
+/*
+Provides a symbol table for keeping lists of blocks.
+*/
 class SymbolTable final {
     private:
         std::vector<std::list<Block> > blocksTable;
@@ -16,29 +16,15 @@ class SymbolTable final {
         */
         SymbolTable() = default;
         /*
-        Inserts a block, at the end of a block list, on a scope to this SymbolTable.
+        Returns this SymbolTable table of blocks.
         */
-        void                pushBlock(unsigned int scope, Block block);
+        std::vector<std::list<Block> >  getBlocksTable() const;
         /*
-        Inserts an entry on a scope to this SymbolTable.
+        Inserts a block on a scope to this SymbolTable.
         */
-        void                insert(unsigned int scope, SymbolTableEntry entry);
-        /*
-        Searches for an entry on this SymbolTable. Returns entry if it's found, else null
-        */
-        SymbolTableEntry    lookup(SymbolTableEntry entry);
-        /*
-        Hides all the entries on a scope on this SymbolTable.
-        */
-        void                hide(unsigned int scope);
+        void                            insert(unsigned int scope, Block block);
+
+        friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbolTable);
 };
-
-// class SymbolTable : public std::vector<BlockList> {
-// public:
-//     SymbolTable() = default;
-//     ~SymbolTable() = default;
-
-//     void        logSymbolTable(void);
-// };
 
 #endif

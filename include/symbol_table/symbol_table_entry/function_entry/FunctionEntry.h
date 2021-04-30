@@ -3,7 +3,6 @@
 
 #include "../SymbolTableEntry.h"
 #include "../variable_entry/FormalVariableEntry.h"
-#include "../../../id/Function.h"
 #include <list>
 
 /*
@@ -16,12 +15,12 @@ class FunctionEntry : public SymbolTableEntry {
         /*
         The Parameterized FunctionEntry Constructor.
         */
-        FunctionEntry(SymbolType type, Function function) : SymbolTableEntry(type, function) {};
+        FunctionEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope) : SymbolTableEntry(type, id, line, scope) {};
         /*
         The Parameterized FunctionEntry Constructor. Sets this FunctionEntry formal arguments.
         */
-        FunctionEntry(SymbolType type, Function function, std::list<FormalVariableEntry> formalArguments) : 
-        SymbolTableEntry(type, function), formalArguments(formalArguments) {};
+        FunctionEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry> formalArguments) : 
+        SymbolTableEntry(type, id, line, scope), formalArguments(formalArguments) {};
         /*
         The Default FunctionEntry Destructor.
         */

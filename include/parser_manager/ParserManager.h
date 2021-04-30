@@ -10,7 +10,7 @@
 /*
 Inserts the library functions to the symbol table.
 */
-void            insert_library_functions();
+void            init_library_functions();
 /*
 Increases the current scope.
 */
@@ -26,7 +26,15 @@ void            set_method_call(bool methodcall);
 /*
 Returns wether the state is a method call.
 */
-bool            is_method_call();
+bool            is_method_call(void);
+/*
+Flags the validity of a possible return.
+*/
+bool            set_valid_return(bool _validReturn);
+/*
+Gets the validity flag of a possible return.
+*/
+bool            is_valid_return(void);
 /*
 Increases the loop depth.
 */
@@ -93,6 +101,8 @@ void            stash_lvalue(const char* name, unsigned int line);
 Cleans the lvalues stash.
 */
 void            reset_lvalues_stash();
+
+void            push_stashed_formal_arguments(void);
 /*
 Stashes a formal argument, with a name, at a line, in order for it to be pushed to the symbol table.
 */

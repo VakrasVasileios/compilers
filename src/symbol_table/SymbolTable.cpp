@@ -1,45 +1,27 @@
 #include "../../include/symbol_table/SymbolTable.h"
 
-void
-SymbolTable:: pushBlock(unsigned int scope, Block block) {    
-    this->blocksTable[scope].push_back(block);//
+std::vector<std::list<Block> >
+SymbolTable:: getBlocksTable() const {
+    return blocksTable;
 }
 
 void
-SymbolTable:: insert(unsigned int scope, SymbolTableEntry entry){
-    this->blocksTable[scope].back().addSymbolTableEntry(entry);
+SymbolTable:: insert(unsigned int scope, Block block) {
+    this->blocksTable[scope].push_back(block);
 }
 
+std::ostream&
+operator<<(std::ostream& os, const SymbolTable symbolTable) {
+    unsigned int scope = 0;
+    for (auto blockList : symbolTable.getBlocksTable())
+    {
+       os << "\n-----------    Scope #" << scope << "    -----------\n";
+       for (auto block : blockList)
+       {
+           os << block;
+       }
+       scope++;
+    }
 
-
-// SymbolTableEntry
-// SymbolTable:: LookUp(SymbolTableEntry entry) {
-//     // unsigned int entryScope = entry.getId().getScope();
-//     // for (; entryScope >= 0; entryScope--)
-//     // {
-//     //     std::stack<SymbolTableEntry> temp;
-//     //     while (!this->blocksMap[entryScope].empty())
-//     //     {
-//     //         if (entry != this->blocksMap[entryScope].top().getSymbolTableEntries())
-//     //         {
-//     //             /* code */
-//     //         }
-            
-//     //     }
-        
-//     // }    
-// }
-
-// void
-// SymbolTable:: Hide(int scope) {
-
-// }
-
-// void
-// SymbolTable::logSymbolTable(void) {
-//     for (int i = 0; i < (*this).size(); i++){
-//         std::cout << std::endl;
-//         std::cout << "-----------    Scope #" << i << "    -----------" << std::endl;
-//         (*this)[i].logBlockList();
-//     }
-// }
+    return os;
+}

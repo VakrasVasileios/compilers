@@ -10,7 +10,23 @@ class ParserTest : public ::testing::Test {
 
         std::string actual;
 
-        void SetUp() override {}
+        std::string libfunc_out;
+
+        void SetUp() override {
+            libfunc_out = "\n-----------    Scope #0    -----------\n";
+            libfunc_out += "\"print\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"input\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"objectmemberkeys\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"objecttotalmembers\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"objectcopy\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"totalarguments\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"argument\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"typeof\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"strtonum\" [library function (line -1) (scope 0)\n";
+            libfunc_out += "\"sqrt\" [library function (line -1) (scope 0)\n"; 
+            libfunc_out += "\"cos\" [library function (line -1) (scope 0)\n"; 
+            libfunc_out += "\"sin\" [library function (line -1) (scope 0)\n"; 
+        }
 
         void TearDown() override {}   
 
@@ -29,12 +45,15 @@ class ParserTest : public ::testing::Test {
 };
 
 TEST_F(ParserTest, Error0) {
-    expected = "No global variable with id: Global, in line: 4\n"; //TO CHANGE
+    expected = "No global variable with id: Global, in line: 4\n";
+    expected += libfunc_out;
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error0.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 // TEST_F(ParserTest, Error1) {
+//     expected = "";
+//     expected += libfunc_out;
 //     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error1.asc");
 //     GTEST_ASSERT_EQ(expected, actual);
 // }
