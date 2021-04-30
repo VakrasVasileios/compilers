@@ -19,6 +19,13 @@ Block:: hide() {
     }
 }
 
+void
+Block:: enable() {
+    for (auto i : symbolTableEntries) {
+        i.setActive(true);
+    }
+}
+
 std::ostream&
 operator<<(std::ostream& os, Block block) {
     for (auto entry : block.getSymbolTableEntries())

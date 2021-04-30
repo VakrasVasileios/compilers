@@ -82,20 +82,14 @@ unsigned int get_loop_depth() {
 void hide_lower_scopes() {
     auto iter = programStack.begin();
     for (; iter != programStack.end(); ++iter) {
-        for (auto entry : (*iter)->getSymbolTableEntries())
-        {
-            entry.setActive(false);
-        }
+        (*iter)->hide();
     }
 }
 
 void enable_lower_scopes() {
     auto iter = programStack.begin();
     for (; iter != programStack.end(); ++iter) {
-        for (auto entry : (*iter)->getSymbolTableEntries())
-        {
-            entry.setActive(true);
-        }
+        (*iter)->enable();
     }
 }
 

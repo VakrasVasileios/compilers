@@ -21,7 +21,7 @@ class Block final {
         */
         ~Block() = default;
         /*
-        Returns the list of all symbol table entries of this Block.
+        Returns a reference of the list of all symbol table entries of this Block.
         */
         std::list<SymbolTableEntry>&    getSymbolTableEntries();
         /*
@@ -32,8 +32,12 @@ class Block final {
         Hides all the symbol table entries of this Block.
         */
         void                            hide();
+        /*
+        Enables all the symbol table entries of this Block.
+        */
+        void                            enable();
 
-        friend std::ostream&    operator<<(std::ostream& os, Block block);
+        friend std::ostream&            operator<<(std::ostream& os, Block block);
 };
 
 #endif
