@@ -23,7 +23,7 @@ class Block final {
         /*
         Returns the list of all symbol table entries of this Block.
         */
-        std::list<SymbolTableEntry>     getSymbolTableEntries() const;
+        std::list<SymbolTableEntry>&    getSymbolTableEntries();
         /*
         Adds a symbol table entry to this Block.
         */
@@ -33,7 +33,7 @@ class Block final {
         */
         void                            hide();
 
-        friend std::ostream&    operator<<(std::ostream& os, const Block block);
+        friend std::ostream&    operator<<(std::ostream& os, Block block);
 };
 
 #endif

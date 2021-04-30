@@ -114,7 +114,7 @@ lvalue:       ID                    {
                                         $$=$1;
                                         auto item = lookup($1);
                                         if (scope_is_global()) {
-                                            if(item == nulptr)
+                                            if(item == nullptr)
                                                 insert_variable_global($1, yylineno);
                                             else if (is_library_function(item) || is_user_function(item)) {
                                                 log_error("Error id, is used already in use as a function");
@@ -160,7 +160,7 @@ member:       lvalue '.' ID         { $$=$3; dlog("member -> lvalue.id"); }
 call:         call '(' elist ')'    { dlog("call -> call(elist)"); }
             | lvalue callsuffix     {
                                         if(!is_method_call()) {
-                                            SymbolTableEntry* entry = lookup($2);
+                                            SymbolTableEntry* entry = lookup($1);
                                             if(!is_library_function(entry) && !is_user_function(entry))
                                                 std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;
                                         }
@@ -263,7 +263,6 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-
 
     yyparse();
 

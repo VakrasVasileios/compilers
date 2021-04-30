@@ -2,8 +2,8 @@
 #include <list>
 #include "../../include/block/Block.h"
 
-std::list<SymbolTableEntry>
-Block:: getSymbolTableEntries() const {
+std::list<SymbolTableEntry>&
+Block:: getSymbolTableEntries() {
     return symbolTableEntries;
 }
 
@@ -20,7 +20,7 @@ Block:: hide() {
 }
 
 std::ostream&
-operator<<(std::ostream& os, const Block block) {
+operator<<(std::ostream& os, Block block) {
     for (auto entry : block.getSymbolTableEntries())
     {
         os << entry << "\n";
