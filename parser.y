@@ -12,7 +12,7 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define     log_error(message)  std::cout << "\033[1;31m" << message << ", in line: " << yyylineno << "\033[0m" << std::endl
+    #define     log_error(message)  std::cout << "\033[1;31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl
 %}
 
 %union {                                                    
@@ -30,7 +30,7 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <stringValue>     lvalue member
+%type <SymbolTableEntry> lvalue member
 
 %right      '='
 %left       OR
@@ -54,13 +54,21 @@ stmts:        stmt stmts            { dlog("stmts -> stmt stmts"); }
             |                       { dlog("stmts -> EMPTY"); }
             ;
 
-stmt:         expr ';'              { !is_method_call(); push_stashed_lvalues(); dlog("stmt -> expr;");}
+stmt:         expr ';'              { !is_method_call(); dlog("stmt -> expr;");}
             | ifstmt                { dlog("stmt -> ifstmt");}
             | whilestmt             { dlog("stmt -> whilestmt");}
             | forstmt               { dlog("stmt -> forstmt");}
             | returnstmt            { dlog("stmt -> returnstmt");}
-            | BREAK ';'             { if(get_loop_depth() == 0) log_error("Error, invalid keyword BREAK outside of loop"); dlog("stmt -> break;");}
-            | CONTINUE ';'          { if(get_loop_depth() == 0) log_error("Error, invalid keyword CONTINUE outside of loop"); dlog("stmt -> continue;");}
+            | BREAK ';'             { 
+                                        if(get_loop_depth() == 0)
+                                            log_error("Error, invalid keyword BREAK outside of loop");
+                                        dlog("stmt -> break;");
+                                    }
+            | CONTINUE ';'          {
+                                        if(get_loop_depth() == 0)
+                                            log_error("Error, invalid keyword CONTINUE outside of loop");
+                                        dlog("stmt -> continue;");
+                                    }
             | block                 { dlog("stmt -> block");}
             | funcdef               { dlog("stmt -> funcdef");}
             | ';'                   { dlog("stmt -> ;");}
@@ -92,7 +100,7 @@ term:         '(' expr ')'          { dlog("term -> (expr)"); }
             | primary               { dlog("term -> primary"); }
             ;
 
-assignexpr:   lvalue                {push_stashed_lvalues();} '=' expr  { dlog("assignexpr -> lvalue = expr"); }
+assignexpr:   lvalue '=' expr  { dlog("assignexpr -> lvalue = expr"); }
             ;
 
 primary:      lvalue                { dlog("primary -> lvalue"); }
@@ -102,20 +110,62 @@ primary:      lvalue                { dlog("primary -> lvalue"); }
             | const                 { dlog("primary -> const"); }
             ;
 
-lvalue:       ID                    { $$=$1; stash_lvalue($1, yylineno); dlog("lvalue -> id"); }
-            | LOCAL ID              { $$=$2; stash_lvalue($2, yylineno); dlog("lvalue -> local id"); }
-            | COLONCOLON ID         { $$=$2; if (!lookup_library_function($2) && !lookup_global_variable($2) && !lookup_user_function($2)) std::cout << "No global variable with id: "<< $2 << ", in line: " << yylineno << std::endl; dlog("lvalue -> ::id"); }
+lvalue:       ID                    {
+                                        $$=$1;
+                                        auto item = lookup($1);
+                                        if (scope_is_global()) {
+                                            if(item == nulptr)
+                                                insert_variable_global($1, yylineno);
+                                            else if (is_library_function(item) || is_user_function(item)) {
+                                                log_error("Error id, is used already in use as a function");
+                                            }
+                                        }
+                                        else {
+                                            if (item == nullptr) {
+                                                insert_variable_local($1, yylineno);
+                                            }
+                                            else if (is_library_function(item) || is_user_function(item)) {
+                                                log_error("Error id, is used already in use as a function");
+                                            }
+                                        }
+                                        dlog("lvalue -> id");
+                                    }
+            | LOCAL ID              {
+                                        $$=$2;
+                                        auto item = lookup($2);
+                                        if (item == nullptr) {
+                                            insert_variable_local($2, yylineno);
+                                        }
+                                        else if (is_user_function(item) || is_library_function(item)) {
+                                            log_error("Error id, is used already in use as a function");
+                                        }
+                                        dlog("lvalue -> local id");
+                                    }
+            | COLONCOLON ID         {
+                                        $$=$2;
+                                        SymbolTableEntry* entry = lookup($2);
+                                        if (!is_library_function(entry) && !is_global_variable(entry) && !is_user_function(entry))
+                                            std::cout << "No global variable with id: "<< $2 << ", in line: " << yylineno << std::endl;
+                                        dlog("lvalue -> ::id");
+                                        }
             | member                { dlog("lvalue -> member"); }
             ;
 
 member:       lvalue '.' ID         { $$=$3; dlog("member -> lvalue.id"); }
-            | lvalue '[' expr ']'   { dlog("member -> lvalue[expr]"); }
+            | lvalue '[' expr ']'   { dlog("member -> lvalue[expr]"); }   
             | call '.' ID           { $$=$3; dlog("member -> call.id"); }
             | call '[' expr ']'     { dlog("member -> call[expr]"); }
             ;
             
 call:         call '(' elist ')'    { dlog("call -> call(elist)"); }
-            | lvalue callsuffix     { if(!is_method_call()) { if(!lookup_library_function($1) && !lookup_user_function($1)) std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;} dlog("call -> lvalue callsuffix"); }
+            | lvalue callsuffix     {
+                                        if(!is_method_call()) {
+                                            SymbolTableEntry* entry = lookup($2);
+                                            if(!is_library_function(entry) && !is_user_function(entry))
+                                                std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;
+                                        }
+                                        dlog("call -> lvalue callsuffix");
+                                    }
             | '(' funcdef ')' '(' elist ')'  { dlog("call -> (funcdef)(elist)"); }
             ;
             
@@ -162,8 +212,8 @@ const:        INTNUM                { dlog("const -> INTNUM"); }
             | DOUBLENUM             { dlog("const -> DOUBLENUM"); }
             | STRING                { dlog("const -> STRING"); }
             | NIL                   { dlog("const -> NIL"); }
-            | TRUE                  { dlog ("const -> TRUE"); }
-            | FALSE                 { dlog ("const -> FALSE"); }
+            | TRUE                  { dlog("const -> TRUE"); }
+            | FALSE                 { dlog("const -> FALSE"); }
             ;
 
 multid:       ',' ID {stash_formal_argument($2, yylineno);} multid { dlog("multid -> , id multid");}
@@ -174,21 +224,21 @@ idlist:       ID {stash_formal_argument($1, yylineno);} multid { dlog("idlist ->
             | {dlog("idlist -> EMPTY");}
             ;
 
-ifstmt:       IF '(' expr ')' {reset_lvalues_stash();} stmt {reset_lvalues_stash();} elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
+ifstmt:       IF '(' expr ')' stmt elsestmt { dlog("ifstmt -> if (expr) stmt elsestmt"); }
             ;
 
-elsestmt:     ELSE stmt { reset_lvalues_stash(); dlog("elsestmt -> else stmt"); }
+elsestmt:     ELSE stmt { dlog("elsestmt -> else stmt"); }
             | {dlog("elsestmt -> EMPTY");}
             ;
 
-whilestmt:    WHILE { increase_loop_depth();} '(' expr ')' {reset_lvalues_stash();} stmt { decrease_loop_depth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
+whilestmt:    WHILE { increase_loop_depth();} '(' expr ')' stmt { decrease_loop_depth(); dlog ("whilestmt -> WHILE (expr) stmt"); }
             ;
 
-forstmt:      FOR { increase_loop_depth();} '(' elist ';' expr ';' elist ')' {reset_lvalues_stash();} stmt { decrease_loop_depth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
+forstmt:      FOR { increase_loop_depth();} '(' elist ';' expr ';' elist ')' stmt { decrease_loop_depth(); dlog("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
             ;
 
-returnstmt:   RETURN {reset_lvalues_stash(); if (!is_valid_return()) log_error("Invalid return, used outside a function block");} ';'  { dlog("returnstmt -> RETURN;"); }
-            | RETURN {reset_lvalues_stash(); if (!is_valid_return()) log_error("Invalid return, used outside a function block");} expr ';' { dlog("returnstmt -> RETURN expr;"); }
+returnstmt:   RETURN {if (!is_valid_return()) log_error("Invalid return, used outside a function block");} ';'  { dlog("returnstmt -> RETURN;"); }
+            | RETURN {if (!is_valid_return()) log_error("Invalid return, used outside a function block");} expr ';' { dlog("returnstmt -> RETURN expr;"); }
             ;
 
 %%
@@ -201,6 +251,7 @@ int yyerror(std::string yaccProvidedMessage) {
 
 #ifndef TESTING
 int main(int argc, char** argv) {    
+    increase_scope();
     init_library_functions();
 
     if (argc > 1) {
@@ -212,6 +263,7 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
+
 
     yyparse();
 
