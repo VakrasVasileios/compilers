@@ -3,41 +3,7 @@
 
 #include "../symbol_table/symbol_table_entry/SymbolTableEntry.h"
 #include <list>
-#include <map>
 
-/*
-Provides a block containing symbol table entries.
-*/
-class Block final {
-    private:
-        std::list<SymbolTableEntry> symbolTableEntries;
-    public:
-        /*
-        The Default Constructor of this Block.
-        */
-        Block() = default;
-        /*
-        The Default Destructor of this Block.
-        */
-        ~Block() = default;
-        /*
-        Returns a reference of the list of all symbol table entries of this Block.
-        */
-        std::list<SymbolTableEntry>&    getSymbolTableEntries();
-        /*
-        Adds a symbol table entry to this Block.
-        */
-        void                            addSymbolTableEntry(SymbolTableEntry entry);
-        /*
-        Hides all the symbol table entries of this Block.
-        */
-        void                            hide();
-        /*
-        Enables all the symbol table entries of this Block.
-        */
-        void                            enable();
-
-        friend std::ostream&            operator<<(std::ostream& os, Block block);
-};
+#define Block std::list<SymbolTableEntry*>
 
 #endif
