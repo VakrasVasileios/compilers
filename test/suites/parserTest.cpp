@@ -4,43 +4,59 @@
 #include <string>
 #include <array>
 
+/*
+Provides a test class for testing the output of the parser.
+*/
 class ParserTest : public ::testing::Test {
-    protected:
-        std::string expected;
-
-        std::string actual;
-
-        std::string libfunc_out;
-
-        void SetUp() override {
-            libfunc_out ="[library function] \"print\" (line 0) (scope 0)\n"
-                        "[library function] \"input\" (line 0) (scope 0)\n"
-                        "[library function] \"objectmemberkeys\" (line 0) (scope 0)\n"
-                        "[library function] \"objecttotalmembers\" (line 0) (scope 0)\n"
-                        "[library function] \"objectcopy\" (line 0) (scope 0)\n"
-                        "[library function] \"totalarguments\" (line 0) (scope 0)\n"
-                        "[library function] \"argument\" (line 0) (scope 0)\n"
-                        "[library function] \"typeof\" (line 0) (scope 0)\n"
-                        "[library function] \"strtonum\" (line 0) (scope 0)\n"
-                        "[library function] \"sqrt\" (line 0) (scope 0)\n"
-                        "[library function] \"cos\" (line 0) (scope 0)\n"
-                        "[library function] \"sin\" (line 0) (scope 0)";
-        }
-
-        void TearDown() override {}   
-
-        std::string exec(const char* cmd) {
-            std::array<char, 128> buffer;
-            std::string result;
-            std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-            if (!pipe) {
-                throw std::runtime_error("popen() failed!");
-            }
-            while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-                result += buffer.data();
-            }
-            return result;
-        }
+   protected:
+      /*
+      The expected output.
+      */
+      std::string expected;
+      /*
+      The actual output.
+      */
+      std::string actual;
+      /*
+      The output of the parsing of the library functions.
+      */
+      std::string libfunc_out;
+      /*
+      Runs before every test.
+      */
+      void SetUp() override {
+         libfunc_out ="[library function] \"print\" (line 0) (scope 0)\n"
+                     "[library function] \"input\" (line 0) (scope 0)\n"
+                     "[library function] \"objectmemberkeys\" (line 0) (scope 0)\n"
+                     "[library function] \"objecttotalmembers\" (line 0) (scope 0)\n"
+                     "[library function] \"objectcopy\" (line 0) (scope 0)\n"
+                     "[library function] \"totalarguments\" (line 0) (scope 0)\n"
+                     "[library function] \"argument\" (line 0) (scope 0)\n"
+                     "[library function] \"typeof\" (line 0) (scope 0)\n"
+                     "[library function] \"strtonum\" (line 0) (scope 0)\n"
+                     "[library function] \"sqrt\" (line 0) (scope 0)\n"
+                     "[library function] \"cos\" (line 0) (scope 0)\n"
+                     "[library function] \"sin\" (line 0) (scope 0)";
+      }
+      /*
+      Runs after every test.
+      */
+      void TearDown() override {}   
+      /*
+      Executes a comand on the current path.
+      */
+      std::string exec(const char* cmd) {
+         std::array<char, 128> buffer;
+         std::string result;
+         std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+         if (!pipe) {
+               throw std::runtime_error("popen() failed!");
+         }
+         while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+               result += buffer.data();
+         }
+         return result;
+      }
 };
 
 TEST_F(ParserTest, Error0) {
@@ -61,23 +77,23 @@ TEST_F(ParserTest, Error2) {
     expected = "Invalid return, used outside a function block, in line: 8\n"
             "Error, invalid keyword BREAK outside of loop, in line: 9\n"
             "Error, invalid keyword CONTINUE outside of loop, in line: 10\n";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error2.asc");    
-     GTEST_ASSERT_EQ(expected, actual);
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error2.asc");    
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error3) {
-     expected = "cannot access 'x'\n";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = "cannot access 'x'\n";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error4) {
-     expected = "Error, x is already in use as a function, in line: 4\n";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error4.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = "Error, x is already in use as a function, in line: 4\n";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error4.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error5) {
@@ -88,10 +104,10 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error6) {
-     expected = "cannot access 'x'\ncannot access 'y'";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error6.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = "cannot access 'x'\ncannot access 'y'";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error6.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error7) {
@@ -104,149 +120,149 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error8) {
-     expected = "\"x\" redeclared as different kind of symbol\nprevious definition of \"x\" was here";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error8.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = "\"x\" redeclared as different kind of symbol\nprevious definition of \"x\" was here";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error8.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error9) {
-       expected = "cannot access 'x'\n";
-       expected += libfunc_out;
-       actual = exec("./scanner ../test/files/phase2_tests/Errors/Error9.asc");
-       GTEST_ASSERT_EQ(expected, actual);
+    expected = "cannot access 'x'\n";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error9.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error10) {
-     expected = "Error, print is already in use as a function, in line: 1\n"
-                "Error, input is already in use as a function, in line: 1\n"
-                "Error, print is already in use as a function, in line: 6\n"
-                "Error, print is already in use as a function, in line: 11\n";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = "Error, print is already in use as a function, in line: 1\n"
+            "Error, input is already in use as a function, in line: 1\n"
+            "Error, print is already in use as a function, in line: 6\n"
+            "Error, print is already in use as a function, in line: 11\n";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error11) {
-       expected = "formal argument \"x\" redeclared\n previous definition of \"x\" was here";
-       expected += libfunc_out;
-       actual = exec("./scanner ../test/files/phase2_tests/Errors/Error11.asc");
-       GTEST_ASSERT_EQ(expected, actual);
+    expected = "formal argument \"x\" redeclared\n previous definition of \"x\" was here";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error11.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error12) {
-     expected = "Error, print is already in use as a function, in line: 2\n";
-     expected += libfunc_out;
-     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error12.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = "Error, print is already in use as a function, in line: 2\n";
+    expected += libfunc_out;
+    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error12.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Anonymous) {
-     expected = libfunc_out;
-     expected += "[user function] \"$0\" (line 5) (scope 0)\n"
-                "[user function] \"$4\" (line 28) (scope 0)\n"
-                "\n"
-                "-----------     Scope #1     -----------\n"
-                "[formal argument] \"x\" (line 5) (scope 1)\n"
-                "[formal argument] \"AnonymousOne\" (line 5) (scope 1)\n"
-                "[user function] \"$1\" (line 10) (scope 1)\n"
-                "[formal argument] \"x\" (line 28) (scope 1)\n"
-                "[formal argument] \"AnonymousFive\" (line 28) (scope 1)\n"
-                "\n"
-                "-----------     Scope #2     -----------\n"
-                "[formal argument] \"AnonymousTwo\" (line 10) (scope 2)\n"
-                "[user function] \"$2\" (line 15) (scope 2)\n"
-                "[user function] \"$3\" (line 20) (scope 2)\n"
-                "\n"
-                "-----------     Scope #3     -----------\n"
-                "[formal argument] \"AnonymousThree\" (line 15) (scope 3)\n"
-                "[formal argument] \"AnonymousFour\" (line 20) (scope 3)";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/Anonymous.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = libfunc_out;
+    expected += "[user function] \"$0\" (line 5) (scope 0)\n"
+            "[user function] \"$4\" (line 28) (scope 0)\n"
+            "\n"
+            "-----------     Scope #1     -----------\n"
+            "[formal argument] \"x\" (line 5) (scope 1)\n"
+            "[formal argument] \"AnonymousOne\" (line 5) (scope 1)\n"
+            "[user function] \"$1\" (line 10) (scope 1)\n"
+            "[formal argument] \"x\" (line 28) (scope 1)\n"
+            "[formal argument] \"AnonymousFive\" (line 28) (scope 1)\n"
+            "\n"
+            "-----------     Scope #2     -----------\n"
+            "[formal argument] \"AnonymousTwo\" (line 10) (scope 2)\n"
+            "[user function] \"$2\" (line 15) (scope 2)\n"
+            "[user function] \"$3\" (line 20) (scope 2)\n"
+            "\n"
+            "-----------     Scope #3     -----------\n"
+            "[formal argument] \"AnonymousThree\" (line 15) (scope 3)\n"
+            "[formal argument] \"AnonymousFour\" (line 20) (scope 3)";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/Anonymous.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Block) {
-     expected = libfunc_out;
-     expected += "-----------     Scope #1     -----------\n"
-                "[local variable] \"x\" (line 2) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "\n"
-                "-----------     Scope #2     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 2)";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/Block.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = libfunc_out;
+    expected += "-----------     Scope #1     -----------\n"
+            "[local variable] \"x\" (line 2) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "\n"
+            "-----------     Scope #2     -----------\n"
+            "[local variable] \"$0\" (line 0) (scope 2)";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/Block.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Circle) {
-     expected = libfunc_out;
-     expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
-                "[local variable] \"$0\" (line 0) (scope 0)\n"
-                "[global variable] \"circle\" (line 6) (scope 0)\n"
-                "[global variable] \"pi\" (line 6) (scope 0)\n"
-                "[local variable] \"$1\" (line 0) (scope 0)\n"
-                "[local variable] \"$2\" (line 0) (scope 0)\n"
-                "[user function] \"Area\" (line 11) (scope 0)\n"
-                "[user function] \"Perimeter\" (line 18) (scope 0)\n"
-                "[user function] \"InitCircle\" (line 25) (scope 0)\n";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/Circle.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = libfunc_out;
+    expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
+            "[local variable] \"$0\" (line 0) (scope 0)\n"
+            "[global variable] \"circle\" (line 6) (scope 0)\n"
+            "[global variable] \"pi\" (line 6) (scope 0)\n"
+            "[local variable] \"$1\" (line 0) (scope 0)\n"
+            "[local variable] \"$2\" (line 0) (scope 0)\n"
+            "[user function] \"Area\" (line 11) (scope 0)\n"
+            "[user function] \"Perimeter\" (line 18) (scope 0)\n"
+            "[user function] \"InitCircle\" (line 25) (scope 0)\n";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/Circle.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, GlobalAndLocal) {
-     expected = libfunc_out;
-     expected += "[global variable] \"global\" (line 2) (scope 0)\n"
-                "[local variable] \"$0\" (line 0) (scope 0)\n"
-                "[user function] \"f\" (line 6) (scope 0)\n"
-                "[local variable] \"$1\" (line 0) (scope 0)\n"
-                "\n"
-                "-----------     Scope #1     -----------\n"
-                "[local variable] \"global\" (line 9) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/GlobalAndLocal.asc");
-     GTEST_ASSERT_EQ(expected, actual); 
+    expected = libfunc_out;
+    expected += "[global variable] \"global\" (line 2) (scope 0)\n"
+            "[local variable] \"$0\" (line 0) (scope 0)\n"
+            "[user function] \"f\" (line 6) (scope 0)\n"
+            "[local variable] \"$1\" (line 0) (scope 0)\n"
+            "\n"
+            "-----------     Scope #1     -----------\n"
+            "[local variable] \"global\" (line 9) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/GlobalAndLocal.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
 }
 
  TEST_F(ParserTest, Grammar) {
-     expected = libfunc_out;
-     expected +="[global variable] \"a1\" (line 2) (scope 0)\n"
-                "[global variable] \"a2\" (line 2) (scope 0)\n"
-                "[global variable] \"a3\" (line 2) (scope 0)\n"
-                "[global variable] \"a4\" (line 2) (scope 0)\n"
-                "[local variable] \"$0\" (line 0) (scope 0)\n"
-                "[local variable] \"$1\" (line 0) (scope 0)\n"
-                "[local variable] \"$2\" (line 0) (scope 0)\n"
-                "[local variable] \"$3\" (line 0) (scope 0)\n"
-                "[global variable] \"global_var\" (line 4) (scope 0)\n"
-                "[user function] \"foo\" (line 10) (scope 0)\n"
-                "[user function] \"foo1\" (line 17) (scope 0)\n"
-                "[global variable] \"i\" (line 41) (scope 0)\n"
-                "[global variable] \"object\" (line 71) (scope 0)\n"
-                "[user function] \"$0\" (line 83) (scope 0)\n"
-                "[user function] \"test\" (line 85) (scope 0)\n"
-                "[user function] \"test1\" (line 98) (scope 0)\n"
-                "\n"
-                "-----------     Scope #1     -----------\n"
-                "[local variable] \"a1\" (line 7) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"global_var\" (line 18) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$3\" (line 0) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[local variable] \"j\" (line 65) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[local variable] \"$2\" (line 0) (scope 1)\n"
-                "[user function] \"test1\" (line 86) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[local variable] \"$2\" (line 0) (scope 1)\n"
-                "\n"
-                "-----------     Scope #2     -----------\n"
-                "[local variable] \"$1\" (line 0) (scope 2)\n"
-                "[local variable] \"$0\" (line 0) (scope 2)";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/Grammar.asc");
-     GTEST_ASSERT_EQ(expected, actual); 
+    expected = libfunc_out;
+    expected +="[global variable] \"a1\" (line 2) (scope 0)\n"
+            "[global variable] \"a2\" (line 2) (scope 0)\n"
+            "[global variable] \"a3\" (line 2) (scope 0)\n"
+            "[global variable] \"a4\" (line 2) (scope 0)\n"
+            "[local variable] \"$0\" (line 0) (scope 0)\n"
+            "[local variable] \"$1\" (line 0) (scope 0)\n"
+            "[local variable] \"$2\" (line 0) (scope 0)\n"
+            "[local variable] \"$3\" (line 0) (scope 0)\n"
+            "[global variable] \"global_var\" (line 4) (scope 0)\n"
+            "[user function] \"foo\" (line 10) (scope 0)\n"
+            "[user function] \"foo1\" (line 17) (scope 0)\n"
+            "[global variable] \"i\" (line 41) (scope 0)\n"
+            "[global variable] \"object\" (line 71) (scope 0)\n"
+            "[user function] \"$0\" (line 83) (scope 0)\n"
+            "[user function] \"test\" (line 85) (scope 0)\n"
+            "[user function] \"test1\" (line 98) (scope 0)\n"
+            "\n"
+            "-----------     Scope #1     -----------\n"
+            "[local variable] \"a1\" (line 7) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[local variable] \"global_var\" (line 18) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[local variable] \"$3\" (line 0) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[local variable] \"$1\" (line 0) (scope 1)\n"
+            "[local variable] \"j\" (line 65) (scope 1)\n"
+            "[local variable] \"$1\" (line 0) (scope 1)\n"
+            "[local variable] \"$2\" (line 0) (scope 1)\n"
+            "[user function] \"test1\" (line 86) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[local variable] \"$1\" (line 0) (scope 1)\n"
+            "[local variable] \"$2\" (line 0) (scope 1)\n"
+            "\n"
+            "-----------     Scope #2     -----------\n"
+            "[local variable] \"$1\" (line 0) (scope 2)\n"
+            "[local variable] \"$0\" (line 0) (scope 2)";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/Grammar.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
 }
 
  TEST_F(ParserTest, Random) {
@@ -307,67 +323,67 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, ShadowedNameOffFunctions) {
-     expected = libfunc_out;
-     expected +="[global variable] \"nl\" (line 2) (scope 0)\n"
-                "[local variable] \"$0\" (line 0) (scope 0)\n"
-                "[user function] \"F\" (line 6) (scope 0)\n"
-                "[local variable] \"$1\" (line 0) (scope 0)\n"
-                "[local variable] \"$2\" (line 0) (scope 0)\n"
-                "[local variable] \"$3\" (line 0) (scope 0)\n"
-                "\n"
-                "-----------     Scope #1     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[user function] \"F\" (line 11) (scope 1)\n"
-                "\n"
-                "-----------     Scope #2     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 2)\n"
-                "[user function] \"F\" (line 16) (scope 2)\n"
-                "\n"
-                "-----------     Scope #3     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 3)\n"
-                "[user function] \"F\" (line 21) (scope 3)\n"
-                "\n"
-                "-----------     Scope #4     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 4)";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = libfunc_out;
+    expected +="[global variable] \"nl\" (line 2) (scope 0)\n"
+            "[local variable] \"$0\" (line 0) (scope 0)\n"
+            "[user function] \"F\" (line 6) (scope 0)\n"
+            "[local variable] \"$1\" (line 0) (scope 0)\n"
+            "[local variable] \"$2\" (line 0) (scope 0)\n"
+            "[local variable] \"$3\" (line 0) (scope 0)\n"
+            "\n"
+            "-----------     Scope #1     -----------\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[user function] \"F\" (line 11) (scope 1)\n"
+            "\n"
+            "-----------     Scope #2     -----------\n"
+            "[local variable] \"$0\" (line 0) (scope 2)\n"
+            "[user function] \"F\" (line 16) (scope 2)\n"
+            "\n"
+            "-----------     Scope #3     -----------\n"
+            "[local variable] \"$0\" (line 0) (scope 3)\n"
+            "[user function] \"F\" (line 21) (scope 3)\n"
+            "\n"
+            "-----------     Scope #4     -----------\n"
+            "[local variable] \"$0\" (line 0) (scope 4)";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Simple) {
-     expected = libfunc_out;
-     expected +="[global variable] \"globalVarFirst\" (line 2) (scope 0)\n"
-                "[local variable] \"$0\" (line 0) (scope 0)\n"
-                "[user function] \"GlobalFunction\" (line 6) (scope 0)\n"
-                "[global variable] \"globalVarSecond\" (line 22) (scope 0)\n"
-                "[local variable] \"$1\" (line 0) (scope 0)\n"
-                "[user function] \"F\" (line 34) (scope 0)\n"
-                "[global variable] \"a\" (line 40) (scope 0)\n"
-                "[global variable] \"b\" (line 40) (scope 0)\n"
-                "[global variable] \"x\" (line 40) (scope 0)\n"
-                "[global variable] \"y\" (line 40) (scope 0)\n"
-                "[local variable] \"$2\" (line 0) (scope 0)\n"
-                "[local variable] \"$3\" (line 0) (scope 0)\n"
-                "[local variable] \"$4\" (line 0) (scope 0)\n"
-                "[local variable] \"$5\" (line 0) (scope 0)\n"
-                "[global variable] \"G\" (line 44) (scope 0)\n"
-                "[global variable] \"lol\" (line 48) (scope 0)\n"
-                "[global variable] \"print_\" (line 53) (scope 0)\n"
-                "\n"
-                "-----------     Scope #1     -----------\n"
-                "[local variable] \"localVar\" (line 8) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[user function] \"LocalFunction\" (line 14) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[local variable] \"localVar\" (line 27) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "\n"
-                "-----------     Scope #2     -----------\n"
-                "[formal argument] \"x\" (line 14) (scope 2)\n"
-                "[formal argument] \"y\" (line 14) (scope 2)\n"
-                "[local variable] \"globalVarFirst\" (line 16) (scope 2)\n"
-                "[local variable] \"$0\" (line 0) (scope 2)";
-     actual = exec("./scanner ../test/files/phase2_tests/Working/Simple.asc");
-     GTEST_ASSERT_EQ(expected, actual);
+    expected = libfunc_out;
+    expected +="[global variable] \"globalVarFirst\" (line 2) (scope 0)\n"
+            "[local variable] \"$0\" (line 0) (scope 0)\n"
+            "[user function] \"GlobalFunction\" (line 6) (scope 0)\n"
+            "[global variable] \"globalVarSecond\" (line 22) (scope 0)\n"
+            "[local variable] \"$1\" (line 0) (scope 0)\n"
+            "[user function] \"F\" (line 34) (scope 0)\n"
+            "[global variable] \"a\" (line 40) (scope 0)\n"
+            "[global variable] \"b\" (line 40) (scope 0)\n"
+            "[global variable] \"x\" (line 40) (scope 0)\n"
+            "[global variable] \"y\" (line 40) (scope 0)\n"
+            "[local variable] \"$2\" (line 0) (scope 0)\n"
+            "[local variable] \"$3\" (line 0) (scope 0)\n"
+            "[local variable] \"$4\" (line 0) (scope 0)\n"
+            "[local variable] \"$5\" (line 0) (scope 0)\n"
+            "[global variable] \"G\" (line 44) (scope 0)\n"
+            "[global variable] \"lol\" (line 48) (scope 0)\n"
+            "[global variable] \"print_\" (line 53) (scope 0)\n"
+            "\n"
+            "-----------     Scope #1     -----------\n"
+            "[local variable] \"localVar\" (line 8) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "[user function] \"LocalFunction\" (line 14) (scope 1)\n"
+            "[local variable] \"$1\" (line 0) (scope 1)\n"
+            "[local variable] \"localVar\" (line 27) (scope 1)\n"
+            "[local variable] \"$0\" (line 0) (scope 1)\n"
+            "\n"
+            "-----------     Scope #2     -----------\n"
+            "[formal argument] \"x\" (line 14) (scope 2)\n"
+            "[formal argument] \"y\" (line 14) (scope 2)\n"
+            "[local variable] \"globalVarFirst\" (line 16) (scope 2)\n"
+            "[local variable] \"$0\" (line 0) (scope 2)";
+    actual = exec("./scanner ../test/files/phase2_tests/Working/Simple.asc");
+    GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Tree) {
