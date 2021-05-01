@@ -265,7 +265,7 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    log_symbol_table();
+    log_symbol_table(std::cout);
 
     return 0;
 }
