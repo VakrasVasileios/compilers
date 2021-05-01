@@ -49,11 +49,11 @@ Returns the loop depth.
 unsigned int        get_loop_depth();
 
 /*
-Hides all of the symbol table entries at lower scopes.
+Hides all of the symbol table entries at lower scopes, except the global scope.
 */
 void                hide_lower_scopes();
 /*
-Shows all of the symbol table entries at lower scopes.
+Shows all of the symbol table entries at lower scopes, except the global scope.
 */
 void                enable_lower_scopes();
 /*

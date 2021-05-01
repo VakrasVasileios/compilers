@@ -16,9 +16,9 @@ class SymbolTable final {
         */
         SymbolTable() = default;
         /*
-        Returns this SymbolTable table of blocks.
+        The Default Destructor of this SymbolTable.
         */
-        std::vector<std::list<Block> >  getBlocksTable() const;
+        ~SymbolTable() = default;
         /*
         Inserts a block on a scope to this SymbolTable.
         */
