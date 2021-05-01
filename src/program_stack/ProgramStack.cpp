@@ -1,5 +1,10 @@
 #include "../../include/program_stack/ProgramStack.h"
 
+std::list<Block*>
+ProgramStack:: getBlockList() const {
+    return blockList;
+}
+
 Block*
 ProgramStack:: top() {
     return *--blockList.end();

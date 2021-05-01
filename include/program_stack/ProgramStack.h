@@ -22,6 +22,10 @@ class ProgramStack {
         */
         ~ProgramStack() = default;
         /*
+        Returns the blockList of this ProgramStack.
+        */
+        std::list<Block*>  getBlockList() const;
+        /*
         Returns read/write access to the top block of this ProgramSTack.
         */
         Block*              top();
