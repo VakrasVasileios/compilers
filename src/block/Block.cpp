@@ -30,7 +30,7 @@ Block:: insert(SymbolTableEntry* entry) {
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
     for(auto entry : block.entries) 
-        os << *entry;
+        os << *entry << std::endl;
 
     return os;    
 }

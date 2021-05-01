@@ -9,6 +9,7 @@
 #include "../../include/symbol_table/SymbolTable.h"
 #include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
 #include "../../include/program_stack/ProgramStack.h"
+#include <fstream>
 
 /*
 Inserts the library functions to the symbol table.
@@ -125,6 +126,6 @@ void                stash_formal_argument(const char* name, unsigned int line);
 /*
 Logs the symbol table contents.
 */
-void                log_symbol_table();
+void                log_symbol_table(std::ostream& output);
 
 #endif

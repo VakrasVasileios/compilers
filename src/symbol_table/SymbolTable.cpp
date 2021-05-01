@@ -1,8 +1,9 @@
 #include "../../include/symbol_table/SymbolTable.h"
 
 void
-SymbolTable:: insert(unsigned int scope, Block block) {
-    this->blocksTable[scope].push_back(block);
+SymbolTable:: insert(unsigned int scope, Block* block) {  
+    blocksTable.push_back(std::list<Block*>());
+    blocksTable[scope].push_back(block);
 }
 
 std::ostream&
@@ -13,7 +14,7 @@ operator<<(std::ostream& os, const SymbolTable symbolTable) {
        os << "\n-----------    Scope #" << scope << "    -----------\n";
        for (auto block : blockList)
        {
-           os << block;
+           os << *block;
        }
        scope++;
     }

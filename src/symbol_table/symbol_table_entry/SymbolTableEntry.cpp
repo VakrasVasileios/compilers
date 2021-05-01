@@ -51,8 +51,8 @@ SymbolTableEntry:: setActive(bool active) {
 
 std::ostream&
 operator<<(std::ostream& os, const SymbolTableEntry symbolTableEntry) {
-    return os << "\"" << symbolTableEntry.getId() << "\""
-              << " [" << symbolTableEntry.typeToString(symbolTableEntry.getType()) << "]"
-              << " (line: " << symbolTableEntry.getLine() << ")" 
+    return os << "[" << symbolTableEntry.typeToString(symbolTableEntry.getType()) << "]"
+              << " \"" << symbolTableEntry.getId() << "\""
+              << " (line " << symbolTableEntry.getLine() << ")" 
               << " (scope " << symbolTableEntry.getScope() << ")";
 }

@@ -9,7 +9,7 @@ Provides a symbol table for keeping lists of blocks.
 */
 class SymbolTable final {
     private:
-        std::vector<std::list<Block> > blocksTable;
+        std::vector<std::list<Block*> > blocksTable;
     public:
         /*
         The Default Constructor of this SymbolTable.
@@ -22,7 +22,7 @@ class SymbolTable final {
         /*
         Inserts a block on a scope to this SymbolTable.
         */
-        void                            insert(unsigned int scope, Block block);
+        void                            insert(unsigned int scope, Block* block);
 
         friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbolTable);
 };

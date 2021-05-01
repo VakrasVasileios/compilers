@@ -23,7 +23,7 @@ ProgramStack  programStack;
 std::list<FormalVariableEntry> stashedFormalArguments;
 
 void init_library_functions() {  
-    increase_scope();  
+    increase_scope(); 
     programStack.top()->insert(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
     programStack.top()->insert(new LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
     programStack.top()->insert(new LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
@@ -40,7 +40,7 @@ void init_library_functions() {
 
 void increase_scope() {
     Block* newBlock = new Block();
-    symbolTable.insert(++current_scope, *newBlock);
+    symbolTable.insert(++current_scope, newBlock);
     programStack.push(newBlock);
 }
 
@@ -145,6 +145,6 @@ void stash_formal_argument(const char* name, unsigned int line) {
     stashedFormalArguments.push_back(FormalVariableEntry(name, line, current_scope + 1));
 }
 
-void log_symbol_table() {
-    std::cout << symbolTable;
+void log_symbol_table(std::ostream& output) {
+    output << symbolTable;
 }
