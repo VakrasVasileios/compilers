@@ -1,16 +1,16 @@
 #include "../../include/parser_manager/ParserManager.h"
 #include "../../include/symbol_table/SymbolTable.h"
 #include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
-#include "../../include/block_stack/BlockStack.h"
 #include "../../include/symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
 #include <string>
 #include <list>
 #include <iostream>
 
 #define LIB_FUNC_LINE -1
+#define OUT_OF_SCOPE  -1
 
 const unsigned int global_scope = 0;
-unsigned int current_scope = 0;
+unsigned int current_scope = OUT_OF_SCOPE;
 
 bool methodCall = false;
 bool validReturn = false;
@@ -21,39 +21,33 @@ unsigned int anonymusFuncsCounter = 0;
 
 SymbolTable symbolTable;
 
-BlockStack  blockStack;
+std::list<Block*>  programStack;
 
 std::list<FormalVariableEntry> stashedFormalArguments;
 
 void init_library_functions() {
-    symbolTable.insert(current_scope, Block());
-    blockStack.pushBlock(getCurrent_Block());
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("objecttotalmembers", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("objectcopy", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("totalarguments", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("argument", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("typeof", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("strtonum", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
-    blockStack.topBlock()->addSymbolTableEntry(LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
-}
-
-Block* getCurrent_Block() {
-    return &*(--symbolTable.getBlocksTable(current_scope).end()); //end() points to nullptr
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("objecttotalmembers", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("objectcopy", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("totalarguments", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("argument", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("typeof", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("strtonum", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
+    (*--programStack.end())->push_back(new LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
 }
 
 void increase_scope() {
-    current_scope++;
-    symbolTable.insert(current_scope, Block());
-    blockStack.pushBlock(getCurrent_Block());
+    Block* newBlock = new Block();
+    symbolTable.insert(++current_scope, *newBlock);
+    programStack.push_back(newBlock);
 }
 
 void decrease_scope() {
-    blockStack.popBlock();
+    programStack.pop_back();
     --current_scope;
 }
 
@@ -65,7 +59,7 @@ bool is_method_call() {
     return methodCall;
 }
 
-void set_valid_return(bool _validReturn) {
+void  set_valid_return(bool _validReturn) {
     validReturn = _validReturn;
 }
 
@@ -86,86 +80,102 @@ unsigned int get_loop_depth() {
 }
 
 void hide_lower_scopes() {
-    blockStack.hideLowerScopes();
+    auto iter = programStack.begin();
+    for (; iter != programStack.end(); ++iter) {
+        for (auto entry : *(*iter) )
+        {
+            entry->setActive(false);
+        }
+    }
 }
 
 void enable_lower_scopes() {
-    blockStack.enableLowerScopes();
+    auto iter = programStack.begin();
+    for (; iter != programStack.end(); ++iter) {
+        for (auto entry : *(*iter) )
+        {
+            entry->setActive(true);
+        }
+    }
 }
 
-bool lookup_library_function(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
-    if(r_value == nullptr || r_value->getType() != LIB_FUNC)
-        return false;
-    else
-        return true;
+bool scope_is_global() {
+    return current_scope == global_scope;
 }
 
-bool lookup_user_function(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
-    if(r_value == nullptr || r_value->getType() != USER_FUNC)
-        return false;
-    else
-        return true;
+SymbolTableEntry*   LookupGlobal(const char* name) {
+    auto iter = programStack.begin();
+    auto b = (*iter);
+    for (auto i : *b) {
+        if (i->getId().c_str() == name && i->isActive())
+            return i;
+    }
+
+    return nullptr;
 }
 
-bool lookup_local_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
-    if(r_value == nullptr || r_value->getType() != LOCAL_VAR)
-        return false;
-    else
-        return true;
+SymbolTableEntry* lookup(const char* name) {
+    auto iter = programStack.end();
+    do {
+        --iter;
+        auto b = (*iter);
+        for (auto i : *b) {
+            if (i->getId().c_str() == name && i->isActive())
+                return i; 
+        }
+    } while (iter != programStack.begin());
+
+    return nullptr;
 }
 
-bool lookup_global_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
-    if(r_value == nullptr)
-        return false;
-    else
-        return true;
+bool is_library_function(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == LIB_FUNC;
 }
 
-bool lookup_formal_variable(const char* name) {
-    SymbolTableEntry *r_value = blockStack.Lookup(std::string(name));
-    if(r_value == nullptr || r_value->getType() != FORMAL_VAR)
-        return false;
-    else
-        return true;
+bool is_user_function(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == USER_FUNC;
+}
+
+bool is_formal_variable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == FORMAL_VAR;
+}
+
+bool is_global_variable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == GLOBAL_VAR;
+} 
+
+bool is_local_variable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->getType() == LOCAL_VAR;
 }
 
 void insert_user_function(const char* name, unsigned int line) {
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(std::string(name), line, current_scope, stashedFormalArguments);
+    (*--programStack.end())->push_back(new UserFunctionEntry(name, line, current_scope, stashedFormalArguments)); 
+}
+
+void insert_variable_local(const char* name, unsigned int line) {
+    (*--programStack.end())->push_back(new LocalVariableEntry(name, line, current_scope)); 
+}
+void insert_variable_global(const char* name, unsigned int line) {
+    (*--programStack.end())->push_back(new GlobalVariableEntry(name, line, current_scope)); 
 }
 
 void insert_user_function(unsigned int line) {
     std::string an = "$";
     an += anonymusFuncsCounter;
-    blockStack.topBlock()->addSymbolTableEntry(UserFunctionEntry(an, line, current_scope, stashedFormalArguments);
+    (*--programStack.end())->push_back(new UserFunctionEntry(an, line, current_scope, stashedFormalArguments)); 
 }
 
-void push_stashed_lvalues() { //TODO
-
-}
-
-void stash_lvalue(const char* name, unsigned int line) { //TODO
-
-}
-
-void reset_lvalues_stash() { //TODO
-
-}
-
-void push_stashed_formal_arguments(void) {
+void push_stashed_formal_arguments(void) { 
     for (auto i : stashedFormalArguments) {
-        blockStack.topBlock()->addSymbolTableEntry(i);
+        (*--programStack.end())->push_back(&i);
     }
     stashedFormalArguments.clear();
 }
 
 void stash_formal_argument(const char* name, unsigned int line) {
-    stashedFormalArguments.push_back(FormalVariableEntry(std::string(name), line, current_scope + 1));
+    stashedFormalArguments.push_back(FormalVariableEntry(name, line, current_scope + 1));
 }
 
 void log_symbol_table() {
-    std::cout << symbolTable << std::endl;
+    std::cout << symbolTable;
 }

@@ -18,7 +18,9 @@ operator<<(std::ostream& os, const SymbolTable symbolTable) {
        os << "\n-----------    Scope #" << scope << "    -----------\n";
        for (auto block : blockList)
        {
-           os << block;
+           for(auto entry : block) {
+               os << *entry;
+           }
        }
        scope++;
     }
