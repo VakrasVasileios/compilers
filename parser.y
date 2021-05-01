@@ -117,7 +117,7 @@ lvalue:       ID                    {
                                             if(item == nullptr)
                                                 insert_variable_global($1, yylineno);
                                             else if (is_library_function(item) || is_user_function(item)) {
-                                                log_error("Error id, is used already in use as a function");
+                                                log_error("Error," + $1 + " is already in use as a function");
                                             }
                                         }
                                         else {
@@ -125,7 +125,7 @@ lvalue:       ID                    {
                                                 insert_variable_local($1, yylineno);
                                             }
                                             else if (is_library_function(item) || is_user_function(item)) {
-                                                log_error("Error id, is used already in use as a function");
+                                                log_error("Error," + $1 + " is already in use as a function");
                                             }
                                         }
                                         dlog("lvalue -> id");
@@ -137,7 +137,7 @@ lvalue:       ID                    {
                                             insert_variable_local($2, yylineno);
                                         }
                                         else if (is_user_function(item) || is_library_function(item)) {
-                                            log_error("Error id, is used already in use as a function");
+                                            log_error("Error," + $2 + " is already in use as a function");
                                         }
                                         dlog("lvalue -> local id");
                                     }
@@ -145,7 +145,7 @@ lvalue:       ID                    {
                                         $$=$2;
                                         SymbolTableEntry* entry = lookup($2);
                                         if (!is_library_function(entry) && !is_global_variable(entry) && !is_user_function(entry))
-                                            std::cout << "No global variable with id: "<< $2 << ", in line: " << yylineno << std::endl;
+                                            log_error("No global variable with id: " + $2);
                                         dlog("lvalue -> ::id");
                                         }
             | member                { dlog("lvalue -> member"); }
@@ -162,7 +162,7 @@ call:         call '(' elist ')'    { dlog("call -> call(elist)"); }
                                         if(!is_method_call()) {
                                             SymbolTableEntry* entry = lookup($1);
                                             if(!is_library_function(entry) && !is_user_function(entry))
-                                                std::cout << "No function with name: " << $1 << ", in line: " << yylineno << std::endl;
+                                                log_error("No function with name: " + $1);
                                         }
                                         dlog("call -> lvalue callsuffix");
                                     }
