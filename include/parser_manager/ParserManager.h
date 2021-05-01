@@ -6,6 +6,9 @@
 #include "../symbol_table/symbol_table_entry/variable_entry/LocalVariableEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/GlobalVariableEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
+#include "../../include/symbol_table/SymbolTable.h"
+#include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
+#include "../../include/program_stack/ProgramStack.h"
 
 /*
 Inserts the library functions to the symbol table.

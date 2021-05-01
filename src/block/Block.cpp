@@ -18,6 +18,8 @@ Block:: lookup(std::string id) {
         if (entry->getId() == id && entry->isActive())
                 return entry; 
     }
+
+    return nullptr;
 }
 
 void 

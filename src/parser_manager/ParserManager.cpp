@@ -1,8 +1,4 @@
 #include "../../include/parser_manager/ParserManager.h"
-#include "../../include/symbol_table/SymbolTable.h"
-#include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
-#include "../../include/symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
-#include "../../include/program_stack/ProgramStack.h"
 #include <string>
 #include <list>
 #include <iostream>
@@ -26,7 +22,8 @@ ProgramStack  programStack;
 
 std::list<FormalVariableEntry> stashedFormalArguments;
 
-void init_library_functions() {    
+void init_library_functions() {  
+    increase_scope();  
     programStack.top()->insert(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
     programStack.top()->insert(new LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
     programStack.top()->insert(new LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
