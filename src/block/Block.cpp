@@ -21,7 +21,7 @@ SymbolTableEntry*
 Block:: lookup(std::string id) {
     for(auto entry : entries) {
         if (entry->getId() == id && entry->isActive())
-                return entry; 
+            return entry; 
     }
 
     return nullptr;

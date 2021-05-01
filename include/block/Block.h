@@ -26,7 +26,7 @@ class Block {
         /*
         Activates all the entries on this Block.
         */
-        void                    activate();
+        void                        activate();
         /*
         Deactivates all the entries on this Block.
         */

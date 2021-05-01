@@ -45,8 +45,8 @@ SymbolTableEntry:: isActive() const {
 }
 
 void
-SymbolTableEntry:: setActive(bool active) {
-    this->active = active;
+SymbolTableEntry:: setActive(bool _active) {
+    active = _active;
 }
 
 std::ostream&

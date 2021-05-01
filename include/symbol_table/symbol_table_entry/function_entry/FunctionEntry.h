@@ -10,7 +10,7 @@ Provides an abstract function symbol table entry.
 */
 class FunctionEntry : public SymbolTableEntry {
     private:
-        const std::list<FormalVariableEntry> formalArguments;
+        const std::list<FormalVariableEntry*> formalArguments;
     public:
         /*
         The Parameterized FunctionEntry Constructor.
@@ -19,7 +19,7 @@ class FunctionEntry : public SymbolTableEntry {
         /*
         The Parameterized FunctionEntry Constructor. Sets this FunctionEntry formal arguments.
         */
-        FunctionEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry> formalArguments) : 
+        FunctionEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry*> formalArguments) : 
         SymbolTableEntry(type, id, line, scope), formalArguments(formalArguments) {};
         /*
         The Default FunctionEntry Destructor.
@@ -28,7 +28,7 @@ class FunctionEntry : public SymbolTableEntry {
         /*
         Returns this FunctionEntry formal arguments.
         */
-        std::list<FormalVariableEntry>      getFormalArguments() const; 
+        std::list<FormalVariableEntry*>      getFormalArguments() const; 
 };
 
 #endif

@@ -20,7 +20,7 @@ SymbolTable symbolTable;
 
 ProgramStack  programStack;
 
-std::list<FormalVariableEntry> stashedFormalArguments;
+std::list<FormalVariableEntry*> stashedFormalArguments;
 
 void init_library_functions() {  
     increase_scope(); 
@@ -45,6 +45,7 @@ void increase_scope() {
 }
 
 void decrease_scope() {
+    programStack.top()->deactivate();
     programStack.pop();
     --current_scope;
 }
@@ -136,13 +137,13 @@ void insert_user_function(unsigned int line) {
 
 void push_stashed_formal_arguments(void) { 
     for (auto i : stashedFormalArguments) {
-        programStack.top()->insert(&i);
+        programStack.top()->insert(i);
     }
     stashedFormalArguments.clear();
 }
 
 void stash_formal_argument(const char* name, unsigned int line) {
-    stashedFormalArguments.push_back(FormalVariableEntry(name, line, current_scope + 1));
+    stashedFormalArguments.push_back(new FormalVariableEntry(name, line, current_scope + 1));
 }
 
 void log_symbol_table(std::ostream& output) {
