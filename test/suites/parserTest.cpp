@@ -25,18 +25,19 @@ class ParserTest : public ::testing::Test {
       Runs before every test.
       */
       void SetUp() override {
-         libfunc_out ="[library function] \"print\" (line 0) (scope 0)\n"
-                     "[library function] \"input\" (line 0) (scope 0)\n"
-                     "[library function] \"objectmemberkeys\" (line 0) (scope 0)\n"
-                     "[library function] \"objecttotalmembers\" (line 0) (scope 0)\n"
-                     "[library function] \"objectcopy\" (line 0) (scope 0)\n"
-                     "[library function] \"totalarguments\" (line 0) (scope 0)\n"
-                     "[library function] \"argument\" (line 0) (scope 0)\n"
-                     "[library function] \"typeof\" (line 0) (scope 0)\n"
-                     "[library function] \"strtonum\" (line 0) (scope 0)\n"
-                     "[library function] \"sqrt\" (line 0) (scope 0)\n"
-                     "[library function] \"cos\" (line 0) (scope 0)\n"
-                     "[library function] \"sin\" (line 0) (scope 0)";
+         libfunc_out ="-----------    Scope #0    -----------\n"
+                    "[library function] \"print\" (line 0) (scope 0)\n"
+                    "[library function] \"input\" (line 0) (scope 0)\n"
+                    "[library function] \"objectmemberkeys\" (line 0) (scope 0)\n"
+                    "[library function] \"objecttotalmembers\" (line 0) (scope 0)\n"
+                    "[library function] \"objectcopy\" (line 0) (scope 0)\n"
+                    "[library function] \"totalarguments\" (line 0) (scope 0)\n"
+                    "[library function] \"argument\" (line 0) (scope 0)\n"
+                    "[library function] \"typeof\" (line 0) (scope 0)\n"
+                    "[library function] \"strtonum\" (line 0) (scope 0)\n"
+                    "[library function] \"sqrt\" (line 0) (scope 0)\n"
+                    "[library function] \"cos\" (line 0) (scope 0)\n"
+                    "[library function] \"sin\" (line 0) (scope 0)\n";
       }
       /*
       Runs after every test.

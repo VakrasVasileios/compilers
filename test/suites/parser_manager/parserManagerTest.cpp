@@ -4,7 +4,7 @@
 
 TEST(ParserManager, init_library_functions) {
     init_library_functions();
-    std::string expected = "\n-----------    Scope #0    -----------\n"
+    std::string expected = "-----------    Scope #0    -----------\n"
                     "[library function] \"print\" (line 0) (scope 0)\n"
                     "[library function] \"input\" (line 0) (scope 0)\n"
                     "[library function] \"objectmemberkeys\" (line 0) (scope 0)\n"

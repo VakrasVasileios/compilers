@@ -12,7 +12,8 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define     log_error(message)  std::cout << "\033[1;31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl
+    #define     log_error(message)  std::cout << message << ", in line: " << yylineno << std::endl
+    //#define     log_error(message)  std::cout << "\033[1;31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
 %}
 
 %union {                                                    
