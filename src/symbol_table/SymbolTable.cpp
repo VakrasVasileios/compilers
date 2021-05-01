@@ -1,5 +1,10 @@
 #include "../../include/symbol_table/SymbolTable.h"
 
+std::vector<std::list<Block*> >
+SymbolTable:: getBlocksTable() const {
+    return blocksTable;
+}
+
 void
 SymbolTable:: insert(unsigned int scope, Block* block) {  
     blocksTable.push_back(std::list<Block*>());

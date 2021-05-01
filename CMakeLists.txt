@@ -51,3 +51,15 @@ target_sources(program_stack_test PRIVATE src/block/Block.cpp)
 target_sources(program_stack_test PRIVATE src/symbol_table/SymbolTable.cpp)
 target_sources(program_stack_test PRIVATE src/symbol_table/symbol_table_entry/SymbolTableEntry.cpp)
 target_sources(program_stack_test PRIVATE src/symbol_table/symbol_table_entry/function_entry/FunctionEntry.cpp)
+
+#SymbolTableTest
+add_executable(symbol_table_test test/suites/symbol_table/SymbolTableTest.cpp)
+
+target_link_libraries(symbol_table_test PRIVATE gtest)
+
+target_compile_definitions(symbol_table_test PRIVATE TESTING=1)
+
+target_sources(symbol_table_test PRIVATE src/block/Block.cpp)
+target_sources(symbol_table_test PRIVATE src/symbol_table/SymbolTable.cpp)
+target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/SymbolTableEntry.cpp)
+target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/function_entry/FunctionEntry.cpp)

@@ -20,6 +20,10 @@ class SymbolTable final {
         */
         ~SymbolTable() = default;
         /*
+        Returns this SYmbolTable table of blocks.
+        */
+        std::vector<std::list<Block*> > getBlocksTable() const;
+        /*
         Inserts a block on a scope to this SymbolTable.
         */
         void                            insert(unsigned int scope, Block* block);
