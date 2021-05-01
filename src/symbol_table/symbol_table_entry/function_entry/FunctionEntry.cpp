@@ -1,4 +1,4 @@
-#include "FunctionEntry.h"
+#include "../../../../include/symbol_table/symbol_table_entry/function_entry/FunctionEntry.h"
 
 std::list<FormalVariableEntry>
 FunctionEntry:: getFormalArguments() const {

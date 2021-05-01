@@ -6,6 +6,10 @@
 #include "../symbol_table/symbol_table_entry/variable_entry/LocalVariableEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/GlobalVariableEntry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
+#include "../../include/symbol_table/SymbolTable.h"
+#include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
+#include "../../include/program_stack/ProgramStack.h"
+#include <fstream>
 
 /*
 Inserts the library functions to the symbol table.
@@ -49,11 +53,11 @@ Returns the loop depth.
 unsigned int        get_loop_depth();
 
 /*
-Hides all of the symbol table entries at lower scopes.
+Hides all of the symbol table entries at lower scopes, except the global scope.
 */
 void                hide_lower_scopes();
 /*
-Shows all of the symbol table entries at lower scopes.
+Shows all of the symbol table entries at lower scopes, except the global scope.
 */
 void                enable_lower_scopes();
 /*
@@ -122,6 +126,6 @@ void                stash_formal_argument(const char* name, unsigned int line);
 /*
 Logs the symbol table contents.
 */
-void                log_symbol_table();
+void                log_symbol_table(std::ostream& output);
 
 #endif
