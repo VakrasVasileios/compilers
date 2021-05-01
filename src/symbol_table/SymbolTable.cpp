@@ -10,8 +10,8 @@ std::ostream&
 operator<<(std::ostream& os, const SymbolTable symbolTable) {
     unsigned int scope = 0;
     for (auto blockList : symbolTable.blocksTable)
-    {
-        os << "-----------    Scope #" << scope << "    -----------\n";
+    {        
+        os << "-----------     Scope #" << scope << "     -----------\n";
         for (auto block : blockList)
         {
             os << *block;

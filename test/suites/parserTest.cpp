@@ -25,7 +25,7 @@ class ParserTest : public ::testing::Test {
       Runs before every test.
       */
       void SetUp() override {
-         libfunc_out ="-----------    Scope #0    -----------\n"
+         libfunc_out ="-----------     Scope #0     -----------\n"
                     "[library function] \"print\" (line 0) (scope 0)\n"
                     "[library function] \"input\" (line 0) (scope 0)\n"
                     "[library function] \"objectmemberkeys\" (line 0) (scope 0)\n"
@@ -177,7 +177,7 @@ TEST_F(ParserTest, Error5) {
             "\n"
             "-----------     Scope #3     -----------\n"
             "[formal argument] \"AnonymousThree\" (line 15) (scope 3)\n"
-            "[formal argument] \"AnonymousFour\" (line 20) (scope 3)";
+            "[formal argument] \"AnonymousFour\" (line 20) (scope 3)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Anonymous.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
@@ -189,7 +189,7 @@ TEST_F(ParserTest, Error5) {
             "[local variable] \"$0\" (line 0) (scope 1)\n"
             "\n"
             "-----------     Scope #2     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 2)";
+            "[local variable] \"$0\" (line 0) (scope 2)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Block.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
@@ -218,7 +218,7 @@ TEST_F(ParserTest, Error5) {
             "\n"
             "-----------     Scope #1     -----------\n"
             "[local variable] \"global\" (line 9) (scope 1)\n"
-            "[local variable] \"$0\" (line 0) (scope 1)";
+            "[local variable] \"$0\" (line 0) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/GlobalAndLocal.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
@@ -261,7 +261,7 @@ TEST_F(ParserTest, Error5) {
             "\n"
             "-----------     Scope #2     -----------\n"
             "[local variable] \"$1\" (line 0) (scope 2)\n"
-            "[local variable] \"$0\" (line 0) (scope 2)";
+            "[local variable] \"$0\" (line 0) (scope 2)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Grammar.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
@@ -318,7 +318,7 @@ TEST_F(ParserTest, Error5) {
                 "[local variable] \"$0\" (line 0) (scope 2)\n"
                 "\n"
                 "-----------     Scope #3     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 3)";
+                "[local variable] \"$0\" (line 0) (scope 3)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Random.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
@@ -345,7 +345,7 @@ TEST_F(ParserTest, Error5) {
             "[user function] \"F\" (line 21) (scope 3)\n"
             "\n"
             "-----------     Scope #4     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 4)";
+            "[local variable] \"$0\" (line 0) (scope 4)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
@@ -382,7 +382,7 @@ TEST_F(ParserTest, Error5) {
             "[formal argument] \"x\" (line 14) (scope 2)\n"
             "[formal argument] \"y\" (line 14) (scope 2)\n"
             "[local variable] \"globalVarFirst\" (line 16) (scope 2)\n"
-            "[local variable] \"$0\" (line 0) (scope 2)";
+            "[local variable] \"$0\" (line 0) (scope 2)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
