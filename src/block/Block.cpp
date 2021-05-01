@@ -1,5 +1,10 @@
 #include "../../include/block/Block.h"
 
+std::list<SymbolTableEntry*>
+Block:: getEntries() const {
+    return entries;
+}
+
 void
 Block:: activate() {
     for(auto entry : entries) 

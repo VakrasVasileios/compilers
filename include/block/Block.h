@@ -20,6 +20,10 @@ class Block {
         */
         ~Block() = default;
         /*
+        Returns this Block entries.
+        */
+        std::list<SymbolTableEntry*> getEntries() const;
+        /*
         Activates all the entries on this Block.
         */
         void                    activate();
