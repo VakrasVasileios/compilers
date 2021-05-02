@@ -13,12 +13,12 @@ class FunctionEntry : public SymbolTableEntry {
         /*
         The Parameterized FunctionEntry Constructor.
         */
-        FunctionEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope) : 
+        FunctionEntry(ExprType type, std::string id, unsigned int line, unsigned int scope) : 
         SymbolTableEntry(type, id, line, scope) {};
         /*
         The Parameterized FunctionEntry Constructor. Sets this FunctionEntry list of references of formal arguments.
         */
-        FunctionEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry*> formalArguments) : 
+        FunctionEntry(ExprType type, std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry*> formalArguments) : 
         SymbolTableEntry(type, id, line, scope), formal_arguments(formalArguments) {};
 
         virtual                             ~FunctionEntry() = default;
