@@ -55,7 +55,7 @@ stmts:        stmt stmts            { DLOG("stmts -> stmt stmts"); }
             |                       { DLOG("stmts -> EMPTY"); }
             ;
 
-stmt:         expr ';'              { !SetMethodCall(false); DLOG("stmt -> expr;");}
+stmt:         expr ';'              { SetMethodCall(false); DLOG("stmt -> expr;");}
             | ifstmt                { DLOG("stmt -> ifstmt");}
             | whilestmt             { DLOG("stmt -> whilestmt");}
             | forstmt               { DLOG("stmt -> forstmt");}
@@ -113,19 +113,19 @@ primary:      lvalue                { DLOG("primary -> lvalue"); }
 
 lvalue:       ID                    {
                                         $$=$1;
-                                        auto item = Lookup($1);
+                                        auto entry = Lookup($1);
                                         if (ScopeIsGlobal()) {
-                                            if(item == nullptr)
+                                            if(entry == nullptr)
                                                 InsertGlobalVariable($1, yylineno);
-                                            else if (IsLibraryFunction(item) || IsUserFunction(item)) {
+                                            else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
                                                 LOGERROR("Error," + std::string($1) + " is already in use as a function");
                                             }
                                         }
                                         else {
-                                            if (item == nullptr) {
+                                            if (entry == nullptr) {
                                                 InsertLocalVariable($1, yylineno);
                                             }
-                                            else if (IsLibraryFunction(item) || IsUserFunction(item)) {
+                                            else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
                                                 LOGERROR("Error," + std::string($1) + " is already in use as a function");
                                             }
                                         }
@@ -133,11 +133,11 @@ lvalue:       ID                    {
                                     }
             | LOCAL ID              {
                                         $$=$2;
-                                        auto item = Lookup($2);
-                                        if (item == nullptr) {
+                                        auto entry = Lookup($2);
+                                        if (entry == nullptr) {
                                             InsertLocalVariable($2, yylineno);
                                         }
-                                        else if (IsUserFunction(item) || IsLibraryFunction(item)) {
+                                        else if (IsUserFunction(entry) || IsLibraryFunction(entry)) {
                                             LOGERROR("Error," + std::string($2) + " is already in use as a function");
                                         }
                                         DLOG("lvalue -> local id");
@@ -205,26 +205,26 @@ indexedelem:  '{' expr ':' expr '}'   { DLOG("indexedelem -> { expr : expr }"); 
 block:        '{' {IncreaseScope();PushStashedFormalArguments();} stmts '}'  { DecreaseScope(); DLOG("block -> { stmts }"); }
             ;
 
-funcdef:      FUNCTION {insert_user_function(yylineno);} '(' idlist ')' {hide_lower_scopes();set_valid_return(true);}  block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function (idlist) block "); }
+funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLowerScopes(); SetValidReturn(true);}  block {EnableLowerScopes(); SetValidReturn(false); DLOG("funcdef -> function (idlist) block "); }
             | FUNCTION ID {
-                                auto item = lookup($2);
-                                if (item == nullptr)
-                                    insert_user_function($2, yylineno);
+                                auto entry = Lookup($2);
+                                if (entry == nullptr)
+                                    InsertUserFunction($2, yylineno);
                                 else {
-                                    if (is_local_variable(item) || is_formal_variable(item) || is_global_variable(item))
-                                        log_error("Error, " + std::string($2) + " variable cannot be redefined as a function");
-                                    else if (is_library_function(item))
-                                        log_error("Error, " + std::string($2) + " library function cannot be shadowed by a user function");
-                                    else if (item->getScope() == get_current_scope()) {
+                                    if (IsLocalVariable(entry) || IsFormalVariable(entry) || IsGlobalVariable(entry))
+                                        LOGERROR("Error, " + std::string($2) + " variable cannot be redefined as a function");
+                                    else if (IsLibraryFunction(entry))
+                                        LOGERROR("Error, " + std::string($2) + " library function cannot be shadowed by a user function");
+                                    else if (entry->get_scope() == GetCurrentScope()) {
                                         std::string message = "Error, " + std::string($2) + " name collision with function defined in line ";
-                                        message += (int)item->getLine();
-                                        log_error(message);
+                                        message += (int)entry->get_line();
+                                        LOGERROR(message);
                                     }
                                     else
                                         insert_user_function($2, yylineno);
                                 }
                           }
-              '(' idlist ')' {hide_lower_scopes();set_valid_return(true);} block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function id (idlist) block"); }
+              '(' idlist ')' {HideLowerScopes();SetValidReturn(true);} block {EnableLowerScopes();SetValidReturn(false); DLOG("funcdef -> function id (idlist) block"); }
             ;
 
 const:        INTNUM                { DLOG("const -> INTNUM"); }
