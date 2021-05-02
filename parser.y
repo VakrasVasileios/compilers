@@ -18,10 +18,10 @@
 %}
 
 %union {                                                    
-    char*       stringValue;
-    int         intValue;
-    double      doubleValue;
-    class Expression* expr;
+    char*               stringValue;
+    int                 intValue;
+    double              doubleValue;
+    class Expression*   expr;
 }
 
 %start program
