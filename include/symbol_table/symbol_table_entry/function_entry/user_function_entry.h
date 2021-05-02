@@ -13,7 +13,7 @@ class UserFunctionEntry final : public FunctionEntry {
         */
         UserFunctionEntry(std::string id, unsigned int line, unsigned int scope) : FunctionEntry(USER_FUNC, id, line, scope){};
         /*
-        The Parameterized Constructor of this UserFunctionEntry. Sets this UserFunctionEntry function and its formal arguments.
+        The Parameterized Constructor of this UserFunctionEntry. Sets this UserFunctionEntry list of references of formal arguments.
         */
         UserFunctionEntry(std::string id, unsigned int line, unsigned int scope, std::list<FormalVariableEntry*> formalArguments)
             : FunctionEntry(USER_FUNC, id, line, scope, formalArguments){}; 

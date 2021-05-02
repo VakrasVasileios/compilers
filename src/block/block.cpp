@@ -1,26 +1,26 @@
 #include "../../include/block/block.h"
 
 std::list<SymbolTableEntry*>
-Block:: getEntries() const {
+Block:: get_entries() const {
     return entries;
 }
 
 void
-Block:: activate() {
+Block:: Activate() {
     for(auto entry : entries) 
-        entry->setActive(true);
+        entry->set_active(true);
 }
 
 void
-Block:: deactivate() {
+Block:: Deactivate() {
     for(auto entry : entries)
-        entry->setActive(false);
+        entry->set_active(false);
 }   
 
 SymbolTableEntry*
-Block:: lookup(std::string id) {
+Block:: Lookup(std::string id) {
     for(auto entry : entries) {
-        if (entry->getId() == id && entry->isActive())
+        if (entry->get_id() == id && entry->is_active())
             return entry; 
     }
 
@@ -28,7 +28,7 @@ Block:: lookup(std::string id) {
 }
 
 void 
-Block:: insert(SymbolTableEntry* entry) {
+Block:: Insert(SymbolTableEntry* entry) {
     entries.push_back(entry);
 }
 

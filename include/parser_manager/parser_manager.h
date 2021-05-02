@@ -14,118 +14,117 @@
 /*
 Inserts the library functions to the symbol table.
 */
-void                init_library_functions();
+void                InitLibraryFunctions();
 /*
 Increases the current scope.
 */
-void                increase_scope();
+void                IncreaseScope();
 /*
 Decreases the current scope.
 */
-void                decrease_scope();
+void                DecreaseScope();
 /*
 Flags the state as a method call.
 */
-void                set_method_call(bool methodcall);
+void                SetMethodCall(bool methodcall);
 /*
 Returns wether the state is a method call.
 */
-bool                is_method_call(void);
+bool                IsMethodCall(void);
 /*
 Flags the validity of a possible return.
 */
-void                set_valid_return(bool _validReturn);
+void                SetValidReturn(bool valid_return);
 /*
-Gets the validity flag of a possible return.
+Gets a read/write access to the validity flag of a possible return.
 */
-bool                is_valid_return(void);
+bool                IsValidReturn(void);
 /*
 Increases the loop depth.
 */
-void                increase_loop_depth();
+void                IncreaseLoopDepth();
 /*
 Decreases the loop depth.
 */
-void                decrease_loop_depth();
+void                DecreaseLoopDepth();
 /*
-Returns the loop depth.
+Returns a read/write access to the loop depth.
 */
-unsigned int        get_loop_depth();
-
+unsigned int        GetLoopDepth();
 /*
 Hides all of the symbol table entries at lower scopes, except the global scope.
 */
-void                hide_lower_scopes();
+void                HideLowerScopes();
 /*
 Shows all of the symbol table entries at lower scopes, except the global scope.
 */
-void                enable_lower_scopes();
+void                EnableLowerScopes();
 /*
-Returns wether the current scope is the global scope.
+Returns a read/write access to wether the current scope is the global scope.
 */
-bool                scope_is_global();
+bool                ScopeIsGlobal();
 /*
 Searches for an acitve symbol table entry by its name across all scopes. 
-Returns the entry if it's found and it's active, else nullptr.
+Returns a read/write access to a reference to the entry if it's found and it's active, else nullptr.
 */
-SymbolTableEntry*   lookup(const char* name);
+SymbolTableEntry*   Lookup(const char* name);
 /*
 Searches for an active symbol table entry by its name at the global_scope. 
-Returns the entry if it's found and it's active, else nullptr.
+Returns a read/write access to a reference to the entry if it's found and it's active, else nullptr.
 */
 SymbolTableEntry*   LookupGlobal(const char* name);
 /*
-Returns wether a symbol table entry is a library function.
+Returns a read/write access to wether a symbol table entry is a library function.
 Returns false if entry is null.
 */
-bool                is_library_function(SymbolTableEntry* entry);
+bool                IsLibraryFunction(SymbolTableEntry* entry);
 /*
-Returns wether a symbol table entry is a user function.
+Returns a read/write access to wether a symbol table entry is a user function.
 Returns false if entry is null.
 */
-bool                is_user_function(SymbolTableEntry* entry);
+bool                IsUserFunction(SymbolTableEntry* entry);
 /*
-Returns wether a symbol table entry is a formal variable.
+Returns a read/write access to wether a symbol table entry is a formal variable.
 Returns false if entry is null.
 */
-bool                is_formal_variable(SymbolTableEntry* entry); 
+bool                IsFormalVariable(SymbolTableEntry* entry); 
 /*
-Returns wether a symbol table entry is a global variable.
+Returns a read/write access to wether a symbol table entry is a global variable.
 Returns false if entry is null.
 */  
-bool                is_global_variable(SymbolTableEntry* entry); 
+bool                IsGlobalVariable(SymbolTableEntry* entry); 
 /*
-Returns wether a symbol table entry is local variable.
+Returns a read/write access to wether a symbol table entry is local variable.
 Returns false if entry is null.
 */  
-bool                is_local_variable(SymbolTableEntry* entry);
+bool                IsLocalVariable(SymbolTableEntry* entry);
 /*
 Inserts a local variable to the symbol table.
 */
-void                insert_variable_local(const char* name, unsigned int line);
+void                InsertLocalVariable(const char* name, unsigned int line);
 /*
 Inserts a global variable to the symbol table.
 */
-void                insert_variable_global(const char* name, unsigned int line);
+void                InsertGlobalVariable(const char* name, unsigned int line);
 /*
 Inserts a user function, with a name, at a line, with the stashed formal arguments, to the symbol table.
 */
-void                insert_user_function(const char* name, unsigned int line);
+void                InsertUserFunction(const char* name, unsigned int line);
 /*
 Inserts a user function, at a line, with the stashed formal arguments, to the symbol table.
 */
-void                insert_user_function(unsigned int line);
+void                InsertUserFunction(unsigned int line);
 /*
 Inserts all of the stashed formal arguments to the symbol table.
 */
-void                push_stashed_formal_arguments();
+void                PushStashedFormalArguments();
 /*
 Stashes a formal argument, with a name, at a line, in order for it to be pushed to the symbol table.
 */
-void                stash_formal_argument(const char* name, unsigned int line);
+void                StashFormalArgument(const char* name, unsigned int line);
 /*
 Logs the symbol table contents.
 */
-void                log_symbol_table(std::ostream& output);
+void                LogSymbolTable(std::ostream& output);
 
 #endif

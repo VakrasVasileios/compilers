@@ -2,7 +2,7 @@
 #include <assert.h>
 
 std::string
-SymbolTableEntry:: typeToString(SymbolType type) const {
+SymbolTableEntry:: TypeToString(SymbolType type) const {
     switch (type) {
     case LIB_FUNC:
         return "library function";
@@ -20,39 +20,39 @@ SymbolTableEntry:: typeToString(SymbolType type) const {
 }
 
 SymbolType
-SymbolTableEntry:: getType() const {
+SymbolTableEntry:: get_type() const {
     return type;
 }
 
 std::string
-SymbolTableEntry:: getId() const {
+SymbolTableEntry:: get_id() const {
     return id;
 }
 
 unsigned int
-SymbolTableEntry:: getLine() const {
+SymbolTableEntry:: get_line() const {
     return line;
 }
 
 unsigned int
-SymbolTableEntry:: getScope() const {
+SymbolTableEntry:: get_scope() const {
     return scope;
 }
 
 bool
-SymbolTableEntry:: isActive() const {
+SymbolTableEntry:: is_active() const {
     return active;
 }
 
 void
-SymbolTableEntry:: setActive(bool _active) {
-    active = _active;
+SymbolTableEntry:: set_active(bool active) {
+    this->active = active;
 }
 
 std::ostream&
-operator<<(std::ostream& os, const SymbolTableEntry symbolTableEntry) {
-    return os << "[" << symbolTableEntry.typeToString(symbolTableEntry.getType()) << "]"
-              << " \"" << symbolTableEntry.getId() << "\""
-              << " (line " << symbolTableEntry.getLine() << ")" 
-              << " (scope " << symbolTableEntry.getScope() << ")";
+operator<<(std::ostream& os, const SymbolTableEntry symbol_table_entry) {
+    return os << "[" << symbol_table_entry.TypeToString(symbol_table_entry.get_type()) << "]"
+              << " \"" << symbol_table_entry.get_id() << "\""
+              << " (line " << symbol_table_entry.get_line() << ")" 
+              << " (scope " << symbol_table_entry.get_scope() << ")";
 }

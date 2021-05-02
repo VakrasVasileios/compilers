@@ -1,61 +1,61 @@
 #include "../../include/program_stack/program_stack.h"
 
 std::list<Block*>
-ProgramStack:: getBlockList() const {
-    return blockList;
+ProgramStack:: get_block_list() const {
+    return block_list;
 }
 
 Block*
-ProgramStack:: top() {
-    return *--blockList.end();
+ProgramStack:: Top() {
+    return *--block_list.end();
 }
 
 void 
-ProgramStack:: push(Block* block) {
-    blockList.push_back(block);
+ProgramStack:: Push(Block* block) {
+    block_list.push_back(block);
 }
 
 void
-ProgramStack:: pop() {
-    blockList.pop_back();
+ProgramStack:: Pop() {
+    block_list.pop_back();
 }
 
 void
-ProgramStack:: activateLowerScopes() {
-    auto iter = blockList.begin();
-    for (; iter != blockList.end(); ++iter) {
-        (*iter)->activate();
+ProgramStack:: ActivateLowerScopes() {
+    auto iter = block_list.begin();
+    for (; iter != block_list.end(); ++iter) {
+        (*iter)->Activate();
     }
 }
 
 void
-ProgramStack:: deactivateLowerScopes() {
-    auto iter = blockList.begin();
-    for (; iter != blockList.end(); ++iter) {
-        (*iter)->deactivate();
+ProgramStack:: DeactivateLowerScopes() {
+    auto iter = block_list.begin();
+    for (; iter != block_list.end(); ++iter) {
+        (*iter)->Deactivate();
     }
 }
 
 SymbolTableEntry*
-ProgramStack:: lookup(std::string name) {
-    auto iter = blockList.end();
+ProgramStack:: Lookup(std::string name) {
+    auto iter = block_list.end();
     SymbolTableEntry* found;
     do {
         --iter;
         auto block = (*iter);
-        found = block->lookup(name);
+        found = block->Lookup(name);
         if (found != nullptr)
             return found;
-    } while (iter != blockList.begin());
+    } while (iter != block_list.begin());
 
     return nullptr;
 }
 
 SymbolTableEntry*
-ProgramStack:: lookupGlobal(std::string name) {
-    auto iter = blockList.begin();
+ProgramStack:: LookupGlobal(std::string name) {
+    auto iter = block_list.begin();
     auto block = (*iter);
 
-    return block->lookup(name);
+    return block->Lookup(name);
 }
 

@@ -4,9 +4,9 @@
 #include <iostream>
 
 #ifdef DELOG
-    #define dlog(message) std::cout << message << std::endl
+    #define DLOG(message) std::cout << message << std::endl
 #else
-    #define dlog(message)
+    #define DLOG(message)
 #endif
 
 #endif

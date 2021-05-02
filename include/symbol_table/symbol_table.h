@@ -5,30 +5,25 @@
 #include "../block/block.h"
 
 /*
-Provides a symbol table for keeping lists of blocks.
+Provides a symbol table, for keeping a table of lists of blocks references.
 */
 class SymbolTable final {
-    private:
-        std::vector<std::list<Block*> > blocksTable;
     public:
-        /*
-        The Default Constructor of this SymbolTable.
-        */
         SymbolTable() = default;
-        /*
-        The Default Destructor of this SymbolTable.
-        */
         ~SymbolTable() = default;
         /*
-        Returns this SYmbolTable table of blocks.
+        Returns a read access to this SymbolTable table,
+        of lists of blocks references.
         */
-        std::vector<std::list<Block*> > getBlocksTable() const;
+        std::vector<std::list<Block*> > get_blocks_table() const;
         /*
-        Inserts a block on a scope to this SymbolTable.
+        Inserts a block reference at a block list on a scope to this SymbolTable.
         */
-        void                            insert(unsigned int scope, Block* block);
+        void                            Insert(unsigned int scope, Block* block);
 
-        friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbolTable);
+        friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbol_table);
+    private:
+        std::vector<std::list<Block*> > blocks_table;
 };
 
 #endif

@@ -9,143 +9,143 @@
 const unsigned int global_scope = 0;
 unsigned int current_scope = OUT_OF_SCOPE;
 
-bool methodCall = false;
-bool validReturn = false;
+bool method_call = false;
+bool valid_return = false;
 
-unsigned int loopDepth = 0;
+unsigned int loop_depth = 0;
 
-unsigned int anonymusFuncsCounter = 0;
+unsigned int anonymus_funcs_counter = 0;
 
-SymbolTable symbolTable;
+SymbolTable symbol_table;
 
-ProgramStack  programStack;
+ProgramStack  program_stack;
 
-std::list<FormalVariableEntry*> stashedFormalArguments;
+std::list<FormalVariableEntry*> stashed_formal_arguments;
 
-void init_library_functions() {  
-    increase_scope(); 
-    programStack.top()->insert(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("objecttotalmembers", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("objectcopy", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("totalarguments", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("argument", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("typeof", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("strtonum", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
-    programStack.top()->insert(new LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
+void InitLibraryFunctions() {  
+    IncreaseScope(); 
+    program_stack.Top()->Insert(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("objecttotalmembers", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("objectcopy", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("totalarguments", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("argument", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("typeof", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("strtonum", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
 }
 
-void increase_scope() {
-    Block* newBlock = new Block();
-    symbolTable.insert(++current_scope, newBlock);
-    programStack.push(newBlock);
+void IncreaseScope() {
+    Block* new_block = new Block();
+    symbol_table.Insert(++current_scope, new_block);
+    program_stack.Push(new_block);
 }
 
-void decrease_scope() {
-    programStack.top()->deactivate();
-    programStack.pop();
+void DecreaseScope() {
+    program_stack.Top()->Deactivate();
+    program_stack.Pop();
     --current_scope;
 }
 
-void set_method_call(bool methodcall) {
-    ::methodCall = methodCall;
+void SetMethodCall(bool methodcall) {
+    ::method_call = method_call;
 }
 
-bool is_method_call() {
-    return methodCall;
+bool IsMethodCall() {
+    return method_call;
 }
 
-void  set_valid_return(bool _validReturn) {
-    validReturn = _validReturn;
+void  SetValidReturn(bool valid_return) {
+    ::valid_return = valid_return;
 }
 
-bool is_valid_return(void) {
-    return validReturn;
+bool IsValidReturn(void) {
+    return valid_return;
 }
 
-void increase_loop_depth() {
-    loopDepth++;
+void IncreaseLoopDepth() {
+    loop_depth++;
 }
 
-void decrease_loop_depth() {
-    loopDepth--;
+void DecreaseLoopDepth() {
+    loop_depth--;
 }
 
-unsigned int get_loop_depth() {
-    return loopDepth;
+unsigned int GetLoopDepth() {
+    return loop_depth;
 }
 
-void hide_lower_scopes() {
-    programStack.deactivateLowerScopes();
+void HideLowerScopes() {
+    program_stack.DeactivateLowerScopes();
 }
 
-void enable_lower_scopes() {
-    programStack.activateLowerScopes();
+void EnableLowerScopes() {
+    program_stack.ActivateLowerScopes();
 }
 
-bool scope_is_global() {
+bool ScopeIsGlobal() {
     return current_scope == global_scope;
 }
 
 SymbolTableEntry*   LookupGlobal(const char* name) {
-    return programStack.lookupGlobal(name);
+    return program_stack.LookupGlobal(name);
 }
 
-SymbolTableEntry* lookup(const char* name) {
-    return programStack.lookup(name);
+SymbolTableEntry* Lookup(const char* name) {
+    return program_stack.Lookup(name);
 }
 
-bool is_library_function(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->getType() == LIB_FUNC;
+bool IsLibraryFunction(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->get_type() == LIB_FUNC;
 }
 
-bool is_user_function(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->getType() == USER_FUNC;
+bool IsUserFunction(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->get_type() == USER_FUNC;
 }
 
-bool is_formal_variable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->getType() == FORMAL_VAR;
+bool IsFormalVariable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->get_type() == FORMAL_VAR;
 }
 
-bool is_global_variable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->getType() == GLOBAL_VAR;
+bool IsGlobalVariable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->get_type() == GLOBAL_VAR;
 } 
 
-bool is_local_variable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->getType() == LOCAL_VAR;
+bool IsLocalVariable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->get_type() == LOCAL_VAR;
 }
 
-void insert_user_function(const char* name, unsigned int line) {
-    programStack.top()->insert(new UserFunctionEntry(name, line, current_scope, stashedFormalArguments)); 
+void InsertUserFunction(const char* name, unsigned int line) {
+    program_stack.Top()->Insert(new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments)); 
 }
 
-void insert_variable_local(const char* name, unsigned int line) {
-    programStack.top()->insert(new LocalVariableEntry(name, line, current_scope)); 
+void InsertLocalVariable(const char* name, unsigned int line) {
+    program_stack.Top()->Insert(new LocalVariableEntry(name, line, current_scope)); 
 }
-void insert_variable_global(const char* name, unsigned int line) {
-    programStack.top()->insert(new GlobalVariableEntry(name, line, current_scope)); 
+void InsertGlobalVariable(const char* name, unsigned int line) {
+    program_stack.Top()->Insert(new GlobalVariableEntry(name, line, current_scope)); 
 }
 
-void insert_user_function(unsigned int line) {
+void InsertUserFunction(unsigned int line) {
     std::string an = "$";
-    an += anonymusFuncsCounter;
-    programStack.top()->insert(new UserFunctionEntry(an, line, current_scope, stashedFormalArguments)); 
+    an += anonymus_funcs_counter;
+    program_stack.Top()->Insert(new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments)); 
 }
 
-void push_stashed_formal_arguments(void) { 
-    for (auto i : stashedFormalArguments) {
-        programStack.top()->insert(i);
+void PushStashedFormalArguments(void) { 
+    for (auto i : stashed_formal_arguments) {
+        program_stack.Top()->Insert(i);
     }
-    stashedFormalArguments.clear();
+    stashed_formal_arguments.clear();
 }
 
-void stash_formal_argument(const char* name, unsigned int line) {
-    stashedFormalArguments.push_back(new FormalVariableEntry(name, line, current_scope + 1));
+void StashFormalArgument(const char* name, unsigned int line) {
+    stashed_formal_arguments.push_back(new FormalVariableEntry(name, line, current_scope + 1));
 }
 
-void log_symbol_table(std::ostream& output) {
-    output << symbolTable;
+void LogSymbolTable(std::ostream& output) {
+    output << symbol_table;
 }

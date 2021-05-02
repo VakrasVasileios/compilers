@@ -5,43 +5,38 @@
 #include <list>
 
 /*
-Provides a block containing ids across a single scope.
+Provides a block, containing a list of references to
+symbol table entries, across a single scope.
 */
-class Block {
-    private:
-       std::list<SymbolTableEntry*> entries;
+class Block final {
     public:
-        /*
-        The Default Constructor of this Block.
-        */
         Block() = default;
-        /*
-        The Default Destructor of this Block.
-        */
         ~Block() = default;
         /*
-        Returns this Block entries.
+        Returns a read access to this Block list of references to symbol table entries.
         */
-        std::list<SymbolTableEntry*> getEntries() const;
+        std::list<SymbolTableEntry*> get_entries() const;
         /*
-        Activates all the entries on this Block.
+        Activates all of the symbol table entries on this Block.
         */
-        void                        activate();
+        void                        Activate();
         /*
-        Deactivates all the entries on this Block.
+        Deactivates all of the symbol table entries on this Block.
         */
-        void                    deactivate();   
+        void                        Deactivate();   
         /*
         Searches for an active symbol table entry with an id on this Block.
-        Returns a reference to the active entry if its found, else nullptr.
+        Returns a read/write reference to the active entry if its found, else nullptr.
         */
-        SymbolTableEntry*       lookup(std::string id);
+        SymbolTableEntry*           Lookup(std::string id);
         /*
-        Inserts a symbol table entry to the end of the Block.
+        Inserts a symbol table entry reference to the end of this Block.
         */
-        void                    insert(SymbolTableEntry* entry);
+        void                        Insert(SymbolTableEntry* entry);
 
-        friend std::ostream&    operator<<(std::ostream& os, const Block block);
+        friend std::ostream&        operator<<(std::ostream& os, const Block block);
+    private:
+       std::list<SymbolTableEntry*> entries;
 };
 
 #endif

@@ -1,22 +1,20 @@
 #include "../../include/symbol_table/symbol_table.h"
 
 std::vector<std::list<Block*> >
-SymbolTable:: getBlocksTable() const {
-    return blocksTable;
+SymbolTable:: get_blocks_table() const {
+    return blocks_table;
 }
 
 void
-SymbolTable:: insert(unsigned int scope, Block* block) {  
-    // if (scope > blocksTable.size()-1)
-    //     blocksTable.push_back(std::list<Block*>());
-    blocksTable.push_back(std::list<Block*>());
-    blocksTable[scope].push_back(block);
+SymbolTable:: Insert(unsigned int scope, Block* block) {  
+    blocks_table.push_back(std::list<Block*>());
+    blocks_table[scope].push_back(block);
 }
 
 std::ostream&
-operator<<(std::ostream& os, const SymbolTable symbolTable) {
+operator<<(std::ostream& os, const SymbolTable symbol_table) {
     unsigned int scope = 0;
-    for (auto blockList : symbolTable.blocksTable)
+    for (auto blockList : symbol_table.blocks_table)
     {        
         os << "-----------     Scope #" << scope << "     -----------\n";
         for (auto block : blockList)
