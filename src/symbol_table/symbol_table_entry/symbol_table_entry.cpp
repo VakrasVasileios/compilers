@@ -2,29 +2,6 @@
 #include <assert.h>
 
 std::string
-SymbolTableEntry:: TypeToString(SymbolType type) const {
-    switch (type) {
-    case LIB_FUNC:
-        return "library function";
-    case USER_FUNC:
-        return "user function";
-    case LOCAL_VAR:
-        return "local variable";
-    case GLOBAL_VAR:
-        return "global variable";
-    case FORMAL_VAR:
-        return "formal variable";        
-    default:
-        assert (false);
-    }
-}
-
-SymbolType
-SymbolTableEntry:: get_type() const {
-    return type;
-}
-
-std::string
 SymbolTableEntry:: get_id() const {
     return id;
 }
@@ -51,7 +28,7 @@ SymbolTableEntry:: set_active(bool active) {
 
 std::ostream&
 operator<<(std::ostream& os, const SymbolTableEntry symbol_table_entry) {
-    return os << "[" << symbol_table_entry.TypeToString(symbol_table_entry.get_type()) << "]"
+    return os << "[" << symbol_table_entry.TypeToString() << "]"
               << " \"" << symbol_table_entry.get_id() << "\""
               << " (line " << symbol_table_entry.get_line() << ")" 
               << " (scope " << symbol_table_entry.get_scope() << ")";
