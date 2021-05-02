@@ -4,6 +4,7 @@
     #include <iostream>
     #include "include/parser_manager/parser_manager.h"
     #include "include/parser_log/debuglog.h"
+    #include <assert.h>
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -20,6 +21,7 @@
     char*       stringValue;
     int         intValue;
     double      doubleValue;
+    class Expression* expr;
 }
 
 %start program
@@ -31,6 +33,7 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
+%type <expr> expr primary term
 %type <stringValue> lvalue member
 
 %right      '='
@@ -91,6 +94,7 @@ expr:         assignexpr            { DLOG("expr -> assignexpr"); }
             | expr OR expr          { DLOG("expr -> expr or expr"); }
             | term                  { DLOG("expr -> term"); }
             ;
+
 term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             | '-' expr %prec UMINUS { DLOG("term -> -expr"); }
             | NOT expr              { DLOG("term -> not expr"); }
@@ -101,10 +105,10 @@ term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             | primary               { DLOG("term -> primary"); }
             ;
 
-assignexpr:   lvalue '=' expr       { DLOG("assignexpr -> lvalue = expr"); }
+assignexpr:   lvalue '=' expr       { /*if(expr.get_type() != lvalue.get_type())error();*/    DLOG("assignexpr -> lvalue = expr"); }
             ;
 
-primary:      lvalue                { DLOG("primary -> lvalue"); }
+primary:      lvalue                { $$ = Lookup($1); DLOG("primary -> lvalue"); }
             | call                  { DLOG("primary -> call"); }
             | objectdef             { DLOG("primary -> objectdef"); }
             | '(' funcdef ')'       { DLOG("primary -> (funcdef)"); }
@@ -113,20 +117,21 @@ primary:      lvalue                { DLOG("primary -> lvalue"); }
 
 lvalue:       ID                    {
                                         $$=$1;
-                                        auto entry = Lookup($1);
                                         if (ScopeIsGlobal()) {
-                                            if(entry == nullptr)
+                                            auto entry = LookupGlobal($1);
+                                            if(entry == nullptr) 
                                                 InsertGlobalVariable($1, yylineno);
                                             else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                                LOGERROR("Error," + std::string($1) + " is already in use as a function");
+                                               // LOGERROR("Error," + std::string($1) + " is already in use as a function");
                                             }
                                         }
                                         else {
+                                            auto entry = Lookup($1);
                                             if (entry == nullptr) {
                                                 InsertLocalVariable($1, yylineno);
                                             }
                                             else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                                LOGERROR("Error," + std::string($1) + " is already in use as a function");
+                                               // LOGERROR("Error," + std::string($1) + " is already in use as a function");
                                             }
                                         }
                                         DLOG("lvalue -> id");
@@ -138,17 +143,18 @@ lvalue:       ID                    {
                                             InsertLocalVariable($2, yylineno);
                                         }
                                         else if (IsUserFunction(entry) || IsLibraryFunction(entry)) {
-                                            LOGERROR("Error," + std::string($2) + " is already in use as a function");
+                                            //LOGERROR("Error," + std::string($2) + " is already in use as a function");
                                         }
                                         DLOG("lvalue -> local id");
                                     }
             | COLONCOLON ID         {
                                         $$=$2;
-                                        SymbolTableEntry* entry = Lookup($2);
-                                        if (!IsLibraryFunction(entry) && !IsGlobalVariable(entry) && !IsUserFunction(entry))
+                                        auto entry = LookupGlobal($2);
+                                        if (entry == nullptr) {
                                             LOGERROR("No global variable with id: " + std::string($2));
-                                        DLOG("lvalue -> ::id");
                                         }
+                                        DLOG("lvalue -> ::id");
+                                    }
             | member                { DLOG("lvalue -> member"); }
             ;
 
@@ -157,7 +163,7 @@ member:       lvalue '.' ID         { $$=$3; DLOG("member -> lvalue.id"); }
             | call '.' ID           { $$=$3; DLOG("member -> call.id"); }
             | call '[' expr ']'     { DLOG("member -> call[expr]"); }
             ;
-            
+
 call:         call '(' elist ')'    { DLOG("call -> call(elist)"); }
             | lvalue callsuffix     {
                                         if(!IsMethodCall()) {
@@ -169,7 +175,7 @@ call:         call '(' elist ')'    { DLOG("call -> call(elist)"); }
                                     }
             | '(' funcdef ')' '(' elist ')'  { DLOG("call -> (funcdef)(elist)"); }
             ;
-            
+
 callsuffix:   normcall              { DLOG("callsuffix -> normcall"); }
             | methodcall            { DLOG("callsuffix -> methodcall"); }
             ;
@@ -211,7 +217,7 @@ funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLower
                                 if (entry == nullptr)
                                     InsertUserFunction($2, yylineno);
                                 else {
-                                    if (IsLocalVariable(entry) || IsFormalVariable(entry) || IsGlobalVariable(entry))
+                                    if (IsVariable(entry))
                                         LOGERROR("Error, " + std::string($2) + " variable cannot be redefined as a function");
                                     else if (IsLibraryFunction(entry))
                                         LOGERROR("Error, " + std::string($2) + " library function cannot be shadowed by a user function");
@@ -221,7 +227,7 @@ funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLower
                                         LOGERROR(message);
                                     }
                                     else
-                                        insert_user_function($2, yylineno);
+                                        InsertUserFunction($2, yylineno);
                                 }
                           }
               '(' idlist ')' {HideLowerScopes();SetValidReturn(true);} block {EnableLowerScopes();SetValidReturn(false); DLOG("funcdef -> function id (idlist) block"); }
@@ -279,7 +285,7 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-    
+    //PARE TA ARXIDIA MOY BILL
     InitLibraryFunctions();
 
     yyparse();
