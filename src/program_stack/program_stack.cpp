@@ -44,7 +44,7 @@ ProgramStack:: Lookup(std::string name) {
         --iter;
         auto block = (*iter);
         found = block->Lookup(name);
-        if (found != nullptr)
+        if (found != nullptr) 
             return found;
     } while (iter != block_list.begin());
 
