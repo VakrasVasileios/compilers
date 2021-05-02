@@ -2,8 +2,8 @@
     #include <stdio.h>
     #include <string>
     #include <iostream>
-    #include "include/parser_manager/ParserManager.h"
-    #include "include/parser_log/DebugLog.h"
+    #include "include/parser_manager/parser_manager.h"
+    #include "include/parser_log/debuglog.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
