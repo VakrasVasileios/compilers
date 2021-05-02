@@ -23,6 +23,8 @@ void                increase_scope();
 Decreases the current scope.
 */
 void                decrease_scope();
+
+unsigned int        get_current_scope(void);
 /*
 Flags the state as a method call.
 */

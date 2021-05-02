@@ -50,6 +50,10 @@ void decrease_scope() {
     --current_scope;
 }
 
+unsigned int        get_current_scope(void) {
+    return current_scope;
+}
+
 void set_method_call(bool methodcall) {
     ::methodCall = methodCall;
 }
@@ -79,7 +83,8 @@ unsigned int get_loop_depth() {
 }
 
 void hide_lower_scopes() {
-    programStack.deactivateLowerScopes();
+    if (current_scope > 1)
+        programStack.deactivateLowerScopes();
 }
 
 void enable_lower_scopes() {
@@ -94,7 +99,7 @@ SymbolTableEntry*   LookupGlobal(const char* name) {
     return programStack.lookupGlobal(name);
 }
 
-SymbolTableEntry* lookup(const char* name) {
+SymbolTableEntry*   lookup(const char* name) {
     return programStack.lookup(name);
 }
 
