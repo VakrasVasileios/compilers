@@ -1,4 +1,4 @@
-#include "../../include/block/Block.h"
+#include "../../include/block/block.h"
 
 std::list<SymbolTableEntry*>
 Block:: getEntries() const {

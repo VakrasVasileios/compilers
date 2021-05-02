@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../../../include/block/Block.h"
-#include "../../../include/symbol_table/symbol_table_entry/function_entry/UserFunctionEntry.h"
-#include "../../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
+#include "../../../include/block/block.h"
+#include "../../../include/symbol_table/symbol_table_entry/function_entry/user_function_entry.h"
+#include "../../../include/symbol_table/symbol_table_entry/symbol_table_entry.h"
 
 class BlockTest : public ::testing::Test {
     protected:

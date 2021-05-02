@@ -1,7 +1,7 @@
 #ifndef LOCALVARIABLEENTRY_H
 #define LOCALVARIABLEENTRY_H
 
-#include "../SymbolTableEntry.h"
+#include "../symbol_table_entry.h"
 
 /*
 Provides a local variable entry.

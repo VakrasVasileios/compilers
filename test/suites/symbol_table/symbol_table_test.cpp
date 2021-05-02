@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../../../include/symbol_table/SymbolTable.h"
-#include "../../../include/block/Block.h"
+#include "../../../include/symbol_table/symbol_table.h"
+#include "../../../include/block/block.h"
 
 class SymbolTableTest : public ::testing::Test {
     protected:

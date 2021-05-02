@@ -1,7 +1,7 @@
 #ifndef FORMALVARIABLEENTRY_H
 #define FORMALVARIABLEENTRY_H
 
-#include "../SymbolTableEntry.h"
+#include "../symbol_table_entry.h"
 
 /*
 Provides a formal variable entry.

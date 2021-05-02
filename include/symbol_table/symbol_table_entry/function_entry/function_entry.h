@@ -1,8 +1,8 @@
 #ifndef FUNCTIONENTRY_H
 #define FUNCTIONENTRY_H
 
-#include "../SymbolTableEntry.h"
-#include "../variable_entry/FormalVariableEntry.h"
+#include "../symbol_table_entry.h"
+#include "../variable_entry/formal_variable_entry.h"
 #include <list>
 
 /*

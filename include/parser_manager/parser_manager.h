@@ -1,14 +1,14 @@
 #ifndef PARSERMANAGER_H
 #define PARSERMANAGER_H
 
-#include "../symbol_table/symbol_table_entry/function_entry/LibraryFunctionEntry.h"
-#include "../symbol_table/symbol_table_entry/function_entry/UserFunctionEntry.h"
-#include "../symbol_table/symbol_table_entry/variable_entry/LocalVariableEntry.h"
-#include "../symbol_table/symbol_table_entry/variable_entry/GlobalVariableEntry.h"
-#include "../symbol_table/symbol_table_entry/variable_entry/FormalVariableEntry.h"
-#include "../../include/symbol_table/SymbolTable.h"
-#include "../../include/symbol_table/symbol_table_entry/SymbolTableEntry.h"
-#include "../../include/program_stack/ProgramStack.h"
+#include "../symbol_table/symbol_table_entry/function_entry/library_function_entry.h"
+#include "../symbol_table/symbol_table_entry/function_entry/user_function_entry.h"
+#include "../symbol_table/symbol_table_entry/variable_entry/local_variable_entry.h"
+#include "../symbol_table/symbol_table_entry/variable_entry/global_variable_entry.h"
+#include "../symbol_table/symbol_table_entry/variable_entry/formal_variable_entry.h"
+#include "../../include/symbol_table/symbol_table.h"
+#include "../../include/symbol_table/symbol_table_entry/symbol_table_entry.h"
+#include "../../include/program_stack/program_stack.h"
 #include <fstream>
 
 /*

@@ -1,7 +1,7 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "../symbol_table/symbol_table_entry/SymbolTableEntry.h"
+#include "../symbol_table/symbol_table_entry/symbol_table_entry.h"
 #include <list>
 
 /*
