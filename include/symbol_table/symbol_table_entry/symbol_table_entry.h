@@ -30,9 +30,43 @@ enum SymbolType {
     FORMAL_VAR
 };
 
-/* Provides a symbol table entry.
+/* 
+Provides a symbol table entry with an id, found at a line, on a scope, with a type.
 */
 class SymbolTableEntry {
+    public:
+        /*
+        The Parameterized Constructor of this SymbolTableEntry. Sets this SymbolTableEntry type, id, line, scope and activeness.
+        */
+        SymbolTableEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope) :
+            type(type), id(id), line(line), scope(scope), active(true) {};
+        virtual                 ~SymbolTableEntry() = default;
+        /*
+        Returns a read access to this SymbolTableEntry type.
+        */
+        SymbolType              get_type() const;
+        /* 
+        Returns a read access to this SymbolTableEntry id.
+        */
+        std::string             get_id() const;
+        /* 
+        Returns a read access to this SymbolTableEntry line.
+        */
+        unsigned int            get_line() const;
+        /* 
+        Returns a read access to this SymbolTableEntry scope.
+        */
+        unsigned int            get_scope() const;
+        /*
+        Returns a read access to this SymbolTableEntry activeness.
+        */
+        bool                    is_active() const;
+        /*
+        Sets this SymbolTableEntry activeness.
+        */
+        void                    set_active(bool active);
+        
+        friend std::ostream&    operator<<(std::ostream& os, const SymbolTableEntry symbol_table_entry);
     private:
         const SymbolType    type;
         const std::string   id;
@@ -40,43 +74,7 @@ class SymbolTableEntry {
         const unsigned int  scope;
         bool                active;
 
-        std::string         typeToString(SymbolType type) const;
-    public:
-        /*
-        The Parameterized Constructor of this SymbolTableEntry. Sets this SymbolTableEntry type, id, line, scope and activeness.
-        */
-        SymbolTableEntry(SymbolType type, std::string id, unsigned int line, unsigned int scope) :
-            type(type), id(id), line(line), scope(scope), active(true) {};
-        /*
-        The Default Destructor of this SymbolTableEntry.
-        */
-        virtual                 ~SymbolTableEntry() = default;
-        /*
-        Returns this SymbolTableEntry type.
-        */
-        SymbolType              getType() const;
-        /* 
-        Returns this SymbolTableEntry id.
-        */
-        std::string             getId() const;
-        /* 
-        Returns this SymbolTableEntry line.
-        */
-        unsigned int            getLine() const;
-        /* 
-        Returns this SymbolTableEntry scope.
-        */
-        unsigned int            getScope() const;
-        /*
-        Returns this SymbolTableEntry activeness.
-        */
-        bool                    isActive() const;
-        /*
-        Sets this SymbolTableEntry activeness.
-        */
-        void                    setActive(bool _active);
-        
-        friend std::ostream&    operator<<(std::ostream& os, const SymbolTableEntry symbolTableEntry);
+        std::string         TypeToString(SymbolType type) const;
 };
 
 #endif

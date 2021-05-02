@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "../../../include/parser_manager/ParserManager.h"
+#include "../../../include/parser_manager/parser_manager.h"
 #include <sstream>
 
 TEST(ParserManager, init_library_functions) {
-    init_library_functions();
+    InitLibraryFunctions();
     std::string expected = "-----------     Scope #0     -----------\n"
                     "[library function] \"print\" (line 0) (scope 0)\n"
                     "[library function] \"input\" (line 0) (scope 0)\n"
@@ -19,7 +19,7 @@ TEST(ParserManager, init_library_functions) {
                     "[library function] \"sin\" (line 0) (scope 0)\n";
 
     std::stringstream actual;
-    log_symbol_table(actual);   
+    LogSymbolTable(actual);   
     GTEST_ASSERT_EQ(expected, actual.str());     
 }
 
