@@ -24,6 +24,10 @@ Decreases the current scope.
 */
 void                DecreaseScope();
 /*
+Returns the current scope.
+*/
+unsigned int        GetCurrentScope();
+/*
 Flags the state as a method call.
 */
 void                SetMethodCall(bool methodcall);

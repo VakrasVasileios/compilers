@@ -50,6 +50,11 @@ void DecreaseScope() {
     --current_scope;
 }
 
+unsigned int 
+GetCurrentScope() {
+    return current_scope;
+}
+
 void SetMethodCall(bool methodcall) {
     ::method_call = method_call;
 }
@@ -79,7 +84,8 @@ unsigned int GetLoopDepth() {
 }
 
 void HideLowerScopes() {
-    program_stack.DeactivateLowerScopes();
+    if (current_scope > 1)
+        program_stack.DeactivateLowerScopes();
 }
 
 void EnableLowerScopes() {
