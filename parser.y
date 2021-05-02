@@ -55,7 +55,7 @@ stmts:        stmt stmts            { dlog("stmts -> stmt stmts"); }
             |                       { dlog("stmts -> EMPTY"); }
             ;
 
-stmt:         expr ';'              { !is_method_call(); dlog("stmt -> expr;");}
+stmt:         expr ';'              { set_method_call(false); dlog("stmt -> expr;");}
             | ifstmt                { dlog("stmt -> ifstmt");}
             | whilestmt             { dlog("stmt -> whilestmt");}
             | forstmt               { dlog("stmt -> forstmt");}
@@ -145,7 +145,7 @@ lvalue:       ID                    {
             | COLONCOLON ID         {
                                         $$=$2;
                                         SymbolTableEntry* entry = lookup($2);
-                                        if (!is_library_function(entry) && !is_global_variable(entry) && !is_user_function(entry))
+                                        if (entry == nullptr)
                                             log_error("No global variable with id: " + std::string($2));
                                         dlog("lvalue -> ::id");
                                         }
@@ -162,7 +162,7 @@ call:         call '(' elist ')'    { dlog("call -> call(elist)"); }
             | lvalue callsuffix     {
                                         if(!is_method_call()) {
                                             SymbolTableEntry* entry = lookup($1);
-                                            if(!is_library_function(entry) && !is_user_function(entry))
+                                            if(entry == nullptr)
                                                 log_error("No function with name: " + std::string($1));
                                         }
                                         dlog("call -> lvalue callsuffix");
@@ -206,7 +206,25 @@ block:        '{' {increase_scope();push_stashed_formal_arguments();} stmts '}' 
             ;
 
 funcdef:      FUNCTION {insert_user_function(yylineno);} '(' idlist ')' {hide_lower_scopes();set_valid_return(true);}  block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function (idlist) block "); }
-            | FUNCTION ID {insert_user_function($2, yylineno);} '(' idlist ')' {hide_lower_scopes();set_valid_return(true);} block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function id (idlist) block"); }
+            | FUNCTION ID {
+                                auto item = lookup($2);
+                                if (item == nullptr)
+                                    insert_user_function($2, yylineno);
+                                else {
+                                    if (is_local_variable(item) || is_formal_variable(item) || is_global_variable(item))
+                                        log_error("Error, " + std::string($2) + " variable cannot be redefined as a function");
+                                    else if (is_library_function(item))
+                                        log_error("Error, " + std::string($2) + " library function cannot be shadowed by a user function");
+                                    else if (item->getScope() == get_current_scope()) {
+                                        std::string message = "Error, " + std::string($2) + " name collision with function defined in line ";
+                                        message += (int)item->getLine();
+                                        log_error(message);
+                                    }
+                                    else
+                                        insert_user_function($2, yylineno);
+                                }
+                          }
+              '(' idlist ')' {hide_lower_scopes();set_valid_return(true);} block {enable_lower_scopes();set_valid_return(false); dlog("funcdef -> function id (idlist) block"); }
             ;
 
 const:        INTNUM                { dlog("const -> INTNUM"); }
