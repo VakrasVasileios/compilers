@@ -74,7 +74,7 @@ class SymbolTableEntry {
         /*
         Sets this SymbolTableEntry activeness.
         */
-        void                    setActive(bool active);
+        void                    setActive(bool _active);
         
         friend std::ostream&    operator<<(std::ostream& os, const SymbolTableEntry symbolTableEntry);
 };

@@ -7,6 +7,7 @@ BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
 dYACC = -v
+#GDBenable = -g
 #myLog = -DELOG
 
 ifdef dYACC
@@ -15,6 +16,10 @@ endif
 
 ifdef myLog
 CFLAGS += $(myLog)
+endif
+
+ifdef GDBenable
+CFLAGS += $(GDBenable)
 endif
 
 YFLAG += --yacc --defines

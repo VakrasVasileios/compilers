@@ -252,6 +252,7 @@ int yyerror(std::string yaccProvidedMessage) {
 
 #ifndef TESTING
 int main(int argc, char** argv) {    
+    init_library_functions();
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -262,7 +263,6 @@ int main(int argc, char** argv) {
         yyin = stdin;
     }
 
-    init_library_functions();
 
     yyparse();
 
