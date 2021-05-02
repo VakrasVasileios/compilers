@@ -22,11 +22,12 @@ Block:: Deactivate() {
 SymbolTableEntry*
 Block:: Lookup(std::string id) {
     for(auto entry : entries) {
-        if (entry->get_id() == id)
+        if (entry->get_id() == id) {
             if (entry->is_active())
                 return entry;
             else
                 std::cout << "Cannot access " << id << std::endl;
+        }
     }
 
     return nullptr;
