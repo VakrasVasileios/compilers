@@ -1,4 +1,5 @@
 #include "../../include/block/Block.h"
+#include <iostream>
 
 std::list<SymbolTableEntry*>
 Block:: getEntries() const {
@@ -20,8 +21,11 @@ Block:: deactivate() {
 SymbolTableEntry*
 Block:: lookup(std::string id) {
     for(auto entry : entries) {
-        if (entry->getId() == id && entry->isActive())
-            return entry; 
+        if (entry->getId() == id)
+            if (entry->isActive())
+                return entry;
+            else
+                std::cout << "Cannot access " << id << std::endl;
     }
 
     return nullptr;
