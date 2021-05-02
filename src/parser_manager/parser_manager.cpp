@@ -1,7 +1,8 @@
-#include "../../include/parser_manager/parser_manager.h"
 #include <string>
 #include <list>
 #include <iostream>
+
+#include "../../include/parser_manager/parser_manager.h"
 
 #define LIB_FUNC_LINE  0
 #define OUT_OF_SCOPE  -1
@@ -84,6 +85,8 @@ unsigned int GetLoopDepth() {
 }
 
 void HideLowerScopes() {
+    if (current_scope != global_scope)
+        program_stack.Top()->Deactivate();
     if (current_scope > 1)
         program_stack.DeactivateLowerScopes();
 }
@@ -105,40 +108,56 @@ SymbolTableEntry* Lookup(const char* name) {
 }
 
 bool IsLibraryFunction(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == LIB_FUNC;
+    return entry != nullptr && entry->GetType() == LIB_FUNC;
 }
 
 bool IsUserFunction(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == USER_FUNC;
+    return entry != nullptr && entry->GetType() == USER_FUNC;
 }
 
-bool IsFormalVariable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == FORMAL_VAR;
+bool IsVariable(SymbolTableEntry* entry) {
+    return entry != nullptr && entry->GetType() == VAR;
 }
 
-bool IsGlobalVariable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == GLOBAL_VAR;
-} 
+// bool IsFormalVariable(SymbolTableEntry* entry) {
+//     return entry != nullptr && entry->get_type() == FORMAL_VAR;
+// }
 
-bool IsLocalVariable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == LOCAL_VAR;
+// bool IsGlobalVariable(SymbolTableEntry* entry) {
+//     return entry != nullptr && entry->get_type() == GLOBAL_VAR;
+// } 
+
+// bool IsLocalVariable(SymbolTableEntry* entry) {
+//     return entry != nullptr && entry->get_type() == LOCAL_VAR;
+// }
+
+Expression* InsertUserFunction(const char* name, unsigned int line) {
+    Expression* expr = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert((UserFunctionEntry*) expr); 
+    
+    return expr;
 }
 
-void InsertUserFunction(const char* name, unsigned int line) {
-    program_stack.Top()->Insert(new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments)); 
+Expression* InsertLocalVariable(const char* name, unsigned int line) {
+    Expression* expr = new LocalVariableEntry(name, line, current_scope);
+    program_stack.Top()->Insert((LocalVariableEntry*) expr);
+
+    return expr;
+}
+Expression* InsertGlobalVariable(const char* name, unsigned int line) {
+    Expression* expr = new GlobalVariableEntry(name, line, current_scope);
+    program_stack.Top()->Insert((GlobalVariableEntry*) expr);
+    
+    return expr;
 }
 
-void InsertLocalVariable(const char* name, unsigned int line) {
-    program_stack.Top()->Insert(new LocalVariableEntry(name, line, current_scope)); 
-}
-void InsertGlobalVariable(const char* name, unsigned int line) {
-    program_stack.Top()->Insert(new GlobalVariableEntry(name, line, current_scope)); 
-}
-
-void InsertUserFunction(unsigned int line) {
+Expression* InsertUserFunction(unsigned int line) {
     std::string an = "$";
     an += anonymus_funcs_counter;
-    program_stack.Top()->Insert(new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments)); 
+    Expression* expr = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert((UserFunctionEntry*)expr);
+
+    return expr; 
 }
 
 void PushStashedFormalArguments(void) { 

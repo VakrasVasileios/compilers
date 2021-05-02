@@ -6,9 +6,11 @@
 #include "../symbol_table/symbol_table_entry/variable_entry/local_variable_entry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/global_variable_entry.h"
 #include "../symbol_table/symbol_table_entry/variable_entry/formal_variable_entry.h"
-#include "../../include/symbol_table/symbol_table.h"
-#include "../../include/symbol_table/symbol_table_entry/symbol_table_entry.h"
-#include "../../include/program_stack/program_stack.h"
+#include "../symbol_table/symbol_table_entry/symbol_table_entry.h"
+#include "../symbol_table/symbol_table.h"
+#include "../program_stack/program_stack.h"
+#include "../expression/constant.h"
+#include "../expression/expression.h"
 #include <fstream>
 
 /*
@@ -87,37 +89,43 @@ Returns a read/write access to wether a symbol table entry is a user function.
 Returns false if entry is null.
 */
 bool                IsUserFunction(SymbolTableEntry* entry);
+
+bool                IsVariable(SymbolTableEntry* entry);
 /*
 Returns a read/write access to wether a symbol table entry is a formal variable.
 Returns false if entry is null.
 */
-bool                IsFormalVariable(SymbolTableEntry* entry); 
+// bool                IsFormalVariable(SymbolTableEntry* entry); 
 /*
 Returns a read/write access to wether a symbol table entry is a global variable.
 Returns false if entry is null.
 */  
-bool                IsGlobalVariable(SymbolTableEntry* entry); 
+// bool                IsGlobalVariable(SymbolTableEntry* entry); 
 /*
 Returns a read/write access to wether a symbol table entry is local variable.
 Returns false if entry is null.
 */  
-bool                IsLocalVariable(SymbolTableEntry* entry);
+// bool                IsLocalVariable(SymbolTableEntry* entry);
 /*
 Inserts a local variable to the symbol table.
+Returns a reference to the expression inserted.
 */
-void                InsertLocalVariable(const char* name, unsigned int line);
+Expression*         InsertLocalVariable(const char* name, unsigned int line);
 /*
 Inserts a global variable to the symbol table.
+Returns a reference to the expression inserted.
 */
-void                InsertGlobalVariable(const char* name, unsigned int line);
+Expression*         InsertGlobalVariable(const char* name, unsigned int line);
 /*
 Inserts a user function, with a name, at a line, with the stashed formal arguments, to the symbol table.
+Returns a reference to the expression inserted.
 */
-void                InsertUserFunction(const char* name, unsigned int line);
+Expression*         InsertUserFunction(const char* name, unsigned int line);
 /*
 Inserts a user function, at a line, with the stashed formal arguments, to the symbol table.
+Returns a reference to the expression inserted.
 */
-void                InsertUserFunction(unsigned int line);
+Expression*         InsertUserFunction(unsigned int line);
 /*
 Inserts all of the stashed formal arguments to the symbol table.
 */
