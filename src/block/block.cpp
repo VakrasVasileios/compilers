@@ -1,9 +1,6 @@
-<<<<<<< HEAD:src/block/Block.cpp
-#include "../../include/block/Block.h"
-#include <iostream>
-=======
 #include "../../include/block/block.h"
->>>>>>> 7749cc3c1c45aae7cd02cb3ffc4b238b0bcff3dd:src/block/block.cpp
+#include <iostream>
+
 
 std::list<SymbolTableEntry*>
 Block:: get_entries() const {
@@ -25,16 +22,11 @@ Block:: Deactivate() {
 SymbolTableEntry*
 Block:: Lookup(std::string id) {
     for(auto entry : entries) {
-<<<<<<< HEAD:src/block/Block.cpp
-        if (entry->getId() == id)
-            if (entry->isActive())
+        if (entry->get_id() == id)
+            if (entry->is_active())
                 return entry;
             else
                 std::cout << "Cannot access " << id << std::endl;
-=======
-        if (entry->get_id() == id && entry->is_active())
-            return entry; 
->>>>>>> 7749cc3c1c45aae7cd02cb3ffc4b238b0bcff3dd:src/block/block.cpp
     }
 
     return nullptr;
