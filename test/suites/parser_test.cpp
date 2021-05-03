@@ -194,20 +194,20 @@ TEST_F(ParserTest, Error5) {
     GTEST_ASSERT_EQ(expected, actual);
  }
 
- TEST_F(ParserTest, Circle) {
-    expected = libfunc_out;
-    expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
-            "[local variable] \"$0\" (line 0) (scope 0)\n"
-            "[global variable] \"circle\" (line 6) (scope 0)\n"
-            "[global variable] \"pi\" (line 6) (scope 0)\n"
-            "[local variable] \"$1\" (line 0) (scope 0)\n"
-            "[local variable] \"$2\" (line 0) (scope 0)\n"
-            "[user function] \"Area\" (line 11) (scope 0)\n"
-            "[user function] \"Perimeter\" (line 18) (scope 0)\n"
-            "[user function] \"InitCircle\" (line 25) (scope 0)\n";
-    actual = exec("./scanner ../test/files/phase2_tests/Working/Circle.asc");
-    GTEST_ASSERT_EQ(expected, actual);
- }
+//  TEST_F(ParserTest, Circle) {
+//     expected = libfunc_out;
+//     expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
+//             "[local variable] \"$0\" (line 0) (scope 0)\n"
+//             "[global variable] \"circle\" (line 6) (scope 0)\n"
+//             "[global variable] \"pi\" (line 6) (scope 0)\n"
+//             "[local variable] \"$1\" (line 0) (scope 0)\n"
+//             "[local variable] \"$2\" (line 0) (scope 0)\n"
+//             "[user function] \"Area\" (line 11) (scope 0)\n"
+//             "[user function] \"Perimeter\" (line 18) (scope 0)\n"
+//             "[user function] \"InitCircle\" (line 25) (scope 0)\n";
+//     actual = exec("./scanner ../test/files/phase2_tests/Working/Circle.asc");
+//     GTEST_ASSERT_EQ(expected, actual);
+//  }
 
  TEST_F(ParserTest, GlobalAndLocal) {
     expected = libfunc_out;
