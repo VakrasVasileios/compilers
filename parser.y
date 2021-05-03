@@ -18,10 +18,11 @@
 %}
 
 %union {                                                    
-    char*               stringValue;
-    int                 intValue;
-    double              doubleValue;
-    class Expression*   expr;
+    char*                   stringValue;
+    int                     intValue;
+    double                  doubleValue;
+    class Expression*       expr;
+    class SymbolTableEntry* entry;
 }
 
 %start program
@@ -33,7 +34,8 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <expr> expr primary term const lvalue
+%type <expr> expr primary term const 
+%type <entry> lvalue
 %type <stringValue> member
 
 %right      '='
@@ -133,11 +135,8 @@ term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             ;
 
 assignexpr:   lvalue '=' expr       {
-                                        // auto entry = Lookup($1);
-                                        // if(($1) == nullptr)
-                                        //     LOGERROR("Attempting to assign a value to NIL");
-                                        // else if(($1)->get_type() == LIB_FUNC || ($1)->get_type() == USER_FUNC)
-                                        //     LOGERROR("Usage of a function as lvalue in assign expression");
+                                        if(($1) == nullptr)
+                                            LOGERROR("Attempting to assign a value to NIL");
 
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
@@ -218,13 +217,18 @@ member:       lvalue '.' ID         { $$=$3; DLOG("member -> lvalue.id"); }
 call:         call '(' elist ')'    { DLOG("call -> call(elist)"); }
             | lvalue callsuffix     {
                                         if(!IsMethodCall()) {
+                                            std::cout << "id: " << ($1)->get_id() << " type: " << ($1)->get_type() << std::endl;
+                                            assert(dynamic_cast<Constant*>($1) != nullptr);
                                             if (($1) == nullptr)
                                                 LOGERROR("Attempting use function call with NIL value");
-                                            else {
-                                                SymbolTableEntry* entry = LookupFunc(static_cast<SymbolTableEntry*>($1)->get_id().c_str());
-                                               // std::cout << static_cast<SymbolTableEntry*>(entry)->get_id() << " " << static_cast<SymbolTableEntry*>(entry)->get_type() << std::endl;
-                                                if (entry == nullptr)
-                                                    LOGERROR("No function with name: " + entry->get_id());
+                                            else if (($1)->get_type() == VAR) {
+                                                std::string id = ($1)->get_id();
+                                                //std::cout << "id: " << id << std::endl;
+                                                std::cout << "id: " << id << " id.c_str: " << id.c_str() << std::endl;
+                                                SymbolTableEntry* entry = LookupFunc(id.c_str());
+                                                // std::cout << static_cast<SymbolTableEntry*>(entry)->get_id() << " " << static_cast<SymbolTableEntry*>(entry)->get_type() << std::endl;
+                                               if (entry == nullptr)
+                                                   LOGERROR("No function with name: " + id);
                                             }
                                         }
                                         DLOG("call -> lvalue callsuffix");
