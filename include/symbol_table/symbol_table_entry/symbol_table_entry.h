@@ -16,7 +16,7 @@ class SymbolTableEntry : public Expression {
         */
         SymbolTableEntry(ExprType type, std::string id, unsigned int line, unsigned int scope) :
         Expression(type), id(id), line(line), scope(scope), active(true) {};
-            
+
         virtual                 ~SymbolTableEntry() = default;
         /* 
         Returns a read access to this SymbolTableEntry id.
