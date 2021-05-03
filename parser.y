@@ -199,7 +199,7 @@ assignexpr:   lvalue '=' expr       {
                                         if ($1 == nullptr || $1 == NULL)
                                             LOGERROR("Attempting to assign a value to NIL");
                                         else {
-                                            auto lval = Lookup($1);
+                                            auto lval = Lookup($1); //$1 is DEALLOCATED!!!???
                                             if (lval == nullptr)
                                                 LOGERROR("Attempting to assign a value to NIL");
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
@@ -267,6 +267,7 @@ lvalue:       ID                    {
                                        /* Declaration Check End*/
                                     }
             | COLONCOLON ID         {
+                                        $$ = $2;
                                         /* Access Check */
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr) {
