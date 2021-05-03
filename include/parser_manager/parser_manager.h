@@ -51,6 +51,9 @@ Checks if a symbol table entry is declared at the current scope.
 It's a checked runtime error for the entry to be null.
 */
 bool                IsAtCurrentScope(SymbolTableEntry* entry);
+
+bool                IsGlobalVar(SymbolTableEntry* entry);
+
 /*
 Increases the loop depth.
 */
