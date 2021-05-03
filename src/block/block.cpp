@@ -27,8 +27,10 @@ Block:: Lookup(std::string id) {
         if (entry->get_id() == id) {
             if (entry->is_active())
                 return entry;
-            else
+            else {
                 std::cout << "Cannot access " << id  << ", defined in line: " << entry->get_line() << std::endl;
+                //return nullptr;
+            }
         }
     }
 
@@ -54,8 +56,9 @@ Block:: Insert(SymbolTableEntry* entry) {
 
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
-    for(auto entry : block.entries) 
-        os << *entry << std::endl;
-
+    for(auto entry : block.entries) {
+        entry->Log(os);
+        os << "\n";
+    }
     return os;    
 }
