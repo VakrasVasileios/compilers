@@ -11,17 +11,29 @@ SymbolTable:: Insert(unsigned int scope, Block* block) {
     blocks_table[scope].push_back(block);
 }
 
+bool ContainsAnEntry(std::list<Block*> blockList) {
+    bool contains = false;
+    for (auto block : blockList) {
+        if (!block->get_entries().empty())
+            contains = true;
+    }
+    return contains;
+}
+
 std::ostream&
 operator<<(std::ostream& os, const SymbolTable symbol_table) {
     unsigned int scope = 0;
     for (auto blockList : symbol_table.blocks_table)
     {        
-        os << "-----------     Scope #" << scope << "     -----------\n";
-        for (auto block : blockList)
+        if (ContainsAnEntry(blockList))
         {
-            os << *block;
+            os << "-----------     Scope #" << scope << "     -----------\n";
+            for (auto block : blockList)
+            {
+                os << *block;
+            }
+            scope++;
         }
-        scope++;
     }
 
     return os;
