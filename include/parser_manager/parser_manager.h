@@ -114,22 +114,22 @@ Returns false if entry is null.
 Inserts a local variable to the symbol table.
 Returns a reference to the expression inserted.
 */
-Expression*         InsertLocalVariable(const char* name, unsigned int line);
+SymbolTableEntry*         InsertLocalVariable(const char* name, unsigned int line);
 /*
 Inserts a global variable to the symbol table.
 Returns a reference to the expression inserted.
 */
-Expression*         InsertGlobalVariable(const char* name, unsigned int line);
+SymbolTableEntry*         InsertGlobalVariable(const char* name, unsigned int line);
 /*
 Inserts a user function, with a name, at a line, with the stashed formal arguments, to the symbol table.
 Returns a reference to the expression inserted.
 */
-Expression*         InsertUserFunction(const char* name, unsigned int line);
+SymbolTableEntry*         InsertUserFunction(const char* name, unsigned int line);
 /*
 Inserts a user function, at a line, with the stashed formal arguments, to the symbol table.
 Returns a reference to the expression inserted.
 */
-Expression*         InsertUserFunction(unsigned int line);
+SymbolTableEntry*         InsertUserFunction(unsigned int line);
 /*
 Inserts all of the stashed formal arguments to the symbol table.
 */

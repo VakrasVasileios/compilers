@@ -135,33 +135,33 @@ bool IsVariable(SymbolTableEntry* entry) {
 //     return entry != nullptr && entry->get_type() == LOCAL_VAR;
 // }
 
-Expression* InsertLocalVariable(const char* name, unsigned int line) {
-    Expression* expr = new LocalVariableEntry(name, line, current_scope);
-    program_stack.Top()->Insert((LocalVariableEntry*) expr);
+SymbolTableEntry* InsertLocalVariable(const char* name, unsigned int line) {
+    SymbolTableEntry* entry = new LocalVariableEntry(name, line, current_scope);
+    program_stack.Top()->Insert((LocalVariableEntry*) entry);
 
-    return expr;
+    return entry;
 }
-Expression* InsertGlobalVariable(const char* name, unsigned int line) {
-    Expression* expr = new GlobalVariableEntry(name, line, current_scope);
-    program_stack.Top()->Insert((GlobalVariableEntry*) expr);
+SymbolTableEntry* InsertGlobalVariable(const char* name, unsigned int line) {
+    SymbolTableEntry* entry = new GlobalVariableEntry(name, line, current_scope);
+    program_stack.Top()->Insert((GlobalVariableEntry*) entry);
     
-    return expr;
+    return entry;
 }
 
-Expression* InsertUserFunction(const char* name, unsigned int line) {
-    Expression* expr = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
-    program_stack.Top()->Insert((UserFunctionEntry*) expr); 
+SymbolTableEntry* InsertUserFunction(const char* name, unsigned int line) {
+    SymbolTableEntry* entry = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert((UserFunctionEntry*) entry);
     
-    return expr;
+    return entry;
 }
 
-Expression* InsertUserFunction(unsigned int line) {
+SymbolTableEntry* InsertUserFunction(unsigned int line) {
     std::string an = "$";
     an += anonymus_funcs_counter;
-    Expression* expr = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
-    program_stack.Top()->Insert((UserFunctionEntry*)expr);
+    SymbolTableEntry* entry = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert((UserFunctionEntry*)entry);
 
-    return expr; 
+    return entry;
 }
 
 void PushStashedFormalArguments(void) { 
