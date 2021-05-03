@@ -3,6 +3,7 @@
 #include "../../../include/block/block.h"
 #include "../../../include/symbol_table/symbol_table_entry/function_entry/user_function_entry.h"
 #include "../../../include/symbol_table/symbol_table_entry/symbol_table_entry.h"
+#include "../../../include/symbol_table/symbol_table_entry/variable_entry/local_variable_entry.h"
 
 class ProgramStackTest : public ::testing::Test {
     protected:
@@ -11,12 +12,14 @@ class ProgramStackTest : public ::testing::Test {
         Block* block2;
         Block* block3;
         UserFunctionEntry* ss;
+        LocalVariableEntry* entry;
 
         void SetUp() override {
             block1 = new Block();
             block2 = new Block();
             block3 = new Block();
             ss = new UserFunctionEntry("ss", 99, 0);
+            entry = new LocalVariableEntry("entry", 0, 0);
         }
 };
 
@@ -117,7 +120,7 @@ TEST_F(ProgramStackTest, lookup_not_inserted_entry) {
     GTEST_ASSERT_TRUE(ps.Lookup("s") == nullptr);
 }
 
-TEST_F(ProgramStackTest, lookup_inactive_entry) {
+TEST_F(ProgramStackTest, lookup_function_entry_after_deactivate) {
     ps.Push(block1);
     ps.Push(block2);
     ps.Push(block3);
@@ -125,7 +128,18 @@ TEST_F(ProgramStackTest, lookup_inactive_entry) {
     ps.Top()->Insert(ss);
     ps.DeactivateLowerScopes();
 
-    GTEST_ASSERT_TRUE(ps.Lookup("ss") == nullptr);
+    GTEST_ASSERT_EQ(ps.Lookup("ss"), ss);
+}
+
+TEST_F(ProgramStackTest, lookup_inactive_entry) {
+    ps.Push(block1);
+    ps.Push(block2);
+    ps.Push(block3);
+
+    ps.Top()->Insert(entry);
+    ps.DeactivateLowerScopes();
+
+    GTEST_ASSERT_TRUE(ps.Lookup("entry") == nullptr);
 }
 
 TEST_F(ProgramStackTest, lookup_active_entry) {
@@ -173,6 +187,16 @@ TEST_F(ProgramStackTest, lookupFunc_entry) {
     block2->Insert(ss);
 
     GTEST_ASSERT_EQ(ps.LookupFunc("ss"), ss);
+}
+
+TEST_F(ProgramStackTest, lookupFunc_variable_entry) {
+    ps.Push(block1);
+    ps.Push(block2);
+    ps.Push(block3);
+
+    block2->Insert(entry);
+
+    GTEST_ASSERT_TRUE(ps.LookupFunc("entry") == nullptr);
 }
 
 #ifdef TESTING
