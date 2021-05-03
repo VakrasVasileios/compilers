@@ -32,11 +32,13 @@ public:
     /*
     The Parameterized Constructor of this Constant. Sets this Constant string value. 
     */
-    Constant(std::string _str) : Expression(CONST), str(_str), type(STRING_T) {}
+    Constant(const char* _str) : Expression(CONST), str(std::string(_str)), type(STRING_T) {}
     /*
     The Parameterized Constructor of this Constant. Sets this Constant boolean value. 
     */
     Constant(bool _val) : Expression(CONST),  boolVal(_val), type(BOOL_T) {}
+
+    Constant(std::nullptr_t NIL) : Expression(CONST), NIL(NIL), type(NIL_T) {}
     /*
     Returns a read access to this Constant value.
     */
@@ -51,6 +53,7 @@ private:
         double          doubleNum;
         std::string     str;
         bool            boolVal;
+        std::nullptr_t  NIL;
     };
 };
 
