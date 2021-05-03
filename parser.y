@@ -33,8 +33,8 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <expr> expr primary term const
-%type <stringValue> lvalue member
+%type <expr> expr primary term const lvalue
+%type <stringValue> member
 
 %right      '='
 %left       OR
@@ -99,24 +99,33 @@ term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             | '-' expr %prec UMINUS { DLOG("term -> -expr"); }
             | NOT expr              { DLOG("term -> not expr"); }
             | PLUSPLUS lvalue       {
-                                        auto entry = Lookup($2);
-                                        if (entry->get_type() != VAR)
+                                        //auto entry = Lookup($2);
+                                        if(($2) == nullptr)
+                                            LOGERROR("Attempting to increase a NIL constant");
+                                        else if (($2)->get_type() != VAR)
                                             LOGERROR("Use of increment operator with non variable type");
-                                        DLOG("term -> ++lvalue"); }
+                                        DLOG("term -> ++lvalue"); 
+                                    }
             | lvalue PLUSPLUS       {
-                                        auto entry = Lookup($1);
-                                        if (entry->get_type() != VAR)
+                                        // auto entry = Lookup($1);
+                                        if(($1) == nullptr)
+                                            LOGERROR("Attempting to increase a NIL constant");
+                                        else if (($1)->get_type() != VAR)
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
-                                        auto entry = Lookup($2);
-                                        if (entry->get_type() != VAR)
+                                        // auto entry = Lookup($2);
+                                        if(($2) == nullptr)
+                                            LOGERROR("Attempting to decrease a NIL constant");
+                                        else if (($2)->get_type() != VAR)
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> --lvaule"); 
                                     }
             | lvalue MINUSMINUS     { 
-                                        auto entry = Lookup($1);
-                                        if (entry->get_type() != VAR)
+                                        //auto entry = Lookup($1);
+                                        if(($1) == nullptr)
+                                            LOGERROR("Attempting to decrease a NIL constant");
+                                        else if (($1)->get_type() != VAR)
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
                                     }
@@ -124,18 +133,17 @@ term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             ;
 
 assignexpr:   lvalue '=' expr       {
-                                        auto entry = Lookup($1);
-                                        if(entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC)
-                                            LOGERROR("Usage of a function as lvalue in assign expression");
-                                        // if(IsLibraryFunction(LookupGlobal($1)) || IsUserFunction(entry))
+                                        // auto entry = Lookup($1);
+                                        // if(($1) == nullptr)
+                                        //     LOGERROR("Attempting to assign a value to NIL");
+                                        // else if(($1)->get_type() == LIB_FUNC || ($1)->get_type() == USER_FUNC)
                                         //     LOGERROR("Usage of a function as lvalue in assign expression");
-                                        // if ((Lookup($1))->get_type() != ($3)->get_type())
-                                        //     LOGERROR("Type mismatch in assign expression");
+
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
             ;
 
-primary:      lvalue                { auto entry = Lookup($1); $$ = entry; DLOG("primary -> lvalue"); }
+primary:      lvalue                { $$ = $1; DLOG("primary -> lvalue"); }
             | call                  { DLOG("primary -> call"); }
             | objectdef             { DLOG("primary -> objectdef"); }
             | '(' funcdef ')'       { DLOG("primary -> (funcdef)"); }
@@ -143,43 +151,59 @@ primary:      lvalue                { auto entry = Lookup($1); $$ = entry; DLOG(
             ;
 
 lvalue:       ID                    {
-                                        $$=$1;
+                                        // $$=$1;
                                         if (ScopeIsGlobal()) {
                                             auto entry = LookupGlobal($1);
-                                            if(entry == nullptr) 
-                                                InsertGlobalVariable($1, yylineno);
+                                            if(entry == nullptr) {
+                                                $$ = InsertGlobalVariable($1, yylineno);
+                                            }
                                             else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
                                                 // LOGERROR(std::string($1) + " is already in use as a function");
+                                                $$ = entry;
                                             }
                                         }
                                         else {
                                             auto entry = Lookup($1);
                                             if (entry == nullptr) {
-                                                InsertLocalVariable($1, yylineno);
+                                                $$ = InsertLocalVariable($1, yylineno);
                                             }
                                             else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                               // LOGERROR(std::string($1) + " is already in use as a function");
+                                            //    LOGERROR(std::string($1) + " is already in use as a function");
+                                               $$ = entry;
                                             }
                                         }
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
-                                        $$=$2;
+                                        // $$=$2;
                                         auto entry = Lookup($2);
                                         if (entry == nullptr) {
-                                            InsertLocalVariable($2, yylineno);
+                                            $$ = InsertLocalVariable($2, yylineno);
                                         }
-                                        else if (IsUserFunction(entry) || IsLibraryFunction(entry)) {
-                                            // LOGERROR(std::string($2) + " is already in use as a function");
+                                        else if (IsUserFunction(entry)){
+                                            if(static_cast<SymbolTableEntry*>(entry)->get_scope() == GetCurrentScope()) {
+                                                LOGERROR("Attempting to redefine a previously declared user function");
+                                                $$ = nullptr;
+                                            }
+                                            else{
+                                                $$ = InsertLocalVariable($2, yylineno);
+                                            }    
+                                        }
+                                        else if (IsLibraryFunction(entry)) {
+                                            LOGERROR("Attempting to redefine a library function");
+                                            $$ = nullptr;
                                         }
                                         DLOG("lvalue -> local id");
                                     }
             | COLONCOLON ID         {
-                                        $$=$2;
+                                        // $$=$2;
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr) {
                                             LOGERROR("No global variable with id: " + std::string($2));
+                                            $$ = nullptr;
                                         }
+                                        else
+                                            $$ = entry;
                                         DLOG("lvalue -> ::id");
                                     }
             | member                { DLOG("lvalue -> member"); }
@@ -194,9 +218,14 @@ member:       lvalue '.' ID         { $$=$3; DLOG("member -> lvalue.id"); }
 call:         call '(' elist ')'    { DLOG("call -> call(elist)"); }
             | lvalue callsuffix     {
                                         if(!IsMethodCall()) {
-                                            SymbolTableEntry* entry = Lookup($1);
-                                            if(!IsLibraryFunction(entry) && !IsUserFunction(entry))
-                                                LOGERROR("No function with name: " + std::string($1));
+                                            if (($1) == nullptr)
+                                                LOGERROR("Attempting use function call with NIL value");
+                                            else {
+                                                SymbolTableEntry* entry = LookupFunc(static_cast<SymbolTableEntry*>($1)->get_id().c_str());
+                                               // std::cout << static_cast<SymbolTableEntry*>(entry)->get_id() << " " << static_cast<SymbolTableEntry*>(entry)->get_type() << std::endl;
+                                                if (entry == nullptr)
+                                                    LOGERROR("No function with name: " + entry->get_id());
+                                            }
                                         }
                                         DLOG("call -> lvalue callsuffix");
                                     }
@@ -260,12 +289,12 @@ funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLower
               '(' idlist ')' {HideLowerScopes();SetValidReturn(true);} block {EnableLowerScopes();SetValidReturn(false); DLOG("funcdef -> function id (idlist) block"); }
             ;
 
-const:        INTNUM                { auto con = new Constant($1); $$ = con; DLOG("const -> INTNUM"); }
-            | DOUBLENUM             { auto con = new Constant($1); $$ = con; DLOG("const -> DOUBLENUM"); }
-            | STRING                { auto con = new Constant($1); $$ = con; DLOG("const -> STRING"); }
-            | NIL                   { auto con = new Constant(nullptr); $$ = con; DLOG("const -> NIL"); }
-            | TRUE                  { auto con = new Constant(true); $$ = con; DLOG("const -> TRUE"); }
-            | FALSE                 { auto con = new Constant(false); $$ = con; DLOG("const -> FALSE"); }
+const:        INTNUM                { $$ = new Constant($1); DLOG("const -> INTNUM"); }
+            | DOUBLENUM             { $$ = new Constant($1); DLOG("const -> DOUBLENUM"); }
+            | STRING                { $$ = new Constant($1); DLOG("const -> STRING"); }
+            | NIL                   { $$ = new Constant(nullptr); DLOG("const -> NIL"); }
+            | TRUE                  { $$ = new Constant(true); DLOG("const -> TRUE"); }
+            | FALSE                 { $$ = new Constant(false); DLOG("const -> FALSE"); }
             ;
 
 multid:       ',' ID {StashFormalArgument($2, yylineno);} multid { DLOG("multid -> , id multid");}
@@ -302,9 +331,7 @@ int yyerror(std::string yaccProvidedMessage) {
 }
 
 #ifndef TESTING
-int main(int argc, char** argv) {    
-    //UNO Reverse
-    InitLibraryFunctions();
+int main(int argc, char** argv) {
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -314,6 +341,8 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
+    //SE KATOYRAW
+    InitLibraryFunctions();
 
     yyparse();
 
