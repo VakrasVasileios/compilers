@@ -21,7 +21,7 @@ class Block final {
         */
         void                        Activate();
         /*
-        Deactivates all of the symbol table entries on this Block.
+        Deactivates variables of the symbol table on this Block.
         */
         void                        Deactivate();   
         /*

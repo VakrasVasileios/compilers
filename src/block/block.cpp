@@ -16,7 +16,7 @@ Block:: Activate() {
 void
 Block:: Deactivate() {
     for(auto entry : entries) {
-        if (entry->get_type() > 1) // deactivate variables only
+        if (entry->get_type() == VAR) // deactivate variables only
             entry->set_active(false);
     }
 }   
