@@ -200,7 +200,9 @@ assignexpr:   lvalue '=' expr       {
                                             LOGERROR("Attempting to assign a value to NIL");
                                         else {
                                             auto lval = Lookup($1);
-                                            if (IsLibraryFunction(lval) || IsUserFunction(lval))
+                                            if (lval == nullptr)
+                                                LOGERROR("Attempting to assign a value to NIL");
+                                            else if (IsLibraryFunction(lval) || IsUserFunction(lval))
                                                 LOGERROR("Functions are constant their value cannot be changed");
                                         }
                                         DLOG("assignexpr -> lvalue = expr");
@@ -247,11 +249,14 @@ lvalue:       ID                    {
                                         if (entry == nullptr) { 
                                             InsertLocalVariable($2, yylineno);
                                         }
+                                        else if (IsGlobalVar(entry)) {
+                                            InsertLocalVariable($2, yylineno);
+                                        }
                                         else if (IsUserFunction(entry)){
                                             if(IsAtCurrentScope(entry)) {
                                                 LOGERROR("Attempting to redefine a previously declared user function");
                                             }
-                                            else{
+                                            else {
                                                 InsertLocalVariable($2, yylineno);
                                             }    
                                         }
