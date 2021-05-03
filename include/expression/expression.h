@@ -16,6 +16,9 @@ enum ExprType {
     The type of a Constant.
     */
     CONST = 2,
+    /*
+    The type of a Variable.
+    */
     VAR = 3
 };
 
@@ -27,12 +30,12 @@ public:
     /*
     The Paramterized Constructor of this Expression. 
     */
-    Expression(ExprType type) : type(type) {};
+    Expression(ExprType _type) : type(_type) {};
     ~Expression() = default;
     /*
     Returns a read access to this Expression type.
     */
-    ExprType        GetType() const;
+    ExprType        get_type() const;
 protected:
     /*
     Returns a read access to this Expression type as a string.

@@ -2,7 +2,7 @@
 #include <assert.h>
 
 ExprType
-Expression:: GetType() const {
+Expression:: get_type() const {
     return type;
 }
 
