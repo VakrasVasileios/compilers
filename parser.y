@@ -22,7 +22,7 @@
     int                     intValue;
     double                  doubleValue;
     class Expression*       expr;
-    class SymbolTableEntry* entry;
+    class Constant*         con;
 }
 
 %start program
@@ -30,13 +30,13 @@
 %token EQUAL NOTEQUAL COLONCOLON DOTDOT GEQL LEQL MINUSMINUS PLUSPLUS
 %token LOCAL FUNCTION IF ELSE FOR WHILE BREAK CONTINUE NIL TRUE FALSE RETURN
 
-%token <stringValue>    STRING ID
+%token <stringValue>    STRING ID 
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <expr> expr primary term const 
-%type <entry> lvalue
-%type <stringValue> member
+%type <expr> primary term expr
+%type <con> const
+%type <stringValue> member lvalue
 
 %right      '='
 %left       OR
@@ -53,18 +53,35 @@
 
 %%
 
-program:      stmts                 { DLOG("program -> stmts"); }
+program:      stmts                 {
+                                        DLOG("program -> stmts");
+                                    }
             ;
 
-stmts:        stmt stmts            { DLOG("stmts -> stmt stmts"); }
-            |                       { DLOG("stmts -> EMPTY"); }
+stmts:        stmt stmts            {
+                                        DLOG("stmts -> stmt stmts");
+                                    }
+            |                       {
+                                        DLOG("stmts -> EMPTY");
+                                    }
             ;
 
-stmt:         expr ';'              { SetMethodCall(false); DLOG("stmt -> expr;");}
-            | ifstmt                { DLOG("stmt -> ifstmt");}
-            | whilestmt             { DLOG("stmt -> whilestmt");}
-            | forstmt               { DLOG("stmt -> forstmt");}
-            | returnstmt            { DLOG("stmt -> returnstmt");}
+stmt:         expr ';'              {
+                                        SetMethodCall(false);
+                                        DLOG("stmt -> expr;");
+                                    }
+            | ifstmt                {
+                                        DLOG("stmt -> ifstmt");
+                                    }
+            | whilestmt             {
+                                        DLOG("stmt -> whilestmt");
+                                    }
+            | forstmt               {
+                                        DLOG("stmt -> forstmt");
+                                    }
+            | returnstmt            {
+                                        DLOG("stmt -> returnstmt");
+                                    }
             | BREAK ';'             { 
                                         if(GetLoopDepth() == 0)
                                             LOGERROR("invalid keyword BREAK outside of loop");
@@ -75,59 +92,101 @@ stmt:         expr ';'              { SetMethodCall(false); DLOG("stmt -> expr;"
                                             LOGERROR("invalid keyword CONTINUE outside of loop");
                                         DLOG("stmt -> continue;");
                                     }
-            | block                 { DLOG("stmt -> block");}
-            | funcdef               { DLOG("stmt -> funcdef");}
-            | ';'                   { DLOG("stmt -> ;");}
+            | block                 {
+                                        DLOG("stmt -> block");
+                                    }
+            | funcdef               {
+                                        DLOG("stmt -> funcdef");
+                                    }
+            | ';'                   {
+                                        DLOG("stmt -> ;");
+                                    }
             ;
 
-expr:         assignexpr            { DLOG("expr -> assignexpr"); }
-            | expr '+' expr         { DLOG("expr -> expr + expr"); }
-            | expr '-' expr         { DLOG("expr -> expr - expr"); }
-            | expr '*' expr         { DLOG("expr -> expr * expr"); }
-            | expr '/' expr         { DLOG("expr -> expr / expr"); }
-            | expr '%' expr         { DLOG("expr -> expr % expr"); }
-            | expr '>' expr         { DLOG("expr -> expr > expr"); }
-            | expr GEQL expr        { DLOG("expr -> expr >= expr"); }
-            | expr '<' expr         { DLOG("expr -> expr + expr"); }
-            | expr LEQL expr        { DLOG("expr -> expr <= expr"); }
-            | expr EQUAL expr       { DLOG("expr -> expr == expr"); }
-            | expr NOTEQUAL expr    { DLOG("expr -> expr != expr"); }
-            | expr AND expr         { DLOG("expr -> expr and expr"); }
-            | expr OR expr          { DLOG("expr -> expr or expr"); }
-            | term                  { DLOG("expr -> term"); }
+expr:         assignexpr            {
+                                        DLOG("expr -> assignexpr");
+                                    }
+            | expr '+' expr         {
+                                        DLOG("expr -> expr + expr");
+                                    }
+            | expr '-' expr         {
+                                        DLOG("expr -> expr - expr");
+                                    }
+            | expr '*' expr         {
+                                        DLOG("expr -> expr * expr");
+                                    }
+            | expr '/' expr         {
+                                        DLOG("expr -> expr / expr");
+                                    }
+            | expr '%' expr         {
+                                        DLOG("expr -> expr % expr");
+                                    }
+            | expr '>' expr         {
+                                        DLOG("expr -> expr > expr");
+                                    }
+            | expr GEQL expr        {
+                                        DLOG("expr -> expr >= expr");
+                                    }
+            | expr '<' expr         {
+                                        DLOG("expr -> expr + expr");
+                                    }
+            | expr LEQL expr        {
+                                        DLOG("expr -> expr <= expr");
+                                    }
+            | expr EQUAL expr       {
+                                        DLOG("expr -> expr == expr");
+                                    }
+            | expr NOTEQUAL expr    {
+                                        DLOG("expr -> expr != expr");
+                                    }
+            | expr AND expr         {
+                                        DLOG("expr -> expr and expr");
+                                    }
+            | expr OR expr          {
+                                        DLOG("expr -> expr or expr");
+                                    }
+            | term                  {
+                                        DLOG("expr -> term");
+                                    }
             ;
 
-term:         '(' expr ')'          { DLOG("term -> (expr)"); }
-            | '-' expr %prec UMINUS { DLOG("term -> -expr"); }
-            | NOT expr              { DLOG("term -> not expr"); }
+term:         '(' expr ')'          {
+                                        DLOG("term -> (expr)");
+                                    }
+            | '-' expr %prec UMINUS {
+                                        DLOG("term -> -expr");
+                                    }
+            | NOT expr              {
+                                        DLOG("term -> not expr");
+                                    }
             | PLUSPLUS lvalue       {
-                                        //auto entry = Lookup($2);
-                                        if(($2) == nullptr)
+                                        auto entry = Lookup($2);
+                                        if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
-                                        else if (($2)->get_type() != VAR)
+                                        else if (entry->get_type() != VAR)
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
-                                        // auto entry = Lookup($1);
-                                        if(($1) == nullptr)
+                                        auto entry = Lookup($1);
+                                        if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
-                                        else if (($1)->get_type() != VAR)
+                                        else if (entry->get_type() != VAR)
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
-                                        // auto entry = Lookup($2);
-                                        if(($2) == nullptr)
+                                        auto entry = Lookup($2);
+                                        if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
-                                        else if (($2)->get_type() != VAR)
+                                        else if (entry->get_type() != VAR)
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> --lvaule"); 
                                     }
             | lvalue MINUSMINUS     { 
-                                        //auto entry = Lookup($1);
-                                        if(($1) == nullptr)
+                                        auto entry = Lookup($1);
+                                        if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
-                                        else if (($1)->get_type() != VAR)
+                                        else if (entry->get_type() != VAR)
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
                                     }
@@ -135,144 +194,198 @@ term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             ;
 
 assignexpr:   lvalue '=' expr       {
-                                        if(($1) == nullptr)
+                                        auto entry = Lookup($1);
+                                        if(entry == nullptr)
                                             LOGERROR("Attempting to assign a value to NIL");
-
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
             ;
 
-primary:      lvalue                { $$ = $1; DLOG("primary -> lvalue"); }
-            | call                  { DLOG("primary -> call"); }
-            | objectdef             { DLOG("primary -> objectdef"); }
-            | '(' funcdef ')'       { DLOG("primary -> (funcdef)"); }
-            | const                 { DLOG("primary -> const"); }
+primary:      lvalue                {
+                                        DLOG("primary -> lvalue");
+                                    }
+            | call                  {
+                                        DLOG("primary -> call");
+                                    }
+            | objectdef             {
+                                        DLOG("primary -> objectdef");
+                                    }
+            | '(' funcdef ')'       {
+                                        DLOG("primary -> (funcdef)");
+                                    }
+            | const                 {
+                                        DLOG("primary -> const");
+                                    }
             ;
 
 lvalue:       ID                    {
-                                        // $$=$1;
+                                        $$=$1;
                                         if (ScopeIsGlobal()) {
                                             auto entry = LookupGlobal($1);
                                             if(entry == nullptr) {
-                                                $$ = InsertGlobalVariable($1, yylineno);
-                                            }
-                                            else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                                // LOGERROR(std::string($1) + " is already in use as a function");
-                                                $$ = entry;
+                                                InsertGlobalVariable($1, yylineno);
                                             }
                                         }
                                         else {
                                             auto entry = Lookup($1);
                                             if (entry == nullptr) {
-                                                $$ = InsertLocalVariable($1, yylineno);
-                                            }
-                                            else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                            //    LOGERROR(std::string($1) + " is already in use as a function");
-                                               $$ = entry;
+                                                InsertLocalVariable($1, yylineno);
                                             }
                                         }
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
-                                        // $$=$2;
+                                        $$=$2;
+                                        /* Declaration Check Start*/
                                         auto entry = Lookup($2);
-                                        if (entry == nullptr) {
-                                            $$ = InsertLocalVariable($2, yylineno);
+                                        if (entry == nullptr) { 
+                                            InsertLocalVariable($2, yylineno);
                                         }
                                         else if (IsUserFunction(entry)){
-                                            if(static_cast<SymbolTableEntry*>(entry)->get_scope() == GetCurrentScope()) {
+                                            if(IsAtCurrentScope(entry)) {
                                                 LOGERROR("Attempting to redefine a previously declared user function");
-                                                $$ = nullptr;
                                             }
                                             else{
-                                                $$ = InsertLocalVariable($2, yylineno);
+                                                InsertLocalVariable($2, yylineno);
                                             }    
                                         }
                                         else if (IsLibraryFunction(entry)) {
                                             LOGERROR("Attempting to redefine a library function");
-                                            $$ = nullptr;
                                         }
                                         DLOG("lvalue -> local id");
+                                       /* Declaration Check End*/
                                     }
             | COLONCOLON ID         {
-                                        // $$=$2;
+                                         /* Access Check */
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr) {
                                             LOGERROR("No global variable with id: " + std::string($2));
-                                            $$ = nullptr;
                                         }
-                                        else
-                                            $$ = entry;
                                         DLOG("lvalue -> ::id");
                                     }
-            | member                { DLOG("lvalue -> member"); }
-            ;
-
-member:       lvalue '.' ID         { $$=$3; DLOG("member -> lvalue.id"); }
-            | lvalue '[' expr ']'   { DLOG("member -> lvalue[expr]"); }   
-            | call '.' ID           { $$=$3; DLOG("member -> call.id"); }
-            | call '[' expr ']'     { DLOG("member -> call[expr]"); }
-            ;
-
-call:         call '(' elist ')'    { DLOG("call -> call(elist)"); }
-            | lvalue callsuffix     {
-                                        if(!IsMethodCall()) {
-                                            std::cout << "id: " << ($1)->get_id() << " type: " << ($1)->get_type() << std::endl;
-                                            assert(dynamic_cast<Constant*>($1) != nullptr);
-                                            if (($1) == nullptr)
-                                                LOGERROR("Attempting use function call with NIL value");
-                                            else if (($1)->get_type() == VAR) {
-                                                std::string id = ($1)->get_id();
-                                                //std::cout << "id: " << id << std::endl;
-                                                std::cout << "id: " << id << " id.c_str: " << id.c_str() << std::endl;
-                                                SymbolTableEntry* entry = LookupFunc(id.c_str());
-                                                // std::cout << static_cast<SymbolTableEntry*>(entry)->get_id() << " " << static_cast<SymbolTableEntry*>(entry)->get_type() << std::endl;
-                                               if (entry == nullptr)
-                                                   LOGERROR("No function with name: " + id);
-                                            }
-                                        }
-                                        DLOG("call -> lvalue callsuffix");
+            | member                {
+                                        DLOG("lvalue -> member");
                                     }
-            | '(' funcdef ')' '(' elist ')'  { DLOG("call -> (funcdef)(elist)"); }
             ;
 
-callsuffix:   normcall              { DLOG("callsuffix -> normcall"); }
-            | methodcall            { DLOG("callsuffix -> methodcall"); }
+member:     lvalue '.' ID           { 
+                                        $$=$3;
+                                        DLOG("member -> lvalue.id");
+                                    }
+            | lvalue '[' expr ']'   { 
+                                        DLOG("member -> lvalue[expr]"); 
+                                    }   
+            | call '.' ID           { 
+                                        $$=$3;
+                                        DLOG("member -> call.id");
+                                    }
+            | call '[' expr ']'     {
+                                        DLOG("member -> call[expr]");
+                                    }
             ;
 
-normcall:     '(' elist ')'           { DLOG("normcall -> (elist)"); }
+call:       call '(' elist ')'              {
+                                                DLOG("call -> call(elist)");
+                                            }
+            | lvalue callsuffix             {   
+                                                /* ACCESS CHECK */
+                                                if(!IsMethodCall()) {
+                                                    auto entry = LookupFunc($1);
+                                                    if (entry == nullptr)
+                                                        LOGERROR("Attempting use of function call with NIL value");
+                                                }
+                                                DLOG("call -> lvalue callsuffix");
+                                            }
+            | '(' funcdef ')' '(' elist ')' {
+                                                DLOG("call -> (funcdef)(elist)");
+                                            }
             ;
 
-methodcall:   DOTDOT ID '(' elist ')' { SetMethodCall(true); DLOG("methodcall -> ..id(elist)"); }
+callsuffix: normcall        {
+                                DLOG("callsuffix -> normcall");
+                            }
+            | methodcall    {
+                                DLOG("callsuffix -> methodcall");
+                            }
             ;
 
-multelist:    ',' expr multelist    { DLOG("multelist -> ,expr multelist"); }
-            |                       { DLOG("multelist -> EMPTY"); }
+normcall:   '(' elist ')'   {
+                                DLOG("normcall -> (elist)"); 
+                            }
             ;
 
-elist:        expr multelist        { DLOG("elist -> expr multelist"); }
-            |                       { DLOG("elist -> EMPTY"); }
+methodcall: DOTDOT ID '(' elist ')' { 
+                                        SetMethodCall(true);
+                                        DLOG("methodcall -> ..id(elist)");
+                                    }
             ;
 
-objectdef:    '[' elist ']'         { DLOG("objectdef -> [elist]"); }
-            | '[' indexed ']'       { DLOG("objectdef -> [indexed]"); }
+multelist:  ',' expr multelist  {
+                                    DLOG("multelist -> ,expr multelist");
+                                }
+            |                   {
+                                    DLOG("multelist -> EMPTY");
+                                }
             ;
 
-multindexed:  ',' indexedelem multindexed   { DLOG("multindexed -> , indexedelem multidexed"); }
-            |                               { DLOG("elsestmt -> EMPTY"); }
+elist:      expr multelist  {
+                                DLOG("elist -> expr multelist");
+                            }
+            |               {
+                                DLOG("elist -> EMPTY");
+                            }
             ;
 
-indexed:      indexedelem multindexed    { DLOG("indexed -> indexedelem multidexed"); }
+objectdef:  '[' elist ']'       {
+                                    DLOG("objectdef -> [elist]");
+                                }
+            | '[' indexed ']'   { 
+                                    DLOG("objectdef -> [indexed]");
+                                }
             ;
 
-indexedelem:  '{' expr ':' expr '}'   { DLOG("indexedelem -> { expr : expr }"); }
+multindexed:',' indexedelem multindexed {
+                                            DLOG("multindexed -> , indexedelem multidexed"); 
+                                        }
+            |                           {
+                                            DLOG("elsestmt -> EMPTY");
+                                        }
             ;
 
-block:        '{' {IncreaseScope();PushStashedFormalArguments();} stmts '}'  { DecreaseScope(); DLOG("block -> { stmts }"); }
+indexed:    indexedelem multindexed {
+                                        DLOG("indexed -> indexedelem multidexed"); 
+                                    }
             ;
 
-funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLowerScopes(); SetValidReturn(true);}  block {EnableLowerScopes(); SetValidReturn(false); DLOG("funcdef -> function (idlist) block "); }
-            | FUNCTION ID {
+indexedelem:'{' expr ':' expr '}'   {
+                                        DLOG("indexedelem -> { expr : expr }"); 
+                                    }
+            ;
+
+block:      '{'         {
+                            IncreaseScope();
+                            PushStashedFormalArguments();
+                        }
+            stmts '}'   {
+                            DecreaseScope();
+                            DLOG("block -> { stmts }");
+                        }
+            ;
+
+funcdef:    FUNCTION        {
+                                InsertUserFunction(yylineno);
+                            } 
+            '(' idlist ')'  {
+                                HideLowerScopes();
+                                SetValidReturn(true);
+                            }  
+            block           {
+                                EnableLowerScopes();
+                                SetValidReturn(false);
+                                DLOG("funcdef -> function (idlist) block "); 
+                            }
+            | FUNCTION ID   {
+                                /* Declaration Check Start */
                                 auto entry = Lookup($2);
                                 if (entry == nullptr)
                                     InsertUserFunction($2, yylineno);
@@ -281,49 +394,120 @@ funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLower
                                         LOGERROR(std::string($2) + " variable cannot be redefined as a function");
                                     else if (IsLibraryFunction(entry))
                                         LOGERROR(std::string($2) + " library function cannot be shadowed by a user function");
-                                    else if (entry->get_scope() == GetCurrentScope()) {
+                                    else if (IsAtCurrentScope(entry)) {
                                         std::string message = std::string($2) + " name collision with function defined in line ";
                                         message += (int)entry->get_line();
                                         LOGERROR(message);
                                     }
                                     else
-                                        InsertUserFunction($2, yylineno);
+                                        InsertUserFunction($2, yylineno); //Shadow user function. 
                                 }
-                          }
-              '(' idlist ')' {HideLowerScopes();SetValidReturn(true);} block {EnableLowerScopes();SetValidReturn(false); DLOG("funcdef -> function id (idlist) block"); }
+                                /* Declaration Check End */
+                            }
+            '(' idlist ')'  { 
+                                HideLowerScopes();
+                                SetValidReturn(true);
+                            }
+            block           { 
+                                EnableLowerScopes();
+                                SetValidReturn(false);
+                                DLOG("funcdef -> function id (idlist) block"); 
+                            }
             ;
 
-const:        INTNUM                { $$ = new Constant($1); DLOG("const -> INTNUM"); }
-            | DOUBLENUM             { $$ = new Constant($1); DLOG("const -> DOUBLENUM"); }
-            | STRING                { $$ = new Constant($1); DLOG("const -> STRING"); }
-            | NIL                   { $$ = new Constant(nullptr); DLOG("const -> NIL"); }
-            | TRUE                  { $$ = new Constant(true); DLOG("const -> TRUE"); }
-            | FALSE                 { $$ = new Constant(false); DLOG("const -> FALSE"); }
+const:        INTNUM    {
+                            $$ = new Constant($1);
+                            DLOG("const -> INTNUM");
+                        }
+            | DOUBLENUM { 
+                            $$ = new Constant($1); 
+                            DLOG("const -> DOUBLENUM"); 
+                        }
+            | STRING    { 
+                            $$ = new Constant($1);
+                            DLOG("const -> STRING"); 
+                        }
+            | NIL       { 
+                            $$ = new Constant(nullptr);
+                            DLOG("const -> NIL"); 
+                        }
+            | TRUE      { 
+                            $$ = new Constant(true);
+                            DLOG("const -> TRUE"); 
+                        }
+            | FALSE     {   
+                            $$ = new Constant(false);
+                            DLOG("const -> FALSE");
+                        }
             ;
 
-multid:       ',' ID {StashFormalArgument($2, yylineno);} multid { DLOG("multid -> , id multid");}
-            | {DLOG("multid -> EMPTY");}
+multid:     ',' ID  {
+                        StashFormalArgument($2, yylineno);
+                    } 
+            multid  {
+                        DLOG("multid -> , id multid");
+                    }
+            |       {
+                        DLOG("multid -> EMPTY");
+                    }
             ;
 
-idlist:       ID {StashFormalArgument($1, yylineno);} multid { DLOG("idlist -> id multid"); }
-            | {DLOG("idlist -> EMPTY");}
+idlist:     ID      {
+                        StashFormalArgument($1, yylineno);
+                    } 
+            multid  { 
+                        DLOG("idlist -> id multid"); 
+                    }
+            |       {
+                        DLOG("idlist -> EMPTY");
+                    }
             ;
 
-ifstmt:       IF '(' expr ')' stmt elsestmt { DLOG("ifstmt -> if (expr) stmt elsestmt"); }
+ifstmt:     IF '(' expr ')' stmt elsestmt   {
+                                                DLOG("ifstmt -> if (expr) stmt elsestmt"); 
+                                            }
             ;
 
-elsestmt:     ELSE stmt { DLOG("elsestmt -> else stmt"); }
-            | {DLOG("elsestmt -> EMPTY");}
+elsestmt:   ELSE stmt       {
+                                DLOG("elsestmt -> else stmt"); 
+                            }
+            |               {
+                                DLOG("elsestmt -> EMPTY");
+                            }
             ;
 
-whilestmt:    WHILE { IncreaseLoopDepth();} '(' expr ')' stmt { DecreaseLoopDepth(); DLOG ("whilestmt -> WHILE (expr) stmt"); }
+whilestmt:  WHILE               { 
+                                    IncreaseLoopDepth();
+                                }
+            '(' expr ')' stmt   { 
+                                    DecreaseLoopDepth();
+                                    DLOG ("whilestmt -> WHILE (expr) stmt"); 
+                                }
             ;
 
-forstmt:      FOR { IncreaseLoopDepth();} '(' elist ';' expr ';' elist ')' stmt { DecreaseLoopDepth(); DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); }
+forstmt:    FOR                                     {
+                                                        IncreaseLoopDepth();
+                                                    }
+            '(' elist ';' expr ';' elist ')' stmt   {
+                                                        DecreaseLoopDepth();
+                                                        DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
+                                                    }
             ;
 
-returnstmt:   RETURN {if (!IsValidReturn()) LOGERROR("Invalid return, used outside a function block");} ';'  { DLOG("returnstmt -> RETURN;"); }
-            | RETURN {if (!IsValidReturn()) LOGERROR("Invalid return, used outside a function block");} expr ';' { DLOG("returnstmt -> RETURN expr;"); }
+returnstmt: RETURN      {
+                            if (!IsValidReturn())
+                                LOGERROR("Invalid return, used outside a function block");
+                        } 
+            ';'         {
+                            DLOG("returnstmt -> RETURN;"); 
+                        }
+            | RETURN    {
+                            if (!IsValidReturn()) 
+                                LOGERROR("Invalid return, used outside a function block")
+                        }
+            expr ';'    {
+                            DLOG("returnstmt -> RETURN expr;");
+                        }
             ;
 
 %%
