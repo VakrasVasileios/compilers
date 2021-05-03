@@ -5,7 +5,7 @@ FunctionEntry:: get_formal_arguments() const {
     return formal_arguments;
 }
 
-std::ostream&
-operator<<(std::ostream& os, const FunctionEntry function_entry) {
-    return os << function_entry;
+unsigned int
+FunctionEntry:: get_argument_count() const {
+    return formal_arguments.size();
 }
