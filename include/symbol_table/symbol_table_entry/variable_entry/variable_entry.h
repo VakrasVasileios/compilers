@@ -24,8 +24,10 @@ class VariableEntry : public SymbolTableEntry {
         : SymbolTableEntry(expr_type, id, line, scope), type(scope_type) {};  
 
         virtual ~VariableEntry() = default;
-
-        friend std::ostream&    operator<<(std::ostream& os, const VariableEntry variable_entry);
+        /*
+        Logs this VariableEntry.
+        */
+        void            Log(std::ostream& output);
     protected:
         /*
         The scope type of this VariableEntry.
@@ -34,7 +36,7 @@ class VariableEntry : public SymbolTableEntry {
         /*
         Returns a string representation of this VariableEntry scope type.
         */
-        std::string ScopeTypeToString() const;    
+        std::string ScopeTypeToString() const;
 };
 
 #endif

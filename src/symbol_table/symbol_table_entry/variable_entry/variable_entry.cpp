@@ -15,10 +15,10 @@ VariableEntry:: ScopeTypeToString() const {
     }
 }
 
-std::ostream&
-operator<<(std::ostream& os, const VariableEntry variable_entry) {
-    return os << "[" << variable_entry.ScopeTypeToString() << " " << variable_entry.TypeToString() << "]"
-              << " \"" << variable_entry.get_id() << "\""
-              << " (line " << variable_entry.get_line() << ")" 
-              << " (scope " << variable_entry.get_scope() << ")";
+void
+VariableEntry:: Log(std::ostream& output) {
+    output  << "[" << ScopeTypeToString()<< " " << TypeToString() << "]"
+            << " \"" << get_id() << "\""
+            << " (line " << get_line() << ")" 
+            << " (scope " << get_scope() << ")";
 }

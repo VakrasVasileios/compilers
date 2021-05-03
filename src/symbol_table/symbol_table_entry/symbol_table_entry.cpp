@@ -26,10 +26,10 @@ SymbolTableEntry:: set_active(bool active) {
     this->active = active;
 }
 
-std::ostream&
-operator<<(std::ostream& os, const SymbolTableEntry symbol_table_entry) {
-    return os << "[" << symbol_table_entry.TypeToString() << "]"
-              << " \"" << symbol_table_entry.get_id() << "\""
-              << " (line " << symbol_table_entry.get_line() << ")" 
-              << " (scope " << symbol_table_entry.get_scope() << ")";
+void
+SymbolTableEntry:: Log(std::ostream& output) {
+    output  << "[" << TypeToString() << "]"
+            << " \"" << get_id() << "\""
+            << " (line " << get_line() << ")" 
+            << " (scope " << get_scope() << ")";
 }

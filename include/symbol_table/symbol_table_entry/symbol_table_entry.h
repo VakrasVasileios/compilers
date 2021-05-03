@@ -38,8 +38,12 @@ class SymbolTableEntry : public Expression {
         Sets this SymbolTableEntry activeness.
         */
         void                    set_active(bool active);
-        
-        friend std::ostream&    operator<<(std::ostream& os, const SymbolTableEntry symbol_table_entry);
+        /*
+        Logs this SymbolTableEntry.
+        */
+        virtual void            Log(std::ostream& output);
+
+        //friend std::ostream&    operator<<(std::ostream& os, const SymbolTableEntry symbol_table_entry);
     private:
         const std::string   id;
         const unsigned int  line;
