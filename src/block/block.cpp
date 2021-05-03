@@ -28,7 +28,7 @@ Block:: Lookup(std::string id) {
             if (entry->is_active())
                 return entry;
             else
-                std::cout << "Cannot access " << id  << ", in line: " << entry->get_line() << std::endl;
+                std::cout << "Cannot access " << id  << ", defined in line: " << entry->get_line() << std::endl;
         }
     }
 
