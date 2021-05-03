@@ -5,6 +5,7 @@ ProgramStack:: get_block_list() const {
     return block_list;
 }
 
+
 Block*
 ProgramStack:: Top() {
     return *--block_list.end();
@@ -18,6 +19,45 @@ ProgramStack:: Push(Block* block) {
 void
 ProgramStack:: Pop() {
     block_list.pop_back();
+}
+
+SymbolTableEntry*
+ProgramStack:: Lookup(std::string name) {
+    auto iter = block_list.end();
+    SymbolTableEntry* found;
+    do {
+        --iter;
+        auto block = (*iter);
+        found = block->Lookup(name);
+        if (found != nullptr)
+            return found;
+    } while (iter != block_list.begin());
+
+    return nullptr;
+}
+
+SymbolTableEntry*
+ProgramStack:: LookupGlobal(std::string name) {
+    auto iter = block_list.begin();
+    auto block = (*iter);
+
+    return block->Lookup(name);
+}
+
+SymbolTableEntry*
+ProgramStack:: LookupFunc(std::string name) {
+    auto iter = block_list.end();
+    SymbolTableEntry* found;
+    do {
+        --iter;
+        auto block = (*iter);
+        found = block->LookupFunc(name);
+        if (found != nullptr) {
+            return found;
+        }
+    } while (iter != block_list.begin());
+
+    return nullptr;
 }
 
 void
@@ -35,27 +75,3 @@ ProgramStack:: DeactivateLowerScopes() {
         (*iter)->Deactivate();
     }
 }
-
-SymbolTableEntry*
-ProgramStack:: Lookup(std::string name) {
-    auto iter = block_list.end();
-    SymbolTableEntry* found;
-    do {
-        --iter;
-        auto block = (*iter);
-        found = block->Lookup(name);
-        if (found != nullptr) 
-            return found;
-    } while (iter != block_list.begin());
-
-    return nullptr;
-}
-
-SymbolTableEntry*
-ProgramStack:: LookupGlobal(std::string name) {
-    auto iter = block_list.begin();
-    auto block = (*iter);
-
-    return block->Lookup(name);
-}
-
