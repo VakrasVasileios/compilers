@@ -13,7 +13,7 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define     LOGERROR(message)  std::cout << message << ", in line: " << yylineno << std::endl
+    #define     LOGERROR(message)  std::cout << "Error, " << message << ", in line: " << yylineno << std::endl
     //#define     LOGERROR(message)  std::cout << "\033[1;31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
 %}
 
@@ -33,7 +33,7 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <expr> expr primary term
+%type <expr> expr primary term const
 %type <stringValue> lvalue member
 
 %right      '='
@@ -65,12 +65,12 @@ stmt:         expr ';'              { SetMethodCall(false); DLOG("stmt -> expr;"
             | returnstmt            { DLOG("stmt -> returnstmt");}
             | BREAK ';'             { 
                                         if(GetLoopDepth() == 0)
-                                            LOGERROR("Error, invalid keyword BREAK outside of loop");
+                                            LOGERROR("invalid keyword BREAK outside of loop");
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
                                         if(GetLoopDepth() == 0)
-                                            LOGERROR("Error, invalid keyword CONTINUE outside of loop");
+                                            LOGERROR("invalid keyword CONTINUE outside of loop");
                                         DLOG("stmt -> continue;");
                                     }
             | block                 { DLOG("stmt -> block");}
@@ -98,17 +98,44 @@ expr:         assignexpr            { DLOG("expr -> assignexpr"); }
 term:         '(' expr ')'          { DLOG("term -> (expr)"); }
             | '-' expr %prec UMINUS { DLOG("term -> -expr"); }
             | NOT expr              { DLOG("term -> not expr"); }
-            | PLUSPLUS lvalue       { DLOG("term -> ++lvalue"); }
-            | lvalue PLUSPLUS       { DLOG("term -> lvalue++"); }
-            | MINUSMINUS lvalue     { DLOG("term -> --lvaule"); }
-            | lvalue MINUSMINUS     { DLOG("term -> lvalue--"); }
+            | PLUSPLUS lvalue       {
+                                        auto entry = Lookup($2);
+                                        if (entry->get_type() != VAR)
+                                            LOGERROR("Use of increment operator with non variable type");
+                                        DLOG("term -> ++lvalue"); }
+            | lvalue PLUSPLUS       {
+                                        auto entry = Lookup($1);
+                                        if (entry->get_type() != VAR)
+                                            LOGERROR("Use of increment operator with non variable type");
+                                        DLOG("term -> lvalue++"); }
+            | MINUSMINUS lvalue     { 
+                                        auto entry = Lookup($2);
+                                        if (entry->get_type() != VAR)
+                                            LOGERROR("Use of decrement operator with non variable type");
+                                        DLOG("term -> --lvaule"); 
+                                    }
+            | lvalue MINUSMINUS     { 
+                                        auto entry = Lookup($1);
+                                        if (entry->get_type() != VAR)
+                                            LOGERROR("Use of decrement operator with non variable type");
+                                        DLOG("term -> lvalue--");
+                                    }
             | primary               { DLOG("term -> primary"); }
             ;
 
-assignexpr:   lvalue '=' expr       { /*if(expr.get_type() != lvalue.get_type())error();*/    DLOG("assignexpr -> lvalue = expr"); }
+assignexpr:   lvalue '=' expr       {
+                                        auto entry = Lookup($1);
+                                        if(entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC)
+                                            LOGERROR("Usage of a function as lvalue in assign expression");
+                                        // if(IsLibraryFunction(LookupGlobal($1)) || IsUserFunction(entry))
+                                        //     LOGERROR("Usage of a function as lvalue in assign expression");
+                                        // if ((Lookup($1))->get_type() != ($3)->get_type())
+                                        //     LOGERROR("Type mismatch in assign expression");
+                                        DLOG("assignexpr -> lvalue = expr");
+                                    }
             ;
 
-primary:      lvalue                { $$ = Lookup($1); DLOG("primary -> lvalue"); }
+primary:      lvalue                { auto entry = Lookup($1); $$ = entry; DLOG("primary -> lvalue"); }
             | call                  { DLOG("primary -> call"); }
             | objectdef             { DLOG("primary -> objectdef"); }
             | '(' funcdef ')'       { DLOG("primary -> (funcdef)"); }
@@ -122,7 +149,7 @@ lvalue:       ID                    {
                                             if(entry == nullptr) 
                                                 InsertGlobalVariable($1, yylineno);
                                             else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                               // LOGERROR("Error," + std::string($1) + " is already in use as a function");
+                                                // LOGERROR(std::string($1) + " is already in use as a function");
                                             }
                                         }
                                         else {
@@ -131,7 +158,7 @@ lvalue:       ID                    {
                                                 InsertLocalVariable($1, yylineno);
                                             }
                                             else if (IsLibraryFunction(entry) || IsUserFunction(entry)) {
-                                               // LOGERROR("Error," + std::string($1) + " is already in use as a function");
+                                               // LOGERROR(std::string($1) + " is already in use as a function");
                                             }
                                         }
                                         DLOG("lvalue -> id");
@@ -143,7 +170,7 @@ lvalue:       ID                    {
                                             InsertLocalVariable($2, yylineno);
                                         }
                                         else if (IsUserFunction(entry) || IsLibraryFunction(entry)) {
-                                            //LOGERROR("Error," + std::string($2) + " is already in use as a function");
+                                            // LOGERROR(std::string($2) + " is already in use as a function");
                                         }
                                         DLOG("lvalue -> local id");
                                     }
@@ -218,11 +245,11 @@ funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLower
                                     InsertUserFunction($2, yylineno);
                                 else {
                                     if (IsVariable(entry))
-                                        LOGERROR("Error, " + std::string($2) + " variable cannot be redefined as a function");
+                                        LOGERROR(std::string($2) + " variable cannot be redefined as a function");
                                     else if (IsLibraryFunction(entry))
-                                        LOGERROR("Error, " + std::string($2) + " library function cannot be shadowed by a user function");
+                                        LOGERROR(std::string($2) + " library function cannot be shadowed by a user function");
                                     else if (entry->get_scope() == GetCurrentScope()) {
-                                        std::string message = "Error, " + std::string($2) + " name collision with function defined in line ";
+                                        std::string message = std::string($2) + " name collision with function defined in line ";
                                         message += (int)entry->get_line();
                                         LOGERROR(message);
                                     }
@@ -233,12 +260,12 @@ funcdef:      FUNCTION {InsertUserFunction(yylineno);} '(' idlist ')' {HideLower
               '(' idlist ')' {HideLowerScopes();SetValidReturn(true);} block {EnableLowerScopes();SetValidReturn(false); DLOG("funcdef -> function id (idlist) block"); }
             ;
 
-const:        INTNUM                { DLOG("const -> INTNUM"); }
-            | DOUBLENUM             { DLOG("const -> DOUBLENUM"); }
-            | STRING                { DLOG("const -> STRING"); }
-            | NIL                   { DLOG("const -> NIL"); }
-            | TRUE                  { DLOG("const -> TRUE"); }
-            | FALSE                 { DLOG("const -> FALSE"); }
+const:        INTNUM                { auto con = new Constant($1); $$ = con; DLOG("const -> INTNUM"); }
+            | DOUBLENUM             { auto con = new Constant($1); $$ = con; DLOG("const -> DOUBLENUM"); }
+            | STRING                { auto con = new Constant($1); $$ = con; DLOG("const -> STRING"); }
+            | NIL                   { auto con = new Constant(nullptr); $$ = con; DLOG("const -> NIL"); }
+            | TRUE                  { auto con = new Constant(true); $$ = con; DLOG("const -> TRUE"); }
+            | FALSE                 { auto con = new Constant(false); $$ = con; DLOG("const -> FALSE"); }
             ;
 
 multid:       ',' ID {StashFormalArgument($2, yylineno);} multid { DLOG("multid -> , id multid");}
@@ -276,6 +303,8 @@ int yyerror(std::string yaccProvidedMessage) {
 
 #ifndef TESTING
 int main(int argc, char** argv) {    
+    //UNO Reverse
+    InitLibraryFunctions();
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -285,8 +314,6 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-    //PARE TA ARXIDIA MOY BILL
-    InitLibraryFunctions();
 
     yyparse();
 
