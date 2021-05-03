@@ -108,15 +108,15 @@ SymbolTableEntry* Lookup(const char* name) {
 }
 
 bool IsLibraryFunction(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->GetType() == LIB_FUNC;
+    return entry != nullptr && entry->get_type() == LIB_FUNC;
 }
 
 bool IsUserFunction(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->GetType() == USER_FUNC;
+    return entry != nullptr && entry->get_type() == USER_FUNC;
 }
 
 bool IsVariable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->GetType() == VAR;
+    return entry != nullptr && entry->get_type() == VAR;
 }
 
 // bool IsFormalVariable(SymbolTableEntry* entry) {

@@ -9,8 +9,8 @@
 #include "../symbol_table/symbol_table_entry/symbol_table_entry.h"
 #include "../symbol_table/symbol_table.h"
 #include "../program_stack/program_stack.h"
-#include "../expression/constant.h"
 #include "../expression/expression.h"
+#include "../expression/constant.h"
 #include <fstream>
 
 /*
