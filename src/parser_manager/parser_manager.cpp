@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <assert.h>
 
 #include "../../include/parser_manager/parser_manager.h"
 
@@ -100,30 +101,37 @@ bool ScopeIsGlobal() {
 }
 
 SymbolTableEntry* LookupGlobal(const char* name) {
+    assert(name != nullptr);
     return program_stack.LookupGlobal(name);
 }
 
 SymbolTableEntry* Lookup(const char* name) {
+    assert(name != nullptr);
     return program_stack.Lookup(name);
 }
 
 SymbolTableEntry* LookupFunc(const char* name) {
+    assert(name != nullptr);
     return program_stack.LookupFunc(name);
 }
 
 bool IsLibraryFunction(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
     return entry->get_type() == LIB_FUNC;
 }
 
 bool IsUserFunction(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
     return entry->get_type() == USER_FUNC;
 }
 
 bool IsVariable(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
     return entry->get_type() == VAR;
 }
 
 bool IsAtCurrentScope(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
     return entry->get_scope() == current_scope;
 }
 
@@ -140,12 +148,14 @@ bool IsAtCurrentScope(SymbolTableEntry* entry) {
 // }
 
 SymbolTableEntry* InsertLocalVariable(const char* name, unsigned int line) {
+    assert(name != nullptr);
     SymbolTableEntry* entry = new LocalVariableEntry(name, line, current_scope);
     program_stack.Top()->Insert((LocalVariableEntry*) entry);
 
     return entry;
 }
 SymbolTableEntry* InsertGlobalVariable(const char* name, unsigned int line) {
+    assert(name != nullptr);
     SymbolTableEntry* entry = new GlobalVariableEntry(name, line, current_scope);
     program_stack.Top()->Insert((GlobalVariableEntry*) entry);
     
@@ -153,6 +163,7 @@ SymbolTableEntry* InsertGlobalVariable(const char* name, unsigned int line) {
 }
 
 SymbolTableEntry* InsertUserFunction(const char* name, unsigned int line) {
+    assert(name != nullptr);
     SymbolTableEntry* entry = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
     program_stack.Top()->Insert((UserFunctionEntry*) entry);
     
@@ -175,8 +186,24 @@ void PushStashedFormalArguments(void) {
     stashed_formal_arguments.clear();
 }
 
+bool
+IsStashed(const char* name) {
+    assert(name != nullptr);
+    std::string wanted = name;
+    for (auto i : stashed_formal_arguments) {
+        if (i->get_id() == wanted) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void StashFormalArgument(const char* name, unsigned int line) {
-    stashed_formal_arguments.push_back(new FormalVariableEntry(name, line, current_scope + 1));
+    assert(name != nullptr);
+    if (!IsStashed(name))
+        stashed_formal_arguments.push_back(new FormalVariableEntry(name, line, current_scope + 1));
+    else
+        std::cout << "Error, formal argument " << name << " already declared, in line: " << line << std::endl;
 }
 
 void LogSymbolTable(std::ostream& output) {
