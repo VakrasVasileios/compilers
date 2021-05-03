@@ -4,16 +4,17 @@ CC = g++
 CFLAGS = -std=c++11
 SRC += src/parser_manager/*.cpp \
 		src/block/block.cpp \
-		src/program_stack/program_stack.cpp \
+		src/program_stack/*.cpp \
 		src/symbol_table/*.cpp \
 		src/symbol_table/symbol_table_entry/*.cpp \
 		src/symbol_table/symbol_table_entry/function_entry/*.cpp \
 		src/symbol_table/symbol_table_entry/variable_entry/*.cpp \
 		src/expression/*.cpp
+
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
-dYACC = -v
+#dYACC = -v
 GDBenable = -g
 #myLog = -DELOG
 
