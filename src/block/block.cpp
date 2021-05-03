@@ -15,8 +15,10 @@ Block:: Activate() {
 
 void
 Block:: Deactivate() {
-    for(auto entry : entries)
-        entry->set_active(false);
+    for(auto entry : entries) {
+        if (entry->get_type() > 1) // deactivate variables only
+            entry->set_active(false);
+    }
 }   
 
 SymbolTableEntry*
@@ -26,7 +28,19 @@ Block:: Lookup(std::string id) {
             if (entry->is_active())
                 return entry;
             else
-                std::cout << "Cannot access " << id << std::endl;
+                std::cout << "Cannot access " << id  << ", in line: " << entry->get_line() << std::endl;
+        }
+    }
+
+    return nullptr;
+}
+
+SymbolTableEntry*
+Block:: LookupFunc(std::string id) {
+    for(auto entry : entries) {
+        if (entry->get_id() == id) {
+            if (entry->is_active() && entry->get_type() < CONST)
+                return entry;
         }
     }
 

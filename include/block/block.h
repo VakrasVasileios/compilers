@@ -30,6 +30,11 @@ class Block final {
         */
         SymbolTableEntry*           Lookup(std::string id);
         /*
+        Searches for an active symbol table function entry with an id on this Block.
+        Returns a read/write reference to the active function entry if its found, else nullptr.
+        */
+        SymbolTableEntry*           LookupFunc(std::string id);
+        /*
         Inserts a symbol table entry reference to the end of this Block.
         */
         void                        Insert(SymbolTableEntry* entry);
