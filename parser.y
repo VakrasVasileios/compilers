@@ -14,7 +14,7 @@
     extern FILE* yyin;
 
     #define     LOGERROR(message)  std::cout << "Error, " << message << ", in line: " << yylineno << std::endl
-    //#define     LOGERROR(message)  std::cout << "\033[1;31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
+    //#define     LOGERROR(message)  std::cout << "Error, " << "\033[31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
 %}
 
 %union {                                                    
@@ -190,13 +190,19 @@ term:         '(' expr ')'          {
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
                                     }
-            | primary               { DLOG("term -> primary"); }
+            | primary               {
+                                        DLOG("term -> primary"); 
+                                    }
             ;
 
 assignexpr:   lvalue '=' expr       {
-                                        auto entry = Lookup($1);
-                                        if(entry == nullptr)
+                                        if ($1 == nullptr || $1 == NULL)
                                             LOGERROR("Attempting to assign a value to NIL");
+                                        else {
+                                            auto lval = Lookup($1);
+                                            if (IsLibraryFunction(lval) || IsUserFunction(lval))
+                                                LOGERROR("Functions are constant their value cannot be changed");
+                                        }
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
             ;
@@ -256,7 +262,7 @@ lvalue:       ID                    {
                                        /* Declaration Check End*/
                                     }
             | COLONCOLON ID         {
-                                         /* Access Check */
+                                        /* Access Check */
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr) {
                                             LOGERROR("No global variable with id: " + std::string($2));
@@ -503,7 +509,7 @@ returnstmt: RETURN      {
                         }
             | RETURN    {
                             if (!IsValidReturn()) 
-                                LOGERROR("Invalid return, used outside a function block")
+                                LOGERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
                             DLOG("returnstmt -> RETURN expr;");
