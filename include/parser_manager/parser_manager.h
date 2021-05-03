@@ -26,10 +26,10 @@ void                IncreaseScope();
 Decreases the current scope.
 */
 void                DecreaseScope();
-/*
-Returns the current scope.
-*/
-unsigned int        GetCurrentScope();
+// /*
+// Returns the current scope.
+// */
+// unsigned int        GetCurrentScope();
 /*
 Flags the state as a method call.
 */
@@ -46,6 +46,9 @@ void                SetValidReturn(bool valid_return);
 Gets a read/write access to the validity flag of a possible return.
 */
 bool                IsValidReturn(void);
+
+bool                IsAtCurrentScope(SymbolTableEntry* entry);
+
 /*
 Increases the loop depth.
 */
@@ -114,22 +117,22 @@ Returns false if entry is null.
 Inserts a local variable to the symbol table.
 Returns a reference to the expression inserted.
 */
-SymbolTableEntry*         InsertLocalVariable(const char* name, unsigned int line);
+SymbolTableEntry*   InsertLocalVariable(const char* name, unsigned int line);
 /*
 Inserts a global variable to the symbol table.
 Returns a reference to the expression inserted.
 */
-SymbolTableEntry*         InsertGlobalVariable(const char* name, unsigned int line);
+SymbolTableEntry*   InsertGlobalVariable(const char* name, unsigned int line);
 /*
 Inserts a user function, with a name, at a line, with the stashed formal arguments, to the symbol table.
 Returns a reference to the expression inserted.
 */
-SymbolTableEntry*         InsertUserFunction(const char* name, unsigned int line);
+SymbolTableEntry*   InsertUserFunction(const char* name, unsigned int line);
 /*
 Inserts a user function, at a line, with the stashed formal arguments, to the symbol table.
 Returns a reference to the expression inserted.
 */
-SymbolTableEntry*         InsertUserFunction(unsigned int line);
+SymbolTableEntry*   InsertUserFunction(unsigned int line);
 /*
 Inserts all of the stashed formal arguments to the symbol table.
 */

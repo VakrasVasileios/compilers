@@ -51,10 +51,10 @@ void DecreaseScope() {
     --current_scope;
 }
 
-unsigned int 
-GetCurrentScope() {
-    return current_scope;
-}
+// unsigned int 
+// GetCurrentScope() {
+//     return current_scope;
+// }
 
 void SetMethodCall(bool methodcall) {
     ::method_call = method_call;
@@ -123,12 +123,16 @@ bool IsVariable(SymbolTableEntry* entry) {
     return entry->get_type() == VAR;
 }
 
+bool IsAtCurrentScope(SymbolTableEntry* entry) {
+    return entry->get_scope() == current_scope;
+}
+
 // bool IsFormalVariable(SymbolTableEntry* entry) {
 //     return entry != nullptr && entry->get_type() == FORMAL_VAR;
 // }
 
 // bool IsGlobalVariable(SymbolTableEntry* entry) {
-//     return entry != nullptr && entry->get_type() == GLOBAL_VAR;
+//     return entry = nullptr && entry->get_type() == GLOBAL_VAR;
 // } 
 
 // bool IsLocalVariable(SymbolTableEntry* entry) {
