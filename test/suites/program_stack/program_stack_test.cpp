@@ -165,6 +165,16 @@ TEST_F(ProgramStackTest, lookupGlobal_nonglobal_entry) {
     GTEST_ASSERT_TRUE(ps.LookupGlobal("ss") == nullptr);
 }
 
+TEST_F(ProgramStackTest, lookupFunc_entry) {
+    ps.Push(block1);
+    ps.Push(block2);
+    ps.Push(block3);
+
+    block2->Insert(ss);
+
+    GTEST_ASSERT_EQ(ps.LookupFunc("ss"), ss);
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
