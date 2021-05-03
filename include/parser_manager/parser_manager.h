@@ -12,6 +12,7 @@
 #include "../expression/expression.h"
 #include "../expression/constant.h"
 #include <fstream>
+#include <string>
 
 /*
 Inserts the library functions to the symbol table.
@@ -80,13 +81,16 @@ Returns a read/write access to a reference to the entry if it's found and it's a
 */
 SymbolTableEntry*   LookupGlobal(const char* name);
 /*
+Searches for an active symbol table entry by its name across all scopes at the function entry stack. 
+Returns a read/write access to a reference to the entry if it's found and it's active, else nullptr.
+*/
+SymbolTableEntry*   LookupFunc(const char* name);
+/*
 Returns a read/write access to wether a symbol table entry is a library function.
-Returns false if entry is null.
 */
 bool                IsLibraryFunction(SymbolTableEntry* entry);
 /*
 Returns a read/write access to wether a symbol table entry is a user function.
-Returns false if entry is null.
 */
 bool                IsUserFunction(SymbolTableEntry* entry);
 

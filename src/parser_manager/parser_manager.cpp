@@ -99,7 +99,7 @@ bool ScopeIsGlobal() {
     return current_scope == global_scope;
 }
 
-SymbolTableEntry*   LookupGlobal(const char* name) {
+SymbolTableEntry* LookupGlobal(const char* name) {
     return program_stack.LookupGlobal(name);
 }
 
@@ -107,16 +107,20 @@ SymbolTableEntry* Lookup(const char* name) {
     return program_stack.Lookup(name);
 }
 
+SymbolTableEntry* LookupFunc(const char* name) {
+    return program_stack.LookupFunc(name);
+}
+
 bool IsLibraryFunction(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == LIB_FUNC;
+    return entry->get_type() == LIB_FUNC;
 }
 
 bool IsUserFunction(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == USER_FUNC;
+    return entry->get_type() == USER_FUNC;
 }
 
 bool IsVariable(SymbolTableEntry* entry) {
-    return entry != nullptr && entry->get_type() == VAR;
+    return entry->get_type() == VAR;
 }
 
 // bool IsFormalVariable(SymbolTableEntry* entry) {
@@ -131,13 +135,6 @@ bool IsVariable(SymbolTableEntry* entry) {
 //     return entry != nullptr && entry->get_type() == LOCAL_VAR;
 // }
 
-Expression* InsertUserFunction(const char* name, unsigned int line) {
-    Expression* expr = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
-    program_stack.Top()->Insert((UserFunctionEntry*) expr); 
-    
-    return expr;
-}
-
 Expression* InsertLocalVariable(const char* name, unsigned int line) {
     Expression* expr = new LocalVariableEntry(name, line, current_scope);
     program_stack.Top()->Insert((LocalVariableEntry*) expr);
@@ -147,6 +144,13 @@ Expression* InsertLocalVariable(const char* name, unsigned int line) {
 Expression* InsertGlobalVariable(const char* name, unsigned int line) {
     Expression* expr = new GlobalVariableEntry(name, line, current_scope);
     program_stack.Top()->Insert((GlobalVariableEntry*) expr);
+    
+    return expr;
+}
+
+Expression* InsertUserFunction(const char* name, unsigned int line) {
+    Expression* expr = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert((UserFunctionEntry*) expr); 
     
     return expr;
 }
