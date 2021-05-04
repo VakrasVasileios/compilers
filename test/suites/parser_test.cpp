@@ -126,8 +126,11 @@ TEST_F(ParserTest, Error4) {
  }
 
 TEST_F(ParserTest, Error5) {
-    expected = "Error, f is already in use as a function, in line: 5\n";
+    expected = "Name collision with function f, previously defined in line: 4, in line: 5";
     expected += libfunc_out;
+    expected += "[user function] \"f\" (line 3) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[user function] \"f\" (line 4) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error5.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }

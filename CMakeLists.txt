@@ -27,6 +27,7 @@ target_sources(parser_manager_test PRIVATE src/program_stack/program_stack.cpp)
 target_sources(parser_manager_test PRIVATE src/symbol_table/symbol_table.cpp)
 target_sources(parser_manager_test PRIVATE src/symbol_table/symbol_table_entry/symbol_table_entry.cpp)
 target_sources(parser_manager_test PRIVATE src/symbol_table/symbol_table_entry/function_entry/function_entry.cpp)
+target_sources(parser_manager_test PRIVATE src/symbol_table/symbol_table_entry/variable_entry/variable_entry.cpp)
 
 #BlockTest
 add_executable(block_test test/suites/block/block_test.cpp)
@@ -69,3 +70,4 @@ target_sources(symbol_table_test PRIVATE src/block/block.cpp)
 target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table.cpp)
 target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/symbol_table_entry.cpp)
 target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/function_entry/function_entry.cpp)
+target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/variable_entry/variable_entry.cpp)
