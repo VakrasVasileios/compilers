@@ -13,7 +13,7 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define     LOGERROR(message)  std::cout << message << ", in line: " << yylineno << std::endl
+    #define       LOGERROR(message)  std::cout << "Error, in line: " << yylineno << ". " << message << std::endl
     //#define     LOGERROR(message)  std::cout << "Error, " << "\033[31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
 %}
 

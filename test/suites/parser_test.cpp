@@ -61,8 +61,8 @@ class ParserTest : public ::testing::Test {
 };
 
 TEST_F(ParserTest, Error0) {
-    expected = "No global variable with id: Global, in line: 4\n"
-               "Attempting to assign a value to NIL, in line: 4\n";
+    expected = "Error, in line: 4. No global variable with id: Global\n"
+               "Error, in line: 4. Attempting to assign a value to NIL\n";
     expected += libfunc_out;
     expected += "[global variable] \"x\" (line 3) (scope 0)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error0.asc");
@@ -70,9 +70,9 @@ TEST_F(ParserTest, Error0) {
 }
 
  TEST_F(ParserTest, Error1) {
-    expected = "Cannot access f in line 6, previously defined in line: 4\n"
-               "Functions are constant their value cannot be changed, in line: 6\n"
-               "Cannot access f in line 7, previously defined in line: 4\n";
+    expected = "Error, in line: 6. Cannot access f, peviously defined in line: 4\n"
+               "Error, in line: 6. Functions are constant their value cannot be changed\n"
+               "Error, in line: 7. Cannot access f, peviously defined in line: 4\n";
     expected += libfunc_out;
     expected += "[user function] \"f\" (line 3) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
@@ -83,12 +83,12 @@ TEST_F(ParserTest, Error0) {
  }
 
 TEST_F(ParserTest, Error2) {
-    expected = "Invalid return, used outside a function block, in line: 8\n"
-               "invalid keyword BREAK outside of loop, in line: 9\n"
-               "invalid keyword CONTINUE outside of loop, in line: 10\n"
-               "Invalid return, used outside a function block, in line: 15\n"
-               "invalid keyword BREAK outside of loop, in line: 16\n"
-               "invalid keyword CONTINUE outside of loop, in line: 17\n";
+    expected = "Error, in line: 8. Invalid return, used outside a function block\n"
+               "Error, in line: 9. invalid keyword BREAK outside of loop\n"
+               "Error, in line: 10. invalid keyword CONTINUE outside of loop\n"
+               "Error, in line: 15. Invalid return, used outside a function block\n"
+               "Error, in line: 16. invalid keyword BREAK outside of loop\n"
+               "Error, in line: 17. invalid keyword CONTINUE outside of loop\n";
     expected += libfunc_out;
     expected += "[user function] \"G\" (line 3) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
@@ -98,7 +98,7 @@ TEST_F(ParserTest, Error2) {
  }
 
 TEST_F(ParserTest, Error3) {
-    expected = "Cannot access x in line: 10, defined in line: 4\n";
+    expected = "Error, in line: 10. Cannot access x, peviously defined in line: 4\n";
     expected += libfunc_out;
     expected += "-----------     Scope #1     -----------\n"
                "[local variable] \"x\" (line 4) (scope 2)\n"
@@ -114,7 +114,7 @@ TEST_F(ParserTest, Error3) {
  }
 
 TEST_F(ParserTest, Error4) {
-    expected = "x variable cannot be redefined as a function, in line: 4\n";
+    expected = "Error, in line: 4. x variable cannot be redefined as a function\n";
     expected += libfunc_out;
     expected += "[user function] \"f\" (line 3) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
@@ -126,7 +126,7 @@ TEST_F(ParserTest, Error4) {
  }
 
 TEST_F(ParserTest, Error5) {
-    expected = "Name collision with function f, previously defined in line: 4, in line: 5";
+    expected = "Error, in line: 5. Name collision with function f, previously defined in line: 4\n";
     expected += libfunc_out;
     expected += "[user function] \"f\" (line 3) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
