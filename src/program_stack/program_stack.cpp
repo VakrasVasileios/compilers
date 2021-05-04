@@ -22,13 +22,13 @@ ProgramStack:: Pop() {
 }
 
 SymbolTableEntry*
-ProgramStack:: Lookup(std::string name, unsigned int lineno) {
+ProgramStack:: Lookup(std::string name, unsigned int lineno, bool log_flag) {
     auto iter = block_list.end();
     SymbolTableEntry* found;
     do {
         --iter;
         auto block = (*iter);
-        found = block->Lookup(name, lineno);
+        found = block->Lookup(name, lineno, log_flag);
         if (found != nullptr)
             return found;
     } while (iter != block_list.begin());
@@ -41,7 +41,7 @@ ProgramStack:: LookupGlobal(std::string name, unsigned int lineno) {
     auto iter = block_list.begin();
     auto block = (*iter);
 
-    return block->Lookup(name, lineno);
+    return block->Lookup(name, lineno, false);
 }
 
 SymbolTableEntry*

@@ -70,9 +70,9 @@ SymbolTableEntry* LookupGlobal(const char* name, unsigned int lineno) {
     return program_stack.LookupGlobal(name, lineno);
 }
 
-SymbolTableEntry* Lookup(const char* name, unsigned int lineno) {
+SymbolTableEntry* Lookup(const char* name, unsigned int lineno, bool log_flag) {
     assert(name != nullptr);
-    return program_stack.Lookup(name, lineno);
+    return program_stack.Lookup(name, lineno, log_flag);
 }
 
 SymbolTableEntry* LookupFunc(const char* name) {

@@ -160,7 +160,7 @@ term:         '(' expr ')'          {
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
-                                        auto entry = Lookup($2, yylineno);
+                                        auto entry = Lookup($2, yylineno, false);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
                                         else if (!IsVariable(entry))
@@ -168,14 +168,14 @@ term:         '(' expr ')'          {
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
-                                        auto entry = Lookup($1, yylineno);
+                                        auto entry = Lookup($1, yylineno, false);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
                                         else if (!IsVariable(entry))
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
-                                        auto entry = Lookup($2, yylineno);
+                                        auto entry = Lookup($2, yylineno, false);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
                                         else if (!IsVariable(entry))
@@ -183,7 +183,7 @@ term:         '(' expr ')'          {
                                         DLOG("term -> --lvaule"); 
                                     }
             | lvalue MINUSMINUS     { 
-                                        auto entry = Lookup($1, yylineno);
+                                        auto entry = Lookup($1, yylineno, false);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
                                         else if (!IsVariable(entry))
@@ -199,7 +199,7 @@ assignexpr:   lvalue '=' expr       {
                                         if ($1 == nullptr || $1 == NULL)
                                             LOGERROR("Attempting to assign a value to NIL");
                                         else {
-                                            auto lval = Lookup($1, yylineno);
+                                            auto lval = Lookup($1, yylineno, false);
                                             if (lval == nullptr)
                                                 LOGERROR("Attempting to assign a value to NIL");
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
@@ -235,7 +235,7 @@ lvalue:       ID                    {
                                             }
                                         }
                                         else {
-                                            auto entry = Lookup($1, yylineno);
+                                            auto entry = Lookup($1, yylineno, true);
                                             if (entry == nullptr) {
                                                 InsertLocalVariable($1, yylineno);
                                             }
@@ -245,7 +245,7 @@ lvalue:       ID                    {
             | LOCAL ID              {
                                         $$=$2;
                                         /* Declaration Check Start*/
-                                        auto entry = Lookup($2, yylineno);
+                                        auto entry = Lookup($2, yylineno, true);
                                         if (entry == nullptr) { 
                                             InsertLocalVariable($2, yylineno);
                                         }
@@ -398,7 +398,7 @@ funcdef:    FUNCTION        {
                             }
             | FUNCTION ID   {
                                 /* Declaration Check Start */
-                                auto entry = Lookup($2, yylineno);
+                                auto entry = Lookup($2, yylineno, false);
                                 if (entry == nullptr)
                                     InsertUserFunction($2, yylineno);
                                 else {
