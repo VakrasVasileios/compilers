@@ -70,31 +70,57 @@ TEST_F(ParserTest, Error0) {
 }
 
  TEST_F(ParserTest, Error1) {
-    expected = "No function with name: f, in line: 6\n";
+    expected = "Cannot access f in line 6, previously defined in line: 4\n"
+               "Functions are constant their value cannot be changed, in line: 6\n"
+               "Cannot access f in line 7, previously defined in line: 4\n";
     expected += libfunc_out;
+    expected += "[user function] \"f\" (line 3) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[local variable] \"f\" (line 4) (scope 1)\n"
+               "[user function] \"g\" (line 5) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error1.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error2) {
     expected = "Invalid return, used outside a function block, in line: 8\n"
-            "Error, invalid keyword BREAK outside of loop, in line: 9\n"
-            "Error, invalid keyword CONTINUE outside of loop, in line: 10\n";
+               "invalid keyword BREAK outside of loop, in line: 9\n"
+               "invalid keyword CONTINUE outside of loop, in line: 10\n"
+               "Invalid return, used outside a function block, in line: 15\n"
+               "invalid keyword BREAK outside of loop, in line: 16\n"
+               "invalid keyword CONTINUE outside of loop, in line: 17\n";
     expected += libfunc_out;
+    expected += "[user function] \"G\" (line 3) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[user function] \"F\" (line 4) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error2.asc");    
     GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error3) {
-    expected = "cannot access 'x'\n";
+    expected = "Cannot access x in line: 10, defined in line: 4\n";
     expected += libfunc_out;
+    expected += "-----------     Scope #1     -----------\n"
+               "[local variable] \"x\" (line 4) (scope 2)\n"
+               "[user function] \"a\" (line 6) (scope 2)\n"
+               "-----------     Scope #2     -----------\n"
+               "[user function] \"b\" (line 8) (scope 3)\n"
+               "[user function] \"c\" (line 13) (scope 3)\n"
+               "-----------     Scope #3     -----------\n"
+               "[local variable] \"x\" (line 10) (scope 4)\n"
+               "[local variable] \"a\" (line 16) (scope 4)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error4) {
-    expected = "Error, x is already in use as a function, in line: 4\n";
+    expected = "x variable cannot be redefined as a function, in line: 4\n";
     expected += libfunc_out;
+    expected += "[user function] \"f\" (line 3) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"x\" (line 3) (scope 1)\n"
+               "-----------     Scope #2     -----------\n"
+               "[formal variable] \"y\" (line 4) (scope 2)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error4.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
