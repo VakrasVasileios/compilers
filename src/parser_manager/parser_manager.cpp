@@ -65,14 +65,14 @@ unsigned int GetLoopDepth() {
     return loop_depth;
 }
 
-SymbolTableEntry* LookupGlobal(const char* name, unsigned int lineno) {
+SymbolTableEntry* LookupGlobal(const char* name) {
     assert(name != nullptr);
-    return program_stack.LookupGlobal(name, lineno);
+    return program_stack.LookupGlobal(name);
 }
 
-SymbolTableEntry* Lookup(const char* name, unsigned int lineno, bool log_flag) {
+SymbolTableEntry* Lookup(const char* name) {
     assert(name != nullptr);
-    return program_stack.Lookup(name, lineno, log_flag);
+    return program_stack.Lookup(name);
 }
 
 SymbolTableEntry* LookupFunc(const char* name) {

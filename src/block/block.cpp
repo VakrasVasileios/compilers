@@ -22,28 +22,30 @@ Block:: Deactivate() {
 }   
 
 SymbolTableEntry*
-Block:: Lookup(std::string id, unsigned int lineno, bool log_flag) {
+Block:: Lookup(std::string id) {
     for(auto entry : entries) {
-        if (entry->get_id() == id) {
-            if (entry->is_active())
-                return entry;
-            else {
-                if(log_flag)
-                    std::cout << "Error, in line: " << lineno << ". Cannot access " << id  << ", peviously defined in line: " << entry->get_line() << std::endl;
-                return nullptr;
-            }
-        }
+        if (entry->get_id() == id) 
+            return entry;
+            // if (entry->is_active())
+            //     return entry;
+            // else {
+            //     if(log_flag)
+            //         std::cout << "Error, in line: " << lineno << ". Cannot access " << id  << ", peviously defined in line: " << entry->get_line() << std::endl;
+            //     return nullptr;   
     }
 
     return nullptr;
 }
 
+bool IsAFUnctionEntry(SymbolTableEntry* entry) {
+    return entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC;
+}
+
 SymbolTableEntry*
 Block:: LookupFunc(std::string id) {
     for(auto entry : entries) {
-        if (entry->get_id() == id) {
-            if (entry->is_active() && entry->get_type() < CONST)
-                return entry;
+        if (entry->get_id() == id && (IsAFUnctionEntry(entry))) {
+            return entry;
         }
     }
 

@@ -104,22 +104,20 @@ Logs the symbol table contents.
 */
 void                LogSymbolTable(std::ostream& output);
 /*
-Searches for an active symbol table entry by its name across all scopes. 
-Returns a read/write access to a reference to the entry if it's found and it's active, else nullptr.
-Logs an error message, using the line number, if the name matches an entry that cannot be accessed and the log flag is true.
+Searches for a symbol table entry reference by its name across all scopes. 
+Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
-SymbolTableEntry*   Lookup(const char* name, unsigned int lineno, bool log_flag);
+SymbolTableEntry*   Lookup(const char* name);
 /*
-Searches for an active symbol table entry by its name at the global_scope. 
-Returns a read/write access to a reference to the entry if it's found and it's active, else nullptr.
-Logs an error message, using the line number, if the name matches an entry that cannot be accessed.
+Searches for a symbol table entry reference by its name at the global_scope. 
+Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
-SymbolTableEntry*   LookupGlobal(const char* name, unsigned int lineno);
+SymbolTableEntry*   LookupGlobal(const char* name);
 /*
-Searches for an active symbol table entry by its name across all scopes at the function entry stack. 
-Returns a read/write access to a reference to the entry if it's found and it's active, else nullptr.
+Searches for a table entry reference by its name across all scopes. 
+Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
 SymbolTableEntry*   LookupFunc(const char* name);

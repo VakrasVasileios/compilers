@@ -25,14 +25,13 @@ class Block final {
         */
         void                        Deactivate();   
         /*
-        Searches for an active symbol table entry with an id on this Block.
-        Returns a read/write reference to the active entry if its found, else nullptr.
-        Logs an error message, using the line number, if the name matches an entry that cannot be accessed and the log flag is true.
+        Searches for a symbol table entry reference with an id on this Block.
+        Returns a read/write reference to the entry if its found, else nullptr.
         */
-        SymbolTableEntry*           Lookup(std::string id, unsigned int lineno, bool log_flag);
+        SymbolTableEntry*           Lookup(std::string id);
         /*
-        Searches for an active symbol table function entry with an id on this Block.
-        Returns a read/write reference to the active function entry if its found, else nullptr.
+        Searches for a symbol table function entry reference with an id on this Block.
+        Returns a read/write reference to the function entry if its found, else nullptr.
         */
         SymbolTableEntry*           LookupFunc(std::string id);
         /*

@@ -34,17 +34,15 @@ public:
     */
     void                Pop();
     /*
-    Searches for an active symbol table entry by its name across all scopes. 
-    Returns a read/write access to the reference of the active entry if it's found, else nullptr.
-    Logs an error message, using the line number, if the name matches an entry that cannot be accessed and the log flag is true.
+    Searches for a symbol table entry reference by its name across all scopes. 
+    Returns a read/write access to the reference if it's found, else nullptr.
     */
-    SymbolTableEntry*   Lookup(std::string name, unsigned int lineno, bool log_flag);
+    SymbolTableEntry*   Lookup(std::string name);
     /*
-    Searches for an active symbol table entry by its name across the global scope. 
-    Returns a read/write access to the reference of the active entry if it's found, else nullptr.
-    Logs an error message, using the line number, if the name matches an entry that cannot be accessed.
+    Searches for a symbol table entry reference by its name across the global scope. 
+    Returns a read/write access to the reference if it's found, else nullptr.
     */
-    SymbolTableEntry*   LookupGlobal(std::string name, unsigned int lineno);
+    SymbolTableEntry*   LookupGlobal(std::string name);
     /*  
     Activates all of the symbol table entries at lower scopes, except the global scope.
     */

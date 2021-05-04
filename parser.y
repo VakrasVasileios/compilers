@@ -160,32 +160,40 @@ term:         '(' expr ')'          {
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
-                                        auto entry = Lookup($2, yylineno, false);
+                                        auto entry = Lookup($2);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
+                                        else if (!entry->is_active())
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of increment operator with non variable type");
+                                            LOGERROR("Use of increment operator with non variable type");    
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
-                                        auto entry = Lookup($1, yylineno, false);
+                                        auto entry = Lookup($1);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
+                                        else if (!entry->is_active())
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of increment operator with non variable type");
+                                            LOGERROR("Use of increment operator with non variable type");    
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
-                                        auto entry = Lookup($2, yylineno, false);
+                                        auto entry = Lookup($2);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
+                                        else if (!entry->is_active())
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of decrement operator with non variable type");
+                                            LOGERROR("Use of decrement operator with non variable type");    
                                         DLOG("term -> --lvaule"); 
                                     }
             | lvalue MINUSMINUS     { 
-                                        auto entry = Lookup($1, yylineno, false);
+                                        auto entry = Lookup($1);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
+                                        else if (!entry->is_active())
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
@@ -199,9 +207,11 @@ assignexpr:   lvalue '=' expr       {
                                         if ($1 == nullptr || $1 == NULL)
                                             LOGERROR("Attempting to assign a value to NIL");
                                         else {
-                                            auto lval = Lookup($1, yylineno, false);
+                                            auto lval = Lookup($1);
                                             if (lval == nullptr)
                                                 LOGERROR("Attempting to assign a value to NIL");
+                                            // else if (!lval->is_active())
+                                            //     LOGERROR("Cannot access " + lval->get_id() + ", previously defined in line: " + std::to_string(lval->get_line()));    
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
                                                 LOGERROR("Functions are constant their value cannot be changed");
                                         }
@@ -229,26 +239,32 @@ primary:      lvalue                {
 lvalue:       ID                    {
                                         $$=$1;
                                         if (ScopeIsGlobal()) {
-                                            auto entry = LookupGlobal($1, yylineno);
+                                            auto entry = LookupGlobal($1);
                                             if(entry == nullptr) {
                                                 InsertGlobalVariable($1, yylineno);
                                             }
+                                            else if (!entry->is_active())
+                                                LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         }
                                         else {
-                                            auto entry = Lookup($1, yylineno, true);
+                                            auto entry = Lookup($1);
                                             if (entry == nullptr) {
                                                 InsertLocalVariable($1, yylineno);
                                             }
+                                            else if (!entry->is_active())
+                                                LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         }
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
                                         $$=$2;
                                         /* Declaration Check Start*/
-                                        auto entry = Lookup($2, yylineno, true);
+                                        auto entry = Lookup($2);
                                         if (entry == nullptr) { 
                                             InsertLocalVariable($2, yylineno);
                                         }
+                                        else if (!entry->is_active())
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (IsGlobalVar(entry)) {
                                             InsertLocalVariable($2, yylineno);
                                         }
@@ -269,8 +285,8 @@ lvalue:       ID                    {
             | COLONCOLON ID         {
                                         $$ = $2;
                                         /* Access Check */
-                                        auto entry = LookupGlobal($2, yylineno);
-                                        if (entry == nullptr) {
+                                        auto entry = LookupGlobal($2);
+                                        if (entry == nullptr || !entry->is_active()) {
                                             LOGERROR("No global variable with id: " + std::string($2));
                                         }
                                         DLOG("lvalue -> ::id");
@@ -303,7 +319,7 @@ call:       call '(' elist ')'              {
                                                 /* ACCESS CHECK */
                                                 if(!IsMethodCall()) {
                                                     auto entry = LookupFunc($1);
-                                                    if (entry == nullptr)
+                                                    if (entry == nullptr || !entry->is_active())
                                                         LOGERROR("Attempting use of function call with NIL value");
                                                 }
                                                 DLOG("call -> lvalue callsuffix");
@@ -398,9 +414,11 @@ funcdef:    FUNCTION        {
                             }
             | FUNCTION ID   {
                                 /* Declaration Check Start */
-                                auto entry = Lookup($2, yylineno, false);
+                                auto entry = Lookup($2);
                                 if (entry == nullptr)
                                     InsertUserFunction($2, yylineno);
+                                 else if (!entry->is_active())
+                                        LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));   
                                 else {
                                     if (IsVariable(entry))
                                         LOGERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(entry->get_line()) + ", cannot be redefined as a function");

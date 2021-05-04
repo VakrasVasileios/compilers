@@ -70,9 +70,8 @@ TEST_F(ParserTest, Error0) {
 }
 
  TEST_F(ParserTest, Error1) {
-    expected = "Error, in line: 6. Cannot access f, peviously defined in line: 4\n"
-               "Error, in line: 6. Functions are constant their value cannot be changed\n"
-               "Error, in line: 7. Cannot access f, peviously defined in line: 4\n";
+    expected = "Error, in line: 6. Cannot access f, previously defined in line: 4\n"
+               "Error, in line: 7. Cannot access f, previously defined in line: 4\n";
     expected += libfunc_out;
     expected += "[user function] \"f\" (line 3) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
