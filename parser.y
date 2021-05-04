@@ -160,7 +160,7 @@ term:         '(' expr ')'          {
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
-                                        auto entry = Lookup($2);
+                                        auto entry = Lookup($2, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
                                         else if (entry->get_type() != VAR)
@@ -168,14 +168,14 @@ term:         '(' expr ')'          {
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
-                                        auto entry = Lookup($1);
+                                        auto entry = Lookup($1, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
                                         else if (entry->get_type() != VAR)
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
-                                        auto entry = Lookup($2);
+                                        auto entry = Lookup($2, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
                                         else if (entry->get_type() != VAR)
@@ -183,7 +183,7 @@ term:         '(' expr ')'          {
                                         DLOG("term -> --lvaule"); 
                                     }
             | lvalue MINUSMINUS     { 
-                                        auto entry = Lookup($1);
+                                        auto entry = Lookup($1, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
                                         else if (entry->get_type() != VAR)
@@ -199,7 +199,7 @@ assignexpr:   lvalue '=' expr       {
                                         if ($1 == nullptr || $1 == NULL)
                                             LOGERROR("Attempting to assign a value to NIL");
                                         else {
-                                            auto lval = Lookup($1); //$1 is DEALLOCATED!!!???
+                                            auto lval = Lookup($1, yylineno);
                                             if (lval == nullptr)
                                                 LOGERROR("Attempting to assign a value to NIL");
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
@@ -229,13 +229,13 @@ primary:      lvalue                {
 lvalue:       ID                    {
                                         $$=$1;
                                         if (ScopeIsGlobal()) {
-                                            auto entry = LookupGlobal($1);
+                                            auto entry = LookupGlobal($1, yylineno);
                                             if(entry == nullptr) {
                                                 InsertGlobalVariable($1, yylineno);
                                             }
                                         }
                                         else {
-                                            auto entry = Lookup($1);
+                                            auto entry = Lookup($1, yylineno);
                                             if (entry == nullptr) {
                                                 InsertLocalVariable($1, yylineno);
                                             }
@@ -245,7 +245,7 @@ lvalue:       ID                    {
             | LOCAL ID              {
                                         $$=$2;
                                         /* Declaration Check Start*/
-                                        auto entry = Lookup($2);
+                                        auto entry = Lookup($2, yylineno);
                                         if (entry == nullptr) { 
                                             InsertLocalVariable($2, yylineno);
                                         }
@@ -269,7 +269,7 @@ lvalue:       ID                    {
             | COLONCOLON ID         {
                                         $$ = $2;
                                         /* Access Check */
-                                        auto entry = LookupGlobal($2);
+                                        auto entry = LookupGlobal($2, yylineno);
                                         if (entry == nullptr) {
                                             LOGERROR("No global variable with id: " + std::string($2));
                                         }
@@ -398,7 +398,7 @@ funcdef:    FUNCTION        {
                             }
             | FUNCTION ID   {
                                 /* Declaration Check Start */
-                                auto entry = Lookup($2);
+                                auto entry = Lookup($2, yylineno);
                                 if (entry == nullptr)
                                     InsertUserFunction($2, yylineno);
                                 else {

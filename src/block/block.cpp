@@ -22,14 +22,14 @@ Block:: Deactivate() {
 }   
 
 SymbolTableEntry*
-Block:: Lookup(std::string id) {
+Block:: Lookup(std::string id, unsigned int lineno) {
     for(auto entry : entries) {
         if (entry->get_id() == id) {
             if (entry->is_active())
                 return entry;
             else {
-                std::cout << "Cannot access " << id  << ", defined in line: " << entry->get_line() << std::endl;
-                //return nullptr;
+                std::cout << "Error, in line: " << lineno << ". Cannot access " << id  << ", peviously defined in line: " << entry->get_line() << std::endl;
+                return nullptr;
             }
         }
     }

@@ -117,7 +117,7 @@ TEST_F(ProgramStackTest, lookup_not_inserted_entry) {
     ps.Push(block2);
     ps.Push(block3);
 
-    GTEST_ASSERT_TRUE(ps.Lookup("s") == nullptr);
+    GTEST_ASSERT_TRUE(ps.Lookup("s", 0) == nullptr);
 }
 
 TEST_F(ProgramStackTest, lookup_function_entry_after_deactivate) {
@@ -128,7 +128,7 @@ TEST_F(ProgramStackTest, lookup_function_entry_after_deactivate) {
     ps.Top()->Insert(ss);
     ps.DeactivateLowerScopes();
 
-    GTEST_ASSERT_EQ(ps.Lookup("ss"), ss);
+    GTEST_ASSERT_EQ(ps.Lookup("ss", 0), ss);
 }
 
 TEST_F(ProgramStackTest, lookup_inactive_entry) {
@@ -139,7 +139,7 @@ TEST_F(ProgramStackTest, lookup_inactive_entry) {
     ps.Top()->Insert(entry);
     ps.DeactivateLowerScopes();
 
-    GTEST_ASSERT_TRUE(ps.Lookup("entry") == nullptr);
+    GTEST_ASSERT_TRUE(ps.Lookup("entry", 0) == nullptr);
 }
 
 TEST_F(ProgramStackTest, lookup_active_entry) {
@@ -148,7 +148,7 @@ TEST_F(ProgramStackTest, lookup_active_entry) {
     ps.Push(block3);
 
     ps.Top()->Insert(ss);
-    GTEST_ASSERT_EQ(ss, ps.Lookup("ss"));
+    GTEST_ASSERT_EQ(ss, ps.Lookup("ss", 0));
 }
 
 TEST_F(ProgramStackTest, lookupGlobal_not_inserted_entry) {
@@ -156,7 +156,7 @@ TEST_F(ProgramStackTest, lookupGlobal_not_inserted_entry) {
     ps.Push(block2);
     ps.Push(block3);
 
-    GTEST_ASSERT_TRUE(ps.LookupGlobal("s") == nullptr);
+    GTEST_ASSERT_TRUE(ps.LookupGlobal("s", 0) == nullptr);
 }
 
 TEST_F(ProgramStackTest, lookupGlobal_global_entry) {
@@ -166,7 +166,7 @@ TEST_F(ProgramStackTest, lookupGlobal_global_entry) {
 
     block1->Insert(ss);
 
-    GTEST_ASSERT_EQ(ss, ps.LookupGlobal("ss"));
+    GTEST_ASSERT_EQ(ss, ps.LookupGlobal("ss", 0));
 }
 
 TEST_F(ProgramStackTest, lookupGlobal_nonglobal_entry) {
@@ -176,7 +176,7 @@ TEST_F(ProgramStackTest, lookupGlobal_nonglobal_entry) {
 
     block2->Insert(ss);
 
-    GTEST_ASSERT_TRUE(ps.LookupGlobal("ss") == nullptr);
+    GTEST_ASSERT_TRUE(ps.LookupGlobal("ss", 0) == nullptr);
 }
 
 TEST_F(ProgramStackTest, lookupFunc_entry) {

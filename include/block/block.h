@@ -27,8 +27,9 @@ class Block final {
         /*
         Searches for an active symbol table entry with an id on this Block.
         Returns a read/write reference to the active entry if its found, else nullptr.
+        Logs an error message, using the line number, if the name matches an entry that cannot be accessed.
         */
-        SymbolTableEntry*           Lookup(std::string id);
+        SymbolTableEntry*           Lookup(std::string id, unsigned int lineno);
         /*
         Searches for an active symbol table function entry with an id on this Block.
         Returns a read/write reference to the active function entry if its found, else nullptr.

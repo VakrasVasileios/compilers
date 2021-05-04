@@ -100,14 +100,14 @@ bool ScopeIsGlobal() {
     return current_scope == global_scope;
 }
 
-SymbolTableEntry* LookupGlobal(const char* name) {
+SymbolTableEntry* LookupGlobal(const char* name, unsigned int lineno) {
     assert(name != nullptr);
-    return program_stack.LookupGlobal(name);
+    return program_stack.LookupGlobal(name, lineno);
 }
 
-SymbolTableEntry* Lookup(const char* name) {
+SymbolTableEntry* Lookup(const char* name, unsigned int lineno) {
     assert(name != nullptr);
-    return program_stack.Lookup(name);
+    return program_stack.Lookup(name, lineno);
 }
 
 SymbolTableEntry* LookupFunc(const char* name) {

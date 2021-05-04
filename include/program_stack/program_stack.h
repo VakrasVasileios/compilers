@@ -36,13 +36,15 @@ public:
     /*
     Searches for an active symbol table entry by its name across all scopes. 
     Returns a read/write access to the reference of the active entry if it's found, else nullptr.
+    Logs an error message, using the line number, if the name matches an entry that cannot be accessed.
     */
-    SymbolTableEntry*   Lookup(std::string name);
+    SymbolTableEntry*   Lookup(std::string name, unsigned int lineno);
     /*
     Searches for an active symbol table entry by its name across the global scope. 
     Returns a read/write access to the reference of the active entry if it's found, else nullptr.
+    Logs an error message, using the line number, if the name matches an entry that cannot be accessed.
     */
-    SymbolTableEntry*   LookupGlobal(std::string name);
+    SymbolTableEntry*   LookupGlobal(std::string name, unsigned int lineno);
     /*  
     Activates all of the symbol table entries at lower scopes, except the global scope.
     */
