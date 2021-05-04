@@ -340,26 +340,13 @@ TEST_F(ParserTest, Error5) {
  TEST_F(ParserTest, ShadowedNameOffFunctions) {
     expected = libfunc_out;
     expected +="[global variable] \"nl\" (line 2) (scope 0)\n"
-            "[local variable] \"$0\" (line 0) (scope 0)\n"
-            "[user function] \"F\" (line 6) (scope 0)\n"
-            "[local variable] \"$1\" (line 0) (scope 0)\n"
-            "[local variable] \"$2\" (line 0) (scope 0)\n"
-            "[local variable] \"$3\" (line 0) (scope 0)\n"
-            "\n"
-            "-----------     Scope #1     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 1)\n"
-            "[user function] \"F\" (line 11) (scope 1)\n"
-            "\n"
-            "-----------     Scope #2     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 2)\n"
-            "[user function] \"F\" (line 16) (scope 2)\n"
-            "\n"
-            "-----------     Scope #3     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 3)\n"
-            "[user function] \"F\" (line 21) (scope 3)\n"
-            "\n"
-            "-----------     Scope #4     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 4)\n";
+               "[user function] \"F\" (line 6) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[user function] \"F\" (line 11) (scope 1)\n"
+               "-----------     Scope #2     -----------\n"
+               "[user function] \"F\" (line 16) (scope 2)\n"
+               "-----------     Scope #3     -----------\n"
+               "[user function] \"F\" (line 21) (scope 3)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }

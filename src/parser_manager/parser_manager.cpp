@@ -12,9 +12,9 @@ const unsigned int global_scope = 0;
 unsigned int current_scope = OUT_OF_SCOPE;
 
 bool method_call = false;
-bool valid_return = false;
 
 unsigned int loop_depth = 0;
+unsigned int return_depth = 0;
 
 unsigned int anonymus_funcs_counter = 0;
 
@@ -57,12 +57,12 @@ bool IsMethodCall() {
     return method_call;
 }
 
-bool IsValidReturn(void) {
-    return valid_return;
-}
-
 unsigned int GetLoopDepth() {
     return loop_depth;
+}
+
+unsigned int GetReturnDepth() {
+    return return_depth;
 }
 
 SymbolTableEntry* LookupGlobal(const char* name) {
@@ -144,16 +144,20 @@ void SetMethodCall(bool methodcall) {
     ::method_call = method_call;
 }
 
-void  SetValidReturn(bool valid_return) {
-    ::valid_return = valid_return;
-}
-
 void IncreaseLoopDepth() {
     loop_depth++;
 }
 
 void DecreaseLoopDepth() {
     loop_depth--;
+}
+
+void IncreaseReturnDepth() {
+    return_depth++;
+}
+
+void DecreaseReturnDepth() {
+    return_depth--;
 }
 
 void HideLowerScopes() {

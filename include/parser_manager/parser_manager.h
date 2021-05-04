@@ -51,6 +51,10 @@ It's a checked runtime error for the entry to be null.
 */
 bool                IsVariable(SymbolTableEntry* entry);
 /*
+Returns a read/write access to the return depth.
+*/
+unsigned int        GetReturnDepth();
+/*
 Returns a read/write access to the loop depth.
 */
 unsigned int        GetLoopDepth();
@@ -82,6 +86,14 @@ void                IncreaseLoopDepth();
 Decreases the loop depth.
 */
 void                DecreaseLoopDepth();
+/*
+Increases the return depth.
+*/
+void                IncreaseReturnDepth();
+/*
+Decreases the return depth.
+*/
+void                DecreaseReturnDepth();
 /*
 Hides all of the symbol table entries at lower scopes, except the global scope.
 */

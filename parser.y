@@ -210,8 +210,6 @@ assignexpr:   lvalue '=' expr       {
                                             auto lval = Lookup($1);
                                             if (lval == nullptr)
                                                 LOGERROR("Attempting to assign a value to NIL");
-                                            // else if (!lval->is_active())
-                                            //     LOGERROR("Cannot access " + lval->get_id() + ", previously defined in line: " + std::to_string(lval->get_line()));    
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
                                                 LOGERROR("Functions are constant their value cannot be changed");
                                         }
@@ -258,7 +256,6 @@ lvalue:       ID                    {
                                     }
             | LOCAL ID              {
                                         $$=$2;
-                                        /* Declaration Check Start*/
                                         auto entry = Lookup($2);
                                         if (entry == nullptr) { 
                                             InsertLocalVariable($2, yylineno);
@@ -280,11 +277,9 @@ lvalue:       ID                    {
                                             LOGERROR("Attempting to redefine a library function");
                                         }
                                         DLOG("lvalue -> local id");
-                                       /* Declaration Check End*/
                                     }
             | COLONCOLON ID         {
                                         $$ = $2;
-                                        /* Access Check */
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr || !entry->is_active()) {
                                             LOGERROR("No global variable with id: " + std::string($2));
@@ -316,7 +311,6 @@ call:       call '(' elist ')'              {
                                                 DLOG("call -> call(elist)");
                                             }
             | lvalue callsuffix             {   
-                                                /* ACCESS CHECK */
                                                 if(!IsMethodCall()) {
                                                     auto entry = LookupFunc($1);
                                                     if (entry == nullptr || !entry->is_active())
@@ -405,15 +399,14 @@ funcdef:    FUNCTION        {
                             } 
             '(' idlist ')'  {
                                 HideLowerScopes();
-                                SetValidReturn(true);
+                                IncreaseReturnDepth();
                             }  
             block           {
                                 EnableLowerScopes();
-                                SetValidReturn(false);
+                                DecreaseReturnDepth();
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
             | FUNCTION ID   {
-                                /* Declaration Check Start */
                                 auto entry = Lookup($2);
                                 if (entry == nullptr)
                                     InsertUserFunction($2, yylineno);
@@ -432,15 +425,14 @@ funcdef:    FUNCTION        {
                                     else
                                         InsertUserFunction($2, yylineno); //Shadow user function. 
                                 }
-                                /* Declaration Check End */
                             }
             '(' idlist ')'  { 
                                 HideLowerScopes();
-                                SetValidReturn(true);
+                                IncreaseReturnDepth();
                             }
             block           { 
                                 EnableLowerScopes();
-                                SetValidReturn(false);
+                                DecreaseReturnDepth();
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
             ;
@@ -525,14 +517,14 @@ forstmt:    FOR                                     {
             ;
 
 returnstmt: RETURN      {
-                            if (!IsValidReturn())
+                            if (GetReturnDepth() == 0)
                                 LOGERROR("Invalid return, used outside a function block");
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
                         }
             | RETURN    {
-                            if (!IsValidReturn()) 
+                            if (GetReturnDepth() == 0) 
                                 LOGERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
