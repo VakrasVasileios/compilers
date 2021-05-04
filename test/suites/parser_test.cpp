@@ -270,7 +270,7 @@ TEST_F(ParserTest, Error5) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
- TEST_F(ParserTest, Grammar) {
+ TEST_F(ParserTest, Grammar) { //??????????
     expected = libfunc_out;
     expected +="[global variable] \"a1\" (line 2) (scope 0)\n"
             "[global variable] \"a2\" (line 2) (scope 0)\n"
@@ -313,59 +313,26 @@ TEST_F(ParserTest, Error5) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
- TEST_F(ParserTest, Random) {
+ TEST_F(ParserTest, Random) { //?
     expected = libfunc_out;
     expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
-                "[local variable] \"$0\" (line 0) (scope 0)\n"
-                "[user function] \"Assert\" (line 7) (scope 0)\n"
-                "[user function] \"IsEven\" (line 15) (scope 0)\n"
-                "[user function] \"IsOdd\" (line 22) (scope 0)\n"
-                "[user function] \"CanDivideByTen\" (line 29) (scope 0)\n"
-                "[user function] \"PrintParityOfNumbers\" (line 36) (scope 0)\n"
-                "[local variable] \"even\" (line 56) (scope 0)\n"
-                "[local variable] \"odd\" (line 56) (scope 0)\n"
-                "[local variable] \"$1\" (line 0) (scope 0)\n"
-                "[local variable] \"cnt\" (line 56) (scope 0)\n"
-                "[local variable] \"$2\" (line 0) (scope 0)\n"
-                "[local variable] \"$3\" (line 0) (scope 0)\n"
-                "[local variable] \"$4\" (line 0) (scope 0)\n"
-                "[local variable] \"$5\" (line 0) (scope 0)\n"
-                "[local variable] \"$6\" (line 0) (scope 0)\n"
-                "[user function] \"Print\" (line 68) (scope 0)\n"
-                "\n"
-                "-----------     Scope #1     -----------\n"
-                "[formal argument] \"con\" (line 7) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[formal argument] \"num\" (line 15) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[formal argument] \"num\" (line 22) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[formal argument] \"num\" (line 29) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[formal argument] \"MAX\" (line 36) (scope 1)\n"
-                "[local variable] \"exit\" (line 37) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"i\" (line 39) (scope 1)\n"
-                "[local variable] \"$1\" (line 0) (scope 1)\n"
-                "[local variable] \"$2\" (line 0) (scope 1)\n"
-                "[local variable] \"$3\" (line 0) (scope 1)\n"
-                "[local variable] \"$7\" (line 0) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "[local variable] \"$0\" (line 0) (scope 1)\n"
-                "\n"
-                "-----------     Scope #2     -----------\n"
-                "[local variable] \"$4\" (line 0) (scope 2)\n"
-                "[local variable] \"$5\" (line 0) (scope 2)\n"
-                "[local variable] \"$0\" (line 0) (scope 2)\n"
-                "[local variable] \"$1\" (line 0) (scope 2)\n"
-                "[local variable] \"$1\" (line 0) (scope 2)\n"
-                "[local variable] \"$0\" (line 0) (scope 2)\n"
-                "\n"
-                "-----------     Scope #3     -----------\n"
-                "[local variable] \"$0\" (line 0) (scope 3)\n";
+               "[user function] \"Assert\" (line 7) (scope 0)\n"
+               "[user function] \"IsEven\" (line 15) (scope 0)\n"
+               "[user function] \"IsOdd\" (line 22) (scope 0)\n"
+               "[user function] \"CanDivideByTen\" (line 29) (scope 0)\n"
+               "[user function] \"PrintParityOfNumbers\" (line 36) (scope 0)\n"
+               "[local variable] \"even\" (line 56) (scope 0)\n"
+               "[local variable] \"odd\" (line 56) (scope 0)\n"
+               "[local variable] \"cnt\" (line 56) (scope 0)\n"
+               "[user function] \"Print\" (line 68) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"con\" (line 7) (scope 1)\n"
+               "[formal variable] \"num\" (line 15) (scope 1)\n"
+               "[formal variable] \"num\" (line 22) (scope 1)\n"
+               "[formal variable] \"num\" (line 29) (scope 1)\n"
+               "[formal variable] \"MAX\" (line 36) (scope 1)\n"
+               "[local variable] \"exit\" (line 37) (scope 1)\n"
+               "[local variable] \"i\" (line 39) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Random.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
