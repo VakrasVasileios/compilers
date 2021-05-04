@@ -234,14 +234,10 @@ TEST_F(ParserTest, Error5) {
     GTEST_ASSERT_EQ(expected, actual);
  }
 
- TEST_F(ParserTest, Block) {
+ TEST_F(ParserTest, Block) { //CHECK THIS
     expected = libfunc_out;
-    expected += "-----------     Scope #1     -----------\n"
-            "[local variable] \"x\" (line 2) (scope 1)\n"
-            "[local variable] \"$0\" (line 0) (scope 1)\n"
-            "\n"
-            "-----------     Scope #2     -----------\n"
-            "[local variable] \"$0\" (line 0) (scope 2)\n";
+    expected +="-----------     Scope #1     -----------\n"
+               "[local variable] \"x\" (line 2) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Block.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
