@@ -114,7 +114,7 @@ TEST_F(ParserTest, Error3) {
  }
 
 TEST_F(ParserTest, Error4) {
-    expected = "Error, in line: 4. x variable cannot be redefined as a function\n";
+    expected = "Error, in line: 4. x variable, previously defined in line: 3, cannot be redefined as a function\n";
     expected += libfunc_out;
     expected += "[user function] \"f\" (line 3) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
@@ -136,54 +136,78 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error6) {
-    expected = "cannot access 'x'\ncannot access 'y'";
+    expected = "Error, in line: 11. Cannot access x, peviously defined in line: 6\n"
+               "Error, in line: 12. Cannot access y, peviously defined in line: 6\n";
     expected += libfunc_out;
+    expected += "[global variable] \"i\" (line 2) (scope 0)\n"
+               "[global variable] \"x\" (line 3) (scope 0)\n"
+               "[global variable] \"y\" (line 4) (scope 0)\n"
+               "[user function] \"foo\" (line 6) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"x\" (line 6) (scope 1)\n"
+               "[formal variable] \"y\" (line 6) (scope 1)\n"
+               "[user function] \"g\" (line 10) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error6.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error7) {
-     expected = "Error, foo is already in use as a function, in line: 4\n"
-                "Error, print is already in use as a function, in line: 5\n"
-                "Error, print is already in use as a function, in line: 6\n"
-                "Error, foo is already in use as a function, in line: 7\n";
+     expected = "Error, in line: 4. Functions are constant their value cannot be changed\n"
+               "Error, in line: 5. Functions are constant their value cannot be changed\n"
+               "Error, in line: 6. Use of increment operator with non variable type\n"
+               "Error, in line: 7. Use of decrement operator with non variable type\n";
+      expected += libfunc_out;         
+      expected += "[user function] \"foo\" (line 1) (scope 0)\n"
+                  "-----------     Scope #1     -----------\n"
+                  "[local variable] \"x\" (line 2) (scope 1)\n";         
      actual = exec("./scanner ../test/files/phase2_tests/Errors/Error7.asc");
      GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error8) {
-    expected = "\"x\" redeclared as different kind of symbol\nprevious definition of \"x\" was here";
+    expected = "Error, in line: 3. x variable, previously defined in line: 1, cannot be redefined as a function\n";
     expected += libfunc_out;
+    expected += "[global variable] \"x\" (line 1) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"y\" (line 3) (scope 1)\n"
+               "[formal variable] \"x\" (line 3) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error8.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error9) {
-    expected = "cannot access 'x'\n";
+    expected = "Error, in line: 4. Cannot access x, peviously defined in line: 1\n";
     expected += libfunc_out;
+    expected += "[user function] \"foo\" (line 1) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"x\" (line 1) (scope 1)\n"
+               "[user function] \"$\" (line 3) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error9.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error10) {
-    expected = "Error, print is already in use as a function, in line: 1\n"
-            "Error, input is already in use as a function, in line: 1\n"
-            "Error, print is already in use as a function, in line: 6\n"
-            "Error, print is already in use as a function, in line: 11\n";
+    expected =  "SHIT\n"
+               "Error, in line: 6. print library function cannot be shadowed by a user function\n"
+               "Error, in line: 11. Attempting to redefine a library function\n";
     expected += libfunc_out;
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error11) {
-    expected = "formal argument \"x\" redeclared\n previous definition of \"x\" was here";
+    expected = "Error, formal argument x already declared, in line: 1\n";
     expected += libfunc_out;
+    expected += "[user function] \"f\" (line 1) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"x\" (line 1) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error11.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error12) {
-    expected = "Error, print is already in use as a function, in line: 2\n";
+    expected = "syntax error: at line 2, before token: =\n"
+               "INPUT NOT VALID\n";
     expected += libfunc_out;
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error12.asc");
     GTEST_ASSERT_EQ(expected, actual);

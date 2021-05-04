@@ -403,7 +403,7 @@ funcdef:    FUNCTION        {
                                     InsertUserFunction($2, yylineno);
                                 else {
                                     if (IsVariable(entry))
-                                        LOGERROR(std::string($2) + " variable cannot be redefined as a function");
+                                        LOGERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(entry->get_line()) + ", cannot be redefined as a function");
                                     else if (IsLibraryFunction(entry))
                                         LOGERROR(std::string($2) + " library function cannot be shadowed by a user function");
                                     else if (IsAtCurrentScope(entry)) {
