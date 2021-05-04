@@ -41,7 +41,7 @@ bool IsVariable(SymbolTableEntry* entry) {
 
 bool IsGlobalVar(SymbolTableEntry* entry) {
     assert(entry != nullptr);
-    return IsVariable(entry) && static_cast<VariableEntry*>(entry)->get_scope() == GLOBAL_T;
+    return IsVariable(entry) && static_cast<VariableEntry*>(entry)->get_scope_type() == GLOBAL_T;
 }
 
 bool IsAtCurrentScope(SymbolTableEntry* entry) {

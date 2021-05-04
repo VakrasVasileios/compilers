@@ -1,6 +1,12 @@
 #include "../../../../include/symbol_table/symbol_table_entry/variable_entry/variable_entry.h"
 #include <assert.h>
 
+ScopeType
+VariableEntry:: get_scope_type() const {
+    return type;
+}
+
+
 std::string
 VariableEntry:: ScopeTypeToString() const {
     switch (type) {

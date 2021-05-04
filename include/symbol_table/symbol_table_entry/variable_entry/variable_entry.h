@@ -25,6 +25,10 @@ class VariableEntry : public SymbolTableEntry {
 
         virtual ~VariableEntry() = default;
         /*
+        Returns the scope type of this VariableEntry.
+        */
+        ScopeType       get_scope_type() const;
+        /*
         Logs this VariableEntry.
         */
         void            Log(std::ostream& output);
