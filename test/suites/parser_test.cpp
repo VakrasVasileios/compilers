@@ -260,13 +260,9 @@ TEST_F(ParserTest, Error5) {
  TEST_F(ParserTest, GlobalAndLocal) {
     expected = libfunc_out;
     expected += "[global variable] \"global\" (line 2) (scope 0)\n"
-            "[local variable] \"$0\" (line 0) (scope 0)\n"
-            "[user function] \"f\" (line 6) (scope 0)\n"
-            "[local variable] \"$1\" (line 0) (scope 0)\n"
-            "\n"
-            "-----------     Scope #1     -----------\n"
-            "[local variable] \"global\" (line 9) (scope 1)\n"
-            "[local variable] \"$0\" (line 0) (scope 1)\n";
+               "[user function] \"f\" (line 6) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[local variable] \"global\" (line 9) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/GlobalAndLocal.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
