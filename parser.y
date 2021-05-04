@@ -13,7 +13,10 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define       LOGERROR(message)  std::cout << "Error, in line: " << yylineno << ". " << message << std::endl
+
+    #define     LOGERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
+    #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl    
+    //#define       LOGERROR(message)  std::cout << "Error, " << "in line: " << yylineno << ". " << message  << std::endl
     //#define     LOGERROR(message)  std::cout << "Error, " << "\033[31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
 %}
 
@@ -205,11 +208,11 @@ term:         '(' expr ')'          {
 
 assignexpr:   lvalue '=' expr       {
                                         if ($1 == nullptr || $1 == NULL)
-                                            LOGERROR("Attempting to assign a value to NIL");
+                                            LOGWARNING("Attempting to assign a value to NIL");
                                         else {
                                             auto lval = Lookup($1);
                                             if (lval == nullptr)
-                                                LOGERROR("Attempting to assign a value to NIL");
+                                                LOGWARNING("Attempting to assign a value to NIL");
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
                                                 LOGERROR("Functions are constant their value cannot be changed");
                                         }

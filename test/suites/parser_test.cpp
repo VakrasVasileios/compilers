@@ -61,8 +61,8 @@ class ParserTest : public ::testing::Test {
 };
 
 TEST_F(ParserTest, Error0) {
-   expected = "Error, in line: 4. No global variable with id: Global\n"
-            "Error, in line: 4. Attempting to assign a value to NIL\n";
+   expected = "Error, in line: 4: No global variable with id: Global\n"
+            "Error, in line: 4: Attempting to assign a value to NIL\n";
    expected += libfunc_out;
    expected += "[global variable] \"x\" (line 3) (scope 0)\n";
    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error0.asc");
@@ -70,8 +70,8 @@ TEST_F(ParserTest, Error0) {
 }
 
  TEST_F(ParserTest, Error1) {
-   expected = "Error, in line: 6. Cannot access f, previously defined in line: 4\n"
-            "Error, in line: 7. Cannot access f, previously defined in line: 4\n";
+   expected = "Error, in line: 6: Cannot access f, previously defined in line: 4\n"
+            "Error, in line: 7: Cannot access f, previously defined in line: 4\n";
    expected += libfunc_out;
    expected += "[user function] \"f\" (line 3) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
@@ -82,12 +82,12 @@ TEST_F(ParserTest, Error0) {
  }
 
 TEST_F(ParserTest, Error2) {
-   expected = "Error, in line: 8. Invalid return, used outside a function block\n"
-            "Error, in line: 9. invalid keyword BREAK outside of loop\n"
-            "Error, in line: 10. invalid keyword CONTINUE outside of loop\n"
-            "Error, in line: 15. Invalid return, used outside a function block\n"
-            "Error, in line: 16. invalid keyword BREAK outside of loop\n"
-            "Error, in line: 17. invalid keyword CONTINUE outside of loop\n";
+   expected = "Error, in line: 8: Invalid return, used outside a function block\n"
+            "Error, in line: 9: invalid keyword BREAK outside of loop\n"
+            "Error, in line: 10: invalid keyword CONTINUE outside of loop\n"
+            "Error, in line: 15: Invalid return, used outside a function block\n"
+            "Error, in line: 16: invalid keyword BREAK outside of loop\n"
+            "Error, in line: 17: invalid keyword CONTINUE outside of loop\n";
    expected += libfunc_out;
    expected += "[user function] \"G\" (line 3) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
@@ -97,22 +97,22 @@ TEST_F(ParserTest, Error2) {
  }
 
 TEST_F(ParserTest, Error3) {
-   expected = "Error, in line: 10. Cannot access x, previously defined in line: 4\n";
-   expected += libfunc_out;
-   expected += "-----------     Scope #2     -----------\n"
-            "[local variable] \"x\" (line 4) (scope 2)\n"
-            "[user function] \"a\" (line 6) (scope 2)\n"
-            "-----------     Scope #3     -----------\n"
-            "[user function] \"b\" (line 8) (scope 3)\n"
-            "[user function] \"c\" (line 13) (scope 3)\n"
-            "-----------     Scope #4     -----------\n"
-            "[local variable] \"a\" (line 16) (scope 4)\n";
-   actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
+  expected = "Error, in line: 10: Cannot access x, previously defined in line: 4\n";
+  expected += libfunc_out;
+  expected += "-----------     Scope #2     -----------\n"
+          "[local variable] \"x\" (line 4) (scope 2)\n"
+          "[user function] \"a\" (line 6) (scope 2)\n"
+          "-----------     Scope #3     -----------\n"
+          "[user function] \"b\" (line 8) (scope 3)\n"
+          "[user function] \"c\" (line 13) (scope 3)\n"
+          "-----------     Scope #4     -----------\n"
+          "[local variable] \"a\" (line 16) (scope 4)\n";
+  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error4) {
-   expected = "Error, in line: 4. x variable, previously defined in line: 3, cannot be redefined as a function\n";
+   expected = "Error, in line: 4: x variable, previously defined in line: 3, cannot be redefined as a function\n";
    expected += libfunc_out;
    expected += "[user function] \"f\" (line 3) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
@@ -124,7 +124,7 @@ TEST_F(ParserTest, Error4) {
  }
 
 TEST_F(ParserTest, Error5) {
-   expected = "Error, in line: 5. Name collision with function f, previously defined in line: 4\n";
+   expected = "Error, in line: 5: Name collision with function f, previously defined in line: 4\n";
    expected += libfunc_out;
    expected += "[user function] \"f\" (line 3) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
@@ -134,8 +134,8 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error6) {
-   expected = "Error, in line: 11. Cannot access x, previously defined in line: 6\n"
-            "Error, in line: 12. Cannot access y, previously defined in line: 6\n";
+   expected = "Error, in line: 11: Cannot access x, previously defined in line: 6\n"
+            "Error, in line: 12: Cannot access y, previously defined in line: 6\n";
    expected += libfunc_out;
    expected += "[global variable] \"i\" (line 2) (scope 0)\n"
             "[global variable] \"x\" (line 3) (scope 0)\n"
@@ -150,10 +150,10 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error7) {
-   expected = "Error, in line: 4. Functions are constant their value cannot be changed\n"
-            "Error, in line: 5. Functions are constant their value cannot be changed\n"
-            "Error, in line: 6. Use of increment operator with non variable type\n"
-            "Error, in line: 7. Use of decrement operator with non variable type\n";
+   expected = "Error, in line: 4: Functions are constant their value cannot be changed\n"
+            "Error, in line: 5: Functions are constant their value cannot be changed\n"
+            "Error, in line: 6: Use of increment operator with non variable type\n"
+            "Error, in line: 7: Use of decrement operator with non variable type\n";
    expected += libfunc_out;         
    expected += "[user function] \"foo\" (line 1) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
@@ -163,7 +163,7 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error8) {
-   expected = "Error, in line: 3. x variable, previously defined in line: 1, cannot be redefined as a function\n";
+   expected = "Error, in line: 3: x variable, previously defined in line: 1, cannot be redefined as a function\n";
    expected += libfunc_out;
    expected += "[global variable] \"x\" (line 1) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
@@ -174,7 +174,7 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error9) {
-   expected = "Error, in line: 4. Cannot access x, previously defined in line: 1\n";
+   expected = "Error, in line: 4: Cannot access x, previously defined in line: 1\n";
    expected += libfunc_out;
    expected += "[user function] \"foo\" (line 1) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
@@ -185,8 +185,8 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error10) {
-   expected =  "Error, in line: 6. print library function cannot be shadowed by a user function\n"
-            "Error, in line: 11. Attempting to redefine a library function\n";
+   expected =  "Error, in line: 6: print library function cannot be shadowed by a user function\n"
+            "Error, in line: 11: Attempting to redefine a library function\n";
    expected += libfunc_out;
    expected += "[user function] \"foo\" (line 1) (scope 0)\n"
             "[user function] \"F\" (line 10) (scope 0)\n"
