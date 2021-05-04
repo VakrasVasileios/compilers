@@ -99,13 +99,13 @@ TEST_F(ParserTest, Error2) {
 TEST_F(ParserTest, Error3) {
     expected = "Error, in line: 10. Cannot access x, previously defined in line: 4\n";
     expected += libfunc_out;
-    expected += "-----------     Scope #1     -----------\n"
+    expected += "-----------     Scope #2     -----------\n"
                "[local variable] \"x\" (line 4) (scope 2)\n"
                "[user function] \"a\" (line 6) (scope 2)\n"
-               "-----------     Scope #2     -----------\n"
+               "-----------     Scope #3     -----------\n"
                "[user function] \"b\" (line 8) (scope 3)\n"
                "[user function] \"c\" (line 13) (scope 3)\n"
-               "-----------     Scope #3     -----------\n"
+               "-----------     Scope #4     -----------\n"
                "[local variable] \"a\" (line 16) (scope 4)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
     GTEST_ASSERT_EQ(expected, actual);

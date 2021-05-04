@@ -76,24 +76,24 @@ TEST_F(BlockTest, deactivate) {
 }
 
 TEST_F(BlockTest, lookup_non_inserted_entry) {
-    GTEST_ASSERT_TRUE(block.Lookup("o", 0) == nullptr);
+    GTEST_ASSERT_TRUE(block.Lookup("o") == nullptr);
 }
 
 TEST_F(BlockTest, lookup_function_entry_after_deactivating) {
     block.Insert(entry1);
     block.Deactivate();
-    GTEST_ASSERT_FALSE(block.Lookup("entry1", 0) == nullptr);
+    GTEST_ASSERT_FALSE(block.Lookup("entry1") == nullptr);
 }
 
 TEST_F(BlockTest, lookup_inactive) {
     block.Insert(entry4);
     block.Deactivate();
-    GTEST_ASSERT_TRUE(block.Lookup("entry1", 0) == nullptr);
+    GTEST_ASSERT_TRUE(block.Lookup("entry1") == nullptr);
 }
 
 TEST_F(BlockTest, lookup_active_entry) {
     block.Insert(entry1);
-    GTEST_ASSERT_EQ(block.Lookup("entry1", 0), entry1);
+    GTEST_ASSERT_EQ(block.Lookup("entry1"), entry1);
 }
 
 #ifdef TESTING
