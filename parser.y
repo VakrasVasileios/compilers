@@ -163,7 +163,7 @@ term:         '(' expr ')'          {
                                         auto entry = Lookup($2, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
-                                        else if (entry->get_type() != VAR)
+                                        else if (!IsVariable(entry))
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> ++lvalue"); 
                                     }
@@ -171,14 +171,14 @@ term:         '(' expr ')'          {
                                         auto entry = Lookup($1, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to increase a NIL constant");
-                                        else if (entry->get_type() != VAR)
+                                        else if (!IsVariable(entry))
                                             LOGERROR("Use of increment operator with non variable type");
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto entry = Lookup($2, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
-                                        else if (entry->get_type() != VAR)
+                                        else if (!IsVariable(entry))
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> --lvaule"); 
                                     }
@@ -186,7 +186,7 @@ term:         '(' expr ')'          {
                                         auto entry = Lookup($1, yylineno);
                                         if(entry == nullptr)
                                             LOGERROR("Attempting to decrease a NIL constant");
-                                        else if (entry->get_type() != VAR)
+                                        else if (!IsVariable(entry))
                                             LOGERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
                                     }

@@ -24,6 +24,94 @@ ProgramStack  program_stack;
 
 std::list<FormalVariableEntry*> stashed_formal_arguments;
 
+bool IsLibraryFunction(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
+    return entry->get_type() == LIB_FUNC;
+}
+
+bool IsUserFunction(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
+    return entry->get_type() == USER_FUNC;
+}
+
+bool IsVariable(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
+    return entry->get_type() == VAR;
+}
+
+bool IsGlobalVar(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
+    return IsVariable(entry) && static_cast<VariableEntry*>(entry)->get_scope() == GLOBAL_T;
+}
+
+bool IsAtCurrentScope(SymbolTableEntry* entry) {
+    assert(entry != nullptr);
+    return entry->get_scope() == current_scope;
+}
+
+bool ScopeIsGlobal() {
+    return current_scope == global_scope;
+}
+
+bool IsMethodCall() {
+    return method_call;
+}
+
+bool IsValidReturn(void) {
+    return valid_return;
+}
+
+unsigned int GetLoopDepth() {
+    return loop_depth;
+}
+
+SymbolTableEntry* LookupGlobal(const char* name, unsigned int lineno) {
+    assert(name != nullptr);
+    return program_stack.LookupGlobal(name, lineno);
+}
+
+SymbolTableEntry* Lookup(const char* name, unsigned int lineno) {
+    assert(name != nullptr);
+    return program_stack.Lookup(name, lineno);
+}
+
+SymbolTableEntry* LookupFunc(const char* name) {
+    assert(name != nullptr);
+    return program_stack.LookupFunc(name);
+}
+
+SymbolTableEntry* InsertLocalVariable(const char* name, unsigned int line) {
+    assert(name != nullptr);
+    SymbolTableEntry* entry = new LocalVariableEntry(name, line, current_scope);
+    program_stack.Top()->Insert(entry);
+
+    return entry;
+}
+SymbolTableEntry* InsertGlobalVariable(const char* name, unsigned int line) {
+    assert(name != nullptr);
+    SymbolTableEntry* entry = new GlobalVariableEntry(name, line, current_scope);
+    program_stack.Top()->Insert(entry);
+    
+    return entry;
+}
+
+SymbolTableEntry* InsertUserFunction(const char* name, unsigned int line) {
+    assert(name != nullptr);
+    SymbolTableEntry* entry = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert(entry);
+    
+    return entry;
+}
+
+SymbolTableEntry* InsertUserFunction(unsigned int line) {
+    std::string an = "$";
+    an += std::to_string(++anonymus_funcs_counter);
+    SymbolTableEntry* entry = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
+    program_stack.Top()->Insert(entry);
+    
+    return entry;
+}
+
 void InitLibraryFunctions() {  
     IncreaseScope(); 
     program_stack.Top()->Insert(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
@@ -52,25 +140,12 @@ void DecreaseScope() {
     --current_scope;
 }
 
-// unsigned int 
-// GetCurrentScope() {
-//     return current_scope;
-// }
-
 void SetMethodCall(bool methodcall) {
     ::method_call = method_call;
 }
 
-bool IsMethodCall() {
-    return method_call;
-}
-
 void  SetValidReturn(bool valid_return) {
     ::valid_return = valid_return;
-}
-
-bool IsValidReturn(void) {
-    return valid_return;
 }
 
 void IncreaseLoopDepth() {
@@ -79,10 +154,6 @@ void IncreaseLoopDepth() {
 
 void DecreaseLoopDepth() {
     loop_depth--;
-}
-
-unsigned int GetLoopDepth() {
-    return loop_depth;
 }
 
 void HideLowerScopes() {
@@ -94,94 +165,6 @@ void HideLowerScopes() {
 
 void EnableLowerScopes() {
     program_stack.ActivateLowerScopes();
-}
-
-bool ScopeIsGlobal() {
-    return current_scope == global_scope;
-}
-
-SymbolTableEntry* LookupGlobal(const char* name, unsigned int lineno) {
-    assert(name != nullptr);
-    return program_stack.LookupGlobal(name, lineno);
-}
-
-SymbolTableEntry* Lookup(const char* name, unsigned int lineno) {
-    assert(name != nullptr);
-    return program_stack.Lookup(name, lineno);
-}
-
-SymbolTableEntry* LookupFunc(const char* name) {
-    assert(name != nullptr);
-    return program_stack.LookupFunc(name);
-}
-
-bool IsLibraryFunction(SymbolTableEntry* entry) {
-    assert(entry != nullptr);
-    return entry->get_type() == LIB_FUNC;
-}
-
-bool IsUserFunction(SymbolTableEntry* entry) {
-    assert(entry != nullptr);
-    return entry->get_type() == USER_FUNC;
-}
-
-bool IsVariable(SymbolTableEntry* entry) {
-    assert(entry != nullptr);
-    return entry->get_type() == VAR;
-}
-
-bool IsGlobalVar(SymbolTableEntry* entry) {
-    assert(entry != nullptr);
-    return IsVariable(entry) && static_cast<VariableEntry*>(entry)->get_scope() == GLOBAL_T;
-}
-
-bool IsAtCurrentScope(SymbolTableEntry* entry) {
-    assert(entry != nullptr);
-    return entry->get_scope() == current_scope;
-}
-
-// bool IsFormalVariable(SymbolTableEntry* entry) {
-//     return entry != nullptr && entry->get_type() == FORMAL_VAR;
-// }
-
-// bool IsGlobalVariable(SymbolTableEntry* entry) {
-//     return entry = nullptr && entry->get_type() == GLOBAL_VAR;
-// } 
-
-// bool IsLocalVariable(SymbolTableEntry* entry) {
-//     return entry != nullptr && entry->get_type() == LOCAL_VAR;
-// }
-
-SymbolTableEntry* InsertLocalVariable(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    SymbolTableEntry* entry = new LocalVariableEntry(name, line, current_scope);
-    program_stack.Top()->Insert((LocalVariableEntry*) entry);
-
-    return entry;
-}
-SymbolTableEntry* InsertGlobalVariable(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    SymbolTableEntry* entry = new GlobalVariableEntry(name, line, current_scope);
-    program_stack.Top()->Insert((GlobalVariableEntry*) entry);
-    
-    return entry;
-}
-
-SymbolTableEntry* InsertUserFunction(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    SymbolTableEntry* entry = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
-    program_stack.Top()->Insert((UserFunctionEntry*) entry);
-    
-    return entry;
-}
-
-SymbolTableEntry* InsertUserFunction(unsigned int line) {
-    std::string an = "$";
-    an += std::to_string(++anonymus_funcs_counter);
-    SymbolTableEntry* entry = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
-    program_stack.Top()->Insert((UserFunctionEntry*)entry);
-    
-    return entry;
 }
 
 void PushStashedFormalArguments(void) { 
