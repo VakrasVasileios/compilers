@@ -407,8 +407,8 @@ funcdef:    FUNCTION        {
                                     else if (IsLibraryFunction(entry))
                                         LOGERROR(std::string($2) + " library function cannot be shadowed by a user function");
                                     else if (IsAtCurrentScope(entry)) {
-                                        std::string message = std::string($2) + " name collision with function defined in line ";
-                                        message += (int)entry->get_line();
+                                        std::string message =  "Name collision with function " +  std::string($2) + ", previously defined in line: ";
+                                        message += std::to_string(entry->get_line());
                                         LOGERROR(message);
                                     }
                                     else
