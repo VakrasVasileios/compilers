@@ -177,10 +177,10 @@ SymbolTableEntry* InsertUserFunction(const char* name, unsigned int line) {
 
 SymbolTableEntry* InsertUserFunction(unsigned int line) {
     std::string an = "$";
-    an += anonymus_funcs_counter;
+    an += std::to_string(++anonymus_funcs_counter);
     SymbolTableEntry* entry = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
     program_stack.Top()->Insert((UserFunctionEntry*)entry);
-
+    
     return entry;
 }
 

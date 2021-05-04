@@ -215,24 +215,21 @@ TEST_F(ParserTest, Error5) {
 
  TEST_F(ParserTest, Anonymous) {
     expected = libfunc_out;
-    expected += "[user function] \"$0\" (line 5) (scope 0)\n"
-            "[user function] \"$4\" (line 28) (scope 0)\n"
-            "\n"
-            "-----------     Scope #1     -----------\n"
-            "[formal argument] \"x\" (line 5) (scope 1)\n"
-            "[formal argument] \"AnonymousOne\" (line 5) (scope 1)\n"
-            "[user function] \"$1\" (line 10) (scope 1)\n"
-            "[formal argument] \"x\" (line 28) (scope 1)\n"
-            "[formal argument] \"AnonymousFive\" (line 28) (scope 1)\n"
-            "\n"
-            "-----------     Scope #2     -----------\n"
-            "[formal argument] \"AnonymousTwo\" (line 10) (scope 2)\n"
-            "[user function] \"$2\" (line 15) (scope 2)\n"
-            "[user function] \"$3\" (line 20) (scope 2)\n"
-            "\n"
-            "-----------     Scope #3     -----------\n"
-            "[formal argument] \"AnonymousThree\" (line 15) (scope 3)\n"
-            "[formal argument] \"AnonymousFour\" (line 20) (scope 3)\n";
+    expected += "[user function] \"$1\" (line 5) (scope 0)\n"
+               "[user function] \"$5\" (line 28) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"x\" (line 5) (scope 1)\n"
+               "[formal variable] \"AnonymousOne\" (line 5) (scope 1)\n"
+               "[user function] \"$2\" (line 10) (scope 1)\n"
+               "[formal variable] \"x\" (line 28) (scope 1)\n"
+               "[formal variable] \"AnonymousFive\" (line 28) (scope 1)\n"
+               "-----------     Scope #2     -----------\n"
+               "[formal variable] \"AnonymousTwo\" (line 10) (scope 2)\n"
+               "[user function] \"$3\" (line 15) (scope 2)\n"
+               "[user function] \"$4\" (line 20) (scope 2)\n"
+               "-----------     Scope #3     -----------\n"
+               "[formal variable] \"AnonymousThree\" (line 15) (scope 3)\n"
+               "[formal variable] \"AnonymousFour\" (line 20) (scope 3)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Working/Anonymous.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
