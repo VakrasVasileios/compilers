@@ -97,7 +97,7 @@ TEST_F(ParserTest, Error2) {
  }
 
 TEST_F(ParserTest, Error3) {
-    expected = "Error, in line: 10. Cannot access x, peviously defined in line: 4\n";
+    expected = "Error, in line: 10. Cannot access x, previously defined in line: 4\n";
     expected += libfunc_out;
     expected += "-----------     Scope #1     -----------\n"
                "[local variable] \"x\" (line 4) (scope 2)\n"
@@ -106,7 +106,6 @@ TEST_F(ParserTest, Error3) {
                "[user function] \"b\" (line 8) (scope 3)\n"
                "[user function] \"c\" (line 13) (scope 3)\n"
                "-----------     Scope #3     -----------\n"
-               "[local variable] \"x\" (line 10) (scope 4)\n"
                "[local variable] \"a\" (line 16) (scope 4)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -135,8 +134,8 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error6) {
-    expected = "Error, in line: 11. Cannot access x, peviously defined in line: 6\n"
-               "Error, in line: 12. Cannot access y, peviously defined in line: 6\n";
+    expected = "Error, in line: 11. Cannot access x, previously defined in line: 6\n"
+               "Error, in line: 12. Cannot access y, previously defined in line: 6\n";
     expected += libfunc_out;
     expected += "[global variable] \"i\" (line 2) (scope 0)\n"
                "[global variable] \"x\" (line 3) (scope 0)\n"
@@ -175,21 +174,26 @@ TEST_F(ParserTest, Error5) {
  }
 
  TEST_F(ParserTest, Error9) {
-    expected = "Error, in line: 4. Cannot access x, peviously defined in line: 1\n";
+    expected = "Error, in line: 4. Cannot access x, previously defined in line: 1\n";
     expected += libfunc_out;
     expected += "[user function] \"foo\" (line 1) (scope 0)\n"
                "-----------     Scope #1     -----------\n"
                "[formal variable] \"x\" (line 1) (scope 1)\n"
-               "[user function] \"$\" (line 3) (scope 1)\n";
+               "[user function] \"$1\" (line 3) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error9.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
 
  TEST_F(ParserTest, Error10) {
-    expected =  "SHIT\n"
-               "Error, in line: 6. print library function cannot be shadowed by a user function\n"
+    expected =  "Error, in line: 6. print library function cannot be shadowed by a user function\n"
                "Error, in line: 11. Attempting to redefine a library function\n";
     expected += libfunc_out;
+    expected += "[user function] \"foo\" (line 1) (scope 0)\n"
+               "[user function] \"F\" (line 10) (scope 0)\n"
+               "-----------     Scope #1     -----------\n"
+               "[formal variable] \"print\" (line 1) (scope 1)\n"
+               "[formal variable] \"input\" (line 1) (scope 1)\n"
+               "[local variable] \"geia\" (line 3) (scope 1)\n";
     actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
     GTEST_ASSERT_EQ(expected, actual);
  }
