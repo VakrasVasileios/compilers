@@ -4,22 +4,21 @@
 #include <string>
 
 enum ExprType {
-    /*
-    The type of a Library Function.
-    */
-    LIB_FUNC = 0,
-    /*
-    The type of a User Function.
-    */
-    USER_FUNC = 1,
-    /*
-    The type of a Constant.
-    */
-    CONST = 2,
-    /*
-    The type of a Variable.
-    */
-    VAR = 3
+    LIB_FUNC,
+    USER_FUNC,
+
+    CONST_NUM,
+    CONST_BOOL,
+    CONST_STR,
+    
+    NIL_t,
+
+    ARITH_EXPR,
+    BOOL_EXPR,
+    ASSIGN_EXPR,
+    NEWTABLE_EXPR,
+    VAR,
+    TABLE_ITEM
 };
 
 /*
@@ -36,13 +35,15 @@ public:
     Returns a read access to this Expression type.
     */
     ExprType        get_type() const;
+
+    virtual void    LogExpr(std::ostream& output) {};
 protected:
     /*
     Returns a read access to this Expression type as a string.
     */
     std::string     TypeToString(void) const;
 private:
-    ExprType type;    
+    ExprType type;
 };
 
 #endif

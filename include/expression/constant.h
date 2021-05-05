@@ -3,17 +3,7 @@
 
 #include "expression.h"
 #include <string>
-
-/*
-Provides a type of a constant expression.
-*/
-enum const_t {
-    INT_T = 0,
-    DOUBLE_T = 1,
-    STRING_T = 2,
-    BOOL_T = 3,
-    NIL_T = 4
-};
+#include <ostream>
 
 /*
 Provides a constant expression with a type and a value.
@@ -24,37 +14,40 @@ public:
     /*
     The Parameterized Constructor of this Constant. Sets this Constant int value. 
     */
-    Constant(int _num) : Expression(CONST), intNum(_num), type(INT_T) {}
+    Constant(int _num) : Expression(CONST_NUM), num(_num) {}
     /*
     The Parameterized Constructor of this Constant. Sets this Constant double value. 
     */
-    Constant(double _num) : Expression(CONST), doubleNum(_num), type(DOUBLE_T) {}
+    Constant(double _num) : Expression(CONST_NUM), num(_num) {}
     /*
     The Parameterized Constructor of this Constant. Sets this Constant string value. 
     */
-    Constant(const char* _str) : Expression(CONST), str(std::string(_str)), type(STRING_T) {}
+    Constant(const char* _str) : Expression(CONST_STR), str(std::string(_str)) {}
     /*
     The Parameterized Constructor of this Constant. Sets this Constant boolean value. 
     */
-    Constant(bool _val) : Expression(CONST),  boolVal(_val), type(BOOL_T) {}
+    Constant(bool _val) : Expression(CONST_BOOL), boolVal(_val) {}
 
-    Constant(std::nullptr_t NIL) : Expression(CONST), NIL(NIL), type(NIL_T) {}
+    Constant(std::nullptr_t _nil) : Expression(NIL_t), _NIL(_nil) {}
     /*
     Returns a read access to this Constant value.
     */
     template<typename typ>
     typ                  get_value(void) const;
 
+    void                 LogExpr(std::ostream& output);
 private:
-    const_t type;
-    
     union {
-        int             intNum;
-        double          doubleNum;
+        double          num;
         std::string     str;
         bool            boolVal;
-        std::nullptr_t  NIL;
+        std::nullptr_t  _NIL;
     };
+
+    double getDouble() { return num; }
+    std::string getStr() {return str; }
+    bool getBool() {return boolVal; }
+    std::nullptr_t getNil() { return nullptr; }
 };
 
 #endif

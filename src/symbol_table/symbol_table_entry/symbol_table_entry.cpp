@@ -33,3 +33,8 @@ SymbolTableEntry:: Log(std::ostream& output) {
             << " (line " << get_line() << ")" 
             << " (scope " << get_scope() << ")";
 }
+
+void 
+SymbolTableEntry:: LogExpr(std::ostream& output) {
+    output << id;
+}

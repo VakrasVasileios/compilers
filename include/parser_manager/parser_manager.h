@@ -11,6 +11,7 @@
 #include "../program_stack/program_stack.h"
 #include "../expression/expression.h"
 #include "../expression/constant.h"
+#include "../quad/quad.h"
 #include <fstream>
 #include <string>
 
@@ -115,6 +116,8 @@ void                StashFormalArgument(const char* name, unsigned int line);
 Logs the symbol table contents.
 */
 void                LogSymbolTable(std::ostream& output);
+
+void                LogQuads(std::ostream& output);
 /*
 Searches for a symbol table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
@@ -133,6 +136,8 @@ Returns a read/write access to a reference to the entry if it's found, else null
 It's a checked runtime error for the name to be null.
 */
 SymbolTableEntry*   LookupFunc(const char* name);
+
+void                Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2);
 /*
 Inserts a local variable to the symbol table.
 Returns a reference to the entry inserted.

@@ -38,6 +38,7 @@ class SymbolTableEntry : public Expression {
         Sets this SymbolTableEntry activeness.
         */
         void                    set_active(bool active);
+        void                    LogExpr(std::ostream& output);
         /*
         Logs this SymbolTableEntry.
         */

@@ -8,6 +8,8 @@
 #define LIB_FUNC_LINE  0
 #define OUT_OF_SCOPE  -1
 
+#define DEFAULT_LABEL -1
+
 const unsigned int global_scope = 0;
 unsigned int current_scope = OUT_OF_SCOPE;
 
@@ -18,11 +20,14 @@ unsigned int return_depth = 0;
 
 unsigned int anonymus_funcs_counter = 0;
 
-SymbolTable symbol_table;
+SymbolTable         symbol_table;
 
-ProgramStack  program_stack;
+ProgramStack        program_stack;
+
+std::vector<Quad>   quads;
 
 std::list<FormalVariableEntry*> stashed_formal_arguments;
+
 
 bool IsLibraryFunction(SymbolTableEntry* entry) {
     assert(entry != nullptr);
@@ -78,6 +83,28 @@ SymbolTableEntry* Lookup(const char* name) {
 SymbolTableEntry* LookupFunc(const char* name) {
     assert(name != nullptr);
     return program_stack.LookupFunc(name);
+}
+
+void
+Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2) {
+    assert(result != nullptr);
+    assert(arg2 != nullptr);
+    int label = DEFAULT_LABEL;
+    int line = quads.size() + 1;
+    // if (op == JUMP)
+    //     // put in stack
+    // else if (op == IF_EQ)
+    //     label = line + 2;
+    // else
+    //     label = line + 1;
+    Quad q = quad(op, result, arg1, arg2, label, line);
+    quads.push_back(q);
+}
+
+void LogQuads(std::ostream& output) {
+    for (auto quad : quads) {
+        output << quad << std::endl;
+    }
 }
 
 SymbolTableEntry* InsertLocalVariable(const char* name, unsigned int line) {

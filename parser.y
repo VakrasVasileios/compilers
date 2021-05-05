@@ -24,7 +24,7 @@
     char*                   stringValue;
     int                     intValue;
     double                  doubleValue;
-    class Expression*       expr;
+    class Expression*       expression;
     class Constant*         con;
 }
 
@@ -37,7 +37,7 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <expr> primary term expr
+%type <expression> primary term expr assignexpr
 %type <con> const
 %type <stringValue> member lvalue
 
@@ -207,14 +207,24 @@ term:         '(' expr ')'          {
             ;
 
 assignexpr:   lvalue '=' expr       {
-                                        if ($1 == nullptr || $1 == NULL)
+                                        if ($1 == nullptr || $1 == NULL) {
                                             LOGWARNING("Attempting to assign a value to NIL");
+                                            // $$ = lval;
+                                            // Emit(ASSIGN_t, lval, nullptr, $2);
+                                        }
                                         else {
                                             auto lval = Lookup($1);
-                                            if (lval == nullptr)
+                                            if (lval == nullptr) {
                                                 LOGWARNING("Attempting to assign a value to NIL");
+                                                // $$ = lval;
+                                                // Emit(ASSIGN_t, lval, nullptr, $2);
+                                            }
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
                                                 LOGERROR("Functions are constant their value cannot be changed");
+                                            else {
+                                                $$ = lval;
+                                                Emit(ASSIGN_t, lval, nullptr, $3);
+                                            }
                                         }
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
@@ -294,14 +304,14 @@ lvalue:       ID                    {
                                     }
             ;
 
-member:     lvalue '.' ID           { 
+member:     lvalue '.' ID           {
                                         $$=$3;
                                         DLOG("member -> lvalue.id");
                                     }
-            | lvalue '[' expr ']'   { 
+            | lvalue '[' expr ']'   {
                                         DLOG("member -> lvalue[expr]"); 
-                                    }   
-            | call '.' ID           { 
+                                    }
+            | call '.' ID           {
                                         $$=$3;
                                         DLOG("member -> call.id");
                                     }
@@ -313,7 +323,7 @@ member:     lvalue '.' ID           {
 call:       call '(' elist ')'              {
                                                 DLOG("call -> call(elist)");
                                             }
-            | lvalue callsuffix             {   
+            | lvalue callsuffix             {
                                                 if(!IsMethodCall()) {
                                                     auto entry = LookupFunc($1);
                                                     if (entry == nullptr || !entry->is_active())
@@ -559,7 +569,9 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    LogSymbolTable(std::cout);
+    LogQuads(std::cout);
+
+    //LogSymbolTable(std::cout);
 
     return 0;
 }
