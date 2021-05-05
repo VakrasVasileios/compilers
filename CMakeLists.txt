@@ -71,3 +71,11 @@ target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table.cpp)
 target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/symbol_table_entry.cpp)
 target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/function_entry/function_entry.cpp)
 target_sources(symbol_table_test PRIVATE src/symbol_table/symbol_table_entry/variable_entry/variable_entry.cpp)
+
+#quad_test
+
+add_executable(quad_test test/suites/quad_test.cpp)
+
+target_link_libraries(quad_test PRIVATE gtest)
+
+target_compile_definitions(quad_test PRIVATE TESTING=1)
