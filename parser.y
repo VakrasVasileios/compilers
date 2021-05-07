@@ -451,27 +451,27 @@ funcdef:    FUNCTION        {
             ;
 
 const:        INTNUM    {
-                            $$ = new Constant($1);
+                            $$ = new IntConstant($1);
                             DLOG("const -> INTNUM");
                         }
             | DOUBLENUM { 
-                            $$ = new Constant($1); 
+                            $$ = new DoubleConstant($1); 
                             DLOG("const -> DOUBLENUM"); 
                         }
             | STRING    { 
-                            $$ = new Constant($1);
+                            $$ = new StringConstant($1);
                             DLOG("const -> STRING"); 
                         }
             | NIL       { 
-                            $$ = new Constant(nullptr);
+                            $$ = new NilConstant(nullptr);
                             DLOG("const -> NIL"); 
                         }
             | TRUE      { 
-                            $$ = new Constant(true);
+                            $$ = new BoolConstant(true);
                             DLOG("const -> TRUE"); 
                         }
             | FALSE     {   
-                            $$ = new Constant(false);
+                            $$ = new BoolConstant(false);
                             DLOG("const -> FALSE");
                         }
             ;

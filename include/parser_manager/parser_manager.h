@@ -10,7 +10,12 @@
 #include "../symbol_table/symbol_table.h"
 #include "../program_stack/program_stack.h"
 #include "../expression/expression.h"
-#include "../expression/constant.h"
+#include "../constant/constant.h"
+#include "../constant/bool_constant.h"
+#include "../constant/nil_constant.h"
+#include "../constant/string_constant.h"
+#include "../constant/numeric_constant/double_constant.h"
+#include "../constant/numeric_constant/int_constant.h"
 #include "../quad/quad.h"
 #include <fstream>
 #include <string>

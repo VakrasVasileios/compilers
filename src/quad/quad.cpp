@@ -63,8 +63,8 @@ std::ostream&
 operator<<(std::ostream& os, const quad _quad) {
     os << std::to_string(_quad.line) << ":   " << OpCodeToString(_quad.op) << " ";
     if(_quad.arg1 != nullptr)
-        _quad.arg1->LogExpr(os);
-    _quad.arg2->LogExpr(os);
+        os << _quad.arg1;
+    os << _quad.arg2 << " " << _quad.result;
 
     return os;
 }

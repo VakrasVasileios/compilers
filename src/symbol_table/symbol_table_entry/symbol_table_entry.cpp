@@ -34,7 +34,8 @@ SymbolTableEntry:: Log(std::ostream& output) {
             << " (scope " << get_scope() << ")";
 }
 
-void 
-SymbolTableEntry:: LogExpr(std::ostream& output) {
-    output << id;
+
+std::ostream&
+SymbolTableEntry:: do_print(std::ostream& os) const {
+    return os << id;
 }

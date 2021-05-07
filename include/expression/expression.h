@@ -34,14 +34,16 @@ public:
     /*
     Returns a read access to this Expression type.
     */
-    ExprType        get_type() const;
-
-    virtual void    LogExpr(std::ostream& output) {};
+    ExprType                get_type() const;
+   
+    friend std::ostream&    operator << (std::ostream& os, const Expression* expression);
 protected:
     /*
     Returns a read access to this Expression type as a string.
     */
     std::string     TypeToString(void) const;
+
+    virtual std::ostream&   do_print(std::ostream&) const = 0;
 private:
     ExprType type;
 };

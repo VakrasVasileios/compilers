@@ -38,6 +38,6 @@ Expression:: TypeToString(void) const {
     }
 }
 
-// void
-// Expression:: LogExpr(std::ostream& output) {
-// }
+std::ostream& operator << (std::ostream& os, const Expression* expression) {
+    return expression->do_print(os);
+}

@@ -10,6 +10,8 @@ SRC += src/parser_manager/*.cpp \
 		src/symbol_table/symbol_table_entry/function_entry/*.cpp \
 		src/symbol_table/symbol_table_entry/variable_entry/*.cpp \
 		src/expression/*.cpp \
+		src/constant/*.cpp \
+		src/constant/numeric_constant/*.cpp \
 		src/quad/*.cpp
 
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
