@@ -26,30 +26,30 @@ ProgramStack        program_stack;
 
 std::vector<Quad>   quads;
 
-std::list<FormalVariableEntry*> stashed_formal_arguments;
+std::list<FormalVariable*> stashed_formal_arguments;
 
 
-bool IsLibraryFunction(SymbolTableEntry* entry) {
+bool IsLibraryFunction(Symbol* entry) {
     assert(entry != nullptr);
     return entry->get_type() == LIB_FUNC;
 }
 
-bool IsUserFunction(SymbolTableEntry* entry) {
+bool IsUserFunction(Symbol* entry) {
     assert(entry != nullptr);
     return entry->get_type() == USER_FUNC;
 }
 
-bool IsVariable(SymbolTableEntry* entry) {
+bool IsVariable(Symbol* entry) {
     assert(entry != nullptr);
     return entry->get_type() == VAR;
 }
 
-bool IsGlobalVar(SymbolTableEntry* entry) {
+bool IsGlobalVar(Symbol* entry) {
     assert(entry != nullptr);
-    return IsVariable(entry) && static_cast<VariableEntry*>(entry)->get_scope_type() == GLOBAL_T;
+    return IsVariable(entry) && static_cast<Variable*>(entry)->get_space() == GLOBALVAR;
 }
 
-bool IsAtCurrentScope(SymbolTableEntry* entry) {
+bool IsAtCurrentScope(Symbol* entry) {
     assert(entry != nullptr);
     return entry->get_scope() == current_scope;
 }
@@ -70,17 +70,17 @@ unsigned int GetReturnDepth() {
     return return_depth;
 }
 
-SymbolTableEntry* LookupGlobal(const char* name) {
+Symbol* LookupGlobal(const char* name) {
     assert(name != nullptr);
     return program_stack.LookupGlobal(name);
 }
 
-SymbolTableEntry* Lookup(const char* name) {
+Symbol* Lookup(const char* name) {
     assert(name != nullptr);
     return program_stack.Lookup(name);
 }
 
-SymbolTableEntry* LookupFunc(const char* name) {
+Symbol* LookupFunc(const char* name) {
     assert(name != nullptr);
     return program_stack.LookupFunc(name);
 }
@@ -101,39 +101,33 @@ Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2) {
     quads.push_back(q);
 }
 
-void LogQuads(std::ostream& output) {
-    for (auto quad : quads) {
-        output << quad << std::endl;
-    }
-}
-
-SymbolTableEntry* InsertLocalVariable(const char* name, unsigned int line) {
+Symbol* InsertLocalVariable(const char* name, unsigned int line) {
     assert(name != nullptr);
-    SymbolTableEntry* entry = new LocalVariableEntry(name, line, current_scope);
+    Symbol* entry = new LocalVariable(name, line, current_scope);
     program_stack.Top()->Insert(entry);
 
     return entry;
 }
-SymbolTableEntry* InsertGlobalVariable(const char* name, unsigned int line) {
+Symbol* InsertGlobalVariable(const char* name, unsigned int line) {
     assert(name != nullptr);
-    SymbolTableEntry* entry = new GlobalVariableEntry(name, line, current_scope);
+    Symbol* entry = new GlobalVariable(name, line, current_scope);
     program_stack.Top()->Insert(entry);
     
     return entry;
 }
 
-SymbolTableEntry* InsertUserFunction(const char* name, unsigned int line) {
+Symbol* InsertUserFunction(const char* name, unsigned int line) {
     assert(name != nullptr);
-    SymbolTableEntry* entry = new UserFunctionEntry(name, line, current_scope, stashed_formal_arguments);
+    Symbol* entry = new UserFunction(name, line, current_scope, stashed_formal_arguments);
     program_stack.Top()->Insert(entry);
     
     return entry;
 }
 
-SymbolTableEntry* InsertUserFunction(unsigned int line) {
+Symbol* InsertUserFunction(unsigned int line) {
     std::string an = "$";
     an += std::to_string(++anonymus_funcs_counter);
-    SymbolTableEntry* entry = new UserFunctionEntry(an, line, current_scope, stashed_formal_arguments);
+    Symbol* entry = new UserFunction(an, line, current_scope, stashed_formal_arguments);
     program_stack.Top()->Insert(entry);
     
     return entry;
@@ -141,18 +135,18 @@ SymbolTableEntry* InsertUserFunction(unsigned int line) {
 
 void InitLibraryFunctions() {  
     IncreaseScope(); 
-    program_stack.Top()->Insert(new LibraryFunctionEntry("print", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("input", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("objectmemberkeys", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("objecttotalmembers", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("objectcopy", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("totalarguments", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("argument", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("typeof", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("strtonum", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("sqrt", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("cos", LIB_FUNC_LINE, global_scope));
-    program_stack.Top()->Insert(new LibraryFunctionEntry("sin", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("print", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("input", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("objectmemberkeys", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("objecttotalmembers", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("objectcopy", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("totalarguments", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("argument", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("typeof", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("strtonum", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("sqrt", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("cos", LIB_FUNC_LINE, global_scope));
+    program_stack.Top()->Insert(new LibraryFunction("sin", LIB_FUNC_LINE, global_scope));
 }
 
 void IncreaseScope() {
@@ -220,11 +214,17 @@ IsStashed(const char* name) {
 void StashFormalArgument(const char* name, unsigned int line) {
     assert(name != nullptr);
     if (!IsStashed(name))
-        stashed_formal_arguments.push_back(new FormalVariableEntry(name, line, current_scope + 1));
+        stashed_formal_arguments.push_back(new FormalVariable(name, line, current_scope + 1));
     else
         std::cout << "Error, formal argument " << name << " already declared, in line: " << line << std::endl;
 }
 
 void LogSymbolTable(std::ostream& output) {
     output << symbol_table;
+}
+
+void LogQuads(std::ostream& output) {
+    for (auto quad : quads) {
+        output << quad << std::endl;
+    }
 }

@@ -21,10 +21,10 @@ ProgramStack:: Pop() {
     block_list.pop_back();
 }
 
-SymbolTableEntry*
+Symbol*
 ProgramStack:: Lookup(std::string name) {
     auto iter = block_list.end();
-    SymbolTableEntry* found;
+    Symbol* found;
     do {
         --iter;
         auto block = (*iter);
@@ -36,7 +36,7 @@ ProgramStack:: Lookup(std::string name) {
     return nullptr;
 }
 
-SymbolTableEntry*
+Symbol*
 ProgramStack:: LookupGlobal(std::string name) {
     auto iter = block_list.begin();
     auto block = (*iter);
@@ -44,10 +44,10 @@ ProgramStack:: LookupGlobal(std::string name) {
     return block->Lookup(name);
 }
 
-SymbolTableEntry*
+Symbol*
 ProgramStack:: LookupFunc(std::string name) {
     auto iter = block_list.end();
-    SymbolTableEntry* found;
+    Symbol* found;
     do {
         --iter;
         auto block = (*iter);

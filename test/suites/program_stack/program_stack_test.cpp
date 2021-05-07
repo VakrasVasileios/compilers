@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include "../../../include/program_stack/program_stack.h"
 #include "../../../include/block/block.h"
-#include "../../../include/symbol_table/symbol_table_entry/function_entry/user_function_entry.h"
-#include "../../../include/symbol_table/symbol_table_entry/symbol_table_entry.h"
-#include "../../../include/symbol_table/symbol_table_entry/variable_entry/local_variable_entry.h"
+#include "../../../include/expression/symbol/function/user_function.h"
+#include "../../../include/expression/symbol/symbol.h"
+#include "../../../include/expression/symbol/variable/local_variable.h"
 
 class ProgramStackTest : public ::testing::Test {
     protected:
@@ -11,15 +11,15 @@ class ProgramStackTest : public ::testing::Test {
         Block* block1;
         Block* block2;
         Block* block3;
-        UserFunctionEntry* ss;
-        LocalVariableEntry* entry;
+        UserFunction* ss;
+        LocalVariable* entry;
 
         void SetUp() override {
             block1 = new Block();
             block2 = new Block();
             block3 = new Block();
-            ss = new UserFunctionEntry("ss", 99, 0);
-            entry = new LocalVariableEntry("entry", 0, 0);
+            ss = new UserFunction("ss", 99, 0);
+            entry = new LocalVariable("entry", 0, 0);
         }
 };
 

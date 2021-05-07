@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-std::list<SymbolTableEntry*>
+std::list<Symbol*>
 Block:: get_entries() const {
     return entries;
 }
@@ -16,32 +16,26 @@ Block:: Activate() {
 void
 Block:: Deactivate() {
     for(auto entry : entries) {
-        if (entry->get_type() == VAR) // deactivate variables only
+        if (entry->get_type() == VAR)
             entry->set_active(false);
     }
 }   
 
-SymbolTableEntry*
+Symbol*
 Block:: Lookup(std::string id) {
     for(auto entry : entries) {
         if (entry->get_id() == id) 
             return entry;
-            // if (entry->is_active())
-            //     return entry;
-            // else {
-            //     if(log_flag)
-            //         std::cout << "Error, in line: " << lineno << ". Cannot access " << id  << ", peviously defined in line: " << entry->get_line() << std::endl;
-            //     return nullptr;   
     }
 
     return nullptr;
 }
 
-bool IsAFUnctionEntry(SymbolTableEntry* entry) {
+bool IsAFUnctionEntry(Symbol* entry) {
     return entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC;
 }
 
-SymbolTableEntry*
+Symbol*
 Block:: LookupFunc(std::string id) {
     for(auto entry : entries) {
         if (entry->get_id() == id && (IsAFUnctionEntry(entry))) {
@@ -53,15 +47,14 @@ Block:: LookupFunc(std::string id) {
 }
 
 void 
-Block:: Insert(SymbolTableEntry* entry) {
+Block:: Insert(Symbol* entry) {
     entries.push_back(entry);
 }
 
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
     for(auto entry : block.entries) {
-        entry->Log(os);
-        os << "\n";
+        os << entry << "\n";
     }
     return os;    
 }

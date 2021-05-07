@@ -16,8 +16,8 @@
 
     #define     LOGERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
     #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl    
-    //#define       LOGERROR(message)  std::cout << "Error, " << "in line: " << yylineno << ". " << message  << std::endl
-    //#define     LOGERROR(message)  std::cout << "Error, " << "\033[31m" << message << ", in line: " << yylineno << "\033[0m" << std::endl  
+    // #define     LOGERROR(message)   std::cout << "Error, in line: " << yylineno << ": " << message << std::endl
+    // #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
 %}
 
 %union {                                                    
@@ -165,7 +165,7 @@ term:         '(' expr ')'          {
             | PLUSPLUS lvalue       {
                                         auto entry = Lookup($2);
                                         if(entry == nullptr)
-                                            LOGERROR("Attempting to increase a NIL constant");
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
                                             LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
@@ -175,7 +175,7 @@ term:         '(' expr ')'          {
             | lvalue PLUSPLUS       {
                                         auto entry = Lookup($1);
                                         if(entry == nullptr)
-                                            LOGERROR("Attempting to increase a NIL constant");
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
                                             LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
@@ -184,7 +184,7 @@ term:         '(' expr ')'          {
             | MINUSMINUS lvalue     { 
                                         auto entry = Lookup($2);
                                         if(entry == nullptr)
-                                            LOGERROR("Attempting to decrease a NIL constant");
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
                                             LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
@@ -194,7 +194,7 @@ term:         '(' expr ')'          {
             | lvalue MINUSMINUS     { 
                                         auto entry = Lookup($1);
                                         if(entry == nullptr)
-                                            LOGERROR("Attempting to decrease a NIL constant");
+                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
                                             LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
@@ -571,7 +571,7 @@ int main(int argc, char** argv) {
 
     LogQuads(std::cout);
 
-    //LogSymbolTable(std::cout);
+    // LogSymbolTable(std::cout);
 
     return 0;
 }

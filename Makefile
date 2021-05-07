@@ -6,12 +6,12 @@ SRC += src/parser_manager/*.cpp \
 		src/block/block.cpp \
 		src/program_stack/*.cpp \
 		src/symbol_table/*.cpp \
-		src/symbol_table/symbol_table_entry/*.cpp \
-		src/symbol_table/symbol_table_entry/function_entry/*.cpp \
-		src/symbol_table/symbol_table_entry/variable_entry/*.cpp \
 		src/expression/*.cpp \
-		src/constant/*.cpp \
-		src/constant/numeric_constant/*.cpp \
+		src/expression/constant/*.cpp \
+		src/expression/constant/numeric_constant/*.cpp \
+		src/expression/symbol/*.cpp \
+		src/expression/symbol/variable/*.cpp \
+		src/expression/symbol/function/*.cpp \
 		src/quad/*.cpp
 
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp

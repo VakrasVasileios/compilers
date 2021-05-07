@@ -1,9 +1,6 @@
 #ifndef INSTRUCTIONOPCODES_H
 #define INSTRUCTIONOPCODES_H
 
-/*
-Provides a set of all the instruction opcodes.
-*/
 enum Iopcode {
     ASSIGN_t,
     ADD_t,            SUB_t,            MUL_t,        DIV_t,            MOD_t,

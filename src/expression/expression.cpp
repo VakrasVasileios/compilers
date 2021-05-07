@@ -13,13 +13,15 @@ Expression:: TypeToString(void) const {
         return "library function";
     case USER_FUNC:
         return "user function";
+    case VAR:
+        return "variable";
     case CONST_NUM:
         return "CONST_NUM";
     case CONST_BOOL:
         return "CONST_BOOL";
     case CONST_STR:
         return "CONST_STR";
-    case NIL_t:
+    case CONST_NIL:
         return "NIL";
     case ARITH_EXPR:
         return "ARITH_EXPR";
@@ -29,8 +31,6 @@ Expression:: TypeToString(void) const {
         return "ASSIGN_EXPR";
     case NEWTABLE_EXPR:
         return "NEWTABLE_EXPR";
-    case VAR:
-        return "VAR";
     case TABLE_ITEM:
         return "TABLE_ITEM";
     default:
@@ -39,5 +39,5 @@ Expression:: TypeToString(void) const {
 }
 
 std::ostream& operator << (std::ostream& os, const Expression* expression) {
-    return expression->do_print(os);
+    return expression->LogExpression(os);
 }

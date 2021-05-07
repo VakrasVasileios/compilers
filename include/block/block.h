@@ -1,47 +1,30 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "../symbol_table/symbol_table_entry/symbol_table_entry.h"
+#include "../expression/symbol/symbol.h"
 #include <list>
 
-/*
-Provides a block, containing a list of references to
-symbol table entries, across a single scope.
-*/
 class Block final {
     public:
         Block() = default;
         ~Block() = default;
-        /*
-        Returns a read access to this Block list of references to symbol table entries.
-        */
-        std::list<SymbolTableEntry*> get_entries() const;
-        /*
-        Activates all of the symbol table entries on this Block.
-        */
-        void                        Activate();
-        /*
-        Deactivates variables of the symbol table on this Block.
-        */
-        void                        Deactivate();   
-        /*
-        Searches for a symbol table entry reference with an id on this Block.
-        Returns a read/write reference to the entry if its found, else nullptr.
-        */
-        SymbolTableEntry*           Lookup(std::string id);
-        /*
-        Searches for a symbol table function entry reference with an id on this Block.
-        Returns a read/write reference to the function entry if its found, else nullptr.
-        */
-        SymbolTableEntry*           LookupFunc(std::string id);
-        /*
-        Inserts a symbol table entry reference to the end of this Block.
-        */
-        void                        Insert(SymbolTableEntry* entry);
 
-        friend std::ostream&        operator<<(std::ostream& os, const Block block);
+        std::list<Symbol*>      get_entries() const;
+
+        void                    Activate();
+        /*
+        Deactivates all the variables of this Block.
+        */
+        void                    Deactivate();   
+
+        Symbol*                 Lookup(std::string id);
+        Symbol*                 LookupFunc(std::string id);
+
+        void                    Insert(Symbol* symbol);
+
+        friend std::ostream&    operator<<(std::ostream& os, const Block block);
     private:
-       std::list<SymbolTableEntry*> entries;
+       std::list<Symbol*> entries;
 };
 
 #endif

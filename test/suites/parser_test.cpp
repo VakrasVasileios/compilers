@@ -62,7 +62,7 @@ class ParserTest : public ::testing::Test {
 
 TEST_F(ParserTest, Error0) {
    expected = "Error, in line: 4: No global variable with id: Global\n"
-            "Error, in line: 4: Attempting to assign a value to NIL\n";
+            "Warning, in line: 4: Attempting to assign a value to NIL\n";
    expected += libfunc_out;
    expected += "[global variable] \"x\" (line 3) (scope 0)\n";
    actual = exec("./scanner ../test/files/phase2_tests/Errors/Error0.asc");

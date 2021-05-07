@@ -6,10 +6,6 @@
 #include <iostream>
 
 
-/*
-Provides a quad at a line, containing two arguments,
-a result and a jump label.
-*/
 typedef struct quad {
     Iopcode       op;
     Expression*   result;
