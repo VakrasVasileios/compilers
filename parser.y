@@ -441,6 +441,8 @@ funcdef:    FUNCTION        {
                                     }
                                     else{
                                         InsertUserFunction($2, yylineno); //Shadow user function. 
+                                        auto function = GetPreviousFunction(); 
+                                        Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                     }
                                 }
                             }

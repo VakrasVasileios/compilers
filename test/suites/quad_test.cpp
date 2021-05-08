@@ -32,14 +32,14 @@ TEST_F(QuadTest, Assign) {
    GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, function1) {
+TEST_F(QuadTest, functions_single) {
     expected = "1:   FUNCSTART f [line 1]\n"
                "2:   FUNCEND f [line 2]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/function1.asc");
+    actual = exec("./scanner ../test/files/phase3_tests/functions/single.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, function2) {
+TEST_F(QuadTest, functions_many) {
     expected =  "1:   FUNCSTART f [line 1]\n"
                 "2:   FUNCEND f [line 2]\n"
                 "3:   FUNCSTART g [line 4]\n"
@@ -48,11 +48,11 @@ TEST_F(QuadTest, function2) {
                 "6:   FUNCEND y [line 9]\n"
                 "7:   FUNCSTART r [line 17]\n"
                 "8:   FUNCEND r [line 18]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/function2.asc");
+    actual = exec("./scanner ../test/files/phase3_tests/functions/many.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, function3) {
+TEST_F(QuadTest, functions_nested) {
     expected =  "1:   FUNCSTART a [line 5]\n"
                 "2:   FUNCSTART b [line 6]\n"
                 "3:   FUNCSTART c [line 7]\n"
@@ -65,7 +65,16 @@ TEST_F(QuadTest, function3) {
                 "10:   FUNCEND a [line 14]\n"
                 "11:   FUNCSTART e [line 16]\n"
                 "12:   FUNCEND e [line 27]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/function3.asc");
+    actual = exec("./scanner ../test/files/phase3_tests/functions/nested.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, functions_shadowed) {
+    expected =  "1:   FUNCSTART lkdland [line 1]\n"
+                "2:   FUNCSTART lkdland [line 2]\n"
+                "3:   FUNCEND lkdland [line 3]\n"
+                "4:   FUNCEND lkdland [line 5]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/shadowed.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
