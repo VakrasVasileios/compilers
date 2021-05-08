@@ -87,6 +87,11 @@ Symbol* LookupFunc(const char* name) {
     return program_stack.LookupFunc(name);
 }
 
+
+Function* LookupPreviousFunction() {
+    return program_stack.LookupPreviousFunc();
+}
+
 void
 Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
     assert(result != nullptr);
@@ -227,9 +232,4 @@ void LogQuads(std::ostream& output) {
     for (auto quad : quads) {
         output << quad << std::endl;
     }
-}
-
-
-Function* LookupPreviousFunction() {
-    return program_stack.LookupPreviousFunc();
 }

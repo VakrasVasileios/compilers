@@ -125,58 +125,59 @@ void                StashFormalArgument(const char* name, unsigned int line);
 Logs the symbol table contents.
 */
 void                LogSymbolTable(std::ostream& output);
-
+/*
+Logs all the emitted quads.
+*/
 void                LogQuads(std::ostream& output);
 /*
 Searches for a symbol table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
-Symbol*   Lookup(const char* name);
+Symbol*             Lookup(const char* name);
 /*
 Searches for a symbol table entry reference by its name at the global_scope. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
-Symbol*   LookupGlobal(const char* name);
+Symbol*             LookupGlobal(const char* name);
 /*
 Searches for a table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
-Symbol*   LookupFunc(const char* name);
-
+Symbol*             LookupFunc(const char* name);
+/*
+Searches teh previously inserted function referenceacross all scopes. 
+Returns a read/write access to a reference to the function if it's found, else nullptr.
+*/
+Function*           LookupPreviousFunction();
+/*
+Constructs a new quad and appends it to the quads list. 
+*/
 void                Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
 /*
 Inserts a local variable to the symbol table.
 Returns a reference to the entry inserted.
 It's a checked runtime error for the name to be null.
 */
-Symbol*   InsertLocalVariable(const char* name, unsigned int line);
+Symbol*             InsertLocalVariable(const char* name, unsigned int line);
 /*
 Inserts a global variable to the symbol table.
 Returns a reference to the entry inserted.
 It's a checked runtime error for the name to be null.
 */
-Symbol*   InsertGlobalVariable(const char* name, unsigned int line);
+Symbol*             InsertGlobalVariable(const char* name, unsigned int line);
 /*
 Inserts a user function, with a name, at a line, with the stashed formal arguments, to the symbol table.
 Returns a reference to the entry inserted.
 It's a checked runtime error for the name to be null.
 */
-Symbol*   InsertUserFunction(const char* name, unsigned int line);
+Symbol*             InsertUserFunction(const char* name, unsigned int line);
 /*
 Inserts a user function, at a line, with the stashed formal arguments, to the symbol table.
 Returns a reference to the entry inserted.
 */
-Symbol*   InsertUserFunction(unsigned int line);
-
-
-/*
-Returns the previously inserted, to the symbol table,
-function.
-*/
-Function* LookupPreviousFunction();
-
+Symbol*             InsertUserFunction(unsigned int line);
 
 #endif
