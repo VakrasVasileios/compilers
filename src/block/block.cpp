@@ -46,6 +46,17 @@ Block:: LookupFunc(std::string id) {
     return nullptr;
 }
 
+Function*
+Block:: LookupPreviousFunc() {
+    for (std::list<Symbol* >::reverse_iterator it = entries.rbegin(); it != entries.rend(); ++it) {
+        auto entry = (*it);
+        if(entry->get_type() == USER_FUNC || (entry)->get_type() == LIB_FUNC)
+            return static_cast<Function*>(entry);
+    }
+
+    return nullptr;
+}
+
 void 
 Block:: Insert(Symbol* entry) {
     entries.push_back(entry);

@@ -142,7 +142,7 @@ It's a checked runtime error for the name to be null.
 */
 Symbol*   LookupFunc(const char* name);
 
-void                Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2);
+void                Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
 /*
 Inserts a local variable to the symbol table.
 Returns a reference to the entry inserted.
@@ -166,6 +166,13 @@ Inserts a user function, at a line, with the stashed formal arguments, to the sy
 Returns a reference to the entry inserted.
 */
 Symbol*   InsertUserFunction(unsigned int line);
+
+
+/*
+Returns the previously inserted, to the symbol table,
+function.
+*/
+Function* GetPreviousFunction();
 
 
 #endif

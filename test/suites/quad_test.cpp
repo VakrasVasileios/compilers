@@ -27,9 +27,16 @@ class QuadTest : public ::testing::Test {
 };
 
 TEST_F(QuadTest, Assign) {
-   expected = "1:   ASSIGN 2 x\n";
+   expected = "1:   ASSIGN 2 x [line 1]\n";
    actual = exec("./scanner ../test/files/phase3_tests/Assign.asc");
    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(QuadTest, function1) {
+    expected = "1:   FUNCSTART f [line 1]\n"
+               "2:   FUNCEND f [line 2]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/function1.asc");
+    GTEST_ASSERT_EQ(expected, actual);
 }
 
 #ifdef TESTING

@@ -223,7 +223,7 @@ assignexpr:   lvalue '=' expr       {
                                                 LOGERROR("Functions are constant their value cannot be changed");
                                             else {
                                                 $$ = lval;
-                                                Emit(ASSIGN_t, lval, nullptr, $3);
+                                                Emit(ASSIGN_t, lval, nullptr, $3, yylineno);
                                             }
                                         }
                                         DLOG("assignexpr -> lvalue = expr");
@@ -421,10 +421,14 @@ funcdef:    FUNCTION        {
                             }
             | FUNCTION ID   {
                                 auto entry = Lookup($2);
-                                if (entry == nullptr)
+                                if (entry == nullptr) {
                                     InsertUserFunction($2, yylineno);
-                                 else if (!entry->is_active())
-                                        LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));   
+                                    auto function = GetPreviousFunction(); 
+                                    Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
+                                }
+                                else if (!entry->is_active()) {
+                                    LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));   
+                                }
                                 else {
                                     if (IsVariable(entry))
                                         LOGERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(entry->get_line()) + ", cannot be redefined as a function");
@@ -435,8 +439,9 @@ funcdef:    FUNCTION        {
                                         message += std::to_string(entry->get_line());
                                         LOGERROR(message);
                                     }
-                                    else
+                                    else{
                                         InsertUserFunction($2, yylineno); //Shadow user function. 
+                                    }
                                 }
                             }
             '(' idlist ')'  { 
@@ -444,6 +449,8 @@ funcdef:    FUNCTION        {
                                 IncreaseReturnDepth();
                             }
             block           { 
+                                auto function = GetPreviousFunction();
+                                Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 EnableLowerScopes();
                                 DecreaseReturnDepth();
                                 DLOG("funcdef -> function id (idlist) block"); 

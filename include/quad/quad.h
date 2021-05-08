@@ -11,7 +11,7 @@ typedef struct quad {
     Expression*   result;
     Expression*   arg1;
     Expression*   arg2;
-    unsigned int        label;
+    unsigned int  label;
     unsigned int  line;
 
     quad(Iopcode _op, Expression* _res, Expression* _arg1, Expression* _arg2, unsigned int _label, unsigned int _line)

@@ -2,6 +2,7 @@
 #define PROGRAMSTACK_H
 
 #include "../block/block.h"
+#include "../expression/symbol/function/function.h"
 
 #include <list>
 #include <string>
@@ -25,6 +26,8 @@ public:
     Symbol*             LookupGlobal(std::string name);
 
     Symbol*             LookupFunc(std::string name);
+
+    Function*           LookupPreviousFunc();
 
     void                ActivateLowerScopes();
     void                DeactivateLowerScopes();

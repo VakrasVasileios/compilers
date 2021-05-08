@@ -8,8 +8,6 @@
 #define LIB_FUNC_LINE  0
 #define OUT_OF_SCOPE  -1
 
-#define DEFAULT_LABEL -1
-
 const unsigned int global_scope = 0;
 unsigned int current_scope = OUT_OF_SCOPE;
 
@@ -86,11 +84,9 @@ Symbol* LookupFunc(const char* name) {
 }
 
 void
-Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2) {
+Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
     assert(result != nullptr);
-    assert(arg2 != nullptr);
-    int label = DEFAULT_LABEL;
-    int line = quads.size() + 1;
+    unsigned int label = quads.size() + 1;
     // if (op == JUMP)
     //     // put in stack
     // else if (op == IF_EQ)
@@ -227,4 +223,9 @@ void LogQuads(std::ostream& output) {
     for (auto quad : quads) {
         output << quad << std::endl;
     }
+}
+
+
+Function* GetPreviousFunction() {
+    return program_stack.LookupPreviousFunc();
 }

@@ -60,6 +60,11 @@ ProgramStack:: LookupFunc(std::string name) {
     return nullptr;
 }
 
+Function*
+ProgramStack:: LookupPreviousFunc() {
+    return Top()->LookupPreviousFunc();
+}
+
 void
 ProgramStack:: ActivateLowerScopes() {
     auto iter = block_list.begin();

@@ -2,6 +2,7 @@
 #define BLOCK_H
 
 #include "../expression/symbol/symbol.h"
+#include "../expression/symbol/function/function.h"
 #include <list>
 
 class Block final {
@@ -19,6 +20,8 @@ class Block final {
 
         Symbol*                 Lookup(std::string id);
         Symbol*                 LookupFunc(std::string id);
+
+        Function*               LookupPreviousFunc();
 
         void                    Insert(Symbol* symbol);
 
