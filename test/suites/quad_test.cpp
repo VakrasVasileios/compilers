@@ -78,6 +78,17 @@ TEST_F(QuadTest, functions_shadowed) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(QuadTest, functions_anonymous) {
+    expected =  "1:   FUNCSTART $1 [line 1]\n"
+                "2:   FUNCSTART c [line 2]\n"
+                "3:   FUNCEND c [line 3]\n"
+                "4:   FUNCSTART $2 [line 4]\n"
+                "5:   FUNCEND $2 [line 5]\n"
+                "6:   FUNCEND $1 [line 6]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/anonymous.asc");
+    GTEST_ASSERT_EQ(expected, actual);              
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {

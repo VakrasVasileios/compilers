@@ -409,12 +409,16 @@ block:      '{'         {
 
 funcdef:    FUNCTION        {
                                 InsertUserFunction(yylineno);
+                                auto function = GetPreviousFunction(); 
+                                Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                             } 
             '(' idlist ')'  {
                                 HideLowerScopes();
                                 IncreaseReturnDepth();
                             }  
             block           {
+                                auto function = GetPreviousFunction();
+                                Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 EnableLowerScopes();
                                 DecreaseReturnDepth();
                                 DLOG("funcdef -> function (idlist) block "); 
