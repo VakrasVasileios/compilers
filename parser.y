@@ -331,6 +331,7 @@ call:       call '(' elist ')'              {
                                                 }
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
+                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
                                                 // if(!IsMethodCall()) {
                                                 //     auto entry = LookupFunc($1);
                                                 //     if (entry == nullptr || !entry->is_active())

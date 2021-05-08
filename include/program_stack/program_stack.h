@@ -3,6 +3,7 @@
 
 #include "../block/block.h"
 #include "../expression/symbol/function/function.h"
+#include "../expression/symbol/variable/hidden_variable.h"
 
 #include <list>
 #include <string>
@@ -33,24 +34,33 @@ public:
     void                Pop();
     /*
     Searches for a symbol with a name on this ProgramStack,
-    across all scopes. Returns the symbol if it's found, else nullptr.
+    across all scopes. Returns a read/write access to the symbol if it's found,
+    else nullptr.
     */
     Symbol*             Lookup(std::string name);
     /*
     Searches for a symbol with a name on this ProgramStack,
-    across the global scope. Returns the symbol if it's found, else nullptr.
+    across the global scope. Returns a read/write access to the symbol if it's found,
+    else nullptr.
     */
     Symbol*             LookupGlobal(std::string name);
     /*
     Searches for a function with a name on this ProgramStack,
-    across all scopes. Returns the symbol if it's found, else nullptr.
+    across all scopes. Returns a read/write access to the symbol if it's found,
+    else nullptr.
     */
     Symbol*             LookupFunc(std::string name);
     /*
     Searches for the previously inserted function at the top of this ProgramStack.
-    Returns the function if it's found, else nullptr.
+    Returns a read/write access to the function if it's found, else nullptr.
     */
     Function*           LookupPreviousFunc();
+    /*
+    Searches for a hidden variable with a name at the current scope of this ProgramStack.
+    Returns a read/write access to the reference of the hidden variable if it's found,
+    else nullptr.
+    */
+    HiddenVariable*     LookupHiddenVariable(std::string name);
     /*
     Activates all of the blocks at the lower scopes of this ProgramStack.
     */

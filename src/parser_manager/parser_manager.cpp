@@ -17,6 +17,7 @@ unsigned int loop_depth = 0;
 unsigned int return_depth = 0;
 
 unsigned int anonymus_funcs_counter = 0;
+unsigned int temp_counter = 0;
 
 SymbolTable         symbol_table;
 
@@ -92,20 +93,6 @@ Function* LookupPreviousFunction() {
     return program_stack.LookupPreviousFunc();
 }
 
-void
-Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
-    assert(result != nullptr);
-    unsigned int label = quads.size() + 1;
-    // if (op == JUMP)
-    //     // put in stack
-    // else if (op == IF_EQ)
-    //     label = line + 2;
-    // else
-    //     label = line + 1;
-    Quad q = quad(op, result, arg1, arg2, label, line);
-    quads.push_back(q);
-}
-
 Symbol* InsertLocalVariable(const char* name, unsigned int line) {
     assert(name != nullptr);
     Symbol* entry = new LocalVariable(name, line, current_scope);
@@ -136,6 +123,29 @@ Symbol* InsertUserFunction(unsigned int line) {
     program_stack.Top()->Insert(entry);
     
     return entry;
+}
+
+std::string NewTempName() {
+    return  "^" + std::to_string(temp_counter++);
+}
+
+void InsertHiddenVariable(HiddenVariable* temp) {
+    program_stack.Top()->Insert(temp);
+}
+
+HiddenVariable* NewTemp() {
+    std::string name = NewTempName();
+    HiddenVariable* sym = program_stack.LookupHiddenVariable(name);
+
+    if (sym == nullptr)
+    {   
+        HiddenVariable* new_temp = new HiddenVariable(name, current_scope);
+        InsertHiddenVariable(new_temp);
+
+        return new_temp;
+    } else {
+        return sym;
+    }
 }
 
 void InitLibraryFunctions() {  
@@ -228,8 +238,26 @@ void LogSymbolTable(std::ostream& output) {
     output << symbol_table;
 }
 
+void
+Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
+    assert(result != nullptr);
+    unsigned int label = quads.size() + 1;
+    // if (op == JUMP)
+    //     // put in stack
+    // else if (op == IF_EQ)
+    //     label = line + 2;
+    // else
+    //     label = line + 1;
+    Quad q = quad(op, result, arg1, arg2, label, line);
+    quads.push_back(q);
+}
+
 void LogQuads(std::ostream& output) {
     for (auto quad : quads) {
         output << quad << std::endl;
     }
+}
+
+void ResetTemp() {
+    temp_counter = 0;
 }

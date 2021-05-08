@@ -6,7 +6,8 @@
 enum ScopeSpace {
     LOCALVAR,
     GLOBALVAR,
-    FORMALVAR
+    FORMALVAR,
+    HIDDEN
 };
 
 class Variable : public Symbol {   

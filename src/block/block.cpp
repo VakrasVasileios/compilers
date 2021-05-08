@@ -57,6 +57,21 @@ Block:: LookupPreviousFunc() {
     return nullptr;
 }
 
+bool IsHiddenVariable(Symbol* entry) {
+    return entry->get_type() == VAR && dynamic_cast<Variable*>(entry)->get_space() == HIDDEN;
+}
+
+HiddenVariable*
+Block:: LookupHiddenVariable(std::string name) {
+    for (auto entry : entries) {
+        if (entry->get_id() == name && IsHiddenVariable(entry))
+        {
+            return static_cast<HiddenVariable*>(entry);
+        }
+    }
+    return nullptr;
+}
+
 void 
 Block:: Insert(Symbol* entry) {
     entries.push_back(entry);

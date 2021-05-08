@@ -65,6 +65,11 @@ ProgramStack:: LookupPreviousFunc() {
     return Top()->LookupPreviousFunc();
 }
 
+HiddenVariable*
+ProgramStack:: LookupHiddenVariable(std::string name) {
+    return Top()->LookupHiddenVariable(name);
+}
+
 void
 ProgramStack:: ActivateLowerScopes() {
     auto iter = block_list.begin();
