@@ -27,6 +27,8 @@ std::vector<Quad>   quads;
 
 std::list<FormalVariable*> stashed_formal_arguments;
 
+bool error_flag = false;
+
 
 bool IsLibraryFunction(Symbol* entry) {
     assert(entry != nullptr);
@@ -59,6 +61,10 @@ bool ScopeIsGlobal() {
 
 bool IsMethodCall() {
     return method_call;
+}
+
+bool NoErrorSignaled() {
+    return !error_flag;
 }
 
 unsigned int GetLoopDepth() {
@@ -230,8 +236,10 @@ void StashFormalArgument(const char* name, unsigned int line) {
     assert(name != nullptr);
     if (!IsStashed(name))
         stashed_formal_arguments.push_back(new FormalVariable(name, line, current_scope + 1));
-    else
+    else {
         std::cout << "Error, formal argument " << name << " already declared, in line: " << line << std::endl;
+        SignalError();
+    }
 }
 
 void LogSymbolTable(std::ostream& output) {
@@ -260,4 +268,8 @@ void LogQuads(std::ostream& output) {
 
 void ResetTemp() {
     temp_counter = 0;
+}
+
+void SignalError() {
+    error_flag = true;
 }

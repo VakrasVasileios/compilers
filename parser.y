@@ -13,9 +13,15 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    // #define     LOGERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
+    // #define     SIGNALERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
     // #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl  
-    #define     LOGERROR(message)   std::cout << "Error, in line: " << yylineno << ": " << message << std::endl
+
+    #define     SIGNALERROR(message)  \
+        do { \
+            std::cout << "Error, in line: " << yylineno << ": " << message << std::endl; \
+            SignalError(); \
+        } while (0)
+
     #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
 %}
 
@@ -85,13 +91,14 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> returnstmt");
                                     }
             | BREAK ';'             { 
-                                        if(GetLoopDepth() == 0)
-                                            LOGERROR("invalid keyword BREAK outside of loop");
+                                        if(GetLoopDepth() == 0) {
+                                            SIGNALERROR("invalid keyword BREAK outside of loop");
+                                        }
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
                                         if(GetLoopDepth() == 0)
-                                            LOGERROR("invalid keyword CONTINUE outside of loop");
+                                            SIGNALERROR("invalid keyword CONTINUE outside of loop");
                                         DLOG("stmt -> continue;");
                                     }
             | block                 {
@@ -164,40 +171,40 @@ term:         '(' expr ')'          {
             | PLUSPLUS lvalue       {
                                         auto entry = Lookup($2);
                                         if(entry == nullptr)
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of increment operator with non variable type");    
+                                            SIGNALERROR("Use of increment operator with non variable type");    
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
                                         auto entry = Lookup($1);
                                         if(entry == nullptr)
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of increment operator with non variable type");    
+                                            SIGNALERROR("Use of increment operator with non variable type");    
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto entry = Lookup($2);
                                         if(entry == nullptr)
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of decrement operator with non variable type");    
+                                            SIGNALERROR("Use of decrement operator with non variable type");    
                                         DLOG("term -> --lvaule"); 
                                     }
             | lvalue MINUSMINUS     { 
                                         auto entry = Lookup($1);
                                         if(entry == nullptr)
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (!entry->is_active())
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
                                         else if (!IsVariable(entry))
-                                            LOGERROR("Use of decrement operator with non variable type");
+                                            SIGNALERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
                                     }
             | primary               {
@@ -219,7 +226,7 @@ assignexpr:   lvalue '=' expr       {
                                                 // Emit(ASSIGN_t, lval, nullptr, $2);
                                             }
                                             else if (IsLibraryFunction(lval) || IsUserFunction(lval))
-                                                LOGERROR("Functions are constant their value cannot be changed");
+                                                SIGNALERROR("Functions are constant their value cannot be changed");
                                             else {
                                                 $$ = lval;
                                                 Emit(ASSIGN_t, lval, nullptr, $3, yylineno);
@@ -254,7 +261,7 @@ lvalue:       ID                    {
                                                 InsertGlobalVariable($1, yylineno);
                                             }
                                             else if (!entry->is_active())
-                                                LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                                SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         }
                                         else {
                                             auto entry = Lookup($1);
@@ -262,7 +269,7 @@ lvalue:       ID                    {
                                                 InsertLocalVariable($1, yylineno);
                                             }
                                             else if (!entry->is_active())
-                                                LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                                SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         }
                                         DLOG("lvalue -> id");
                                     }
@@ -273,20 +280,20 @@ lvalue:       ID                    {
                                             InsertLocalVariable($2, yylineno);
                                         }
                                         else if (!entry->is_active())
-                                            LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
                                         else if (IsGlobalVar(entry)) {
                                             InsertLocalVariable($2, yylineno);
                                         }
                                         else if (IsUserFunction(entry)){
                                             if(IsAtCurrentScope(entry)) {
-                                                LOGERROR("Attempting to redefine a previously declared user function");
+                                                SIGNALERROR("Attempting to redefine a previously declared user function");
                                             }
                                             else {
                                                 InsertLocalVariable($2, yylineno);
                                             }    
                                         }
                                         else if (IsLibraryFunction(entry)) {
-                                            LOGERROR("Attempting to redefine a library function");
+                                            SIGNALERROR("Attempting to redefine a library function");
                                         }
                                         DLOG("lvalue -> local id");
                                     }
@@ -294,7 +301,7 @@ lvalue:       ID                    {
                                         $$ = $2;
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr || !entry->is_active()) {
-                                            LOGERROR("No global variable with id: " + std::string($2));
+                                            SIGNALERROR("No global variable with id: " + std::string($2));
                                         }
                                         DLOG("lvalue -> ::id");
                                     }
@@ -334,7 +341,7 @@ call:       call '(' elist ')'              {
                                                 // if(!IsMethodCall()) {
                                                 //     auto entry = LookupFunc($1);
                                                 //     if (entry == nullptr || !entry->is_active())
-                                                //         LOGERROR("Attempting use of function call with NIL value");
+                                                //         SIGNALERROR("Attempting use of function call with NIL value");
                                                 // }
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -371,6 +378,7 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
+
                                 DLOG("elist -> expr multelist");
                             }
             |               {
@@ -438,17 +446,17 @@ funcdef:    FUNCTION        {
                                     Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                 }
                                 else if (!entry->is_active()) {
-                                    LOGERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));   
+                                    SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));   
                                 }
                                 else {
                                     if (IsVariable(entry))
-                                        LOGERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(entry->get_line()) + ", cannot be redefined as a function");
+                                        SIGNALERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(entry->get_line()) + ", cannot be redefined as a function");
                                     else if (IsLibraryFunction(entry))
-                                        LOGERROR(std::string($2) + " library function cannot be shadowed by a user function");
+                                        SIGNALERROR(std::string($2) + " library function cannot be shadowed by a user function");
                                     else if (IsAtCurrentScope(entry)) {
                                         std::string message =  "Name collision with function " +  std::string($2) + ", previously defined in line: ";
                                         message += std::to_string(entry->get_line());
-                                        LOGERROR(message);
+                                        SIGNALERROR(message);
                                     }
                                     else{
                                         InsertUserFunction($2, yylineno); //Shadow user function. 
@@ -551,14 +559,14 @@ forstmt:    FOR                                     {
 
 returnstmt: RETURN      {
                             if (GetReturnDepth() == 0)
-                                LOGERROR("Invalid return, used outside a function block");
+                                SIGNALERROR("Invalid return, used outside a function block");
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
                         }
             | RETURN    {
                             if (GetReturnDepth() == 0) 
-                                LOGERROR("Invalid return, used outside a function block");
+                                SIGNALERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
                             DLOG("returnstmt -> RETURN expr;");
@@ -589,9 +597,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    LogQuads(std::cout);
+    // if (NoErrorSignaled())
+    //     LogQuads(std::cout);
 
-    //LogSymbolTable(std::cout);
+    if (NoErrorSignaled())
+        LogSymbolTable(std::cout);
 
     return 0;
 }

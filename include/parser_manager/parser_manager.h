@@ -58,6 +58,10 @@ It's a checked runtime error for the entry to be null.
 */
 bool                IsVariable(Symbol* entry);
 /*
+Returns wether a compilation error has previously been signaled.
+*/
+bool                NoErrorSignaled();
+/*
 Returns a read/write access to the return depth.
 */
 unsigned int        GetReturnDepth();
@@ -189,5 +193,9 @@ void                Emit(Iopcode op, Expression* result, Expression* arg1, Expre
 Resets the hidden variable counter.
 */
 void                ResetTemp();
+/*
+Signals that a compination error has occured.
+*/
+void                SignalError();
 
 #endif
