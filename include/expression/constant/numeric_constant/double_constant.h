@@ -3,6 +3,9 @@
 
 #include "numeric_constant.h"
 
+/*
+Provides a double constant expression.
+*/
 class DoubleConstant final : public NumericConstant {
 public:
     DoubleConstant(double value) : NumericConstant(), value(value) {};

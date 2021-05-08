@@ -89,6 +89,14 @@ TEST_F(QuadTest, functions_anonymous) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
+TEST_F(QuadTest, functions_call_warning) {
+    expected =  "Warning, in line: 1: Attempting use of function call with NIL value\n"
+                "1:   CALL g [line 1]\n"
+                "2:   GETRETVAL ^0 [line 1]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_warning.asc");
+    GTEST_ASSERT_EQ(expected, actual);  
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {

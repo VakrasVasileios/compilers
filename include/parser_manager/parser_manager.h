@@ -65,6 +65,10 @@ Returns a read/write access to the loop depth.
 */
 unsigned int        GetLoopDepth();
 /*
+Returns the current scope.
+*/
+unsigned int        GetCurrentScope();
+/*
 Inserts the library functions to the symbol table.
 */
 void                InitLibraryFunctions();
@@ -172,7 +176,7 @@ Symbol*   InsertUserFunction(unsigned int line);
 Returns the previously inserted, to the symbol table,
 function.
 */
-Function* GetPreviousFunction();
+Function* LookupPreviousFunction();
 
 
 #endif

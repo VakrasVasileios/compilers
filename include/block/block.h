@@ -5,24 +5,46 @@
 #include "../expression/symbol/function/function.h"
 #include <list>
 
+/*
+Provides a block of multiple different symbols accross a scope.
+*/
 class Block final {
     public:
         Block() = default;
         ~Block() = default;
-
+        /*
+        Returns a read access to this Block symbols list.
+        */
         std::list<Symbol*>      get_entries() const;
-
+        /*
+        Activates all of the symbols of this Block.
+        */
         void                    Activate();
         /*
         Deactivates all the variables of this Block.
         */
         void                    Deactivate();   
-
+        /*
+        Searches for a symbol with an id on this Block.
+        Returns a read/write access to a reference of the symbol if it's found,
+        else nullptr.
+        */
         Symbol*                 Lookup(std::string id);
+        /*
+        Searches for a function with an id on this Block.
+        Returns a read/write access to a reference of the function if it's found,
+        else nullptr.
+        */
         Symbol*                 LookupFunc(std::string id);
-
+        /*
+        Searches for the previously inserted function on this Block.
+        Returns a read/write access to a reference of the function if it's found,
+        else nullptr.
+        */
         Function*               LookupPreviousFunc();
-
+        /*
+        Inserts a symbol at the end of this Block.
+        */
         void                    Insert(Symbol* symbol);
 
         friend std::ostream&    operator<<(std::ostream& os, const Block block);

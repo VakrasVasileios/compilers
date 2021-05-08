@@ -3,6 +3,9 @@
 
 #include "../constant.h"
 
+/*
+Provides a numeric constant expression.
+*/
 class NumericConstant: public Constant {
 protected:
     NumericConstant() : Constant(CONST_NUM) {};

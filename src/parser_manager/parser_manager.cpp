@@ -68,6 +68,10 @@ unsigned int GetReturnDepth() {
     return return_depth;
 }
 
+unsigned int GetCurrentScope() {
+    return current_scope;
+}
+
 Symbol* LookupGlobal(const char* name) {
     assert(name != nullptr);
     return program_stack.LookupGlobal(name);
@@ -226,6 +230,6 @@ void LogQuads(std::ostream& output) {
 }
 
 
-Function* GetPreviousFunction() {
+Function* LookupPreviousFunction() {
     return program_stack.LookupPreviousFunc();
 }

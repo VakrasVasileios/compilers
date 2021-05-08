@@ -3,6 +3,9 @@
 
 #include "constant.h"
 
+/*
+Provides a string constant expression.
+*/
 class StringConstant final : public Constant {
 public:
     StringConstant(std::string value) : Constant(CONST_STR), value(value) {};

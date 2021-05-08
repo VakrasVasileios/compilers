@@ -3,7 +3,9 @@
 
 #include "function.h"
 
-
+/*
+Provides a user function.
+*/
 class UserFunction final : public Function {
 public:
     UserFunction(std::string id, unsigned int line, unsigned int scope) : Function(USER_FUNC, id, line, scope){};

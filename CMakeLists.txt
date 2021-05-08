@@ -29,6 +29,7 @@ target_sources(parser_manager_test PRIVATE src/expression/symbol/symbol.cpp)
 target_sources(parser_manager_test PRIVATE src/expression/symbol/function/function.cpp)
 target_sources(parser_manager_test PRIVATE src/expression/symbol/variable/variable.cpp)
 target_sources(parser_manager_test PRIVATE src/quad/quad.cpp)
+target_sources(parser_manager_test PRIVATE src/instruction_opcodes/instruction_opcodes.cpp)
 
 #BlockTest
 add_executable(block_test test/suites/block/block_test.cpp)
@@ -44,6 +45,7 @@ target_sources(block_test PRIVATE src/expression/symbol/symbol.cpp)
 target_sources(block_test PRIVATE src/expression/symbol/function/function.cpp)
 target_sources(block_test PRIVATE src/expression/symbol/variable/variable.cpp)
 target_sources(block_test PRIVATE src/quad/quad.cpp)
+target_sources(block_test PRIVATE src/instruction_opcodes/instruction_opcodes.cpp)
 
 #ProgramStackTest
 add_executable(program_stack_test test/suites/program_stack/program_stack_test.cpp)
@@ -60,6 +62,8 @@ target_sources(program_stack_test PRIVATE src/expression/symbol/symbol.cpp)
 target_sources(program_stack_test PRIVATE src/expression/symbol/function/function.cpp)
 target_sources(program_stack_test PRIVATE src/expression/symbol/variable/variable.cpp)
 target_sources(program_stack_test PRIVATE src/quad/quad.cpp)
+target_sources(program_stack_test PRIVATE src/instruction_opcodes/instruction_opcodes.cpp)
+
 
 #SymbolTableTest
 add_executable(symbol_table_test test/suites/symbol_table/symbol_table_test.cpp)
@@ -75,6 +79,8 @@ target_sources(symbol_table_test PRIVATE src/expression/symbol/symbol.cpp)
 target_sources(symbol_table_test PRIVATE src/expression/symbol/function/function.cpp)
 target_sources(symbol_table_test PRIVATE src/expression/symbol/variable/variable.cpp)
 target_sources(symbol_table_test PRIVATE src/quad/quad.cpp)
+target_sources(symbol_table_test PRIVATE src/instruction_opcodes/instruction_opcodes.cpp)
+
 
 #quad_test
 

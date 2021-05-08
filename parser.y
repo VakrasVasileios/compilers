@@ -14,10 +14,10 @@
     extern FILE* yyin;
 
 
-    #define     LOGERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
-    #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl    
-    // #define     LOGERROR(message)   std::cout << "Error, in line: " << yylineno << ": " << message << std::endl
-    // #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
+    // #define     LOGERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
+    // #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl  
+    #define     LOGERROR(message)   std::cout << "Error, in line: " << yylineno << ": " << message << std::endl
+    #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
 %}
 
 %union {                                                    
@@ -324,11 +324,18 @@ call:       call '(' elist ')'              {
                                                 DLOG("call -> call(elist)");
                                             }
             | lvalue callsuffix             {
-                                                if(!IsMethodCall()) {
-                                                    auto entry = LookupFunc($1);
-                                                    if (entry == nullptr || !entry->is_active())
-                                                        LOGERROR("Attempting use of function call with NIL value");
+                                                auto entry = LookupFunc($1);
+                                                if (entry == nullptr) {
+                                                    LOGWARNING("Attempting use of function call with NIL value");
+                                                    entry = new UserFunction($1, yylineno, GetCurrentScope()); 
                                                 }
+
+                                                Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
+                                                // if(!IsMethodCall()) {
+                                                //     auto entry = LookupFunc($1);
+                                                //     if (entry == nullptr || !entry->is_active())
+                                                //         LOGERROR("Attempting use of function call with NIL value");
+                                                // }
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')' '(' elist ')' {
@@ -409,7 +416,7 @@ block:      '{'         {
 
 funcdef:    FUNCTION        {
                                 InsertUserFunction(yylineno);
-                                auto function = GetPreviousFunction(); 
+                                auto function = LookupPreviousFunction(); 
                                 Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                             } 
             '(' idlist ')'  {
@@ -417,7 +424,7 @@ funcdef:    FUNCTION        {
                                 IncreaseReturnDepth();
                             }  
             block           {
-                                auto function = GetPreviousFunction();
+                                auto function = LookupPreviousFunction();
                                 Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 EnableLowerScopes();
                                 DecreaseReturnDepth();
@@ -427,7 +434,7 @@ funcdef:    FUNCTION        {
                                 auto entry = Lookup($2);
                                 if (entry == nullptr) {
                                     InsertUserFunction($2, yylineno);
-                                    auto function = GetPreviousFunction(); 
+                                    auto function = LookupPreviousFunction(); 
                                     Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                 }
                                 else if (!entry->is_active()) {
@@ -445,7 +452,7 @@ funcdef:    FUNCTION        {
                                     }
                                     else{
                                         InsertUserFunction($2, yylineno); //Shadow user function. 
-                                        auto function = GetPreviousFunction(); 
+                                        auto function = LookupPreviousFunction(); 
                                         Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                     }
                                 }
@@ -455,7 +462,7 @@ funcdef:    FUNCTION        {
                                 IncreaseReturnDepth();
                             }
             block           { 
-                                auto function = GetPreviousFunction();
+                                auto function = LookupPreviousFunction();
                                 Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 EnableLowerScopes();
                                 DecreaseReturnDepth();

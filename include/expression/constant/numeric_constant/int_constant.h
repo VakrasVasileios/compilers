@@ -3,6 +3,9 @@
 
 #include "numeric_constant.h"
 
+/*
+Provides an int constant expression.
+*/
 class IntConstant final : public NumericConstant {
 public:
     IntConstant(int value) : NumericConstant(), value(value) {};

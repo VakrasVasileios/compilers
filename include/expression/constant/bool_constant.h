@@ -3,6 +3,9 @@
 
 #include "constant.h"
 
+/*
+Provides a bool constant expression.
+*/
 class BoolConstant final : public Constant {
 public:
     BoolConstant(bool value) : Constant(CONST_BOOL), value(value) {};

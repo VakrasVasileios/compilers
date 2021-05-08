@@ -5,7 +5,9 @@
 #include "../instruction_opcodes/instruction_opcodes.h"
 #include <iostream>
 
-
+/*
+Provides a quad, the building stone of the intermediate code.
+*/
 typedef struct quad {
     Iopcode       op;
     Expression*   result;
@@ -19,8 +21,5 @@ typedef struct quad {
 
     friend std::ostream&    operator<<(std::ostream& os, const quad _quad);
 } Quad;
-
-std::string
-OpCodeToString(Iopcode _op);
 
 #endif

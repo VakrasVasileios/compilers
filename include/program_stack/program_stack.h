@@ -15,21 +15,49 @@ class ProgramStack final {
 public:
     ProgramStack() = default;
     ~ProgramStack() = default;
-
+    /*
+    Returns a read access to this ProgramStack blocks.
+    */
     std::list<Block*>   get_block_list() const;
-
+    /*
+    Returns a read/write access to this ProgramStack top block.
+    */
     Block*              Top();
+    /*
+    Pushes a block at the top of this ProgramStack.
+    */
     void                Push(Block* block);
+    /*
+    Pops a block from the top of this ProgramStack.
+    */
     void                Pop();
-
+    /*
+    Searches for a symbol with a name on this ProgramStack,
+    across all scopes. Returns the symbol if it's found, else nullptr.
+    */
     Symbol*             Lookup(std::string name);
+    /*
+    Searches for a symbol with a name on this ProgramStack,
+    across the global scope. Returns the symbol if it's found, else nullptr.
+    */
     Symbol*             LookupGlobal(std::string name);
-
+    /*
+    Searches for a function with a name on this ProgramStack,
+    across all scopes. Returns the symbol if it's found, else nullptr.
+    */
     Symbol*             LookupFunc(std::string name);
-
+    /*
+    Searches for the previously inserted function at the top of this ProgramStack.
+    Returns the function if it's found, else nullptr.
+    */
     Function*           LookupPreviousFunc();
-
+    /*
+    Activates all of the blocks at the lower scopes of this ProgramStack.
+    */
     void                ActivateLowerScopes();
+    /*
+    Deactivates all of the blocks variables at the lower scopes of this ProgramStack.
+    */
     void                DeactivateLowerScopes();
 private:
     std::list<Block*>   block_list;  
