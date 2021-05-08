@@ -165,7 +165,7 @@ TEST_F(ParserTest, Error11) {
    GTEST_ASSERT_EQ(expected, actual);
  }
 
- TEST_F(ParserTest, Block) { //CHECK THIS
+ TEST_F(ParserTest, Block) {
    expected = libfunc_out;
    expected +="-----------     Scope #1     -----------\n"
             "[local variable] \"x\" (line 2) (scope 1)\n";

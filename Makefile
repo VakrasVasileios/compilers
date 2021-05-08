@@ -20,7 +20,7 @@ BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
 #dYACC = -v
 GDBenable = -g
-#myLog = -DELOG
+# myLog = -D DELOG
 
 ifdef dYACC
 YFLAG += $(dYACC)

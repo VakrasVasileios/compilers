@@ -326,10 +326,13 @@ member:     lvalue '.' ID           {
                                     }
             ;
 
-call:       call '(' elist ')'              {
+call:       call  '(' elist ')'             {
                                                 DLOG("call -> call(elist)");
                                             }
-            | lvalue callsuffix             {
+            | lvalue                        {
+                                                SetFunctionCall(true);
+                                            }
+            callsuffix                      {
                                                 auto entry = LookupFunc($1);
                                                 if (entry == nullptr) {
                                                     LOGWARNING("Attempting use of function call with NIL value");
@@ -338,11 +341,7 @@ call:       call '(' elist ')'              {
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
                                                 Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
-                                                // if(!IsMethodCall()) {
-                                                //     auto entry = LookupFunc($1);
-                                                //     if (entry == nullptr || !entry->is_active())
-                                                //         SIGNALERROR("Attempting use of function call with NIL value");
-                                                // }
+
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')' '(' elist ')' {
@@ -359,11 +358,13 @@ callsuffix: normcall        {
             ;
 
 normcall:   '(' elist ')'   {
+                                SetFunctionCall(false);
                                 DLOG("normcall -> (elist)"); 
                             }
             ;
 
 methodcall: DOTDOT ID '(' elist ')' { 
+                                        SetFunctionCall(false);
                                         SetMethodCall(true);
                                         DLOG("methodcall -> ..id(elist)");
                                     }
@@ -378,7 +379,9 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-
+                                if (IsFunctionCall()) 
+                                    Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
+                                
                                 DLOG("elist -> expr multelist");
                             }
             |               {
@@ -597,11 +600,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    // if (NoErrorSignaled())
-    //     LogQuads(std::cout);
-
     if (NoErrorSignaled())
-        LogSymbolTable(std::cout);
+        LogQuads(std::cout);
+
+    // if (NoErrorSignaled())
+    //     LogSymbolTable(std::cout);
 
     return 0;
 }

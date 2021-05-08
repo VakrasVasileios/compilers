@@ -37,7 +37,11 @@ bool                IsAtCurrentScope(Symbol* entry);
 /*
 Returns wether the state is a method call.
 */
-bool                IsMethodCall(void);
+bool                IsMethodCall();
+/*
+Returns wether the state is a function call.
+*/
+bool                IsFunctionCall();
 /*
 Returns wether a symbol table entry is a global variable.
 */
@@ -140,6 +144,10 @@ void                DecreaseScope();
 Flags the state as a method call.
 */
 void                SetMethodCall(bool methodcall);
+/*
+Flags the state as a function call.
+*/
+void                SetFunctionCall(bool function_call);
 /*
 Flags the validity of a possible return.
 */

@@ -12,6 +12,7 @@ const unsigned int global_scope = 0;
 unsigned int current_scope = OUT_OF_SCOPE;
 
 bool method_call = false;
+bool function_call = false;
 
 unsigned int loop_depth = 0;
 unsigned int return_depth = 0;
@@ -61,6 +62,10 @@ bool ScopeIsGlobal() {
 
 bool IsMethodCall() {
     return method_call;
+}
+
+bool IsFunctionCall() {
+    return function_call;
 }
 
 bool NoErrorSignaled() {
@@ -184,6 +189,10 @@ void DecreaseScope() {
 
 void SetMethodCall(bool methodcall) {
     ::method_call = method_call;
+}
+
+void SetFunctionCall(bool function_call) {
+    ::function_call = function_call;
 }
 
 void IncreaseLoopDepth() {

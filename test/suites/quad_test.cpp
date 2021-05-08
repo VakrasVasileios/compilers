@@ -109,7 +109,7 @@ TEST_F(QuadTest, functions_call_noparameters) {
 TEST_F(QuadTest, functions_call_parameters) {
     expected =  "1:   FUNCSTART f [line 1]\n"
                 "2:   FUNCEND f [line 2]\n"
-                "3:   PARAM  f [line 4]\n"
+                "3:   PARAM 0 [line 4]\n"
                 "4:   CALL f [line 4]\n"
                 "5:   GETRETVAL ^0 [line 4]\n";
     actual = exec("./scanner ../test/files/phase3_tests/functions/call_parameters.asc");
