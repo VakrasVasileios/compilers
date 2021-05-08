@@ -9,8 +9,6 @@ class HiddenVariable final : public Variable {
 public:
     HiddenVariable(std::string id, unsigned int scope) : Variable(HIDDEN, id, HIDDEN_VARIABLE_LINE, scope) {};
     ~HiddenVariable() = default;
-protected:
-    std::ostream&   LogSymbol(std::ostream& os) const override  { return os; };    
 };
 
 #endif

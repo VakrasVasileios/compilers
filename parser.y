@@ -13,7 +13,6 @@
     extern char* yytext;
     extern FILE* yyin;
 
-
     // #define     LOGERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
     // #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl  
     #define     LOGERROR(message)   std::cout << "Error, in line: " << yylineno << ": " << message << std::endl
@@ -585,14 +584,14 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-    //SE KATOYRAW
+    
     InitLibraryFunctions();
 
     yyparse();
 
     LogQuads(std::cout);
 
-    // LogSymbolTable(std::cout);
+    //LogSymbolTable(std::cout);
 
     return 0;
 }

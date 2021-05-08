@@ -31,9 +31,9 @@ operator<<(std::ostream& os, const SymbolTable symbol_table) {
             for (auto block : blockList)
             {
                 os << *block;
-            }
-            scope++;
+            }    
         }
+        scope++;
     }
 
     return os;

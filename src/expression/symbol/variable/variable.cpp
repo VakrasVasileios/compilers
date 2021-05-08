@@ -15,6 +15,8 @@ Variable:: SpaceToString() const {
             return "local";
         case FORMALVAR:
             return "formal";
+        case HIDDEN:
+            return "hidden";    
         default:
             assert(false);
     }
