@@ -358,8 +358,7 @@ call:       call  '(' elist ')'             {
                                                 }
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
-                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
-                                                IncreaseTemp();
+                                               // Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -398,8 +397,8 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (IsFunctionCall())
-                                    Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
+                                // if (IsFunctionCall())
+                                //     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
                                              
                                 DLOG("elist -> expr multelist");
                             }
@@ -619,11 +618,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    if (NoErrorSignaled())
-        LogQuads(std::cout);
-
     // if (NoErrorSignaled())
-    //     LogSymbolTable(std::cout);
+    //     LogQuads(std::cout);
+
+    if (NoErrorSignaled())
+        LogSymbolTable(std::cout);
 
     return 0;
 }

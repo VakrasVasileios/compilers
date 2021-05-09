@@ -90,13 +90,13 @@ It's a checked runtime error for the name to be null.
 */
 Symbol*             LookupGlobal(const char* name);
 /*
-Searches for a table entry reference by its name across all scopes. 
+Searches for a function entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
 Symbol*             LookupFunc(const char* name);
 /*
-Searches teh previously inserted function referenceacross all scopes. 
+Searches the previously inserted function referenceacross all scopes. 
 Returns a read/write access to a reference to the function if it's found, else nullptr.
 */
 Function*           LookupPreviousFunction();
