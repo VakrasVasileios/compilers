@@ -1,6 +1,6 @@
 %{
     #include "parser.hpp"
-    #include "dataStructs.h"
+    #include "include/scanner_data_structs/data_structs.h"
     #include <string>
     #include <string.h>
 
@@ -26,13 +26,13 @@ IDENT           [a-zA-Z][a-zA-Z_0-9]*
 INTCONST        [0-9]+
 DOUBLECONST     {INTCONST}\.{INTCONST}
 STRING          \"
-PUNCTUATIONMARK (\{|\}|\[|\]|\(|\)|\;|\,|\:|\.)
+PUNCTUATIONMARK [\{|\}|\[|\]|\(|\)|\;|\,|\:|\.]
 SPACE           [\r \t\v]
 NEWLINE         [\n]
 OPERATOR        \+|\-|\*|\/|\=|\>|\<|\%|\^|\(|\)
 SINGLELCOMMENT  \/\/
-MULTILCOMMENT   (\/\*)
-ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
+MULTILCOMMENT   [\/\*]
+ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
 
 /*Flex rules*/
 %%
@@ -55,7 +55,7 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
 "continue"          { return CONTINUE; }
 
 {IDENT}             {
-                        yylval.stringValue = yytext;
+                        yylval.stringValue = strdup(yytext);
                         return ID;
                     }
 
@@ -118,7 +118,7 @@ ILLEGALCHARS    (\$|\_|\!|\~|\?|\#)
                     }                    
 
 {PUNCTUATIONMARK}   {
-                        return *yytext; 
+                        return *yytext;
                     }
 "::"                { return COLONCOLON; }
 ".."                { return DOTDOT;     }

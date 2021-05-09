@@ -2,14 +2,36 @@ FLEXTRGT = scanner
 YACCTRGT = parser
 CC = g++
 CFLAGS = -std=c++11
-SRC += src/*.cpp
+SRC += src/parser_manager/*.cpp \
+		src/block/block.cpp \
+		src/program_stack/*.cpp \
+		src/symbol_table/*.cpp \
+		src/expression/*.cpp \
+		src/expression/constant/*.cpp \
+		src/expression/constant/numeric_constant/*.cpp \
+		src/expression/symbol/*.cpp \
+		src/expression/symbol/variable/*.cpp \
+		src/expression/symbol/function/*.cpp \
+		src/instruction_opcodes/*.cpp \
+		src/quad/*.cpp
+
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
-dYACC = -v
+#dYACC = -v
+GDBenable = -g
+# myLog = -D DELOG
 
 ifdef dYACC
 YFLAG += $(dYACC)
+endif
+
+ifdef myLog
+CFLAGS += $(myLog)
+endif
+
+ifdef GDBenable
+CFLAGS += $(GDBenable)
 endif
 
 YFLAG += --yacc --defines
