@@ -78,6 +78,11 @@ Returns the current scope.
 */
 unsigned int        GetCurrentScope();
 /*
+Returns the counter that is responsible for counting
+the number of passed arguments to a function call.
+*/
+unsigned int        GetCallArgsCount();
+/*
 Searches for a symbol table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
@@ -209,5 +214,15 @@ void                ResetTemp();
 Signals that a compination error has occured.
 */
 void                SignalError();
+/*
+Increments the counter that is responsible for counting
+the number of passed arguments to a function call.
+*/
+void                IncreaseCallArgsCount();
+/*
+Decrements the counter that is responsible for counting
+the number of passed arguments to a function call.
+*/
+void                DecreaseCallArgsCount();
 
 #endif

@@ -145,6 +145,12 @@ TEST_F(QuadTest, call_with_symbol_parameters) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(QuadTest, call_less_parameters) {
+    expected = "Error, in line: 4: Too few arguments passed to function: f, defined in line: 1\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_less_parameters.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

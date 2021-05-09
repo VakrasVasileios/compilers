@@ -360,8 +360,18 @@ call:       call  '(' elist ')'             {
                                                 }
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
-                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
-                                                
+                                                //Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+
+                                                auto args_num = static_cast<Function*>(entry)->get_formal_arguments().size();
+
+                                                std::cout << entry->get_id() << " args count: " << args_num << std::endl;
+                                                std::cout << entry->get_id() << " counted args count: " << GetCallArgsCount() << std::endl;
+
+                                                if (GetCallArgsCount() < args_num)
+                                                    SIGNALERROR("Too few arguments passed to function: " << entry->get_id() << ", defined in line: " << std::to_string(entry->get_line()));
+                                                // else if (GetCallArgsCount() > args_num)
+                                                DecreaseCallArgsCount();
+
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')' '(' elist ')' {
@@ -391,8 +401,10 @@ methodcall: DOTDOT ID '(' elist ')' {
             ;
 
 multelist:  ',' expr multelist  {
-                                    if (IsFunctionCall())
+                                    if (IsFunctionCall()) {
+                                        IncreaseCallArgsCount();
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
+                                    }
                                     DLOG("multelist -> ,expr multelist");
                                 }
             |                   {
@@ -401,8 +413,10 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (IsFunctionCall())
+                                if (IsFunctionCall()) {
+                                    IncreaseCallArgsCount();
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
+                                }
                                              
                                 DLOG("elist -> expr multelist");
                             }
@@ -447,12 +461,12 @@ block:      '{'         {
                         }
             ;
 
-funcdef:    FUNCTION        {
+funcdef:    FUNCTION 
+                '(' idlist ')'  
+                            {
                                 InsertUserFunction(yylineno);
                                 auto function = LookupPreviousFunction(); 
                                 Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
-                            } 
-            '(' idlist ')'  {
                                 HideLowerScopes();
                                 IncreaseReturnDepth();
                             }  
@@ -463,7 +477,9 @@ funcdef:    FUNCTION        {
                                 DecreaseReturnDepth();
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
-            | FUNCTION ID   {
+            | FUNCTION ID 
+                '(' idlist ')'
+                            { 
                                 auto entry = Lookup($2);
                                 if (entry == nullptr) {
                                     InsertUserFunction($2, yylineno);
@@ -489,8 +505,6 @@ funcdef:    FUNCTION        {
                                         Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                     }
                                 }
-                            }
-            '(' idlist ')'  { 
                                 HideLowerScopes();
                                 IncreaseReturnDepth();
                             }
@@ -622,11 +636,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    if (NoErrorSignaled())
-        LogQuads(std::cout);
-
     // if (NoErrorSignaled())
-    //     LogSymbolTable(std::cout);
+    //     LogQuads(std::cout);
+
+    if (NoErrorSignaled())
+        LogSymbolTable(std::cout);
 
     return 0;
 }

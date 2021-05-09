@@ -19,6 +19,7 @@ unsigned int return_depth = 0;
 
 unsigned int anonymus_funcs_counter = 0;
 unsigned int temp_counter = 0;
+unsigned int call_args_counter = 0;
 
 SymbolTable         symbol_table;
 
@@ -29,7 +30,6 @@ std::vector<Quad>   quads;
 std::list<FormalVariable*> stashed_formal_arguments;
 
 bool error_flag = false;
-
 
 bool IsLibraryFunction(Symbol* entry) {
     assert(entry != nullptr);
@@ -82,6 +82,10 @@ unsigned int GetReturnDepth() {
 
 unsigned int GetCurrentScope() {
     return current_scope;
+}
+
+unsigned int GetCallArgsCount() {
+    return call_args_counter;
 }
 
 Symbol* LookupGlobal(const char* name) {
@@ -285,4 +289,12 @@ void ResetTemp() {
 
 void SignalError() {
     error_flag = true;
+}
+
+void IncreaseCallArgsCount() {
+    call_args_counter++;
+}
+
+void ResetCallArgsCount() {
+    call_args_counter = 0;
 }
