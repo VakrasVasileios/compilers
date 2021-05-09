@@ -18,6 +18,9 @@ Provides a variable symbol.
 */
 class Variable : public Symbol {   
 public:
+    /*
+    Returns the scope of this Variable.
+    */
     ScopeSpace       get_space() const;
 protected:
     Variable(ScopeSpace scope_type, std::string id, unsigned int line, unsigned int scope)

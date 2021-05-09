@@ -119,33 +119,58 @@ TEST_F(QuadTest, functions_call_parameters) {
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
+TEST_F(QuadTest, call_with_symbol_parameters) {
+    expected =  "1:   FUNCSTART f [line 1]\n"
+                "2:   FUNCEND f [line 2]\n"
+                "3:   PARAM c [line 5]\n"
+                "4:   CALL f [line 5]\n"
+                "5:   GETRETVAL ^0 [line 5]\n"
+                "6:   PARAM 0 [line 10]\n"
+                "7:   PARAM c [line 10]\n"
+                "8:   CALL f [line 10]\n"
+                "9:   GETRETVAL ^0 [line 10]\n"
+                "10:   PARAM 3 [line 11]\n"
+                "11:   PARAM 10 [line 11]\n"
+                "12:   PARAM c [line 11]\n"
+                "13:   CALL f [line 11]\n"
+                "14:   GETRETVAL ^0 [line 11]\n"
+                "15:   PARAM aaaaa [line 12]\n"
+                "16:   PARAM aaaaa [line 12]\n"
+                "17:   PARAM a [line 12]\n"
+                "18:   PARAM 0 [line 12]\n"
+                "19:   PARAM c [line 12]\n"
+                "20:   CALL f [line 12]\n"
+                "21:   GETRETVAL ^0 [line 12]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
 
 /*  ------------ Arithmetic --------------   */
 
-TEST_F(QuadTest, arithmetic_simple) {
-    expected =  "1:   ADD ^0 x 9 [line 1]\n"
-                "2:   SUB ^0 a 0 [line 2]\n"
-                "3:   MUL ^0 8 o [line 3]\n"
-                "4:   MOD ^0 3 6 [line 4]\n"
-                "5:   DIV ^0 1 1 [line 5]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/arithmetic/simple.asc");
-    GTEST_ASSERT_EQ(expected, actual); 
-}
+// TEST_F(QuadTest, arithmetic_simple) {
+//     expected =  "1:   ADD ^0 x 9 [line 1]\n"
+//                 "2:   SUB ^0 a 0 [line 2]\n"
+//                 "3:   MUL ^0 8 o [line 3]\n"
+//                 "4:   MOD ^0 3 6 [line 4]\n"
+//                 "5:   DIV ^0 1 1 [line 5]\n";
+//     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/simple.asc");
+//     GTEST_ASSERT_EQ(expected, actual); 
+// }
 
-TEST_F(QuadTest, arithmetic_spaghetti) {
-    expected =  "1:   ADD ^0 x 9 [line 1]\n"
-                "2:   ADD ^0 ^0 8 [line 1]\n"
-                "3:   ADD ^0 ^0 9 [line 1]\n"
-                "4:   ADD ^0 ^0 u [line 1]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/arithmetic/spaghetti.asc");
-    GTEST_ASSERT_EQ(expected, actual); 
-}
+// TEST_F(QuadTest, arithmetic_spaghetti) {
+//     expected =  "1:   ADD ^0 x 9 [line 1]\n"
+//                 "2:   ADD ^0 ^0 8 [line 1]\n"
+//                 "3:   ADD ^0 ^0 9 [line 1]\n"
+//                 "4:   ADD ^0 ^0 u [line 1]\n";
+//     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/spaghetti.asc");
+//     GTEST_ASSERT_EQ(expected, actual); 
+// }
 
-TEST_F(QuadTest, arithmetic_function_id_error) {
-    expected =  "Error, in line: 4: Use of addition with non variable type\n";
-    actual = exec("./scanner ../test/files/phase3_tests/arithmetic/function_id_error.asc");
-    GTEST_ASSERT_EQ(expected, actual); 
-}
+// TEST_F(QuadTest, arithmetic_function_id_error) {
+//     expected =  "Error, in line: 4: Use of addition with non variable type\n";
+//     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/function_id_error.asc");
+//     GTEST_ASSERT_EQ(expected, actual); 
+// }
 
 #ifdef TESTING
 int main(int argc, char* argv[])
