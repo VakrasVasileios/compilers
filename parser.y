@@ -116,6 +116,24 @@ expr:         assignexpr            {
                                         DLOG("expr -> assignexpr");
                                     }
             | expr '+' expr         {
+                                        // auto entry1 = Lookup($1);
+                                        // auto entry2 = Lookup($3);
+                                        // if(entry1 == nullptr)
+                                        //     LOGERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        // else if (!entry1->is_active())
+                                        //     LOGERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        // else if(entry2 == nullptr)
+                                        //     LOGERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        // else if (!entry2->is_active())
+                                        //     LOGERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
+                                        //     LOGERROR("Use of addition with non variable type");
+                                        //     //boolean + string check      
+                                        // else{
+                                        //     auto _t1 = NewTemp();
+                                        //     $$ = _t1;
+                                        //     Emit(ADD_t, _t1, entry1, entry2, yylineno);
+                                        // } 
                                         DLOG("expr -> expr + expr");
                                     }
             | expr '-' expr         {
@@ -341,6 +359,7 @@ call:       call  '(' elist ')'             {
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
                                                 Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+                                                IncreaseTemp();
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -358,13 +377,13 @@ callsuffix: normcall        {
             ;
 
 normcall:   '(' elist ')'   {
-                                SetFunctionCall(false);
+                                SetFunctionCall(false); //?
                                 DLOG("normcall -> (elist)"); 
                             }
             ;
 
 methodcall: DOTDOT ID '(' elist ')' { 
-                                        SetFunctionCall(false);
+                                        SetFunctionCall(false); //?
                                         SetMethodCall(true);
                                         DLOG("methodcall -> ..id(elist)");
                                     }
@@ -379,9 +398,9 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (IsFunctionCall()) 
+                                if (IsFunctionCall())
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
-                                
+                                             
                                 DLOG("elist -> expr multelist");
                             }
             |               {

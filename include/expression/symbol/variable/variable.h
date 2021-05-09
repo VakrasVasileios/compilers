@@ -3,6 +3,9 @@
 
 #include "../symbol.h"
 
+/*
+Provides the scope of a variable.
+*/
 enum ScopeSpace {
     LOCALVAR,
     GLOBALVAR,
@@ -10,6 +13,9 @@ enum ScopeSpace {
     HIDDEN
 };
 
+/*
+Provides a variable symbol.
+*/
 class Variable : public Symbol {   
 public:
     ScopeSpace       get_space() const;
@@ -20,7 +26,9 @@ protected:
     ~Variable() = default;
 
     std::ostream&   LogSymbol(std::ostream& os) const override;
-
+    /*
+    Returns a read access to this Variable scope space as a string.
+    */
     std::string     SpaceToString() const;
 
 private:

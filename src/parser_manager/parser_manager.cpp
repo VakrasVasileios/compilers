@@ -137,7 +137,7 @@ Symbol* InsertUserFunction(unsigned int line) {
 }
 
 std::string NewTempName() {
-    return  "^" + std::to_string(temp_counter++);
+    return  "^" + std::to_string(temp_counter);
 }
 
 void InsertHiddenVariable(HiddenVariable* temp) {
@@ -273,6 +273,10 @@ void LogQuads(std::ostream& output) {
     for (auto quad : quads) {
         output << quad << std::endl;
     }
+}
+
+void IncreaseTemp() {
+    temp_counter++;
 }
 
 void ResetTemp() {

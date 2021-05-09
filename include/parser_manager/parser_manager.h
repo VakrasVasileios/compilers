@@ -198,6 +198,10 @@ Constructs a new quad and appends it to the quads list.
 */
 void                Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
 /*
+Increases the hidden variable counter.
+*/
+void                IncreaseTemp();
+/*
 Resets the hidden variable counter.
 */
 void                ResetTemp();
