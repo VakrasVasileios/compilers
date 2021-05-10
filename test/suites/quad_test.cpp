@@ -120,7 +120,10 @@ TEST_F(QuadTest, functions_call_parameters) {
 }
 
 TEST_F(QuadTest, call_with_symbol_parameters) {
-    expected =  "1:   FUNCSTART f [line 1]\n"
+    expected =  "Warning, in line: 10: Too many arguments passed to function: f, defined in line: 1\n"
+                "Warning, in line: 11: Too many arguments passed to function: f, defined in line: 1\n"
+                "Warning, in line: 12: Too many arguments passed to function: f, defined in line: 1\n"
+                "1:   FUNCSTART f [line 1]\n"
                 "2:   FUNCEND f [line 2]\n"
                 "3:   PARAM c [line 5]\n"
                 "4:   CALL f [line 5]\n"
