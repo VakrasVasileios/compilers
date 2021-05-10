@@ -360,17 +360,14 @@ call:       call  '(' elist ')'             {
                                                 }
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
-                                                //Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
 
                                                 auto args_num = static_cast<Function*>(entry)->get_formal_arguments().size();
+                                                auto call_args_num = PopCallArgsCount();
 
-                                                std::cout << entry->get_id() << " args count: " << args_num << std::endl;
-                                                std::cout << entry->get_id() << " counted args count: " << GetCallArgsCount() << std::endl;
-
-                                                if (GetCallArgsCount() < args_num)
+                                                if (call_args_num < args_num)
                                                     SIGNALERROR("Too few arguments passed to function: " << entry->get_id() << ", defined in line: " << std::to_string(entry->get_line()));
                                                 // else if (GetCallArgsCount() > args_num)
-                                                DecreaseCallArgsCount();
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -379,10 +376,10 @@ call:       call  '(' elist ')'             {
                                             }
             ;
 
-callsuffix: normcall        {
+callsuffix: {PushCallArgsCount();}normcall        {
                                 DLOG("callsuffix -> normcall");
                             }
-            | methodcall    {
+            | {PushCallArgsCount();}methodcall    {
                                 DLOG("callsuffix -> methodcall");
                             }
             ;
@@ -636,11 +633,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    // if (NoErrorSignaled())
-    //     LogQuads(std::cout);
-
     if (NoErrorSignaled())
-        LogSymbolTable(std::cout);
+        LogQuads(std::cout);
+
+    // if (NoErrorSignaled())
+    //     LogSymbolTable(std::cout);
 
     return 0;
 }

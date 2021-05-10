@@ -2,6 +2,7 @@
 #include <list>
 #include <iostream>
 #include <assert.h>
+#include <stack>
 
 #include "../../include/parser_manager/parser_manager.h"
 
@@ -19,7 +20,8 @@ unsigned int return_depth = 0;
 
 unsigned int anonymus_funcs_counter = 0;
 unsigned int temp_counter = 0;
-unsigned int call_args_counter = 0;
+
+std::stack<unsigned int> call_stack;
 
 SymbolTable         symbol_table;
 
@@ -84,8 +86,8 @@ unsigned int GetCurrentScope() {
     return current_scope;
 }
 
-unsigned int GetCallArgsCount() {
-    return call_args_counter;
+unsigned int PopCallArgsCount() {
+    return call_stack.top();
 }
 
 Symbol* LookupGlobal(const char* name) {
@@ -292,9 +294,9 @@ void SignalError() {
 }
 
 void IncreaseCallArgsCount() {
-    call_args_counter++;
+    call_stack.top()++;
 }
 
-void ResetCallArgsCount() {
-    call_args_counter = 0;
+void PushCallArgsCount() {
+    call_stack.push(0);
 }

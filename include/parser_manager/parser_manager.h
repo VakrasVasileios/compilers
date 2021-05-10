@@ -81,7 +81,7 @@ unsigned int        GetCurrentScope();
 Returns the counter that is responsible for counting
 the number of passed arguments to a function call.
 */
-unsigned int        GetCallArgsCount();
+unsigned int        PopCallArgsCount();
 /*
 Searches for a symbol table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
@@ -219,10 +219,7 @@ Increments the counter that is responsible for counting
 the number of passed arguments to a function call.
 */
 void                IncreaseCallArgsCount();
-/*
-Decrements the counter that is responsible for counting
-the number of passed arguments to a function call.
-*/
-void                DecreaseCallArgsCount();
+
+void                PushCallArgsCount();
 
 #endif
