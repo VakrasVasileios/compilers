@@ -17,6 +17,7 @@
 #include "../expression/symbol/variable/formal_variable.h"
 #include "../expression/symbol/variable/hidden_variable.h"
 #include "../expression/symbol/symbol.h"
+#include "../expression/function_call/function_call.h"
 #include "../quad/quad.h"
 #include <fstream>
 #include <string>
@@ -38,10 +39,6 @@ bool                IsAtCurrentScope(Symbol* entry);
 Returns wether the state is a method call.
 */
 bool                IsMethodCall();
-/*
-Returns wether the state is a function call.
-*/
-bool                IsFunctionCall();
 /*
 Returns wether a symbol table entry is a global variable.
 */
@@ -77,11 +74,6 @@ unsigned int        GetLoopDepth();
 Returns the current scope.
 */
 unsigned int        GetCurrentScope();
-/*
-Pops this stack frame, returning the counter that is responsible for counting
-the number of passed arguments to the top function call.
-*/
-unsigned int        PopCallStackFrame();
 /*
 Searches for a symbol table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
@@ -150,10 +142,6 @@ Flags the state as a method call.
 */
 void                SetMethodCall(bool methodcall);
 /*
-Flags the state as a function call.
-*/
-void                SetFunctionCall(bool function_call);
-/*
 Flags the validity of a possible return.
 */
 void                SetValidReturn(bool valid_return);
@@ -215,13 +203,31 @@ Signals that a compination error has occured.
 */
 void                SignalError();
 /*
-Increments the counter that is responsible for counting
-the number of passed arguments to the top function call, at this stack frame.
+Creates a new call stack frame of a function call.
 */
-void                IncreaseCallArgsCount();
+void                NewCallStackFrame(FunctionCall* function_call);
 /*
-Creates a new call stack frame.
+Returns the function call at the top call stack frame.
 */
-void                NewCallStackFrame();
+FunctionCall*       PopCallStackFrame();
+/*
+Pushes an expression parameter, to the top call stack frame,
+called function, parameters list.
+It's a checked runtime error for the expression to be null.
+*/
+void                PushCallParam(Expression* expr);
+/*
+Returns the depth of the current function call.
+*/
+unsigned int        GetFunctionDepth();
+/*
+Increases the depth of the function call.
+*/
+void                IncreaseFunctionDepth();
+/*
+Decreases the depth of the function call.
+*/
+void                DecreaseFunctionDepth();
+
 
 #endif

@@ -12,6 +12,7 @@ SRC += src/parser_manager/*.cpp \
 		src/expression/symbol/*.cpp \
 		src/expression/symbol/variable/*.cpp \
 		src/expression/symbol/function/*.cpp \
+		src/expression/function_call/function_call.cpp \
 		src/instruction_opcodes/*.cpp \
 		src/quad/*.cpp
 

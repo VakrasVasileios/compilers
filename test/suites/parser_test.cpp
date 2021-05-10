@@ -241,7 +241,7 @@ TEST_F(ParserTest, GlobalAndLocal) {
 //    GTEST_ASSERT_EQ(expected, actual); 
 // }
 
- TEST_F(ParserTest, Random) { //?
+ TEST_F(ParserTest, Random) { 
    expected = libfunc_out;
    expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
             "[user function] \"Assert\" (line 7) (scope 0)\n"

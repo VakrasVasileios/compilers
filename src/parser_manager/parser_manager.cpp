@@ -12,16 +12,11 @@
 const unsigned int global_scope = 0;
 unsigned int current_scope = OUT_OF_SCOPE;
 
-bool method_call = false;
-bool function_call = false;
-
 unsigned int loop_depth = 0;
 unsigned int return_depth = 0;
 
 unsigned int anonymus_funcs_counter = 0;
 unsigned int temp_counter = 0;
-
-std::stack<unsigned int> call_stack;
 
 SymbolTable         symbol_table;
 
@@ -62,14 +57,6 @@ bool ScopeIsGlobal() {
     return current_scope == global_scope;
 }
 
-bool IsMethodCall() {
-    return method_call;
-}
-
-bool IsFunctionCall() {
-    return function_call;
-}
-
 bool NoErrorSignaled() {
     return !error_flag;
 }
@@ -84,10 +71,6 @@ unsigned int GetReturnDepth() {
 
 unsigned int GetCurrentScope() {
     return current_scope;
-}
-
-unsigned int PopCallStackFrame() {
-    return call_stack.top();
 }
 
 Symbol* LookupGlobal(const char* name) {
@@ -193,14 +176,6 @@ void DecreaseScope() {
     --current_scope;
 }
 
-void SetMethodCall(bool methodcall) {
-    ::method_call = method_call;
-}
-
-void SetFunctionCall(bool function_call) {
-    ::function_call = function_call;
-}
-
 void IncreaseLoopDepth() {
     loop_depth++;
 }
@@ -293,10 +268,33 @@ void SignalError() {
     error_flag = true;
 }
 
-void IncreaseCallArgsCount() {
-    call_stack.top()++;
+unsigned int function_depth = 0; // provides the depth of the current function call.
+
+void IncreaseFunctionDepth() {
+    function_depth++;
 }
 
-void NewCallStackFrame() {
-    call_stack.push(0);
+void DecreaseFunctionDepth() {
+    function_depth--;
+}
+
+unsigned int GetFunctionDepth() {
+    return function_depth;
+}
+
+std::stack<FunctionCall*> call_stack; // provides the call stack containing all the active call stack frames.
+
+void NewCallStackFrame(FunctionCall* function_call) {
+    assert(function_call != nullptr);
+    call_stack.push(function_call);
+}
+
+FunctionCall* PopCallStackFrame() {
+    auto top_call = call_stack.top();
+    call_stack.pop();
+    return top_call;
+}
+
+void PushCallParam(Expression* expr) {
+    call_stack.top()->IncludeParameter(expr);
 }

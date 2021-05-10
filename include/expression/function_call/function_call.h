@@ -1,21 +1,37 @@
-// #ifndef FUNCTIONCALL_H
-// #define FUNCTIONCALL_H
+#ifndef FUNCTIONCALL_H
+#define FUNCTIONCALL_H
 
-// #include "../expression.h"
-// #include "../symbol/function/function.h"
+#include "../expression.h"
+#include "../symbol/function/function.h"
+#include <list>
 
-// class FunctionCall : public Expression {
-// public:
-//     FunctionCall(Function* called_function, unsigned int params_count)
-//     : Expression(FUNCTION_CALL), called_function(called_function), params_count(params_count) {};
+/*
+Provides a function call that always resides at the top
+call stack frame. 
+*/
+class FunctionCall : public Expression {
+public:
+    FunctionCall(Function* called_function, std::list<Expression*> params)
+    : Expression(FUNCTION_CALL), called_function(called_function), params(params) {};
 
-//     ~FunctionCall() = default;
+    ~FunctionCall() = default;
+    /*
+    Returns this FunctionCall called function.
+    */
+    Function*               get_called_function() const;
+    /*
+    Returns this FunctionCall passed parameters list.
+    */
+    std::list<Expression*>  get_params() const;
+    /*
+    Includes a parameter to this FunctionCall.
+    */
+    void                    IncludeParameter(Expression* param);
+protected:
+    std::ostream&           LogExpression(std::ostream& os) const override;
+private:
+    Function*               called_function; 
+    std::list<Expression*>  params;  
+};
 
-//     const Function*             get_called_function() const { return called_function; };
-//     const unsigned int          get_params_count() const { return params_count; };
-// private:
-//     const Function* called_function; 
-//     const unsigned int params_count = 0;   
-// };
-
-// #endif
+#endif

@@ -20,7 +20,9 @@ enum ExprType {
     BOOL_EXPR,
     ASSIGN_EXPR,
     NEWTABLE_EXPR,
-    TABLE_ITEM
+    TABLE_ITEM,
+
+    FUNCTION_CALL
 };
 
 /*

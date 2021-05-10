@@ -75,7 +75,6 @@ stmts:        stmt stmts            {
             ;
 
 stmt:         expr ';'              {
-                                        SetMethodCall(false);
                                         DLOG("stmt -> expr;");
                                     }
             | ifstmt                {
@@ -350,26 +349,31 @@ call:       call  '(' elist ')'             {
                                                 DLOG("call -> call(elist)");
                                             }
             | lvalue                        {
-                                                SetFunctionCall(true);
-                                                NewCallStackFrame();
+                                                IncreaseFunctionDepth();
+                                                
+                                                auto called_function = LookupFunc($1);
+                                                if (called_function == nullptr) {
+                                                    LOGWARNING("Attempting use of function call with NIL value");
+                                                    called_function = new UserFunction($1, yylineno, GetCurrentScope()); 
+                                                }
+                                                auto function_call = new FunctionCall(called_function, std::list<Expression*>());
+                                                NewCallStackFrame(function_call);
                                             }
             callsuffix                      {
-                                                auto function = LookupFunc($1);
-                                                if (function == nullptr) {
-                                                    LOGWARNING("Attempting use of function call with NIL value");
-                                                    function = new UserFunction($1, yylineno, GetCurrentScope()); 
-                                                }
+                                                auto function_call = PopCallStackFrame();
+                                                auto called_function = function_call->get_called_function();
 
-                                                Emit(CALL_t, function, nullptr, nullptr, yylineno);    
+                                                Emit(CALL_t, called_function, nullptr, nullptr, yylineno);    
                                                 Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
 
-                                                auto args_num = function->get_formal_arguments().size();
-                                                auto call_args_num = PopCallStackFrame();
-
+                                                auto args_num = called_function->get_formal_arguments().size();
+                                                auto call_args_num = function_call->get_params().size();
 
                                                 if (call_args_num < args_num)
-                                                    SIGNALERROR("Too few arguments passed to function: " << function->get_id() << ", defined in line: " << std::to_string(function->get_line()));
+                                                    SIGNALERROR("Too few arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
                                                 // else if (GetCallArgsCount() > args_num)
+
+                                                DecreaseFunctionDepth();
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -387,21 +391,18 @@ callsuffix: normcall        {
             ;
 
 normcall:   '(' elist ')'   {
-                                SetFunctionCall(false);
                                 DLOG("normcall -> (elist)"); 
                             }
             ;
 
 methodcall: DOTDOT ID '(' elist ')' { 
-                                        SetFunctionCall(false);
-                                        SetMethodCall(true);
                                         DLOG("methodcall -> ..id(elist)");
                                     }
             ;
 
 multelist:  ',' expr multelist  {
-                                    if (IsFunctionCall()) {
-                                        IncreaseCallArgsCount();
+                                    if (GetFunctionDepth() != 0) {
+                                        PushCallParam($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
                                     }
                                     DLOG("multelist -> ,expr multelist");
@@ -412,8 +413,8 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (IsFunctionCall()) {
-                                    IncreaseCallArgsCount();
+                                if (GetFunctionDepth() != 0) {
+                                    PushCallParam($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
                                 }
                                              
