@@ -351,6 +351,7 @@ call:       call  '(' elist ')'             {
                                             }
             | lvalue                        {
                                                 SetFunctionCall(true);
+                                                PushCallArgsCount();
                                             }
             callsuffix                      {
                                                 auto entry = LookupFunc($1);
@@ -360,7 +361,7 @@ call:       call  '(' elist ')'             {
                                                 }
 
                                                 Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
-                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+                                                //Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
 
                                                 auto args_num = static_cast<Function*>(entry)->get_formal_arguments().size();
                                                 auto call_args_num = PopCallArgsCount();
@@ -376,10 +377,10 @@ call:       call  '(' elist ')'             {
                                             }
             ;
 
-callsuffix: {PushCallArgsCount();}normcall        {
+callsuffix: normcall        {
                                 DLOG("callsuffix -> normcall");
                             }
-            | {PushCallArgsCount();}methodcall    {
+            | methodcall    {
                                 DLOG("callsuffix -> methodcall");
                             }
             ;
@@ -633,11 +634,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    if (NoErrorSignaled())
-        LogQuads(std::cout);
-
     // if (NoErrorSignaled())
-    //     LogSymbolTable(std::cout);
+    //     LogQuads(std::cout);
+
+    if (NoErrorSignaled())
+        LogSymbolTable(std::cout);
 
     return 0;
 }
