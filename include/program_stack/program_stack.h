@@ -49,7 +49,7 @@ public:
     across all scopes. Returns a read/write access to the symbol if it's found,
     else nullptr.
     */
-    Symbol*             LookupFunc(std::string name);
+    Function*             LookupFunc(std::string name);
     /*
     Searches for the previously inserted function at the top of this ProgramStack.
     Returns a read/write access to the function if it's found, else nullptr.

@@ -78,10 +78,10 @@ Returns the current scope.
 */
 unsigned int        GetCurrentScope();
 /*
-Returns the counter that is responsible for counting
-the number of passed arguments to a function call.
+Pops this stack frame, returning the counter that is responsible for counting
+the number of passed arguments to the top function call.
 */
-unsigned int        PopCallArgsCount();
+unsigned int        PopCallStackFrame();
 /*
 Searches for a symbol table entry reference by its name across all scopes. 
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
@@ -99,7 +99,7 @@ Searches for a function entry reference by its name across all scopes.
 Returns a read/write access to a reference to the entry if it's found, else nullptr.
 It's a checked runtime error for the name to be null.
 */
-Symbol*             LookupFunc(const char* name);
+Function*           LookupFunc(const char* name);
 /*
 Searches the previously inserted function referenceacross all scopes. 
 Returns a read/write access to a reference to the function if it's found, else nullptr.
@@ -216,10 +216,12 @@ Signals that a compination error has occured.
 void                SignalError();
 /*
 Increments the counter that is responsible for counting
-the number of passed arguments to a function call.
+the number of passed arguments to the top function call, at this stack frame.
 */
 void                IncreaseCallArgsCount();
-
-void                PushCallArgsCount();
+/*
+Creates a new call stack frame.
+*/
+void                NewCallStackFrame();
 
 #endif

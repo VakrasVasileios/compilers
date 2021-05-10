@@ -44,10 +44,10 @@ ProgramStack:: LookupGlobal(std::string name) {
     return block->Lookup(name);
 }
 
-Symbol*
+Function*
 ProgramStack:: LookupFunc(std::string name) {
     auto iter = block_list.end();
-    Symbol* found;
+    Function* found;
     do {
         --iter;
         auto block = (*iter);

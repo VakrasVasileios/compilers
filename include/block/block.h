@@ -36,7 +36,7 @@ class Block final {
         Returns a read/write access to a reference of the function if it's found,
         else nullptr.
         */
-        Symbol*                 LookupFunc(std::string id);
+        Function*               LookupFunc(std::string id);
         /*
         Searches for the previously inserted function on this Block.
         Returns a read/write access to a reference of the function if it's found,

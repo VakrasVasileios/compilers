@@ -86,7 +86,7 @@ unsigned int GetCurrentScope() {
     return current_scope;
 }
 
-unsigned int PopCallArgsCount() {
+unsigned int PopCallStackFrame() {
     return call_stack.top();
 }
 
@@ -100,7 +100,7 @@ Symbol* Lookup(const char* name) {
     return program_stack.Lookup(name);
 }
 
-Symbol* LookupFunc(const char* name) {
+Function* LookupFunc(const char* name) {
     assert(name != nullptr);
     return program_stack.LookupFunc(name);
 }
@@ -297,6 +297,6 @@ void IncreaseCallArgsCount() {
     call_stack.top()++;
 }
 
-void PushCallArgsCount() {
+void NewCallStackFrame() {
     call_stack.push(0);
 }

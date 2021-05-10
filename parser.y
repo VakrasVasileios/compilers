@@ -351,23 +351,24 @@ call:       call  '(' elist ')'             {
                                             }
             | lvalue                        {
                                                 SetFunctionCall(true);
-                                                PushCallArgsCount();
+                                                NewCallStackFrame();
                                             }
             callsuffix                      {
-                                                auto entry = LookupFunc($1);
-                                                if (entry == nullptr) {
+                                                auto function = LookupFunc($1);
+                                                if (function == nullptr) {
                                                     LOGWARNING("Attempting use of function call with NIL value");
-                                                    entry = new UserFunction($1, yylineno, GetCurrentScope()); 
+                                                    function = new UserFunction($1, yylineno, GetCurrentScope()); 
                                                 }
 
-                                                Emit(CALL_t, entry, nullptr, nullptr, yylineno);    
-                                                //Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+                                                Emit(CALL_t, function, nullptr, nullptr, yylineno);    
+                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
 
-                                                auto args_num = static_cast<Function*>(entry)->get_formal_arguments().size();
-                                                auto call_args_num = PopCallArgsCount();
+                                                auto args_num = function->get_formal_arguments().size();
+                                                auto call_args_num = PopCallStackFrame();
+
 
                                                 if (call_args_num < args_num)
-                                                    SIGNALERROR("Too few arguments passed to function: " << entry->get_id() << ", defined in line: " << std::to_string(entry->get_line()));
+                                                    SIGNALERROR("Too few arguments passed to function: " << function->get_id() << ", defined in line: " << std::to_string(function->get_line()));
                                                 // else if (GetCallArgsCount() > args_num)
 
                                                 DLOG("call -> lvalue callsuffix");
@@ -634,11 +635,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    // if (NoErrorSignaled())
-    //     LogQuads(std::cout);
-
     if (NoErrorSignaled())
-        LogSymbolTable(std::cout);
+        LogQuads(std::cout);
+
+    // if (NoErrorSignaled())
+    //     LogSymbolTable(std::cout);
 
     return 0;
 }

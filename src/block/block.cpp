@@ -35,11 +35,11 @@ bool IsAFUnctionEntry(Symbol* entry) {
     return entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC;
 }
 
-Symbol*
+Function*
 Block:: LookupFunc(std::string id) {
     for(auto entry : entries) {
         if (entry->get_id() == id && (IsAFUnctionEntry(entry))) {
-            return entry;
+            return static_cast<Function*>(entry);
         }
     }
 
