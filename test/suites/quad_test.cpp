@@ -151,6 +151,42 @@ TEST_F(QuadTest, call_less_parameters) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
+TEST_F(QuadTest, call_nested) {
+    expected =  "1:   FUNCSTART f [line 2]\n"
+                "2:   FUNCEND f [line 4]\n"
+                "3:   FUNCSTART g [line 6]\n"
+                "4:   FUNCEND g [line 8]\n"
+                "5:   PARAM 1 [line 10]\n"
+                "6:   CALL g [line 10]\n"
+                "7:   GETRETVAL ^0 [line 10]\n"
+                "8:   PARAM ^0 [line 10]\n"
+                "9:   CALL f [line 10]\n"
+                "10:   GETRETVAL ^1 [line 10]\n"
+                "11:   PARAM 2 [line 12]\n"
+                "12:   CALL y [line 12]\n"
+                "13:   GETRETVAL ^0 [line 12]\n"
+                "14:   PARAM ^0 [line 12]\n"
+                "15:   CALL g [line 12]\n"
+                "16:   GETRETVAL ^1 [line 12]\n"
+                "17:   PARAM ^1 [line 12]\n"
+                "18:   CALL f [line 12]\n"
+                "19:   GETRETVAL ^2 [line 12]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_nested.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, call_more_parameters) {
+    expected =  "Warning, in line: 5: Too many arguments passed to function: f, defined in line: 1\n"
+                "1:   FUNCSTART f [line 1]\n"
+                "2:   FUNCEND f [line 3]\n"
+                "3:   PARAM 2 [line 5]\n"
+                "4:   PARAM a [line 5]\n"
+                "5:   CALL f [line 5]\n"
+                "6:   GETRETVAL ^0 [line 5]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_more_parameters.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

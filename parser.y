@@ -371,7 +371,8 @@ call:       call  '(' elist ')'             {
 
                                                 if (call_args_num < args_num)
                                                     SIGNALERROR("Too few arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
-                                                // else if (GetCallArgsCount() > args_num)
+                                                else if (call_args_num > args_num)
+                                                    LOGWARNING("Too many arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
 
                                                 DecreaseFunctionDepth();
 
