@@ -4,11 +4,12 @@
 std::ostream&
 operator<<(std::ostream& os, const quad _quad) {
     os << std::to_string(_quad.label) << ":   " << OpCodeToString(_quad.op) << " ";
+    os << _quad.result << " ";
     if(_quad.arg1 != nullptr)
-        os << _quad.arg1 << "";
+        os << _quad.arg1 << " ";
     if (_quad.arg2 != nullptr)
         os << _quad.arg2 << " ";
-    os << _quad.result << " [line " << std::to_string(_quad.line) << "]";
+    os << "[line " << std::to_string(_quad.line) << "]";
 
     return os;
 }

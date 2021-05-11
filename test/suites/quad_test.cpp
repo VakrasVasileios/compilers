@@ -27,7 +27,7 @@ class QuadTest : public ::testing::Test {
 };
 
 TEST_F(QuadTest, Assign) {
-   expected = "1:   ASSIGN 2 x [line 1]\n";
+   expected = "1:   ASSIGN x 2 [line 1]\n";
    actual = exec("./scanner ../test/files/phase3_tests/Assign.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
@@ -228,6 +228,22 @@ TEST_F(QuadTest, call_anonymous_func_def) {
                 "6:   GETRETVAL ^0 [line 1]\n";
     actual = exec("./scanner ../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(QuadTest, assign_nested) {
+    expected =  "1:   FUNCSTART f [line 1]\n"
+                "2:   FUNCEND f [line 2]\n"
+                "3:   FUNCSTART g [line 4]\n"
+                "4:   FUNCEND g [line 5]\n"
+                "5:   PARAM 3 [line 7]\n"
+                "6:   CALL g [line 7]\n"
+                "7:   GETRETVAL ^0 [line 7]\n"
+                "8:   PARAM ^0 [line 7]\n"
+                "9:   CALL f [line 7]\n"
+                "10:   GETRETVAL ^1 [line 7]\n"
+                "11:   ASSIGN x ^1 [line 7]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/assign_nested.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
 }
 
 /*  ------------ Arithmetic --------------   */
