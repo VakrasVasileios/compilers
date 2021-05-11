@@ -77,10 +77,24 @@ Block:: Insert(Symbol* entry) {
     entries.push_back(entry);
 }
 
+bool
+Block:: ContainsOnlyHiddenVars() {
+    unsigned int hidden_var_count = 0;
+    for (auto entry : entries) {
+        if (IsHiddenVariable(entry))
+            hidden_var_count++;
+    } 
+
+    return hidden_var_count == entries.size();
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
     for(auto entry : block.entries) {
-        os << entry << "\n";
+        if (!IsHiddenVariable(entry))
+        {
+            os << entry << "\n";
+        }
     }
     return os;    
 }

@@ -53,6 +53,10 @@ class Block final {
         Inserts a symbol at the end of this Block.
         */
         void                    Insert(Symbol* symbol);
+        /*
+        Returns wether this Block contains only hidden variables.
+        */
+        bool                    ContainsOnlyHiddenVars();
 
         friend std::ostream&    operator<<(std::ostream& os, const Block block);
     private:

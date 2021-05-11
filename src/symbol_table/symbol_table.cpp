@@ -20,12 +20,22 @@ bool ContainsAnEntry(std::list<Block*> blockList) {
     return contains;
 }
 
+bool ContainsOnlyHiddenVariables(std::list<Block*> blockList) {
+    unsigned int blocks_with_only_hidden_vars_count = 0;
+    for (auto block : blockList) {
+        if (block->ContainsOnlyHiddenVars())
+            blocks_with_only_hidden_vars_count++;    
+    }
+    
+    return blocks_with_only_hidden_vars_count == blockList.size();
+}
+
 std::ostream&
 operator<<(std::ostream& os, const SymbolTable symbol_table) {
     unsigned int scope = 0;
     for (auto blockList : symbol_table.blocks_table)
     {        
-        if (ContainsAnEntry(blockList))
+        if (ContainsAnEntry(blockList) && !ContainsOnlyHiddenVariables(blockList))
         {
             os << "-----------     Scope #" << scope << "     -----------\n";
             for (auto block : blockList)
