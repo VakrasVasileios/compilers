@@ -23,6 +23,9 @@ public:
     friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbol_table);
 private:
     std::vector<std::list<Block*> > blocks_table;
+
+    static bool                     ContainsAnEntry(std::list<Block*> blockList);
+    static bool                     ContainsOnlyHiddenVariables(std::list<Block*> blockList);
 };
 
 #endif

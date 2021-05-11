@@ -11,7 +11,8 @@ SymbolTable:: Insert(unsigned int scope, Block* block) {
     blocks_table[scope].push_back(block);
 }
 
-bool ContainsAnEntry(std::list<Block*> blockList) {
+bool
+SymbolTable:: ContainsAnEntry(std::list<Block*> blockList) {
     bool contains = false;
     for (auto block : blockList) {
         if (!block->get_entries().empty())
@@ -20,7 +21,8 @@ bool ContainsAnEntry(std::list<Block*> blockList) {
     return contains;
 }
 
-bool ContainsOnlyHiddenVariables(std::list<Block*> blockList) {
+bool
+SymbolTable:: ContainsOnlyHiddenVariables(std::list<Block*> blockList) {
     unsigned int blocks_with_only_hidden_vars_count = 0;
     for (auto block : blockList) {
         if (block->ContainsOnlyHiddenVars())
@@ -35,7 +37,7 @@ operator<<(std::ostream& os, const SymbolTable symbol_table) {
     unsigned int scope = 0;
     for (auto blockList : symbol_table.blocks_table)
     {        
-        if (ContainsAnEntry(blockList) && !ContainsOnlyHiddenVariables(blockList))
+        if (symbol_table.ContainsAnEntry(blockList) && !symbol_table.ContainsOnlyHiddenVariables(blockList))
         {
             os << "-----------     Scope #" << scope << "     -----------\n";
             for (auto block : blockList)

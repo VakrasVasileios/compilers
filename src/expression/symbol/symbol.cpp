@@ -29,14 +29,6 @@ std::ostream& operator<<(std::ostream& os, const Symbol* symbol) {
     return symbol->LogSymbol(os);
 }
 
-// std::ostream&
-// Symbol:: LogSymbolTableEntry(std::ostream& os) const {
-//     os      << "[" << TypeToString() << "]"
-//             << " \"" << get_id() << "\""
-//             << " (line " << get_line() << ")" 
-//             << " (scope " << get_scope() << ")";
-// }
-
 std::ostream&
 Symbol:: LogExpression(std::ostream& os) const {
     return os << id;

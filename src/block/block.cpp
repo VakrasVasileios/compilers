@@ -31,14 +31,15 @@ Block:: Lookup(std::string id) {
     return nullptr;
 }
 
-bool IsAFUnctionEntry(Symbol* entry) {
+bool
+Block:: IsAFunctionEntry(Symbol* entry) {
     return entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC;
 }
 
 Function*
 Block:: LookupFunc(std::string id) {
     for(auto entry : entries) {
-        if (entry->get_id() == id && (IsAFUnctionEntry(entry))) {
+        if (entry->get_id() == id && (IsAFunctionEntry(entry))) {
             return static_cast<Function*>(entry);
         }
     }
@@ -57,7 +58,8 @@ Block:: LookupPreviousFunc() {
     return nullptr;
 }
 
-bool IsHiddenVariable(Symbol* entry) {
+bool
+Block:: IsHiddenVariable(Symbol* entry) {
     return entry->get_type() == VAR && dynamic_cast<Variable*>(entry)->get_space() == HIDDEN;
 }
 
@@ -91,7 +93,7 @@ Block:: ContainsOnlyHiddenVars() {
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
     for(auto entry : block.entries) {
-        if (!IsHiddenVariable(entry))
+        if (!block.IsHiddenVariable(entry))
         {
             os << entry << "\n";
         }
