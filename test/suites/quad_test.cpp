@@ -249,6 +249,16 @@ TEST_F(QuadTest, functions_call_anonymous_func_def) {
 }
 /*  ------------ Return --------------   */
 
+// TEST_F(QuadTest, return_void) {
+//     expected =  "1:   FUNCSTART f [line 1]\n"
+//                 "2:   RETURN  [line 2]\n"
+//                 "3:   JUMP 5 [line 2]\n"
+//                 "4:   FUNCEND f [line 3]\n";
+//     actual = exec("./scanner ../test/files/phase3_tests/return/return_void.asc");
+//     GTEST_ASSERT_EQ(expected, actual);            
+// }
+
+
 // TEST_F(QuadTest, return_symbol) {
 //     expected =  "1:   FUNCSTART f [line 3]\n"
 //                 "2:   RETURN x [line 4]\n"

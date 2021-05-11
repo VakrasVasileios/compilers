@@ -238,7 +238,6 @@ void LogSymbolTable(std::ostream& output) {
 
 void
 Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
-    assert(result != nullptr);
     unsigned int label = quads.size() + 1;
     // if (op == JUMP)
     //     // put in stack

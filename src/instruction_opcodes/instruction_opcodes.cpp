@@ -24,6 +24,8 @@ std::string OpCodeToString(Iopcode _op) {
             return "OR";
         case NOT_t:
             return "NOT";
+        case JUMP_t:
+            return "JUMP";    
         case IF_EQ_t:
             return "IF_EQ";
         case IF_NOTEQ_t:
@@ -41,7 +43,7 @@ std::string OpCodeToString(Iopcode _op) {
         case PARAM_t:
             return "PARAM";          
         case RET_t:
-            return "RET";  
+            return "RETURN";  
         case GETRETVAL_t:
             return "GETRETVAL";
         case FUNCSTART_t:

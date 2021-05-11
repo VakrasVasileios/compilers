@@ -653,6 +653,9 @@ forstmt:    FOR                                     {
 returnstmt: RETURN      {
                             if (GetReturnDepth() == 0)
                                 SIGNALERROR("Invalid return, used outside a function block");
+
+                            Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
+                            //Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
@@ -662,6 +665,7 @@ returnstmt: RETURN      {
                                 SIGNALERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
+                           // Emit(RET_t, $2, nullptr, nullptr, yylineno);
                             DLOG("returnstmt -> RETURN expr;");
                         }
             ;

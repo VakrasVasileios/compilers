@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.12)
 
 project(compilers) 
 
-include_directories(test/googletest/include) 
+include_directories(libs/googletest/include) 
 
-add_subdirectory(test/googletest) 
+add_subdirectory(libs/googletest) 
 
 #parserTest
 add_executable(parser_test test/suites/parser_test.cpp)
