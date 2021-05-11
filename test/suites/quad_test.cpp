@@ -219,6 +219,17 @@ TEST_F(QuadTest, call_nested_with_func_def) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
+TEST_F(QuadTest, call_anonymous_func_def) {
+    expected =  "1:   FUNCSTART $1 [line 1]\n"
+                "2:   FUNCEND $1 [line 1]\n"
+                "3:   PARAM 4 [line 1]\n"
+                "4:   PARAM 1 [line 1]\n"
+                "5:   CALL $1 [line 1]\n"
+                "6:   GETRETVAL ^0 [line 1]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
