@@ -26,10 +26,28 @@ class QuadTest : public ::testing::Test {
     }
 };
 
-TEST_F(QuadTest, Assign) {
+/*  ------------ Assign --------------   */
+
+TEST_F(QuadTest, assign_simple) {
    expected = "1:   ASSIGN x 2 [line 1]\n";
-   actual = exec("./scanner ../test/files/phase3_tests/Assign.asc");
+   actual = exec("./scanner ../test/files/phase3_tests/assign/simple.asc");
    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(QuadTest, assign_calls_nested) {
+    expected =  "1:   FUNCSTART f [line 1]\n"
+                "2:   FUNCEND f [line 2]\n"
+                "3:   FUNCSTART g [line 4]\n"
+                "4:   FUNCEND g [line 5]\n"
+                "5:   PARAM 3 [line 7]\n"
+                "6:   CALL g [line 7]\n"
+                "7:   GETRETVAL ^0 [line 7]\n"
+                "8:   PARAM ^0 [line 7]\n"
+                "9:   CALL f [line 7]\n"
+                "10:   GETRETVAL ^1 [line 7]\n"
+                "11:   ASSIGN x ^1 [line 7]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/assign/calls_nested.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
 }
 
 
@@ -119,7 +137,7 @@ TEST_F(QuadTest, functions_call_parameters) {
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
-TEST_F(QuadTest, call_with_symbol_parameters) {
+TEST_F(QuadTest, functions_call_with_symbol_parameters) {
     expected =  "Warning, in line: 10: Too many arguments passed to function: f, defined in line: 1\n"
                 "Warning, in line: 11: Too many arguments passed to function: f, defined in line: 1\n"
                 "Warning, in line: 12: Too many arguments passed to function: f, defined in line: 1\n"
@@ -148,13 +166,13 @@ TEST_F(QuadTest, call_with_symbol_parameters) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, call_less_parameters) {
+TEST_F(QuadTest, functions_call_less_parameters) {
     expected = "Error, in line: 4: Too few arguments passed to function: f, defined in line: 1\n";
     actual = exec("./scanner ../test/files/phase3_tests/functions/call_less_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, call_nested) {
+TEST_F(QuadTest, functions_call_nested) {
     expected =  "Warning, in line: 10: Too many arguments passed to function: g, defined in line: 6\n"
                 "Warning, in line: 12: Attempting use of function call with NIL value\n"
                 "Warning, in line: 12: Too many arguments passed to function: y, defined in line: 12\n"
@@ -182,7 +200,7 @@ TEST_F(QuadTest, call_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, call_more_parameters) {
+TEST_F(QuadTest, functions_call_more_parameters) {
     expected =  "Warning, in line: 5: Too many arguments passed to function: f, defined in line: 1\n"
                 "1:   FUNCSTART f [line 1]\n"
                 "2:   FUNCEND f [line 3]\n"
@@ -194,7 +212,7 @@ TEST_F(QuadTest, call_more_parameters) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, call_function_def) {
+TEST_F(QuadTest, functions_call_function_def) {
     expected =  "1:   FUNCSTART f [line 1]\n"
                 "2:   FUNCEND f [line 1]\n"
                 "3:   PARAM 1 [line 1]\n"
@@ -204,7 +222,7 @@ TEST_F(QuadTest, call_function_def) {
     GTEST_ASSERT_EQ(expected, actual);        
 }
 
-TEST_F(QuadTest, call_nested_with_func_def) {
+TEST_F(QuadTest, functions_call_nested_with_func_def) {
     expected =  "Warning, in line: 1: Attempting use of function call with NIL value\n"
                 "Warning, in line: 1: Too many arguments passed to function: g, defined in line: 1\n"
                 "1:   FUNCSTART x [line 1]\n"
@@ -219,7 +237,7 @@ TEST_F(QuadTest, call_nested_with_func_def) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
-TEST_F(QuadTest, call_anonymous_func_def) {
+TEST_F(QuadTest, functions_call_anonymous_func_def) {
     expected =  "1:   FUNCSTART $1 [line 1]\n"
                 "2:   FUNCEND $1 [line 1]\n"
                 "3:   PARAM 4 [line 1]\n"
@@ -229,22 +247,16 @@ TEST_F(QuadTest, call_anonymous_func_def) {
     actual = exec("./scanner ../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
+/*  ------------ Return --------------   */
 
-TEST_F(QuadTest, assign_nested) {
-    expected =  "1:   FUNCSTART f [line 1]\n"
-                "2:   FUNCEND f [line 2]\n"
-                "3:   FUNCSTART g [line 4]\n"
-                "4:   FUNCEND g [line 5]\n"
-                "5:   PARAM 3 [line 7]\n"
-                "6:   CALL g [line 7]\n"
-                "7:   GETRETVAL ^0 [line 7]\n"
-                "8:   PARAM ^0 [line 7]\n"
-                "9:   CALL f [line 7]\n"
-                "10:   GETRETVAL ^1 [line 7]\n"
-                "11:   ASSIGN x ^1 [line 7]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/assign_nested.asc");
-    GTEST_ASSERT_EQ(expected, actual);            
-}
+// TEST_F(QuadTest, return_symbol) {
+//     expected =  "1:   FUNCSTART f [line 3]\n"
+//                 "2:   RETURN x [line 4]\n"
+//                 "3:   JUMP 5 [line 4]\n"
+//                 "4:   FUNCEND f [line 5]\n";
+//     actual = exec("./scanner ../test/files/phase3_tests/return/return_symbol.asc");
+//     GTEST_ASSERT_EQ(expected, actual);            
+//}
 
 /*  ------------ Arithmetic --------------   */
 
