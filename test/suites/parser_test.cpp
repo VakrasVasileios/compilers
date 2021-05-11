@@ -132,8 +132,9 @@ TEST_F(ParserTest, Error9) {
 }
 
 TEST_F(ParserTest, Error10) {
-  expected =  "Error, in line: 6: print library function cannot be shadowed by a user function\n"
-          "Error, in line: 11: Attempting to redefine a library function\n";
+  expected =  "Warning, in line: 3: Too many arguments passed to function: print, defined in line: 0\n"
+              "Error, in line: 6: print library function cannot be shadowed by a user function\n"
+              "Error, in line: 11: Attempting to redefine a library function\n";
   actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
@@ -189,7 +190,9 @@ TEST_F(ParserTest, Error11) {
 //  }
 
 TEST_F(ParserTest, GlobalAndLocal) {
-  expected = libfunc_out;
+  expected =  "Warning, in line: 13: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 14: Too many arguments passed to function: print, defined in line: 0\n";
+  expected += libfunc_out;
   expected += "[global variable] \"global\" (line 2) (scope 0)\n"
           "[user function] \"f\" (line 6) (scope 0)\n"
           "-----------     Scope #1     -----------\n"
@@ -242,7 +245,13 @@ TEST_F(ParserTest, GlobalAndLocal) {
 // }
 
  TEST_F(ParserTest, Random) { 
-   expected = libfunc_out;
+   expected = "Warning, in line: 9: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 41: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 43: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 69: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 70: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 71: Too many arguments passed to function: print, defined in line: 0\n";
+   expected += libfunc_out;
    expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
             "[user function] \"Assert\" (line 7) (scope 0)\n"
             "[user function] \"IsEven\" (line 15) (scope 0)\n"
@@ -266,7 +275,14 @@ TEST_F(ParserTest, GlobalAndLocal) {
  }
 
  TEST_F(ParserTest, ShadowedNameOffFunctions) {
-   expected = libfunc_out;
+   expected = "Warning, in line: 7: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 12: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 17: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 22: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 33: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 35: Too many arguments passed to function: print, defined in line: 0\n"
+              "Warning, in line: 37: Too many arguments passed to function: print, defined in line: 0\n";
+   expected += libfunc_out;
    expected +="[global variable] \"nl\" (line 2) (scope 0)\n"
             "[user function] \"F\" (line 6) (scope 0)\n"
             "-----------     Scope #1     -----------\n"

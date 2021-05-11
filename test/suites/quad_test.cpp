@@ -155,7 +155,11 @@ TEST_F(QuadTest, call_less_parameters) {
 }
 
 TEST_F(QuadTest, call_nested) {
-    expected =  "1:   FUNCSTART f [line 2]\n"
+    expected =  "Warning, in line: 10: Too many arguments passed to function: g, defined in line: 6\n"
+                "Warning, in line: 12: Attempting use of function call with NIL value\n"
+                "Warning, in line: 12: Too many arguments passed to function: y, defined in line: 12\n"
+                "Warning, in line: 12: Too many arguments passed to function: g, defined in line: 6\n"
+                "1:   FUNCSTART f [line 2]\n"
                 "2:   FUNCEND f [line 4]\n"
                 "3:   FUNCSTART g [line 6]\n"
                 "4:   FUNCEND g [line 8]\n"

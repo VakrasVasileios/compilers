@@ -31,6 +31,7 @@
     double                  doubleValue;
     class Expression*       expression;
     class Constant*         con;
+    class FunctionCall*     funcCall;
 }
 
 %start program
@@ -45,6 +46,7 @@
 %type <expression> primary term expr assignexpr
 %type <con> const
 %type <stringValue> member lvalue
+%type <funcCall> call
 
 %right      '='
 %left       OR
@@ -259,6 +261,7 @@ primary:      lvalue                {
                                         DLOG("primary -> lvalue");
                                     }
             | call                  {
+                                        $$ = $1;
                                         DLOG("primary -> call");
                                     }
             | objectdef             {
@@ -358,13 +361,21 @@ call:       call  '(' elist ')'             {
                                                 }
                                                 auto function_call = new FunctionCall(called_function, std::list<Expression*>());
                                                 NewCallStackFrame(function_call);
+
+                                                $<funcCall>$ = function_call;
                                             }
             callsuffix                      {
                                                 auto function_call = PopCallStackFrame();
                                                 auto called_function = function_call->get_called_function();
 
+                                                $<funcCall>$ = function_call;
+
+
+
                                                 Emit(CALL_t, called_function, nullptr, nullptr, yylineno);    
-                                                Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+                                               // Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+
+                                                IncreaseTemp();
 
                                                 auto args_num = called_function->get_formal_arguments().size();
                                                 auto call_args_num = function_call->get_params().size();
@@ -375,6 +386,9 @@ call:       call  '(' elist ')'             {
                                                     LOGWARNING("Too many arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
 
                                                 DecreaseFunctionDepth();
+
+                                                if (GetFunctionDepth() == 0)
+                                                    ResetTemp();
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -637,11 +651,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    if (NoErrorSignaled())
-        LogQuads(std::cout);
-
     // if (NoErrorSignaled())
-    //     LogSymbolTable(std::cout);
+    //     LogQuads(std::cout);
+
+    if (NoErrorSignaled())
+        LogSymbolTable(std::cout);
 
     return 0;
 }
