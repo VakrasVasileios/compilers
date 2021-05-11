@@ -394,7 +394,43 @@ call:       call  '(' elist ')'             {
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
-            | '(' funcdef ')' '(' elist ')' {
+            | '(' funcdef ')'               {
+                                                IncreaseFunctionDepth();
+                                                
+                                                auto called_function = LookupPreviousFunction();
+                                                auto function_call = new FunctionCall(called_function, std::list<Expression*>());
+
+                                                NewCallStackFrame(function_call);
+
+                                                $<funcCall>$ = function_call;
+                                            } 
+            '(' elist ')'                   {
+                                                auto function_call = PopCallStackFrame();
+                                                auto called_function = function_call->get_called_function();
+
+                                                $<funcCall>$ = function_call;
+
+                                                auto temp_value = NewTemp();
+
+                                                Emit(CALL_t, called_function, nullptr, nullptr, yylineno);    
+                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
+
+                                                function_call->set_ret_val(temp_value->get_id());
+
+                                                IncreaseTemp();
+
+                                                auto args_num = called_function->get_formal_arguments().size();
+                                                auto call_args_num = function_call->get_params().size();
+
+                                                if (call_args_num < args_num)
+                                                    SIGNALERROR("Too few arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
+                                                else if (call_args_num > args_num)
+                                                    LOGWARNING("Too many arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
+
+                                                DecreaseFunctionDepth();
+
+                                                if (GetFunctionDepth() == 0)
+                                                    ResetTemp();
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
             ;

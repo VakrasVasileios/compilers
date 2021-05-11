@@ -194,6 +194,16 @@ TEST_F(QuadTest, call_more_parameters) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(QuadTest, call_function_def) {
+    expected =  "1:   FUNCSTART f [line 1]\n"
+                "2:   FUNCEND f [line 1]\n"
+                "3:   PARAM 1 [line 1]\n"
+                "4:   CALL f [line 1]\n"
+                "5:   GETRETVAL ^0 [line 1]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_function_def.asc");
+    GTEST_ASSERT_EQ(expected, actual);        
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
