@@ -370,10 +370,12 @@ call:       call  '(' elist ')'             {
 
                                                 $<funcCall>$ = function_call;
 
-
+                                                auto temp_value = NewTemp();
 
                                                 Emit(CALL_t, called_function, nullptr, nullptr, yylineno);    
-                                               // Emit(GETRETVAL_t, NewTemp(), nullptr, nullptr, yylineno);
+                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
+
+                                                function_call->set_ret_val(temp_value->get_id());
 
                                                 IncreaseTemp();
 
@@ -651,11 +653,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    // if (NoErrorSignaled())
-    //     LogQuads(std::cout);
-
     if (NoErrorSignaled())
-        LogSymbolTable(std::cout);
+        LogQuads(std::cout);
+
+    // if (NoErrorSignaled())
+    //     LogSymbolTable(std::cout);
 
     return 0;
 }

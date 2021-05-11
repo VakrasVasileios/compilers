@@ -27,11 +27,20 @@ public:
     Includes a parameter to this FunctionCall.
     */
     void                    IncludeParameter(Expression* param);
+    /*
+    Returns a read access to this FunctionCall return value.
+    */
+    std::string             get_ret_val() const;
+    /*
+    Sets this FunctionCall return value.
+    */
+    void                    set_ret_val(const std::string ret_val);
 protected:
     std::ostream&           LogExpression(std::ostream& os) const override;
 private:
     Function*               called_function; 
     std::list<Expression*>  params;  
+    std::string             ret_val;
 };
 
 #endif

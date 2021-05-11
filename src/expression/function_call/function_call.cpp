@@ -15,7 +15,17 @@ FunctionCall:: IncludeParameter(Expression* param) {
     params.push_back(param);
 }
 
+std::string 
+FunctionCall:: get_ret_val() const {
+    return ret_val;
+}
+
+void
+FunctionCall:: set_ret_val(const std::string ret_val) {
+    this->ret_val = ret_val; 
+}
+
 std::ostream&
 FunctionCall:: LogExpression(std::ostream& os) const {
-    return os << called_function->get_id();
+    return os << ret_val;
 }
