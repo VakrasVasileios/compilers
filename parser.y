@@ -690,11 +690,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    // if (NoErrorSignaled())
-    //     LogQuads(std::cout);
-
     if (NoErrorSignaled())
-        LogSymbolTable(std::cout);
+        LogQuads(std::cout);
+
+    // if (NoErrorSignaled())
+    //     LogSymbolTable(std::cout);
 
     return 0;
 }

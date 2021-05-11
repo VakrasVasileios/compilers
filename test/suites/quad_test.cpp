@@ -204,6 +204,21 @@ TEST_F(QuadTest, call_function_def) {
     GTEST_ASSERT_EQ(expected, actual);        
 }
 
+TEST_F(QuadTest, call_nested_with_func_def) {
+    expected =  "Warning, in line: 1: Attempting use of function call with NIL value\n"
+                "Warning, in line: 1: Too many arguments passed to function: g, defined in line: 1\n"
+                "1:   FUNCSTART x [line 1]\n"
+                "2:   FUNCEND x [line 1]\n"
+                "3:   PARAM d [line 1]\n"
+                "4:   CALL x [line 1]\n"
+                "5:   GETRETVAL ^0 [line 1]\n"
+                "6:   PARAM ^0 [line 1]\n"
+                "7:   CALL g [line 1]\n"
+                "8:   GETRETVAL ^1 [line 1]\n";
+    actual = exec("./scanner ../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
+    GTEST_ASSERT_EQ(expected, actual);              
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
