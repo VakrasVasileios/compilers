@@ -32,6 +32,7 @@
     class Expression*       expression;
     class Constant*         con;
     class FunctionCall*     funcCall;
+    class Symbol*           sym;
 }
 
 %start program
@@ -45,7 +46,8 @@
 
 %type <expression> primary term expr assignexpr
 %type <con> const
-%type <stringValue> member lvalue
+%type <sym> lvalue funcdef
+%type <stringValue> member
 %type <funcCall> call
 
 %right      '='
@@ -188,45 +190,45 @@ term:         '(' expr ')'          {
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
-                                        auto entry = Lookup($2);
-                                        if(entry == nullptr)
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
-                                        else if (!entry->is_active())
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
-                                        else if (!IsVariable(entry))
+                                        auto symbol = $2;
+                                        if(symbol == nullptr)
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                        else if (!symbol->is_active())
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of increment operator with non variable type");    
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
-                                        auto entry = Lookup($1);
-                                        if(entry == nullptr)
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
-                                        else if (!entry->is_active())
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
-                                        else if (!IsVariable(entry))
+                                        auto symbol = $1;
+                                        if(symbol == nullptr)
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                        else if (!symbol->is_active())
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of increment operator with non variable type");    
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
-                                        auto entry = Lookup($2);
-                                        if(entry == nullptr)
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
-                                        else if (!entry->is_active())
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
-                                        else if (!IsVariable(entry))
+                                        auto symbol = $2;
+                                        if(symbol == nullptr)
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                        else if (!symbol->is_active())
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of decrement operator with non variable type");    
-                                        DLOG("term -> --lvaule"); 
+                                        DLOG("term -> --lvaule");
                                     }
             | lvalue MINUSMINUS     { 
-                                        auto entry = Lookup($1);
-                                        if(entry == nullptr)
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
-                                        else if (!entry->is_active())
-                                            SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));    
-                                        else if (!IsVariable(entry))
+                                        auto symbol = $1;
+                                        if(symbol == nullptr)
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                        else if (!symbol->is_active())
+                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of decrement operator with non variable type");
                                         DLOG("term -> lvalue--");
                                     }
-            | primary               {
+            | primary               {   
                                         DLOG("term -> primary"); 
                                     }
             ;
@@ -238,17 +240,17 @@ assignexpr:   lvalue '=' expr       {
                                             // Emit(ASSIGN_t, lval, nullptr, $2);
                                         }
                                         else {
-                                            auto lval = Lookup($1);
-                                            if (lval == nullptr) {
+                                            auto symbol = $1;
+                                            if (symbol == nullptr) {
                                                 LOGWARNING("Attempting to assign a value to NIL");
                                                 // $$ = lval;
                                                 // Emit(ASSIGN_t, lval, nullptr, $2);
                                             }
-                                            else if (IsLibraryFunction(lval) || IsUserFunction(lval))
+                                            else if (IsLibraryFunction(symbol) || IsUserFunction(symbol))
                                                 SIGNALERROR("Functions are constant their value cannot be changed");
                                             else {
-                                                $$ = lval;
-                                                Emit(ASSIGN_t, lval, nullptr, $3, yylineno);
+                                                $$ = symbol;
+                                                Emit(ASSIGN_t, symbol, nullptr, $3, yylineno);
                                             }
                                         }
                                         DLOG("assignexpr -> lvalue = expr");
@@ -256,8 +258,7 @@ assignexpr:   lvalue '=' expr       {
             ;
 
 primary:      lvalue                {
-                                        auto lval = Lookup($1);
-                                        $$ = lval;
+                                        $$ = $1;
                                         DLOG("primary -> lvalue");
                                     }
             | call                  {
@@ -268,62 +269,82 @@ primary:      lvalue                {
                                         DLOG("primary -> objectdef");
                                     }
             | '(' funcdef ')'       {
+                                        $$ = $2;
                                         DLOG("primary -> (funcdef)");
                                     }
             | const                 {
+                                        $$ = $1;
                                         DLOG("primary -> const");
                                     }
             ;
 
 lvalue:       ID                    {
-                                        $$=$1;
                                         if (ScopeIsGlobal()) {
                                             auto entry = LookupGlobal($1);
                                             if(entry == nullptr) {
-                                                InsertGlobalVariable($1, yylineno);
+                                                $$ = InsertGlobalVariable($1, yylineno);
                                             }
-                                            else if (!entry->is_active())
+                                            else if (!entry->is_active()) {
                                                 SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                                $$ = entry;
+                                            }
+                                            else {
+                                                $$ = entry;
+                                            }
                                         }
                                         else {
                                             auto entry = Lookup($1);
                                             if (entry == nullptr) {
-                                                InsertLocalVariable($1, yylineno);
+                                                $$ = InsertLocalVariable($1, yylineno);
                                             }
-                                            else if (!entry->is_active())
+                                            else if (!entry->is_active()) {
                                                 SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                                $$ = entry;
+                                            }
+                                            else {
+                                                $$ = entry;
+                                            }
                                         }
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
-                                        $$=$2;
                                         auto entry = Lookup($2);
                                         if (entry == nullptr) { 
-                                            InsertLocalVariable($2, yylineno);
+                                            $$ = InsertLocalVariable($2, yylineno);
                                         }
-                                        else if (!entry->is_active())
+                                        else if (!entry->is_active()) {
                                             SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                            $$ = entry;
+                                        }
                                         else if (IsGlobalVar(entry)) {
-                                            InsertLocalVariable($2, yylineno);
+                                            $$ = InsertLocalVariable($2, yylineno);
                                         }
                                         else if (IsUserFunction(entry)){
                                             if(IsAtCurrentScope(entry)) {
                                                 SIGNALERROR("Attempting to redefine a previously declared user function");
+                                                $$ = entry;
                                             }
                                             else {
-                                                InsertLocalVariable($2, yylineno);
+                                                $$ = InsertLocalVariable($2, yylineno);
                                             }    
                                         }
                                         else if (IsLibraryFunction(entry)) {
                                             SIGNALERROR("Attempting to redefine a library function");
+                                            $$ = entry;
+                                        }
+                                        else {
+                                            $$ = entry;
                                         }
                                         DLOG("lvalue -> local id");
                                     }
             | COLONCOLON ID         {
-                                        $$ = $2;
                                         auto entry = LookupGlobal($2);
                                         if (entry == nullptr || !entry->is_active()) {
                                             SIGNALERROR("No global variable with id: " + std::string($2));
+                                            $$ = entry;
+                                        }
+                                        else {
+                                            $$ = entry;
                                         }
                                         DLOG("lvalue -> ::id");
                                     }
@@ -352,40 +373,44 @@ call:       call  '(' elist ')'             {
                                                 DLOG("call -> call(elist)");
                                             }
             | lvalue                        {
-                                                IncreaseFunctionDepth();
                                                 
-                                                auto called_function = LookupFunc($1);
-                                                if (called_function == nullptr) {
-                                                    LOGWARNING("Attempting use of function call with NIL value");
-                                                    called_function = new UserFunction($1, yylineno, GetCurrentScope()); 
-                                                }
-                                                auto function_call = new FunctionCall(called_function, std::list<Expression*>());
+                                                auto called_symbol = $1;
+
+                                                // if (called_function == nullptr) {
+                                                //     LOGWARNING("Attempting use of function call with NIL value");
+                                                //     called_function = new UserFunction($1, yylineno, GetCurrentScope()); 
+                                                // }
+                                                auto function_call = new FunctionCall(called_symbol, std::list<Expression*>());
+                                                
                                                 NewCallStackFrame(function_call);
+                                                IncreaseFunctionDepth();
 
                                                 $<funcCall>$ = function_call;
                                             }
             callsuffix                      {
                                                 auto function_call = PopCallStackFrame();
-                                                auto called_function = function_call->get_called_function();
+                                                auto called_symbol = function_call->get_called_symbol();
 
                                                 $<funcCall>$ = function_call;
 
                                                 auto temp_value = NewTemp();
-
-                                                Emit(CALL_t, called_function, nullptr, nullptr, yylineno);    
+                        
+                                                Emit(CALL_t, called_symbol, nullptr, nullptr, yylineno);    
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
 
                                                 function_call->set_ret_val(temp_value->get_id());
 
                                                 IncreaseTemp();
 
-                                                auto args_num = called_function->get_formal_arguments().size();
-                                                auto call_args_num = function_call->get_params().size();
+                                                if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
+                                                    auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
+                                                    auto call_args_num = function_call->get_params().size();
 
-                                                if (call_args_num < args_num)
-                                                    SIGNALERROR("Too few arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
-                                                else if (call_args_num > args_num)
-                                                    LOGWARNING("Too many arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
+                                                    if (call_args_num < args_num)
+                                                        SIGNALERROR("Too few arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                    else if (call_args_num > args_num)
+                                                        LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                }
 
                                                 DecreaseFunctionDepth();
 
@@ -397,35 +422,37 @@ call:       call  '(' elist ')'             {
             | '(' funcdef ')'               {
                                                 IncreaseFunctionDepth();
                                                 
-                                                auto called_function = LookupPreviousFunction();
-                                                auto function_call = new FunctionCall(called_function, std::list<Expression*>());
+                                                auto called_symbol = $2;
+                                                auto function_call = new FunctionCall(called_symbol, std::list<Expression*>());
 
                                                 NewCallStackFrame(function_call);
 
                                                 $<funcCall>$ = function_call;
-                                            } 
+                                            }
             '(' elist ')'                   {
                                                 auto function_call = PopCallStackFrame();
-                                                auto called_function = function_call->get_called_function();
+                                                auto called_symbol = function_call->get_called_symbol();
 
                                                 $<funcCall>$ = function_call;
 
                                                 auto temp_value = NewTemp();
 
-                                                Emit(CALL_t, called_function, nullptr, nullptr, yylineno);    
+                                                Emit(CALL_t, called_symbol, nullptr, nullptr, yylineno);
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
 
                                                 function_call->set_ret_val(temp_value->get_id());
 
                                                 IncreaseTemp();
 
-                                                auto args_num = called_function->get_formal_arguments().size();
-                                                auto call_args_num = function_call->get_params().size();
+                                                if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
+                                                    auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
+                                                    auto call_args_num = function_call->get_params().size();
 
-                                                if (call_args_num < args_num)
-                                                    SIGNALERROR("Too few arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
-                                                else if (call_args_num > args_num)
-                                                    LOGWARNING("Too many arguments passed to function: " << called_function->get_id() << ", defined in line: " << std::to_string(called_function->get_line()));
+                                                    if (call_args_num < args_num)
+                                                        SIGNALERROR("Too few arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                    else if (call_args_num > args_num)
+                                                        LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                }
 
                                                 DecreaseFunctionDepth();
 
@@ -449,7 +476,7 @@ normcall:   '(' elist ')'   {
                             }
             ;
 
-methodcall: DOTDOT ID '(' elist ')' { 
+methodcall: DOTDOT ID '(' elist ')' {
                                         DLOG("methodcall -> ..id(elist)");
                                     }
             ;
@@ -518,14 +545,15 @@ block:      '{'         {
 funcdef:    FUNCTION 
                 '(' idlist ')'  
                             {
-                                InsertUserFunction(yylineno);
-                                auto function = LookupPreviousFunction(); 
+                                auto function = InsertUserFunction(yylineno);
+                                $<sym>$ = function;
                                 Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                 HideLowerScopes();
                                 IncreaseReturnDepth();
-                            }  
+                            }
             block           {
                                 auto function = LookupPreviousFunction();
+                                $<sym>$ = function;
                                 Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 EnableLowerScopes();
                                 DecreaseReturnDepth();
@@ -533,29 +561,35 @@ funcdef:    FUNCTION
                             }
             | FUNCTION ID 
                 '(' idlist ')'
-                            { 
+                            {
                                 auto entry = Lookup($2);
                                 if (entry == nullptr) {
-                                    InsertUserFunction($2, yylineno);
-                                    auto function = LookupPreviousFunction(); 
+                                    auto function = InsertUserFunction($2, yylineno);
+                                    $<sym>$ = function;
                                     Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                 }
                                 else if (!entry->is_active()) {
-                                    SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));   
+                                    SIGNALERROR("Cannot access " + entry->get_id() + ", previously defined in line: " + std::to_string(entry->get_line()));
+                                    $<sym>$ = entry;
                                 }
                                 else {
-                                    if (IsVariable(entry))
+                                    if (IsVariable(entry)) {
                                         SIGNALERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(entry->get_line()) + ", cannot be redefined as a function");
-                                    else if (IsLibraryFunction(entry))
+                                        $<sym>$ = entry;
+                                    }
+                                    else if (IsLibraryFunction(entry)) {
                                         SIGNALERROR(std::string($2) + " library function cannot be shadowed by a user function");
+                                        $<sym>$ = entry;
+                                    }
                                     else if (IsAtCurrentScope(entry)) {
                                         std::string message =  "Name collision with function " +  std::string($2) + ", previously defined in line: ";
                                         message += std::to_string(entry->get_line());
                                         SIGNALERROR(message);
+                                        $<sym>$ = entry;
                                     }
                                     else{
-                                        InsertUserFunction($2, yylineno); //Shadow user function. 
-                                        auto function = LookupPreviousFunction(); 
+                                        auto function = InsertUserFunction($2, yylineno); //Shadow user function. 
+                                        $<sym>$ = function;
                                         Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
                                     }
                                 }
@@ -564,6 +598,7 @@ funcdef:    FUNCTION
                             }
             block           { 
                                 auto function = LookupPreviousFunction();
+                                $<sym>$ = function;
                                 Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 EnableLowerScopes();
                                 DecreaseReturnDepth();
@@ -665,7 +700,7 @@ returnstmt: RETURN      {
                                 SIGNALERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
-                           // Emit(RET_t, $2, nullptr, nullptr, yylineno);
+                           // Emit(RET_t, $3, nullptr, nullptr, yylineno);
                             DLOG("returnstmt -> RETURN expr;");
                         }
             ;

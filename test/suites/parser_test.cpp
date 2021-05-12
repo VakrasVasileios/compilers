@@ -132,8 +132,7 @@ TEST_F(ParserTest, Error9) {
 }
 
 TEST_F(ParserTest, Error10) {
-  expected =  "Warning, in line: 3: Too many arguments passed to function: print, defined in line: 0\n"
-              "Error, in line: 6: print library function cannot be shadowed by a user function\n"
+  expected =  "Error, in line: 6: print library function cannot be shadowed by a user function\n"
               "Error, in line: 11: Attempting to redefine a library function\n";
   actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
   GTEST_ASSERT_EQ(expected, actual);

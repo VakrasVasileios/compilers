@@ -111,8 +111,7 @@ TEST_F(QuadTest, functions_anonymous) {
 }
 
 TEST_F(QuadTest, functions_call_warning) {
-    expected =  "Warning, in line: 1: Attempting use of function call with NIL value\n"
-                "1:   CALL g [line 1]\n"
+    expected =  "1:   CALL g [line 1]\n"
                 "2:   GETRETVAL ^0 [line 1]\n";
     actual = exec("./scanner ../test/files/phase3_tests/functions/call_warning.asc");
     GTEST_ASSERT_EQ(expected, actual);  
@@ -174,8 +173,6 @@ TEST_F(QuadTest, functions_call_less_parameters) {
 
 TEST_F(QuadTest, functions_call_nested) {
     expected =  "Warning, in line: 10: Too many arguments passed to function: g, defined in line: 6\n"
-                "Warning, in line: 12: Attempting use of function call with NIL value\n"
-                "Warning, in line: 12: Too many arguments passed to function: y, defined in line: 12\n"
                 "Warning, in line: 12: Too many arguments passed to function: g, defined in line: 6\n"
                 "1:   FUNCSTART f [line 2]\n"
                 "2:   FUNCEND f [line 4]\n"
@@ -223,9 +220,7 @@ TEST_F(QuadTest, functions_call_function_def) {
 }
 
 TEST_F(QuadTest, functions_call_nested_with_func_def) {
-    expected =  "Warning, in line: 1: Attempting use of function call with NIL value\n"
-                "Warning, in line: 1: Too many arguments passed to function: g, defined in line: 1\n"
-                "1:   FUNCSTART x [line 1]\n"
+    expected =  "1:   FUNCSTART x [line 1]\n"
                 "2:   FUNCEND x [line 1]\n"
                 "3:   PARAM d [line 1]\n"
                 "4:   CALL x [line 1]\n"

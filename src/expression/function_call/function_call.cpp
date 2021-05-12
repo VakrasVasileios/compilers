@@ -1,8 +1,8 @@
 #include "../../../include/expression/function_call/function_call.h"
 
-Function*
-FunctionCall:: get_called_function() const {
-    return called_function;
+Symbol*
+FunctionCall:: get_called_symbol() const {
+    return called_symbol;
 }
 
 std::list<Expression*>
