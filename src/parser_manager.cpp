@@ -58,6 +58,12 @@ void PushFuncDef(FunctionDef* func_def) {
     function_definitions.push(func_def);
 }
 
+FunctionDef* TopFuncDef() {
+    if (GetFuncDefDepth() != 0)
+        return function_definitions.top();
+    return nullptr;    
+}
+
 FunctionDef* PopFuncDef() {
     FunctionDef* top;
     if (GetFuncDefDepth() != 0) {
@@ -245,6 +251,8 @@ std::vector<Quad*>   quads;
 
 std::map<FunctionDef*, Quad*> jump_quads_by_func_defs; // Maps function definitions with their initial jump quad. 
 
+std::map<FunctionDef*, std::list<Quad*> > jump_quad_lists_by_func_defs; // Maps function definitions with their list of jump quads.
+
 Quad*
 Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
     unsigned int label = quads.size() + 1;
@@ -263,6 +271,17 @@ void PatchJumpQuad(FunctionDef* func_def, int label) {
 
     auto jump_quad = jump_quads_by_func_defs[func_def];
     jump_quad->result = new IntConstant(label);
+}
+
+void PushJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
+    jump_quad_lists_by_func_defs[func_def].push_back(jump_quad);
+}
+
+void PatchJumpQuadList(FunctionDef* func_def, int label) {
+    auto jump_quad_list = jump_quad_lists_by_func_defs[func_def];
+    for (auto jump_quad : jump_quad_list) {
+        jump_quad->result = new IntConstant(label);
+    }
 }
 
 /* ---------------------- Temp -------------------------- */

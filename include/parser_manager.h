@@ -66,6 +66,11 @@ It's a checked runtime error for the function definition to be null.
 */
 void                PushFuncDef(FunctionDef* func_def);
 /*
+Returns a read/write access to the top function definition from the
+function definitions stack.
+*/
+FunctionDef*        TopFuncDef();
+/*
 Pops the top function definition from the function definitions stack.
 Returns a read/write reference to the top function definition.
 */
@@ -186,6 +191,15 @@ Patches a function definition's previously inserted jump quad label.
 It's a runtime error for the function definition to not be mapped with a jump quad.
 */
 void                PatchJumpQuad(FunctionDef* func_def, int label);
+/*
+Pushes a jump quad to the mapped list of a function definition.
+*/
+void                PushJumpQuad(FunctionDef* func_def, Quad* jump_quad);
+/*
+Patches the mapped jump quad list from return statements of a function definition
+with a label.
+*/
+void                PatchJumpQuadList(FunctionDef* func_def, int label);
 
 
 /* ---------------------- Temp -------------------------- */

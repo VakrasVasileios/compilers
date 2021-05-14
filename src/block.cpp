@@ -60,10 +60,10 @@ Block:: ContainsOnlyHiddenVars() {
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
     for(auto entry : block.entries) {
-        /* if (!block.IsHiddenVariable(entry))
-        { */
+        if (!block.IsHiddenVariable(entry))
+        {
             os << entry << "\n";
-        // }
+        }
     }
     return os;    
 }

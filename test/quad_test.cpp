@@ -273,24 +273,26 @@ TEST_F(QuadTest, functions_call_anonymous_func_def) {
 }
 /*  ------------ Return --------------   */
 
-// TEST_F(QuadTest, return_void) {
-//     expected =  "1:   FUNCSTART f [line 1]\n"
-//                 "2:   RETURN  [line 2]\n"
-//                 "3:   JUMP 5 [line 2]\n"
-//                 "4:   FUNCEND f [line 3]\n";
-//     actual = exec("./scanner ../test/files/phase3_tests/return/return_void.asc");
-//     GTEST_ASSERT_EQ(expected, actual);            
-// }
+TEST_F(QuadTest, return_void) {
+    expected =  "1:   JUMP 6 [line 1]\n"
+                "2:   FUNCSTART f [line 1]\n"
+                "3:   RETURN [line 2]\n"
+                "4:   JUMP 5 [line 2]\n"
+                "5:   FUNCEND f [line 3]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/return/return_void.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
 
 
-// TEST_F(QuadTest, return_symbol) {
-//     expected =  "1:   FUNCSTART f [line 3]\n"
-//                 "2:   RETURN x [line 4]\n"
-//                 "3:   JUMP 5 [line 4]\n"
-//                 "4:   FUNCEND f [line 5]\n";
-//     actual = exec("./scanner ../test/files/phase3_tests/return/return_symbol.asc");
-//     GTEST_ASSERT_EQ(expected, actual);            
-//}
+TEST_F(QuadTest, return_symbol) {
+    expected =  "1:   JUMP 6 [line 5]\n"
+                "2:   FUNCSTART f [line 5]\n"
+                "3:   RETURN x [line 6]\n"
+                "4:   JUMP 5 [line 6]\n"
+                "5:   FUNCEND f [line 7]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/return/return_symbol.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
 
 /*  ------------ Arithmetic --------------   */
 

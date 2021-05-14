@@ -520,6 +520,7 @@ funcdef:    FUNCTION
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
 
                                 PatchJumpQuad(func_def, func_end_quad->label + 1);
+                                PatchJumpQuadList(func_def, func_end_quad->label);
 
                                 EnableLowerScopes();
 
@@ -573,6 +574,7 @@ funcdef:    FUNCTION
                                     function = func_def->get_sym();
                                     auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                     PatchJumpQuad(func_def, func_end_quad->label + 1);
+                                    PatchJumpQuadList(func_def, func_end_quad->label);
                                 }
                                 
                                 EnableLowerScopes();
@@ -663,11 +665,14 @@ forstmt:    FOR                                     {
             ;
 
 returnstmt: RETURN      {
-                            if (GetFuncDefDepth() == 0) 
+                            if (GetFuncDefDepth() == 0) {
                                 SIGNALERROR("Invalid return, used outside a function block");
+                            }
 
                             Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
-                            //Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                            PushJumpQuad(TopFuncDef(), jump_quad);
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
@@ -677,7 +682,11 @@ returnstmt: RETURN      {
                                 SIGNALERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
-                           // Emit(RET_t, $3, nullptr, nullptr, yylineno);
+                            Emit(RET_t, $3, nullptr, nullptr, yylineno);
+                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                            PushJumpQuad(TopFuncDef(), jump_quad);
+
                             DLOG("returnstmt -> RETURN expr;");
                         }
             ;
