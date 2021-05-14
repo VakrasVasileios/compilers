@@ -545,11 +545,12 @@ funcdef:    FUNCTION
                             }
             block           { 
                                 auto func_def =  PopFuncDef();
+                                Symbol* function;
                                 if (func_def != nullptr) {
-                                    auto function = func_def->get_sym();
+                                    function = func_def->get_sym();
                                     Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                 }
-                                //$<sym>$ = function;
+                                $<sym>$ = function;
                                 EnableLowerScopes();
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
@@ -678,11 +679,11 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    // if (NoErrorSignaled())
-    //     LogQuads(std::cout);
-
     if (NoErrorSignaled())
-        LogSymbolTable(std::cout);
+        LogQuads(std::cout);
+
+    // if (NoErrorSignaled())
+    //     LogSymbolTable(std::cout);
 
     return 0;
 }
