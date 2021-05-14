@@ -1,4 +1,4 @@
-#include "../../include/block/block.h"
+#include "../include/block.h"
 #include <iostream>
 
 
@@ -36,42 +36,9 @@ Block:: IsAFunctionEntry(Symbol* entry) {
     return entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC;
 }
 
-Function*
-Block:: LookupFunc(std::string id) {
-    for(auto entry : entries) {
-        if (entry->get_id() == id && (IsAFunctionEntry(entry))) {
-            return static_cast<Function*>(entry);
-        }
-    }
-
-    return nullptr;
-}
-
-Function*
-Block:: LookupPreviousFunc() {
-    for (std::list<Symbol* >::reverse_iterator it = entries.rbegin(); it != entries.rend(); ++it) {
-        auto entry = (*it);
-        if(entry->get_type() == USER_FUNC || (entry)->get_type() == LIB_FUNC)
-            return static_cast<Function*>(entry);
-    }
-
-    return nullptr;
-}
-
 bool
 Block:: IsHiddenVariable(Symbol* entry) {
-    return entry->get_type() == VAR && dynamic_cast<Variable*>(entry)->get_space() == HIDDEN;
-}
-
-HiddenVariable*
-Block:: LookupHiddenVariable(std::string name) {
-    for (auto entry : entries) {
-        if (entry->get_id() == name && IsHiddenVariable(entry))
-        {
-            return static_cast<HiddenVariable*>(entry);
-        }
-    }
-    return nullptr;
+    return entry->get_id().at(0) == '^';
 }
 
 void 

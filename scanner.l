@@ -1,6 +1,6 @@
 %{
     #include "parser.hpp"
-    #include "include/scanner_data_structs/data_structs.h"
+    #include "include/token.h"
     #include <string>
     #include <string.h>
 

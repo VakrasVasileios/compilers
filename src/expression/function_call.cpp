@@ -1,4 +1,4 @@
-#include "../../../include/expression/function_call/function_call.h"
+#include "../../include/expression/function_call.h"
 
 Symbol*
 FunctionCall:: get_called_symbol() const {

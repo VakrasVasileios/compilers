@@ -2,19 +2,13 @@ FLEXTRGT = scanner
 YACCTRGT = parser
 CC = g++
 CFLAGS = -std=c++11
-SRC += src/parser_manager/*.cpp \
-		src/block/block.cpp \
-		src/program_stack/*.cpp \
-		src/symbol_table/*.cpp \
+SRC +=  src/*.cpp \
 		src/expression/*.cpp \
 		src/expression/constant/*.cpp \
 		src/expression/constant/numeric_constant/*.cpp \
 		src/expression/symbol/*.cpp \
 		src/expression/symbol/variable/*.cpp \
-		src/expression/symbol/function/*.cpp \
-		src/expression/function_call/function_call.cpp \
-		src/instruction_opcodes/*.cpp \
-		src/quad/*.cpp
+		src/expression/symbol/function/*.cpp 
 
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)

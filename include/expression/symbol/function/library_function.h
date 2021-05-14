@@ -8,12 +8,15 @@ Provides a library function.
 */
 class LibraryFunction final : public Function {
 public:
-    LibraryFunction(std::string id, unsigned int line, unsigned int scope) : Function(LIB_FUNC, id, line, scope) {};
+    LibraryFunction(std::string id, unsigned int line, unsigned int scope, unsigned int offset)
+        : Function(LIB_FUNC, id, line, scope, PROGRAM_VAR, offset) {};
 
-    LibraryFunction(std::string id, unsigned int line, unsigned int scope, std::list<FormalVariable*> formalArguments) :
-        Function(LIB_FUNC, id, line, scope, formalArguments) {};
+    LibraryFunction(std::string id, unsigned int line, unsigned int scope, unsigned int offset, std::list<FormalVariable*> formalArguments) :
+        Function(LIB_FUNC, id, line, scope, PROGRAM_VAR, offset, formalArguments) {};
 
-    ~LibraryFunction() = default;    
+    ~LibraryFunction() = default;   
+
+    std::ostream&                       LogSymbol(std::ostream& os) const override;    
 };
 
 #endif

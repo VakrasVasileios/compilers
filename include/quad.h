@@ -1,8 +1,8 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "../expression/expression.h"
-#include "../instruction_opcodes/instruction_opcodes.h"
+#include "expression/expression.h"
+#include "instruction_opcodes.h"
 #include <iostream>
 
 /*

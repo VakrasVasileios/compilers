@@ -1,4 +1,4 @@
-#include "../../include/quad/quad.h"
+#include "../include/quad.h"
 #include <assert.h>
 
 std::ostream&

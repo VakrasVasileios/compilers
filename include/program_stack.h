@@ -1,10 +1,8 @@
 #ifndef PROGRAMSTACK_H
 #define PROGRAMSTACK_H
 
-#include "../block/block.h"
-#include "../expression/symbol/function/function.h"
-#include "../expression/symbol/variable/hidden_variable.h"
-
+#include "block.h"
+#include "expression/symbol/function/function.h"
 #include <list>
 #include <string>
 
@@ -45,22 +43,11 @@ public:
     */
     Symbol*             LookupGlobal(std::string name);
     /*
-    Searches for a function with a name on this ProgramStack,
-    across all scopes. Returns a read/write access to the symbol if it's found,
-    else nullptr.
-    */
-    Function*             LookupFunc(std::string name);
-    /*
-    Searches for the previously inserted function at the top of this ProgramStack.
-    Returns a read/write access to the function if it's found, else nullptr.
-    */
-    Function*           LookupPreviousFunc();
-    /*
     Searches for a hidden variable with a name at the current scope of this ProgramStack.
     Returns a read/write access to the reference of the hidden variable if it's found,
     else nullptr.
     */
-    HiddenVariable*     LookupHiddenVariable(std::string name);
+    Symbol*             LookupHiddenVariable(std::string name);
     /*
     Activates all of the blocks at the lower scopes of this ProgramStack.
     */

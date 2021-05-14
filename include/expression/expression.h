@@ -22,6 +22,7 @@ enum ExprType {
     NEWTABLE_EXPR,
     TABLE_ITEM,
 
+    FUNCTION_DEF,
     FUNCTION_CALL
 };
 

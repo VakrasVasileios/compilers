@@ -1,8 +1,8 @@
 #ifndef FUNCTIONCALL_H
 #define FUNCTIONCALL_H
 
-#include "../expression.h"
-#include "../symbol/symbol.h"
+#include "expression.h"
+#include "symbol/symbol.h"
 #include <list>
 
 /*

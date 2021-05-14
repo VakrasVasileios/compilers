@@ -1,4 +1,4 @@
-#include "../../include/program_stack/program_stack.h"
+#include "../include/program_stack.h"
 
 std::list<Block*>
 ProgramStack:: get_block_list() const {
@@ -44,30 +44,9 @@ ProgramStack:: LookupGlobal(std::string name) {
     return block->Lookup(name);
 }
 
-Function*
-ProgramStack:: LookupFunc(std::string name) {
-    auto iter = block_list.end();
-    Function* found;
-    do {
-        --iter;
-        auto block = (*iter);
-        found = block->LookupFunc(name);
-        if (found != nullptr) {
-            return found;
-        }
-    } while (iter != block_list.begin());
-
-    return nullptr;
-}
-
-Function*
-ProgramStack:: LookupPreviousFunc() {
-    return Top()->LookupPreviousFunc();
-}
-
-HiddenVariable*
+Symbol*
 ProgramStack:: LookupHiddenVariable(std::string name) {
-    return Top()->LookupHiddenVariable(name);
+    return Top()->Lookup(name);
 }
 
 void

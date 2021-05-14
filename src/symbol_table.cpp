@@ -1,4 +1,4 @@
-#include "../../include/symbol_table/symbol_table.h"
+#include "../include/symbol_table.h"
 
 std::vector<std::list<Block*> >
 SymbolTable:: get_blocks_table() const {

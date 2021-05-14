@@ -9,8 +9,11 @@ This symbol has a global scope space.
 */
 class GlobalVariable final : public Variable {
 public:
-    GlobalVariable(std::string id, unsigned int line, unsigned int scope) : Variable(GLOBALVAR, id, line, scope) {};
+    GlobalVariable(std::string id, unsigned int line, unsigned int scope, unsigned int offset)
+        : Variable(id, line, scope, PROGRAM_VAR, offset) {};
     ~GlobalVariable() = default;
+protected:
+    virtual std::ostream&   LogSymbol(std::ostream& os) const override;    
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "../../include/instruction_opcodes/instruction_opcodes.h"
+#include "../include/instruction_opcodes.h"
 #include "string"
 #include "assert.h"
 
