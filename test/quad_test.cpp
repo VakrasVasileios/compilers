@@ -29,7 +29,8 @@ class QuadTest : public ::testing::Test {
 /*  ------------ Assign --------------   */
 
 TEST_F(QuadTest, assign_simple) {
-   expected = "1:   ASSIGN x 2 [line 1]\n";
+   expected =   "1:   ASSIGN x 2 [line 1]\n"
+                "2:   ASSIGN ^0 x [line 1]\n";
    actual = exec("./scanner ../../test/files/phase3_tests/assign/simple.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
@@ -47,7 +48,8 @@ TEST_F(QuadTest, assign_calls_nested) {
                 "10:   PARAM ^0 [line 7]\n"
                 "11:   CALL f [line 7]\n"
                 "12:   GETRETVAL ^1 [line 7]\n"
-                "13:   ASSIGN x ^1 [line 7]\n";
+                "13:   ASSIGN x ^1 [line 7]\n"
+                "14:   ASSIGN ^2 x [line 7]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/assign/calls_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
