@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <list>
+#include <map>
 #include <iostream>
 #include <assert.h>
 #include <stack>
@@ -173,8 +174,18 @@ void                DecreaseLoopDepth();
 
 /*
 Constructs a new quad and appends it to the quads list. 
+Returns a read/write reference to the new quad.
 */
-void                Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
+Quad*               Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
+/*
+Maps a function definition with its initial jump quad.
+*/
+void                MapJumpQuad(FunctionDef* func_def, Quad* jump_quad);
+/*
+Patches a function definition's previously inserted jump quad label.
+It's a runtime error for the function definition to not be mapped with a jump quad.
+*/
+void                PatchJumpQuad(FunctionDef* func_def, int label);
 
 
 /* ---------------------- Temp -------------------------- */

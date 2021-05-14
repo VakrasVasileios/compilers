@@ -15,7 +15,6 @@ enum ScopeSpace {
     FORMAL_ARG
 };
 
-
 /*
 Provides a symbol, an expression with an id. 
 */

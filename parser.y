@@ -498,15 +498,27 @@ funcdef:    FUNCTION
                                 auto function = InsertUserFunction(yylineno);
                                 auto function_def = new FunctionDef(function);
                                 PushFuncDef(function_def);
-                                $<sym>$ = function;
+                                
+                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                 Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
+
+                                MapJumpQuad(function_def, jump_quad);
+
                                 HideLowerScopes();
+
+                                $<sym>$ = function;
                             }
             block           {
-                                auto function = PopFuncDef()->get_sym();
-                                $<sym>$ = function;
-                                Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+                                auto func_def = PopFuncDef();
+                                auto function = func_def->get_sym();
+                                
+                                auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+
+                                PatchJumpQuad(func_def, func_end_quad->label + 1);
+
                                 EnableLowerScopes();
+
+                                $<sym>$ = function;
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
             | FUNCTION ID 
@@ -539,19 +551,29 @@ funcdef:    FUNCTION
                                 }
                                 auto function_def = new FunctionDef(symbol);
                                 PushFuncDef(function_def);
+
+                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                 Emit(FUNCSTART_t, symbol, nullptr, nullptr, yylineno);
-                                $<sym>$ = symbol;
+
+                                MapJumpQuad(function_def, jump_quad);
+
                                 HideLowerScopes();
+
+                                $<sym>$ = symbol;
                             }
             block           { 
                                 auto func_def =  PopFuncDef();
                                 Symbol* function;
                                 if (func_def != nullptr) {
                                     function = func_def->get_sym();
-                                    Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+                                    auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+                                    PatchJumpQuad(func_def, func_end_quad->label + 1);
                                 }
-                                $<sym>$ = function;
+                                
                                 EnableLowerScopes();
+
+                                $<sym>$ = function;
+
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
             ;

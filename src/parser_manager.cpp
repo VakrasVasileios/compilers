@@ -241,15 +241,29 @@ void DecreaseLoopDepth() {
 
 /* ---------------------- Quad -------------------------- */
 
-std::vector<Quad>   quads;
+std::vector<Quad*>   quads;
 
-void
+std::map<FunctionDef*, Quad*> jump_quads_by_func_defs; // Maps function definitions with their initial jump quad. 
+
+Quad*
 Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
     unsigned int label = quads.size() + 1;
-    Quad q = quad(op, result, arg1, arg2, label, line);
+    Quad* q = new quad(op, result, arg1, arg2, label, line);
     quads.push_back(q);
+
+    return q;
 }
 
+void MapJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
+    jump_quads_by_func_defs.insert({func_def, jump_quad});
+}
+
+void PatchJumpQuad(FunctionDef* func_def, int label) {
+    assert (jump_quads_by_func_defs[func_def] != nullptr);
+
+    auto jump_quad = jump_quads_by_func_defs[func_def];
+    jump_quad->result = new IntConstant(label);
+}
 
 /* ---------------------- Temp -------------------------- */
 
@@ -333,7 +347,7 @@ void LogSymbolTable(std::ostream& output) {
 
 void LogQuads(std::ostream& output) {
     for (auto quad : quads) {
-        output << quad << std::endl;
+        output << *quad << std::endl;
     }
 }
 
