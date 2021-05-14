@@ -294,6 +294,27 @@ TEST_F(QuadTest, return_symbol) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(QuadTest, return_many_and_nested) {
+    expected =  "1:   JUMP 17 [line 1]\n"
+                "2:   FUNCSTART MPIFTEKI [line 1]\n"
+                "3:   RETURN [line 2]\n"
+                "4:   JUMP 16 [line 2]\n"
+                "5:   RETURN a [line 4]\n"
+                "6:   JUMP 16 [line 4]\n"
+                "7:   JUMP 12 [line 6]\n"
+                "8:   FUNCSTART $1 [line 6]\n"
+                "9:   RETURN [line 6]\n"
+                "10:   JUMP 11 [line 6]\n"
+                "11:   FUNCEND $1 [line 6]\n"
+                "12:   CALL $1 [line 6]\n"
+                "13:   GETRETVAL ^0 [line 6]\n"
+                "14:   RETURN ^0 [line 6]\n"
+                "15:   JUMP 16 [line 6]\n"
+                "16:   FUNCEND MPIFTEKI [line 7]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/return/return_many_and_nested.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
