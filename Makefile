@@ -8,9 +8,8 @@ SRC +=  src/*.cpp \
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)
 OBJ += $(BLDSRC:.cpp=.o) $(SRC:.cpp=.o)
-#dYACC = -v
-GDBenable = -g
-# myLog = -D DELOG
+dYACC = -v
+myLog += -D LOG
 
 ifdef dYACC
 YFLAG += $(dYACC)
