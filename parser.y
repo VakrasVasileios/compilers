@@ -116,6 +116,11 @@ stmt:         expr ';'              {
             ;
 
 expr:         assignexpr            {
+                                        auto temp = NewTemp();
+                                        Emit(ASSIGN_t, temp, $1, nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> assignexpr");
                                     }
             | expr '+' expr         {
@@ -223,8 +228,8 @@ assignexpr:   lvalue '=' expr       {
                                                 SIGNALERROR("Functions are constant their value cannot be changed");
                                             }
                                             else {
-                                                $$ = symbol;
-                                                Emit(ASSIGN_t, symbol, nullptr, $3, yylineno);
+                                                auto assign_quad = Emit(ASSIGN_t, symbol, nullptr, $3, yylineno);
+                                                $$ = assign_quad->result;
                                             }
                                         }
                                             

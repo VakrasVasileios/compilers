@@ -37,7 +37,7 @@ operator<<(std::ostream& os, const SymbolTable symbol_table) {
     unsigned int scope = 0;
     for (auto blockList : symbol_table.blocks_table)
     {        
-        if (symbol_table.ContainsAnEntry(blockList) && !symbol_table.ContainsOnlyHiddenVariables(blockList))
+        if (symbol_table.ContainsAnEntry(blockList) /* && !symbol_table.ContainsOnlyHiddenVariables(blockList) */)
         {
             os << "-----------     Scope #" << scope << "     -----------\n";
             for (auto block : blockList)
