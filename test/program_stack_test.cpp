@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "../../../include/program_stack/program_stack.h"
-#include "../../../include/block/block.h"
-#include "../../../include/expression/symbol/function/user_function.h"
-#include "../../../include/expression/symbol/symbol.h"
-#include "../../../include/expression/symbol/variable/local_variable.h"
+#include "../include/program_stack.h"
+#include "../include/block.h"
+#include "../include/expression/user_function.h"
+#include "../include/expression/symbol.h"
+#include "../include/expression/local_variable.h"
 
 class ProgramStackTest : public ::testing::Test {
     protected:
@@ -18,8 +18,8 @@ class ProgramStackTest : public ::testing::Test {
             block1 = new Block();
             block2 = new Block();
             block3 = new Block();
-            ss = new UserFunction("ss", 99, 0);
-            entry = new LocalVariable("entry", 0, 0);
+            ss = new UserFunction("ss", 99, 0, PROGRAM_VAR, 0);
+            entry = new LocalVariable("entry", 0, 0, PROGRAM_VAR, 0);
         }
 };
 
@@ -168,25 +168,6 @@ TEST_F(ProgramStackTest, lookupGlobal_nonglobal_entry) {
     GTEST_ASSERT_TRUE(ps.LookupGlobal("ss") == nullptr);
 }
 
-TEST_F(ProgramStackTest, lookupFunc_entry) {
-    ps.Push(block1);
-    ps.Push(block2);
-    ps.Push(block3);
-
-    block2->Insert(ss);
-
-    GTEST_ASSERT_EQ(ps.LookupFunc("ss"), ss);
-}
-
-TEST_F(ProgramStackTest, lookupFunc_variable_entry) {
-    ps.Push(block1);
-    ps.Push(block2);
-    ps.Push(block3);
-
-    block2->Insert(entry);
-
-    GTEST_ASSERT_TRUE(ps.LookupFunc("entry") == nullptr);
-}
 
 #ifdef TESTING
 int main(int argc, char* argv[])

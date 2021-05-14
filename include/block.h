@@ -1,8 +1,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "expression/symbol/symbol.h"
-#include "expression/symbol/function/function.h"
+#include "expression/symbol.h"
+#include "expression/function.h"
 #include <list>
 
 /*

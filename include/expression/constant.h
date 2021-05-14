@@ -1,7 +1,7 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
 
-#include "../expression.h"
+#include "expression.h"
 #include <string>
 #include <ostream>
 

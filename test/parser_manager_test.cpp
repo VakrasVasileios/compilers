@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../../include/parser_manager/parser_manager.h"
+#include "../include/parser_manager.h"
 #include <sstream>
 
 TEST(ParserManager, init_library_functions) {

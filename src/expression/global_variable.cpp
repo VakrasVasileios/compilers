@@ -1,4 +1,4 @@
-#include "../../../../include/expression/symbol/variable/global_variable.h"
+#include "../../include/expression/global_variable.h"
 
 std::ostream&
 GlobalVariable:: LogSymbol(std::ostream& os) const {

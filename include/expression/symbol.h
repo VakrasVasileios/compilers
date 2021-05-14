@@ -1,7 +1,7 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include "../expression.h"
+#include "expression.h"
 #include <string>
 #include <iostream>
 

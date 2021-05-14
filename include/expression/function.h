@@ -1,8 +1,8 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "../symbol.h"
-#include "../variable/formal_variable.h"
+#include "symbol.h"
+#include "formal_variable.h"
 #include <list>
 
 /*

@@ -1,4 +1,4 @@
-#include "../../../include/expression/constant/string_constant.h"
+#include "../../include/expression/string_constant.h"
 
 std::ostream&
 StringConstant:: LogExpression(std::ostream& os) const {

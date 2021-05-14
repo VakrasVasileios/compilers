@@ -1,8 +1,8 @@
-#include "../../../../include/expression/symbol/variable/local_variable.h"
+#include "../../include/expression/library_function.h"
 
 std::ostream&
-LocalVariable:: LogSymbol(std::ostream& os) const {
-    os << "[local variable]"
+LibraryFunction:: LogSymbol(std::ostream& os) const {
+    os << "[library function]"
        << " \"" << get_id() << "\""
        << " (line " << get_line() << ")" 
        << " (scope " << get_scope() << ")";

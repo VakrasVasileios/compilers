@@ -2,7 +2,7 @@
 #define FUNCTIONDEF_H
 
 #include "expression.h"
-#include "symbol/symbol.h"
+#include "symbol.h"
 
 /*
 Provides a user function definition expression.

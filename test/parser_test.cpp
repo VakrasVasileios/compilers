@@ -61,8 +61,7 @@ class ParserTest : public ::testing::Test {
 };
 
 TEST_F(ParserTest, Error0) {
-  expected = "Error, in line: 4: No global variable with id: Global\n"
-          "Warning, in line: 4: Attempting to assign a value to NIL\n";
+  expected = "Error, in line: 4: No global variable with id: Global\n";
   actual = exec("./scanner ../test/files/phase2_tests/Errors/Error0.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }

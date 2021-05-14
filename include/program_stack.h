@@ -2,7 +2,7 @@
 #define PROGRAMSTACK_H
 
 #include "block.h"
-#include "expression/symbol/function/function.h"
+#include "expression/function.h"
 #include <list>
 #include <string>
 

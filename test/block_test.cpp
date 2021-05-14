@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include "../../../include/block/block.h"
-#include "../../../include/expression/symbol/function/user_function.h"
-#include "../../../include/expression/symbol/symbol.h"
-#include "../../../include/expression/symbol/variable/local_variable.h"
+#include "../include/block.h"
+#include "../include/expression/user_function.h"
+#include "../include/expression/symbol.h"
+#include "../include/expression/local_variable.h"
 
 class BlockTest : public ::testing::Test {
     protected:
@@ -13,10 +13,10 @@ class BlockTest : public ::testing::Test {
         LocalVariable* entry4;
 
         void SetUp() override {
-            entry1 =  new UserFunction("entry1", 9, 0);
-            entry2 =  new UserFunction("entry2", 90, 0);
-            entry3 =  new UserFunction("entry3", 99, 2220);
-            entry4 =  new LocalVariable("entry4", 0, 2);
+            entry1 =  new UserFunction("entry1", 9, 0, PROGRAM_VAR, 0);
+            entry2 =  new UserFunction("entry2", 90, 0, PROGRAM_VAR, 0);
+            entry3 =  new UserFunction("entry3", 99, 2220, PROGRAM_VAR, 0);
+            entry4 =  new LocalVariable("entry4", 0, 2, PROGRAM_VAR, 0);
         }
 };
 

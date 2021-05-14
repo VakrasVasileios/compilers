@@ -1,8 +1,8 @@
-#include "../../../../include/expression/symbol/function/user_function.h"
+#include "../../include/expression/formal_variable.h"
 
 std::ostream&
-UserFunction:: LogSymbol(std::ostream& os) const {
-    os << "[user function]"
+FormalVariable:: LogSymbol(std::ostream& os) const {
+    os << "[formal variable]"
        << " \"" << get_id() << "\""
        << " (line " << get_line() << ")" 
        << " (scope " << get_scope() << ")";

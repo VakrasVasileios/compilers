@@ -2,7 +2,7 @@
 #define FUNCTIONCALL_H
 
 #include "expression.h"
-#include "symbol/symbol.h"
+#include "symbol.h"
 #include <list>
 
 /*

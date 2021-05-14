@@ -1,4 +1,4 @@
-#include "../../../../include/expression/constant/numeric_constant/double_constant.h"
+#include "../../include/expression/double_constant.h"
 
 std::ostream&
 DoubleConstant:: LogExpression(std::ostream& os) const {

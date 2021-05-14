@@ -1,4 +1,4 @@
-#include "../../../include/expression/symbol/symbol.h"
+#include "../../include/expression/symbol.h"
 #include <assert.h>
 
 std::string

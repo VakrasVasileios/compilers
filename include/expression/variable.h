@@ -1,7 +1,7 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "../symbol.h"
+#include "symbol.h"
 
 /*
 Provides a variable symbol.

@@ -1,7 +1,7 @@
 #ifndef NUMERICCONSTANT_H
 #define NUMERICCONSTANT_H
 
-#include "../constant.h"
+#include "constant.h"
 
 /*
 Provides a numeric constant expression.
