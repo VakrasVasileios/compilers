@@ -515,42 +515,41 @@ funcdef:    FUNCTION
                                 auto symbol = Lookup($2);
                                 if (symbol == nullptr) {
                                     auto function = InsertUserFunction($2, yylineno);
-                                    auto function_def = new FunctionDef(function);
-                                    PushFuncDef(function_def);
-                                    $<sym>$ = function;
-                                    Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
+                                    symbol = function;
                                 }
                                 else if (!symbol->is_active()) {
                                     SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                    $<sym>$ = symbol;
                                 }
                                 else {
                                     if (IsVariable(symbol)) {
                                         SIGNALERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
-                                        $<sym>$ = symbol;
                                     }
                                     else if (IsLibraryFunction(symbol)) {
                                         SIGNALERROR(std::string($2) + " library function cannot be shadowed by a user function");
-                                        $<sym>$ = symbol;
                                     }
                                     else if (IsAtCurrentScope(symbol)) {
                                         std::string message =  "Name collision with function " +  std::string($2) + ", previously defined in line: ";
                                         message += std::to_string(symbol->get_line());
                                         SIGNALERROR(message);
-                                        $<sym>$ = symbol;
                                     }
                                     else{
                                         auto function = InsertUserFunction($2, yylineno); //Shadow user function. 
-                                        $<sym>$ = function;
-                                        Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
+                                        symbol = function;
                                     }
                                 }
+                                auto function_def = new FunctionDef(symbol);
+                                PushFuncDef(function_def);
+                                Emit(FUNCSTART_t, symbol, nullptr, nullptr, yylineno);
+                                $<sym>$ = symbol;
                                 HideLowerScopes();
                             }
             block           { 
-                                 auto function = PopFuncDef()->get_sym();
-                                $<sym>$ = function;
-                                Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+                                auto func_def =  PopFuncDef();
+                                if (func_def != nullptr) {
+                                    auto function = func_def->get_sym();
+                                    Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+                                }
+                                //$<sym>$ = function;
                                 EnableLowerScopes();
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
@@ -636,7 +635,7 @@ forstmt:    FOR                                     {
             ;
 
 returnstmt: RETURN      {
-                            if (GetFuncDefDepth() == 0)
+                            if (GetFuncDefDepth() == 0) 
                                 SIGNALERROR("Invalid return, used outside a function block");
 
                             Emit(RET_t, nullptr, nullptr, nullptr, yylineno);

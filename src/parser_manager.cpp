@@ -55,14 +55,16 @@ std::stack<FunctionDef*> function_definitions;
 
 void PushFuncDef(FunctionDef* func_def) {
     assert (func_def != nullptr);
-
     function_definitions.push(func_def);
 }
 
 FunctionDef* PopFuncDef() {
-    auto top = function_definitions.top();
-    function_definitions.pop();
-
+    FunctionDef* top;
+    if (GetFuncDefDepth() != 0) {
+        top = function_definitions.top();
+        function_definitions.pop();
+    }
+    
     return top;
 }
 
@@ -126,15 +128,17 @@ Symbol* InsertGlobalVariable(const char* name, unsigned int line) {
     return symbol;
 }
 
+std::list<FormalVariable*> stashed_formal_arguments;
+
 Symbol* InsertUserFunction(const char* name, unsigned int line) {
     assert(name != nullptr);
 
     Symbol* symbol;
     if (GetFuncDefDepth() == 0) {
-        symbol = new UserFunction(name, line, current_scope, PROGRAM_VAR, program_var_offset++);
+        symbol = new UserFunction(name, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
     }
     else {
-        symbol = new UserFunction(name, line, current_scope, FUNCTION_LOCAL, function_definitions.top()->get_offset());  
+        symbol = new UserFunction(name, line, current_scope, FUNCTION_LOCAL, function_definitions.top()->get_offset(), stashed_formal_arguments);  
         function_definitions.top()->IncreaseOffset();
     }
     program_stack.Top()->Insert(symbol);
@@ -149,10 +153,10 @@ Symbol* InsertUserFunction(unsigned int line) {
     an += std::to_string(++anonymus_funcs_counter);
     Symbol* symbol;
     if (GetFuncDefDepth() == 0) {
-        symbol = new UserFunction(an, line, current_scope, PROGRAM_VAR, program_var_offset++);
+        symbol = new UserFunction(an, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
     }
     else {
-        symbol = new UserFunction(an, line, current_scope, FUNCTION_LOCAL, function_definitions.top()->get_offset());  
+        symbol = new UserFunction(an, line, current_scope, FUNCTION_LOCAL, function_definitions.top()->get_offset(), stashed_formal_arguments);  
         function_definitions.top()->IncreaseOffset();
     }
     program_stack.Top()->Insert(symbol);
@@ -160,7 +164,6 @@ Symbol* InsertUserFunction(unsigned int line) {
     return symbol;
 }
 
-std::list<FormalVariable*> stashed_formal_arguments;
 unsigned int formal_args_offset = 0;
 
 void PushStashedFormalArguments(void) { 
