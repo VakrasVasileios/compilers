@@ -30,7 +30,7 @@ class QuadTest : public ::testing::Test {
 
 TEST_F(QuadTest, assign_simple) {
    expected = "1:   ASSIGN x 2 [line 1]\n";
-   actual = exec("./scanner ../test/files/phase3_tests/assign/simple.asc");
+   actual = exec("./scanner ../../test/files/phase3_tests/assign/simple.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -46,7 +46,7 @@ TEST_F(QuadTest, assign_calls_nested) {
                 "9:   CALL f [line 7]\n"
                 "10:   GETRETVAL ^1 [line 7]\n"
                 "11:   ASSIGN x ^1 [line 7]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/assign/calls_nested.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/assign/calls_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -56,7 +56,7 @@ TEST_F(QuadTest, assign_calls_nested) {
 TEST_F(QuadTest, functions_single) {
     expected = "1:   FUNCSTART f [line 1]\n"
                "2:   FUNCEND f [line 2]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/single.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/single.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -69,7 +69,7 @@ TEST_F(QuadTest, functions_many) {
                 "6:   FUNCEND y [line 9]\n"
                 "7:   FUNCSTART r [line 17]\n"
                 "8:   FUNCEND r [line 18]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/many.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/many.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -86,7 +86,7 @@ TEST_F(QuadTest, functions_nested) {
                 "10:   FUNCEND a [line 14]\n"
                 "11:   FUNCSTART e [line 16]\n"
                 "12:   FUNCEND e [line 27]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/nested.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -95,7 +95,7 @@ TEST_F(QuadTest, functions_shadowed) {
                 "2:   FUNCSTART lkdland [line 2]\n"
                 "3:   FUNCEND lkdland [line 3]\n"
                 "4:   FUNCEND lkdland [line 5]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/shadowed.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/shadowed.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -106,14 +106,14 @@ TEST_F(QuadTest, functions_anonymous) {
                 "4:   FUNCSTART $2 [line 4]\n"
                 "5:   FUNCEND $2 [line 5]\n"
                 "6:   FUNCEND $1 [line 6]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/anonymous.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/anonymous.asc");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
 TEST_F(QuadTest, functions_call_warning) {
     expected =  "1:   CALL g [line 1]\n"
                 "2:   GETRETVAL ^0 [line 1]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_warning.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_warning.asc");
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
@@ -122,7 +122,7 @@ TEST_F(QuadTest, functions_call_noparameters) {
                 "2:   FUNCEND f [line 2]\n"
                 "3:   CALL f [line 4]\n"
                 "4:   GETRETVAL ^0 [line 4]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_no_parameters.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_no_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);          
 }
 
@@ -132,7 +132,7 @@ TEST_F(QuadTest, functions_call_parameters) {
                 "3:   PARAM 0 [line 4]\n"
                 "4:   CALL f [line 4]\n"
                 "5:   GETRETVAL ^0 [line 4]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_parameters.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
@@ -161,13 +161,13 @@ TEST_F(QuadTest, functions_call_with_symbol_parameters) {
                 "19:   PARAM c [line 12]\n"
                 "20:   CALL f [line 12]\n"
                 "21:   GETRETVAL ^0 [line 12]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(QuadTest, functions_call_less_parameters) {
     expected = "Error, in line: 4: Too few arguments passed to function: f, defined in line: 1\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_less_parameters.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_less_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -193,7 +193,7 @@ TEST_F(QuadTest, functions_call_nested) {
                 "17:   PARAM ^1 [line 12]\n"
                 "18:   CALL f [line 12]\n"
                 "19:   GETRETVAL ^2 [line 12]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_nested.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -205,7 +205,7 @@ TEST_F(QuadTest, functions_call_more_parameters) {
                 "4:   PARAM a [line 5]\n"
                 "5:   CALL f [line 5]\n"
                 "6:   GETRETVAL ^0 [line 5]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_more_parameters.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_more_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -215,7 +215,7 @@ TEST_F(QuadTest, functions_call_function_def) {
                 "3:   PARAM 1 [line 1]\n"
                 "4:   CALL f [line 1]\n"
                 "5:   GETRETVAL ^0 [line 1]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_function_def.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_function_def.asc");
     GTEST_ASSERT_EQ(expected, actual);        
 }
 
@@ -228,7 +228,7 @@ TEST_F(QuadTest, functions_call_nested_with_func_def) {
                 "6:   PARAM ^0 [line 1]\n"
                 "7:   CALL g [line 1]\n"
                 "8:   GETRETVAL ^1 [line 1]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -239,7 +239,7 @@ TEST_F(QuadTest, functions_call_anonymous_func_def) {
                 "4:   PARAM 1 [line 1]\n"
                 "5:   CALL $1 [line 1]\n"
                 "6:   GETRETVAL ^0 [line 1]\n";
-    actual = exec("./scanner ../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
+    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 /*  ------------ Return --------------   */

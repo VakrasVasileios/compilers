@@ -62,14 +62,14 @@ class ParserTest : public ::testing::Test {
 
 TEST_F(ParserTest, Error0) {
   expected = "Error, in line: 4: No global variable with id: Global\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error0.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error0.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
  TEST_F(ParserTest, Error1) {
   expected = "Error, in line: 6: Cannot access f, previously defined in line: 4\n"
           "Error, in line: 7: Cannot access f, previously defined in line: 4\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error1.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error1.asc");
   GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -80,32 +80,32 @@ TEST_F(ParserTest, Error2) {
           "Error, in line: 15: Invalid return, used outside a function block\n"
           "Error, in line: 16: invalid keyword BREAK outside of loop\n"
           "Error, in line: 17: invalid keyword CONTINUE outside of loop\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error2.asc");    
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error2.asc");    
   GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error3) {
   expected = "Error, in line: 10: Cannot access x, previously defined in line: 4\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error3.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error3.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error4) {
   expected = "Error, in line: 4: x variable, previously defined in line: 3, cannot be redefined as a function\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error4.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error4.asc");
   GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(ParserTest, Error5) {
   expected = "Error, in line: 5: Name collision with function f, previously defined in line: 4\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error5.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error5.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(ParserTest, Error6) {
   expected = "Error, in line: 11: Cannot access x, previously defined in line: 6\n"
           "Error, in line: 12: Cannot access y, previously defined in line: 6\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error6.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error6.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -114,32 +114,32 @@ TEST_F(ParserTest, Error7) {
           "Error, in line: 5: Functions are constant their value cannot be changed\n"
           "Error, in line: 6: Use of increment operator with non variable type\n"
           "Error, in line: 7: Use of decrement operator with non variable type\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error7.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error7.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(ParserTest, Error8) {
   expected = "Error, in line: 3: x variable, previously defined in line: 1, cannot be redefined as a function\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error8.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error8.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(ParserTest, Error9) {
   expected = "Error, in line: 4: Cannot access x, previously defined in line: 1\n"; 
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error9.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error9.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(ParserTest, Error10) {
   expected =  "Error, in line: 6: print library function cannot be shadowed by a user function\n"
               "Error, in line: 11: Attempting to redefine a library function\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error10.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error10.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(ParserTest, Error11) {
   expected = "Error, formal argument x already declared, in line: 1\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Errors/Error11.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error11.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -160,7 +160,7 @@ TEST_F(ParserTest, Error11) {
             "-----------     Scope #3     -----------\n"
             "[formal variable] \"AnonymousThree\" (line 15) (scope 3)\n"
             "[formal variable] \"AnonymousFour\" (line 20) (scope 3)\n";
-   actual = exec("./scanner ../test/files/phase2_tests/Working/Anonymous.asc");
+   actual = exec("./scanner ../../test/files/phase2_tests/Working/Anonymous.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -168,7 +168,7 @@ TEST_F(ParserTest, Error11) {
    expected = libfunc_out;
    expected +="-----------     Scope #1     -----------\n"
             "[local variable] \"x\" (line 2) (scope 1)\n";
-   actual = exec("./scanner ../test/files/phase2_tests/Working/Block.asc");
+   actual = exec("./scanner ../../test/files/phase2_tests/Working/Block.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -195,7 +195,7 @@ TEST_F(ParserTest, GlobalAndLocal) {
           "[user function] \"f\" (line 6) (scope 0)\n"
           "-----------     Scope #1     -----------\n"
           "[local variable] \"global\" (line 9) (scope 1)\n";
-  actual = exec("./scanner ../test/files/phase2_tests/Working/GlobalAndLocal.asc");
+  actual = exec("./scanner ../../test/files/phase2_tests/Working/GlobalAndLocal.asc");
   GTEST_ASSERT_EQ(expected, actual); 
 }
 
@@ -268,7 +268,7 @@ TEST_F(ParserTest, GlobalAndLocal) {
             "[formal variable] \"MAX\" (line 36) (scope 1)\n"
             "[local variable] \"exit\" (line 37) (scope 1)\n"
             "[local variable] \"i\" (line 39) (scope 1)\n";
-   actual = exec("./scanner ../test/files/phase2_tests/Working/Random.asc");
+   actual = exec("./scanner ../../test/files/phase2_tests/Working/Random.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -289,7 +289,7 @@ TEST_F(ParserTest, GlobalAndLocal) {
             "[user function] \"F\" (line 16) (scope 2)\n"
             "-----------     Scope #3     -----------\n"
             "[user function] \"F\" (line 21) (scope 3)\n";
-   actual = exec("./scanner ../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
+   actual = exec("./scanner ../../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -334,7 +334,7 @@ TEST_F(ParserTest, GlobalAndLocal) {
    expected = "syntax error: at line 1, before token: /\n"
             "INPUT NOT VALID\n";
    expected += libfunc_out;
-   actual = exec("./scanner ../test/files/phase2_tests/Working/Tree.asc");
+   actual = exec("./scanner ../../test/files/phase2_tests/Working/Tree.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
