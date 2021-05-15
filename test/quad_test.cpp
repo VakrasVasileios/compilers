@@ -401,6 +401,17 @@ TEST_F(QuadTest, while_simple) {
     actual = exec("./scanner ../../test/files/phase3_tests/loop/while_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);  
 }
+
+TEST_F(QuadTest, while_simple_with_stms) {
+    expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
+                "2:   JUMP 6 [line 1]\n"
+                "3:   ASSIGN x 9 [line 2]\n"
+                "4:   ASSIGN ^0 x [line 2]\n"
+                "5:   JUMP 1 [line 5]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");    
+    GTEST_ASSERT_EQ(expected, actual);              
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
