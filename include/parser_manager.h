@@ -216,8 +216,24 @@ with a label.
 void                PatchJumpQuadList(FunctionDef* func_def, int label);
 /*
 Returns a read/write access to the label of the last quad from the emitted quads list.
+In case that no quads have been previously emitted, zero is returned.
 */
 unsigned int        GetBackQuadLabel();
+/*
+Pushes a standard loop branch quad to the mapped list of a loop's first quad start label.
+Standard loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
+2: jump quad, that jumps to the start of the loop, and a 3: jump quad that exits the loop in case
+the branch quad is evaluated as false.
+*/
+void                PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad);
+/*
+Patches the mapped loop branch quad list from of a loop's first quad start label
+with the start label.
+Standard loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
+2: jump quad, that jumps to the start of the loop, and a 3: jump quad that exits the loop in case
+the branch quad is evaluated as false.
+*/
+void                PatchLoopBranchQuads(unsigned int start_label);
 
 
 /* ---------------------- Temp -------------------------- */
