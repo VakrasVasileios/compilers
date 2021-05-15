@@ -106,6 +106,10 @@ stmt:         expr ';'              {
             | BREAK ';'             { 
                                         if(GetLoopDepth() == 0) {
                                             SIGNALERROR("invalid keyword BREAK outside of loop");
+                                        } else {
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_label = TopLoopStartLabel();
+                                            PushLoopBreakJumpQuad(jump_label, jump_quad);
                                         }
                                         DLOG("stmt -> break;");
                                     }
@@ -779,6 +783,7 @@ whilestmt:  WHILE               {
                                     PushLoopBranchQuad(top_loop_start_label, loop_quad);
 
                                     PatchLoopBranchQuads(top_loop_start_label);
+                                    PatchLoopBreakJumpQuads(top_loop_start_label, loop_quad->label + 1);
 
                                     PopLoopStartLabel();
 

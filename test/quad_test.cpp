@@ -478,6 +478,16 @@ TEST_F(QuadTest, while_continue_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(QuadTest, while_break_single) {
+    expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   JUMP 5 [line 2]\n"
+                "4:   JUMP 1 [line 3]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_break_single.asc");    
+    GTEST_ASSERT_EQ(expected, actual);             
+}
+
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

@@ -234,6 +234,14 @@ Standard loop branch quads consist of a 1: branch quad, which evaluates a statem
 the branch quad is evaluated as false.
 */
 void                PatchLoopBranchQuads(unsigned int start_label);
+/*
+Pushes a jump quad from a break statement to the mapped list of a loop's first quad start label.
+*/
+void                PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad);
+/*
+Patches the mapped, to a loop's first quad start label, jump quads from break statements.
+*/
+void                PatchLoopBreakJumpQuads(unsigned int start_label, unsigned int patch_label);
 
 
 /* ---------------------- Temp -------------------------- */

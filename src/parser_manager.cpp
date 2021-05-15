@@ -317,8 +317,9 @@ unsigned int GetBackQuadLabel() {
 
 std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;  // maps a loop's first quad start label with the 3 
                                                                             // standard loop branch quads.
-std::map<unsigned int, std::list<Quad*>> continue_jump_quads_by_start_label;
-std::map<unsigned int, std::list<Quad*>> break_jump_quads_by_start_label;
+
+std::map<unsigned int, std::list<Quad*>> break_jump_quads_by_start_label;   // maps a loop's first quad start label with the 
+                                                                            // loops body break statements.
 
 void PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad) {
     loop_branch_quads_by_start_label[start_label].push_back(branch_quad);
@@ -339,6 +340,17 @@ void PatchLoopBranchQuads(unsigned int start_label) {
     PatchJumpQuad(loop_quad, start_label);
     PatchJumpQuad(exit_quad, loop_quad->label + 1);
     PatchBranchQuad(branch_quad, branch_quad->label + 2);
+}
+
+void PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad) {
+    break_jump_quads_by_start_label[start_label].push_back(break_jump_quad);
+}
+
+void PatchLoopBreakJumpQuads(unsigned int start_label, unsigned int patch_label) {
+    auto loop_break_jump_quads = break_jump_quads_by_start_label[start_label];
+
+    for (auto loop_break_jump_quad : loop_break_jump_quads)
+        PatchJumpQuad(loop_break_jump_quad, patch_label);
 }
 
 /* ---------------------- Temp -------------------------- */
