@@ -230,18 +230,30 @@ bool IsAtCurrentScope(Symbol* symbol) {
 
 /* ---------------------- Loop -------------------------- */
 
-unsigned int loop_depth = 0;
+std::stack<unsigned int> loop_start_labels;  // provides a stack of loop start labels,
+                                                        // that will be used to patch the loops branch quads.
 
 unsigned int GetLoopDepth() {
-    return loop_depth;
+    return loop_start_labels.size();
 }
 
-void IncreaseLoopDepth() {
-    loop_depth++;
+void PushLoopStartLabel(unsigned int start_label) {
+    loop_start_labels.push(start_label);
 }
 
-void DecreaseLoopDepth() {
-    loop_depth--;
+unsigned int TopLoopStartLabel() {
+    assert (GetLoopDepth != 0);
+
+    return loop_start_labels.top();
+}
+
+unsigned int PopLoopStartLabel() {
+    assert (GetLoopDepth != 0);
+
+    unsigned int top = loop_start_labels.top();
+    loop_start_labels.pop();
+
+    return top;    
 }
 
 
@@ -295,6 +307,12 @@ void PatchJumpQuadList(FunctionDef* func_def, int label) {
         PatchJumpQuad(jump_quad, label);
     }
 }
+
+unsigned int GetBackQuadLabel() {
+    return quads.back()->label;
+}
+
+std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;
 
 /* ---------------------- Temp -------------------------- */
 

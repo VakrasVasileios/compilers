@@ -39,5 +39,11 @@ flex: $(FLEXTRGT).l
 scanner: $(BLDSRC)
 	$(CC) $(CFLAGS) -o $@ $(BLDSRC) $(SRC)
 
+quads: yacc flex $(BLDSRC)
+	$(CC) $(CFLAGS) -DLOGQUADS -o scanner $(BLDSRC) $(SRC)
+
+sym_table: yacc flex $(BLDSRC)
+	$(CC) $(CFLAGS) -DLOGSYMTABLE -o scanner $(BLDSRC) $(SRC)
+
 clean:
 	rm -rf $(FLEXTRGT) $(BLDHEADERS) $(OBJ) $(BLDSRC) *.output

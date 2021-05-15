@@ -387,6 +387,20 @@ TEST_F(QuadTest, not_equal_simple) {
 }
 
 
+/* ------------- Loop -------------------  */
+
+TEST_F(QuadTest, while_simple) {
+    expected =  "1:   IF_GREATER 2 6 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 8 [line 1]\n"
+                "7:   JUMP 9 [line 1]\n"
+                "8:   JUMP 1 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);  
+}
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

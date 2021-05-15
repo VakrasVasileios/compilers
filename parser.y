@@ -749,19 +749,24 @@ elsestmt:   ELSE stmt       {
             ;
 
 whilestmt:  WHILE               { 
-                                    IncreaseLoopDepth();
+                                    PushLoopStartLabel(GetBackQuadLabel() + 1);
                                 }
-            '(' expr ')' stmt   { 
-                                    DecreaseLoopDepth();
+            '(' expr ')'        {
+                                    Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
+                                    Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                }
+            stmt                { 
+                                    Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    PopLoopStartLabel();
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
             ;
 
 forstmt:    FOR                                     {
-                                                        IncreaseLoopDepth();
+                                                        PushLoopStartLabel(GetBackQuadLabel() + 1);
                                                     }
             '(' elist ';' expr ';' elist ')' stmt   {
-                                                        DecreaseLoopDepth();
+                                                        PopLoopStartLabel();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }
             ;
@@ -817,11 +822,13 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    if (NoErrorSignaled())
-        LogQuads(std::cout);
-
-    // if (NoErrorSignaled())
-    //     LogSymbolTable(std::cout);
+    #if defined LOGQUADS
+        if (NoErrorSignaled()) 
+            LogQuads(std::cout); 
+    #elif defined LOGSYMTABLE
+        if (NoErrorSignaled()) 
+            LogSymbolTable(std::cout); 
+    #endif
 
     return 0;
 }

@@ -162,18 +162,21 @@ bool                IsVariable(Symbol* entry);
 /* ---------------------- Loop -------------------------- */
 
 /*
-Returns a read/write access to the loop depth.
+Returns a read access to the loop depth.
 */
 unsigned int        GetLoopDepth();
 /*
-Increases the loop depth.
+Pushes the label of the first quad of a loop statement to the stack of loop statements.
 */
-void                IncreaseLoopDepth();
+void                PushLoopStartLabel(unsigned int start_label);
 /*
-Decreases the loop depth.
+Returns a read/write access to the label of the first quad of the top loop statement from the stack of loop statements.
 */
-void                DecreaseLoopDepth();
-
+unsigned int        TopLoopStartLabel();
+/*
+Pops a read/write access to the label of the first quad of the top loop statement from the stack of loop statements.
+*/
+unsigned int        PopLoopStartLabel();
 
 /* ---------------------- Quad -------------------------- */
 
@@ -211,6 +214,10 @@ Patches the mapped jump quad list from return statements of a function definitio
 with a label.
 */
 void                PatchJumpQuadList(FunctionDef* func_def, int label);
+/*
+Returns a read/write access to the label of the last quad from the emitted quads list.
+*/
+unsigned int        GetBackQuadLabel();
 
 
 /* ---------------------- Temp -------------------------- */
