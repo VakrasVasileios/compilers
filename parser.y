@@ -13,16 +13,23 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    // #define     SIGNALERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
-    // #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl  
+    #if !defined TEST
+        #define     SIGNALERROR(message)  \
+            do { \
+                std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl; \
+                SignalError(); \
+            } while (0)
 
-    #define     SIGNALERROR(message)  \
-        do { \
-            std::cout << "Error, in line: " << yylineno << ": " << message << std::endl; \
-            SignalError(); \
-        } while (0)
+        #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl 
+    #else 
+        #define     SIGNALERROR(message)  \
+            do { \
+                std::cout << "Error, in line: " << yylineno << ": " << message << std::endl; \
+                SignalError(); \
+            } while (0)
 
-    #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
+        #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
+    #endif
 %}
 
 %union {                                                    
