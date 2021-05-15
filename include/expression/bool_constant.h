@@ -13,7 +13,8 @@ public:
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:
-    bool value;    
+    bool        value;   
+    std::string value_to_string() const; 
 };
 
 #endif

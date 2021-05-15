@@ -262,6 +262,18 @@ Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigne
     return q;
 }
 
+void PatchJumpQuad(Quad* jump_quad, int label) {
+    assert (jump_quad != nullptr);
+    
+    jump_quad->result = new IntConstant(label);
+}
+
+void PatchBranchQuad(Quad* branch_quad, int label) {
+    assert (branch_quad != nullptr);
+
+    branch_quad->arg2 = new IntConstant(label);
+}
+
 void MapJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
     jump_quads_by_func_defs.insert({func_def, jump_quad});
 }
@@ -270,7 +282,7 @@ void PatchJumpQuad(FunctionDef* func_def, int label) {
     assert (jump_quads_by_func_defs[func_def] != nullptr);
 
     auto jump_quad = jump_quads_by_func_defs[func_def];
-    jump_quad->result = new IntConstant(label);
+    PatchJumpQuad(jump_quad, label);
 }
 
 void PushJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
@@ -280,7 +292,7 @@ void PushJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
 void PatchJumpQuadList(FunctionDef* func_def, int label) {
     auto jump_quad_list = jump_quad_lists_by_func_defs[func_def];
     for (auto jump_quad : jump_quad_list) {
-        jump_quad->result = new IntConstant(label);
+        PatchJumpQuad(jump_quad, label);
     }
 }
 

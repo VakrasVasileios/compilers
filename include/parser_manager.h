@@ -183,6 +183,17 @@ Returns a read/write reference to the new quad.
 */
 Quad*               Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
 /*
+Patches a jump quad's result with a label.
+It's a checked runtime error for the quad to be null.
+*/
+void                PatchJumpQuad(Quad* jump_quad, int label);
+/*
+Patches a branch quad's arg2 with a label.
+It's a checked runtime error for the quad to be null.
+*/
+void                PatchBranchQuad(Quad* branch_quad, int label);
+
+/*
 Maps a function definition with its initial jump quad.
 */
 void                MapJumpQuad(FunctionDef* func_def, Quad* jump_quad);
