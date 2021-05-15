@@ -326,6 +326,65 @@ TEST_F(QuadTest, logical_greater_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
+TEST_F(QuadTest, equal_simple) {
+    expected =  "1:   IF_EQ 3 2 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/logical/equal_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(QuadTest, greater_equal_simple) {
+    expected =  "1:   IF_GREATEREQ 3 2 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/logical/greater_equal_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(QuadTest, greater_simple) {
+    expected =  "1:   IF_GREATER 3 2 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/logical/greater_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(QuadTest, less_equal_simple) {
+    expected =  "1:   IF_LESSEQ 3 2 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/logical/less_equal_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(QuadTest, less_simple) {
+    expected =  "1:   IF_LESS 3 2 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/logical/less_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(QuadTest, not_equal_simple) {
+    expected =  "1:   IF_NOTEQ 3 2 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/logical/not_equal_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);     
+}
 
 
 /*  ------------ Arithmetic --------------   */

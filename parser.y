@@ -155,18 +155,81 @@ expr:         assignexpr            {
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
+                                        auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+
                                         DLOG("expr -> expr >= expr");
                                     }
             | expr '<' expr         {
+                                        auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(less_quad, less_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
+                                        auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
+                                        auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(equal_quad, equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
                                         DLOG("expr -> expr == expr");
                                     }
             | expr NOTEQUAL expr    {
+                                        auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
                                         DLOG("expr -> expr != expr");
                                     }
             | expr AND expr         {
