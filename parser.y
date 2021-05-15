@@ -77,7 +77,10 @@ program:      stmts                 {
                                     }
             ;
 
-stmts:        stmt stmts            {
+stmts:      stmt                    {
+                                        ResetTemp();
+                                    }
+            stmts                   {
                                         DLOG("stmts -> stmt stmts");
                                     }
             |                       {
@@ -470,8 +473,6 @@ call:       call  '(' elist ')'             {
 
                                                 function_call->set_ret_val(temp_value->get_id());
 
-                                                IncreaseTemp();
-
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
                                                     auto call_args_num = function_call->get_params().size();
@@ -481,9 +482,6 @@ call:       call  '(' elist ')'             {
                                                     else if (call_args_num > args_num)
                                                         LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                 }
-
-                                                if (GetCallDepth() == 0)
-                                                    ResetTemp();
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -508,8 +506,6 @@ call:       call  '(' elist ')'             {
 
                                                 function_call->set_ret_val(temp_value->get_id());
 
-                                                IncreaseTemp();
-
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
                                                     auto call_args_num = function_call->get_params().size();
@@ -519,9 +515,6 @@ call:       call  '(' elist ')'             {
                                                     else if (call_args_num > args_num)
                                                         LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                 }
-
-                                                if (GetCallDepth() == 0)
-                                                    ResetTemp();
 
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
@@ -742,12 +735,16 @@ idlist:     ID      {
                     }
             ;
 
-ifstmt:     IF '(' expr ')' stmt elsestmt   {
+ifstmt:     IF '(' expr ')' stmt            {
+                                                ResetTemp();
+                                            }
+            elsestmt                        {
                                                 DLOG("ifstmt -> if (expr) stmt elsestmt"); 
                                             }
             ;
 
 elsestmt:   ELSE stmt       {
+                                ResetTemp();
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
@@ -768,6 +765,7 @@ whilestmt:  WHILE               {
                                     PushLoopBranchQuad(top_loop_start_label, exit_quad);
                                 }
             stmt                { 
+                                    ResetTemp();
                                     unsigned int top_loop_start_label = TopLoopStartLabel();
 
                                     auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
@@ -786,6 +784,7 @@ forstmt:    FOR                                     {
                                                         PushLoopStartLabel(GetBackQuadLabel() + 1);
                                                     }
             '(' elist ';' expr ';' elist ')' stmt   {
+                                                        ResetTemp();
                                                         PopLoopStartLabel();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }

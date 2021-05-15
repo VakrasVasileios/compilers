@@ -49,7 +49,7 @@ TEST_F(QuadTest, assign_calls_nested) {
                 "11:   CALL f [line 7]\n"
                 "12:   GETRETVAL ^1 [line 7]\n"
                 "13:   ASSIGN x ^1 [line 7]\n"
-                "14:   ASSIGN ^0 x [line 7]\n";
+                "14:   ASSIGN ^2 x [line 7]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/assign/calls_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
@@ -411,6 +411,31 @@ TEST_F(QuadTest, while_simple_with_stms) {
     actual = exec("./scanner ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");    
     GTEST_ASSERT_EQ(expected, actual);              
 }
+
+TEST_F(QuadTest, while_many_nested) {
+    expected =  "1:   IF_LESS x 0 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 8 [line 1]\n"
+                "7:   JUMP 17 [line 1]\n"
+                "8:   ASSIGN x 0 [line 2]\n"
+                "9:   ASSIGN ^1 x [line 2]\n"
+                "10:   IF_EQ 1 'true' 12 [line 3]\n"
+                "11:   JUMP 16 [line 3]\n"
+                "12:   IF_EQ 0 'true' 14 [line 3]\n"
+                "13:   JUMP 15 [line 3]\n"
+                "14:   JUMP 12 [line 3]\n"
+                "15:   JUMP 10 [line 3]\n"
+                "16:   JUMP 1 [line 4]\n"
+                "17:   IF_EQ s 'true' 19 [line 9]\n"
+                "18:   JUMP 20 [line 9]\n"
+                "19:   JUMP 17 [line 10]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_many_nested.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 
 /*  ------------ Arithmetic --------------   */
 

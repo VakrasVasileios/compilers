@@ -338,7 +338,7 @@ void PatchLoopBranchQuads(unsigned int start_label) {
 
     PatchJumpQuad(loop_quad, start_label);
     PatchJumpQuad(exit_quad, loop_quad->label + 1);
-    PatchBranchQuad(branch_quad, loop_quad->label);
+    PatchBranchQuad(branch_quad, branch_quad->label + 2);
 }
 
 /* ---------------------- Temp -------------------------- */
@@ -351,9 +351,15 @@ std::string NewTempName() {
     return  "^" + std::to_string(temp_counter);
 }
 
+void IncreaseTemp() {
+    temp_counter++;
+}
+
 Symbol* NewTemp() {
     std::string name = NewTempName();
     Symbol* sym = program_stack.LookupHiddenVariable(name);
+
+    IncreaseTemp();
 
     if (sym == nullptr)
     {   
@@ -361,16 +367,12 @@ Symbol* NewTemp() {
         if (ScopeIsGlobal())
             new_temp = InsertGlobalVariable(name.c_str(), TEMP_LINE);
         else    
-            new_temp = InsertLocalVariable(name.c_str(), TEMP_LINE)   ; 
+            new_temp = InsertLocalVariable(name.c_str(), TEMP_LINE); 
 
         return new_temp;
     } else {
         return sym;
     }
-}
-
-void IncreaseTemp() {
-    temp_counter++;
 }
 
 void ResetTemp() {

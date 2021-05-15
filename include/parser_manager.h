@@ -241,12 +241,9 @@ void                PatchLoopBranchQuads(unsigned int start_label);
 /*
 Returns either a new hidden variable, or an available hidden_variable ,
 at the current scope.
+Increments the hidden variable counter.
 */
 Symbol*             NewTemp();
-/*
-Increases the hidden variable counter.
-*/
-void                IncreaseTemp();
 /*
 Resets the hidden variable counter.
 */
