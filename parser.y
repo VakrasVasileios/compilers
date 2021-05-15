@@ -145,12 +145,16 @@ expr:         assignexpr            {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
 
                                         DLOG("expr -> expr > expr");
                                     }
@@ -161,12 +165,16 @@ expr:         assignexpr            {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
 
                                         DLOG("expr -> expr >= expr");
                                     }
@@ -177,12 +185,16 @@ expr:         assignexpr            {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
 
                                         DLOG("expr -> expr + expr");
                                     }
@@ -193,12 +205,16 @@ expr:         assignexpr            {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
 
                                         DLOG("expr -> expr <= expr");
                                     }
@@ -209,12 +225,17 @@ expr:         assignexpr            {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr == expr");
                                     }
             | expr NOTEQUAL expr    {
@@ -224,12 +245,17 @@ expr:         assignexpr            {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(true), nullptr, yylineno);
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, NewTemp(), new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr != expr");
                                     }
             | expr AND expr         {
