@@ -110,8 +110,14 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
-                                        if(GetLoopDepth() == 0)
+                                        if(GetLoopDepth() == 0) {
                                             SIGNALERROR("invalid keyword CONTINUE outside of loop");
+                                        } else {
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_label = TopLoopStartLabel();
+                                            PatchJumpQuad(jump_quad, jump_label);
+                                        }
+                                        
                                         DLOG("stmt -> continue;");
                                     }
             | block                 {

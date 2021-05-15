@@ -45,7 +45,7 @@ quads: yacc flex $(BLDSRC)
 sym_table: yacc flex $(BLDSRC)
 	$(CC) $(CFLAGS) -DLOGSYMTABLE -o scanner $(BLDSRC) $(SRC)
 
-quads_test:	yacc flex $(BLDSRC)
+quad_test:	yacc flex $(BLDSRC)
 	$(CC) $(CFLAGS) -DLOGQUADS -DTEST -o scanner $(BLDSRC) $(SRC)
 
 sym_table_test: yacc flex $(BLDSRC)
