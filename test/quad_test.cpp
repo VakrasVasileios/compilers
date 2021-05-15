@@ -445,6 +445,39 @@ TEST_F(QuadTest, while_continue_single) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
+TEST_F(QuadTest, while_continue_many_nested) {
+    expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
+                "2:   JUMP 29 [line 1]\n"
+                "3:   JUMP 1 [line 2]\n"
+                "4:   JUMP 1 [line 3]\n"
+                "5:   JUMP 1 [line 4]\n"
+                "6:   JUMP 1 [line 5]\n"
+                "7:   JUMP 1 [line 5]\n"
+                "8:   JUMP 1 [line 6]\n"
+                "9:   JUMP 1 [line 7]\n"
+                "10:   JUMP 1 [line 7]\n"
+                "11:   JUMP 1 [line 7]\n"
+                "12:   JUMP 1 [line 7]\n"
+                "13:   JUMP 1 [line 7]\n"
+                "14:   JUMP 1 [line 7]\n"
+                "15:   JUMP 1 [line 7]\n"
+                "16:   IF_LESS 3 0 18 [line 8]\n"
+                "17:   JUMP 20 [line 8]\n"
+                "18:   ASSIGN ^0 'true' [line 8]\n"
+                "19:   JUMP 21 [line 8]\n"
+                "20:   ASSIGN ^0 'false' [line 8]\n"
+                "21:   IF_EQ ^0 'true' 23 [line 8]\n"
+                "22:   JUMP 28 [line 8]\n"
+                "23:   JUMP 16 [line 9]\n"
+                "24:   JUMP 16 [line 10]\n"
+                "25:   JUMP 16 [line 10]\n"
+                "26:   JUMP 16 [line 10]\n"
+                "27:   JUMP 16 [line 15]\n"
+                "28:   JUMP 1 [line 20]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_continue_many_nested.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
