@@ -759,12 +759,25 @@ whilestmt:  WHILE               {
                                     PushLoopStartLabel(GetBackQuadLabel() + 1);
                                 }
             '(' expr ')'        {
-                                    Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
-                                    Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    auto top_loop_start_label = TopLoopStartLabel();
+
+                                    auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
+                                    auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                                    PushLoopBranchQuad(top_loop_start_label, branch_quad);
+                                    PushLoopBranchQuad(top_loop_start_label, exit_quad);
                                 }
             stmt                { 
-                                    Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    unsigned int top_loop_start_label = TopLoopStartLabel();
+
+                                    auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    
+                                    PushLoopBranchQuad(top_loop_start_label, loop_quad);
+
+                                    PatchLoopBranchQuads(top_loop_start_label);
+
                                     PopLoopStartLabel();
+
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
             ;

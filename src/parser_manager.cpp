@@ -309,10 +309,37 @@ void PatchJumpQuadList(FunctionDef* func_def, int label) {
 }
 
 unsigned int GetBackQuadLabel() {
-    return quads.back()->label;
+    if (quads.size() == 0)
+        return 0;
+    else     
+        return quads.back()->label;
 }
 
-std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;
+std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;  // maps a loop's first quad start label with the 3 
+                                                                            // standard loop branch quads.
+std::map<unsigned int, std::list<Quad*>> continue_jump_quads_by_start_label;
+std::map<unsigned int, std::list<Quad*>> break_jump_quads_by_start_label;
+
+void PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad) {
+    loop_branch_quads_by_start_label[start_label].push_back(branch_quad);
+}
+
+void PatchLoopBranchQuads(unsigned int start_label) {
+    auto loop_branch_quads = loop_branch_quads_by_start_label[start_label];
+
+    auto loop_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto exit_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto branch_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    PatchJumpQuad(loop_quad, start_label);
+    PatchJumpQuad(exit_quad, loop_quad->label + 1);
+    PatchBranchQuad(branch_quad, loop_quad->label);
+}
 
 /* ---------------------- Temp -------------------------- */
 
