@@ -487,6 +487,24 @@ TEST_F(QuadTest, while_break_single) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
+TEST_F(QuadTest, for_simple) {
+    expected =  "1:   ASSIGN i 0 [line 1]\n"
+                "2:   ASSIGN ^0 i [line 1]\n"
+                "3:   IF_LESS i 20 5 [line 1]\n"
+                "4:   JUMP 7 [line 1]\n"
+                "5:   ASSIGN ^1 'true' [line 1]\n"
+                "6:   JUMP 8 [line 1]\n"
+                "7:   ASSIGN ^1 'false' [line 1]\n"
+                "8:   IF_EQ ^1 'true' 13 [line 1]\n"
+                "9:   JUMP 14 [line 1]\n"
+                "10:   ASSIGN ^2 i [line 1]\n"
+                "11:   ADD i i 1 [line 1]\n"
+                "12:   JUMP 3 [line 1]\n"
+                "13:   JUMP 10 [line 2]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);                
+}
+
 
 /*  ------------ Arithmetic --------------   */
 
@@ -514,6 +532,14 @@ TEST_F(QuadTest, while_break_single) {
 //     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/function_id_error.asc");
 //     GTEST_ASSERT_EQ(expected, actual); 
 // }
+
+TEST_F(QuadTest, plusplus_suffix) {
+    expected =  "1:   ASSIGN ^0 i [line 1]\n"
+                "2:   ADD i i 1 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 
 #ifdef TESTING
 int main(int argc, char* argv[])

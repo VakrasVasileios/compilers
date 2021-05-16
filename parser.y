@@ -306,6 +306,7 @@ term:         '(' expr ')'          {
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of increment operator with non variable type");    
+
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
@@ -316,6 +317,14 @@ term:         '(' expr ')'          {
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of increment operator with non variable type");    
+
+                                        auto temp = NewTemp(); 
+
+                                        Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
+                                        Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
