@@ -742,6 +742,18 @@ TEST_F(QuadTest, if_nested_many) {
     GTEST_ASSERT_EQ(expected, actual);                  
 }
 
+TEST_F(QuadTest, if_else) {
+    expected =  "1:   IF_EQ a 'true' 3 [line 1]\n"
+                "2:   JUMP 4 [line 1]\n"
+                "3:   JUMP 8 [line 2]\n"
+                "4:   ASSIGN b 2 [line 2]\n"
+                "5:   ASSIGN ^0 b [line 2]\n"
+                "6:   ASSIGN a x [line 2]\n"
+                "7:   ASSIGN ^0 a [line 2]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_else.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

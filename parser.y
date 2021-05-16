@@ -766,12 +766,6 @@ ifstmt:     IF '(' expr ')'                 {
                                                 MapIfStmtJumpQuad(if_stmt_depth, jump_quad);
                                             }
             stmt                            {
-                                                auto if_stmt_depth = GetIfStmtDepth();
-
-                                                PatchIfStmtJumpQuad(if_stmt_depth);
-
-                                                DecreaseIfStmtDepth(); //?0
-
                                                 ResetTemp();
                                             }
             elsestmt                        {
@@ -779,11 +773,32 @@ ifstmt:     IF '(' expr ')'                 {
                                             }
             ;
 
-elsestmt:   ELSE stmt       {
+elsestmt:   ELSE            {
+                                auto if_stmt_depth = GetIfStmtDepth();
+
+                                auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                PushElseJumpQuad(if_stmt_depth, else_jump_quad);
+
+                                auto patch_label = GetBackQuadLabel() + 1;
+                                PatchIfStmtJumpQuad(if_stmt_depth, patch_label);
+                            }
+            stmt            {
+                                auto if_stmt_depth = GetIfStmtDepth();
+                                PatchElseJumpQuad(if_stmt_depth);
+
+                                DecreaseIfStmtDepth();
+
                                 ResetTemp();
+
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
+                                auto if_stmt_depth = GetIfStmtDepth();
+
+                                auto patch_label = GetBackQuadLabel() + 1;
+                                PatchIfStmtJumpQuad(if_stmt_depth, patch_label);
+
+                                DecreaseIfStmtDepth();
                                 DLOG("elsestmt -> EMPTY");
                             }
             ;

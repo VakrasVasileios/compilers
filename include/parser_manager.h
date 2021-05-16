@@ -291,7 +291,15 @@ void                MapIfStmtJumpQuad(unsigned int if_stmt_depth, Quad* exit_qua
 /*
 Patches the mapped, with the if statement's depth, exit jump quad of the if statement .
 */
-void                PatchIfStmtJumpQuad(unsigned int if_stmt_depth);
+void                PatchIfStmtJumpQuad(unsigned int if_stmt_depth, unsigned int patch_label);
+/*
+Pushes a jump quad from a else statement to the mapped list of an if statement's depth.
+*/
+void                PushElseJumpQuad(unsigned int if_stmt_depth, Quad* else_jump_quad);
+/*
+Patches the most recent mapped, to an if statement's depth, else jump quad.
+*/
+void                PatchElseJumpQuad(unsigned int if_stmt_depth);
 
 
 /* ---------------------- Temp -------------------------- */
