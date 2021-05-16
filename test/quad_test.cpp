@@ -754,6 +754,52 @@ TEST_F(QuadTest, if_else) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(QuadTest, if_elseif) {
+    expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
+                "2:   JUMP 6 [line 1]\n"
+                "3:   ASSIGN x 2 [line 1]\n"
+                "4:   ASSIGN ^0 x [line 1]\n"
+                "5:   JUMP 10 [line 2]\n"
+                "6:   IF_EQ 1 'true' 8 [line 2]\n"
+                "7:   JUMP 10 [line 2]\n"
+                "8:   ASSIGN x 3 [line 2]\n"
+                "9:   ASSIGN ^0 x [line 2]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_elseif.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, if_elseif_else) {
+    expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
+                "2:   JUMP 6 [line 1]\n"
+                "3:   ASSIGN x 2 [line 1]\n"
+                "4:   ASSIGN ^0 x [line 1]\n"
+                "5:   JUMP 28 [line 2]\n"
+                "6:   IF_EQ 1 'true' 8 [line 2]\n"
+                "7:   JUMP 11 [line 2]\n"
+                "8:   ASSIGN x 3 [line 2]\n"
+                "9:   ASSIGN ^0 x [line 2]\n"
+                "10:   JUMP 28 [line 3]\n"
+                "11:   IF_EQ 1 'true' 13 [line 3]\n"
+                "12:   JUMP 16 [line 3]\n"
+                "13:   ASSIGN x 3 [line 3]\n"
+                "14:   ASSIGN ^0 x [line 3]\n"
+                "15:   JUMP 28 [line 4]\n"
+                "16:   IF_EQ 1 'true' 18 [line 4]\n"
+                "17:   JUMP 21 [line 4]\n"
+                "18:   ASSIGN x 3 [line 4]\n"
+                "19:   ASSIGN ^0 x [line 4]\n"
+                "20:   JUMP 28 [line 5]\n"
+                "21:   IF_EQ 1 'true' 23 [line 5]\n"
+                "22:   JUMP 26 [line 5]\n"
+                "23:   ASSIGN x 3 [line 5]\n"
+                "24:   ASSIGN ^0 x [line 5]\n"
+                "25:   JUMP 28 [line 6]\n"
+                "26:   ASSIGN x 3 [line 6]\n"
+                "27:   ASSIGN ^0 x [line 6]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_elseif_else.asc");    
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {
