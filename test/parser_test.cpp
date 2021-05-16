@@ -333,7 +333,6 @@ TEST_F(ParserTest, GlobalAndLocal) {
  TEST_F(ParserTest, Tree) {
    expected = "syntax error: at line 1, before token: /\n"
             "INPUT NOT VALID\n";
-   expected += libfunc_out;
    actual = exec("./scanner ../../test/files/phase2_tests/Working/Tree.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }

@@ -35,18 +35,34 @@ SymbolTable:: ContainsOnlyHiddenVariables(std::list<Block*> blockList) {
 std::ostream&
 operator<<(std::ostream& os, const SymbolTable symbol_table) {
     unsigned int scope = 0;
-    for (auto blockList : symbol_table.blocks_table)
-    {        
-        if (symbol_table.ContainsAnEntry(blockList) && !symbol_table.ContainsOnlyHiddenVariables(blockList))
-        {
-            os << "-----------     Scope #" << scope << "     -----------\n";
-            for (auto block : blockList)
+
+    #if !defined TEST
+        for (auto blockList : symbol_table.blocks_table)
+        {        
+            if (symbol_table.ContainsAnEntry(blockList))
             {
-                os << *block;
-            }    
+                os << "-----------     Scope #" << scope << "     -----------\n";
+                for (auto block : blockList)
+                {
+                    os << *block;
+                }    
+            }
+            scope++;
         }
-        scope++;
-    }
+    #else 
+        for (auto blockList : symbol_table.blocks_table)
+        {        
+            if (symbol_table.ContainsAnEntry(blockList) && !symbol_table.ContainsOnlyHiddenVariables(blockList))
+            {
+                os << "-----------     Scope #" << scope << "     -----------\n";
+                for (auto block : blockList)
+                {
+                    os << *block;
+                }    
+            }
+            scope++;
+        }
+    #endif
 
     return os;
 }

@@ -13,16 +13,23 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    // #define     SIGNALERROR(message)   std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl
-    // #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl  
+    #if !defined TEST
+        #define     SIGNALERROR(message)  \
+            do { \
+                std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl; \
+                SignalError(); \
+            } while (0)
 
-    #define     SIGNALERROR(message)  \
-        do { \
-            std::cout << "Error, in line: " << yylineno << ": " << message << std::endl; \
-            SignalError(); \
-        } while (0)
+        #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl 
+    #else 
+        #define     SIGNALERROR(message)  \
+            do { \
+                std::cout << "Error, in line: " << yylineno << ": " << message << std::endl; \
+                SignalError(); \
+            } while (0)
 
-    #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
+        #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
+    #endif
 %}
 
 %union {                                                    
@@ -70,7 +77,10 @@ program:      stmts                 {
                                     }
             ;
 
-stmts:        stmt stmts            {
+stmts:      stmt                    {
+                                        ResetTemp();
+                                    }
+            stmts                   {
                                         DLOG("stmts -> stmt stmts");
                                     }
             |                       {
@@ -96,12 +106,22 @@ stmt:         expr ';'              {
             | BREAK ';'             { 
                                         if(GetLoopDepth() == 0) {
                                             SIGNALERROR("invalid keyword BREAK outside of loop");
+                                        } else {
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_label = TopLoopStartLabel();
+                                            PushLoopBreakJumpQuad(jump_label, jump_quad);
                                         }
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
-                                        if(GetLoopDepth() == 0)
+                                        if(GetLoopDepth() == 0) {
                                             SIGNALERROR("invalid keyword CONTINUE outside of loop");
+                                        } else {
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_label = TopLoopStartLabel();
+                                            PushLoopContinueJumpQuad(jump_label, jump_quad);
+                                        }
+                                        
                                         DLOG("stmt -> continue;");
                                     }
             | block                 {
@@ -116,6 +136,11 @@ stmt:         expr ';'              {
             ;
 
 expr:         assignexpr            {
+                                        auto temp = NewTemp();
+                                        Emit(ASSIGN_t, temp, $1, nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> assignexpr");
                                     }
             | expr '+' expr         {
@@ -134,21 +159,123 @@ expr:         assignexpr            {
                                         DLOG("expr -> expr % expr");
                                     }
             | expr '>' expr         {
+                                        auto greater_quad = Emit(IF_GREATER_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(greater_quad, greater_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
+                                        auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr >= expr");
                                     }
             | expr '<' expr         {
+                                        auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(less_quad, less_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
+                                        auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
+                                        auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(equal_quad, equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr == expr");
                                     }
             | expr NOTEQUAL expr    {
+                                        auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr, yylineno);
+                                        PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("expr -> expr != expr");
                                     }
             | expr AND expr         {
@@ -179,6 +306,7 @@ term:         '(' expr ')'          {
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of increment operator with non variable type");    
+
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
@@ -189,6 +317,14 @@ term:         '(' expr ')'          {
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of increment operator with non variable type");    
+
+                                        auto temp = NewTemp(); 
+
+                                        Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
+                                        Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
+
+                                        $$ = temp;
+
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
@@ -223,8 +359,8 @@ assignexpr:   lvalue '=' expr       {
                                                 SIGNALERROR("Functions are constant their value cannot be changed");
                                             }
                                             else {
-                                                $$ = symbol;
-                                                Emit(ASSIGN_t, symbol, nullptr, $3, yylineno);
+                                                auto assign_quad = Emit(ASSIGN_t, symbol, nullptr, $3, yylineno);
+                                                $$ = assign_quad->result;
                                             }
                                         }
                                             
@@ -356,8 +492,6 @@ call:       call  '(' elist ')'             {
 
                                                 function_call->set_ret_val(temp_value->get_id());
 
-                                                IncreaseTemp();
-
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
                                                     auto call_args_num = function_call->get_params().size();
@@ -367,9 +501,6 @@ call:       call  '(' elist ')'             {
                                                     else if (call_args_num > args_num)
                                                         LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                 }
-
-                                                if (GetCallDepth() == 0)
-                                                    ResetTemp();
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
@@ -394,8 +525,6 @@ call:       call  '(' elist ')'             {
 
                                                 function_call->set_ret_val(temp_value->get_id());
 
-                                                IncreaseTemp();
-
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
                                                     auto call_args_num = function_call->get_params().size();
@@ -405,9 +534,6 @@ call:       call  '(' elist ')'             {
                                                     else if (call_args_num > args_num)
                                                         LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                 }
-
-                                                if (GetCallDepth() == 0)
-                                                    ResetTemp();
 
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
@@ -515,6 +641,7 @@ funcdef:    FUNCTION
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
 
                                 PatchJumpQuad(func_def, func_end_quad->label + 1);
+                                PatchJumpQuadList(func_def, func_end_quad->label);
 
                                 EnableLowerScopes();
 
@@ -568,6 +695,7 @@ funcdef:    FUNCTION
                                     function = func_def->get_sym();
                                     auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
                                     PatchJumpQuad(func_def, func_end_quad->label + 1);
+                                    PatchJumpQuadList(func_def, func_end_quad->label);
                                 }
                                 
                                 EnableLowerScopes();
@@ -626,43 +754,138 @@ idlist:     ID      {
                     }
             ;
 
-ifstmt:     IF '(' expr ')' stmt elsestmt   {
+ifstmt:     IF '(' expr ')'                 {
+                                                IncreaseIfStmt();
+
+                                                auto if_stmt = GetIfStmt();
+
+                                                auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
+                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
+
+                                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
+                                                MapIfStmtJumpQuad(if_stmt, jump_quad);
+                                            }
+            stmt                            {
+                                                ResetTemp();
+                                            }
+            elsestmt                        {
                                                 DLOG("ifstmt -> if (expr) stmt elsestmt"); 
                                             }
             ;
 
-elsestmt:   ELSE stmt       {
+elsestmt:   ELSE            {
+                                auto if_stmt = GetIfStmt();
+
+                                auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                PushElseJumpQuad(if_stmt, else_jump_quad);
+
+                                auto patch_label = GetBackQuadLabel() + 1;
+                                PatchIfStmtJumpQuad(if_stmt, patch_label);
+                            }
+            stmt            {
+                                auto if_stmt = GetIfStmt();
+                                PatchElseJumpQuad(if_stmt);
+
+                                DecreaseIfStmt();
+
+                                ResetTemp();
+
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
+                                auto if_stmt = GetIfStmt();
+
+                                auto patch_label = GetBackQuadLabel() + 1;
+                                PatchIfStmtJumpQuad(if_stmt, patch_label);
+
+                                DecreaseIfStmt();
                                 DLOG("elsestmt -> EMPTY");
                             }
             ;
 
 whilestmt:  WHILE               { 
-                                    IncreaseLoopDepth();
+                                    PushLoopStartLabel(GetBackQuadLabel() + 1);
                                 }
-            '(' expr ')' stmt   { 
-                                    DecreaseLoopDepth();
+            '(' expr ')'        {
+                                    auto top_loop_start_label = TopLoopStartLabel();
+
+                                    auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
+                                    auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                                    PushLoopBranchQuad(top_loop_start_label, branch_quad);
+                                    PushLoopBranchQuad(top_loop_start_label, exit_quad);
+                                }
+            stmt                { 
+                                    unsigned int top_loop_start_label = TopLoopStartLabel();
+
+                                    auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    
+                                    PushLoopBranchQuad(top_loop_start_label, loop_quad);
+
+                                    PatchWhileLoopBranchQuads(top_loop_start_label);
+                                    PatchLoopBreakJumpQuads(top_loop_start_label, loop_quad->label + 1);
+                                    PatchWhileLoopContinueJumpQuads(top_loop_start_label);
+
+                                    PopLoopStartLabel();
+
+                                    ResetTemp();
+
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
             ;
 
 forstmt:    FOR                                     {
-                                                        IncreaseLoopDepth();
+                                                        PushLoopStartLabel(GetBackQuadLabel() + 1);
                                                     }
-            '(' elist ';' expr ';' elist ')' stmt   {
-                                                        DecreaseLoopDepth();
+            '(' elist ';'                           {
+                                                        auto top_loop_start_label = TopLoopStartLabel();
+                                                        auto logical_expr_start_label = GetBackQuadLabel() + 1;
+
+                                                        MapLogicalExpressionStartLabel(top_loop_start_label, logical_expr_start_label);
+                                                    }
+            expr ';'                                {
+                                                        auto top_loop_start_label = TopLoopStartLabel();
+
+                                                        auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr, yylineno);
+                                                        PushLoopBranchQuad(top_loop_start_label, branch_quad);
+
+                                                        auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                        PushLoopBranchQuad(top_loop_start_label, exit_quad);
+
+                                                        auto exprs_start_label = GetBackQuadLabel() + 1;
+                                                        MapExpressionsStartLabel(top_loop_start_label, exprs_start_label);
+                                                    }
+            elist ')'                               {
+                                                        auto top_loop_start_label = TopLoopStartLabel();
+
+                                                        auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                        PushLoopBranchQuad(top_loop_start_label, loop_quad);
+                                                    }
+            stmt                                    {
+                                                        auto top_loop_start_label = PopLoopStartLabel();
+
+                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);  
+                                                        PushLoopBranchQuad(top_loop_start_label, expr_jump_quad);
+
+                                                        PatchForLoopBranchQuads(top_loop_start_label);
+                                                        PatchLoopBreakJumpQuads(top_loop_start_label, GetBackQuadLabel() + 1);
+                                                        PatchForLoopContinueJumpQuads(top_loop_start_label);
+
+                                                        ResetTemp();
+
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }
             ;
 
 returnstmt: RETURN      {
-                            if (GetFuncDefDepth() == 0) 
+                            if (GetFuncDefDepth() == 0) {
                                 SIGNALERROR("Invalid return, used outside a function block");
+                            }
 
                             Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
-                            //Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                            PushJumpQuad(TopFuncDef(), jump_quad);
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
@@ -672,7 +895,11 @@ returnstmt: RETURN      {
                                 SIGNALERROR("Invalid return, used outside a function block");
                         }
             expr ';'    {
-                           // Emit(RET_t, $3, nullptr, nullptr, yylineno);
+                            Emit(RET_t, $3, nullptr, nullptr, yylineno);
+                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                            PushJumpQuad(TopFuncDef(), jump_quad);
+
                             DLOG("returnstmt -> RETURN expr;");
                         }
             ;
@@ -682,6 +909,7 @@ returnstmt: RETURN      {
 int yyerror(std::string yaccProvidedMessage) {
     std::cout << yaccProvidedMessage << ": at line " << yylineno << ", before token: " << yytext << std::endl;
     std::cout << "INPUT NOT VALID" << std::endl;
+    SignalError();
     return 1;
 }
 
@@ -701,11 +929,14 @@ int main(int argc, char** argv) {
 
     yyparse();
 
-    if (NoErrorSignaled())
-        LogQuads(std::cout);
-
-    // if (NoErrorSignaled())
-    //     LogSymbolTable(std::cout);
+    #if defined LOGQUADS
+        if (NoErrorSignaled()) 
+            LogQuads(std::cout);
+    #endif         
+    #if defined LOGSYMTABLE
+        if (NoErrorSignaled()) 
+            LogSymbolTable(std::cout); 
+    #endif
 
     return 0;
 }

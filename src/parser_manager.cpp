@@ -58,6 +58,12 @@ void PushFuncDef(FunctionDef* func_def) {
     function_definitions.push(func_def);
 }
 
+FunctionDef* TopFuncDef() {
+    if (GetFuncDefDepth() != 0)
+        return function_definitions.top();
+    return nullptr;    
+}
+
 FunctionDef* PopFuncDef() {
     FunctionDef* top;
     if (GetFuncDefDepth() != 0) {
@@ -222,20 +228,48 @@ bool IsAtCurrentScope(Symbol* symbol) {
 }
 
 
+/* ---------------------- Conditional -------------------------- */ 
+
+unsigned int if_cnt = 0;
+
+unsigned int GetIfStmt() {
+    return if_cnt;
+}
+
+void IncreaseIfStmt() {
+    if_cnt++;
+}
+
+void DecreaseIfStmt() {
+    if_cnt--;
+}
+
 /* ---------------------- Loop -------------------------- */
 
-unsigned int loop_depth = 0;
+std::stack<unsigned int> loop_start_labels;  // provides a stack of loop start labels,
+                                                        // that will be used to patch the loops branch quads.
 
 unsigned int GetLoopDepth() {
-    return loop_depth;
+    return loop_start_labels.size();
 }
 
-void IncreaseLoopDepth() {
-    loop_depth++;
+void PushLoopStartLabel(unsigned int start_label) {
+    loop_start_labels.push(start_label);
 }
 
-void DecreaseLoopDepth() {
-    loop_depth--;
+unsigned int TopLoopStartLabel() {
+    assert (GetLoopDepth != 0);
+
+    return loop_start_labels.top();
+}
+
+unsigned int PopLoopStartLabel() {
+    assert (GetLoopDepth != 0);
+
+    unsigned int top = loop_start_labels.top();
+    loop_start_labels.pop();
+
+    return top;    
 }
 
 
@@ -244,6 +278,8 @@ void DecreaseLoopDepth() {
 std::vector<Quad*>   quads;
 
 std::map<FunctionDef*, Quad*> jump_quads_by_func_defs; // Maps function definitions with their initial jump quad. 
+
+std::map<FunctionDef*, std::list<Quad*> > jump_quad_lists_by_func_defs; // Maps function definitions with their list of jump quads.
 
 Quad*
 Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
@@ -254,6 +290,18 @@ Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigne
     return q;
 }
 
+void PatchJumpQuad(Quad* jump_quad, int label) {
+    assert (jump_quad != nullptr);
+    
+    jump_quad->result = new IntConstant(label);
+}
+
+void PatchBranchQuad(Quad* branch_quad, int label) {
+    assert (branch_quad != nullptr);
+
+    branch_quad->arg2 = new IntConstant(label);
+}
+
 void MapJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
     jump_quads_by_func_defs.insert({func_def, jump_quad});
 }
@@ -262,8 +310,155 @@ void PatchJumpQuad(FunctionDef* func_def, int label) {
     assert (jump_quads_by_func_defs[func_def] != nullptr);
 
     auto jump_quad = jump_quads_by_func_defs[func_def];
-    jump_quad->result = new IntConstant(label);
+    PatchJumpQuad(jump_quad, label);
 }
+
+void PushJumpQuad(FunctionDef* func_def, Quad* jump_quad) {
+    jump_quad_lists_by_func_defs[func_def].push_back(jump_quad);
+}
+
+void PatchJumpQuadList(FunctionDef* func_def, int label) {
+    auto jump_quad_list = jump_quad_lists_by_func_defs[func_def];
+    for (auto jump_quad : jump_quad_list) {
+        PatchJumpQuad(jump_quad, label);
+    }
+}
+
+unsigned int GetBackQuadLabel() {
+    if (quads.size() == 0)
+        return 0;
+    else     
+        return quads.back()->label;
+}
+
+std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;  // maps a loop's first quad start label with the 
+                                                                            // standard loop branch quads.
+
+std::map<unsigned int, std::list<Quad*>> break_jump_quads_by_start_label;   // maps a loop's first quad start label with the 
+                                                                            // loops body break statements.
+
+std::map<unsigned int, std::list<Quad*>> continue_jump_quads_by_start_label;    // maps a loop's first quad start label with the 
+                                                                                // loops body continue statements.                                                                          
+
+void PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad) {
+    loop_branch_quads_by_start_label[start_label].push_back(branch_quad);
+}
+
+void PatchWhileLoopBranchQuads(unsigned int start_label) {
+    auto loop_branch_quads = loop_branch_quads_by_start_label[start_label];
+
+    auto loop_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto exit_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto branch_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    PatchJumpQuad(loop_quad, start_label);
+    PatchJumpQuad(exit_quad, loop_quad->label + 1);
+    PatchBranchQuad(branch_quad, branch_quad->label + 2);
+}
+
+std::map<unsigned int, unsigned int> logical_expr_start_label_by_start_label;   // maps the label of the first quad of a for statement
+                                                                                // with the logical expression with which the statement is evaluated.
+
+std::map<unsigned int, unsigned int> exprs_start_label_by_start_label;    // maps the label of the first quad of a for statement
+                                                                                    // with the first quad of the list of expressions be- 
+                                                                                    // -fore the main body of the statement.
+
+void MapLogicalExpressionStartLabel(unsigned int start_label, unsigned int logical_expr_start_label) {
+    logical_expr_start_label_by_start_label.insert({start_label, logical_expr_start_label});
+}
+
+void MapExpressionsStartLabel(unsigned int start_label, unsigned int exprs_start_label) {
+    exprs_start_label_by_start_label.insert({start_label, exprs_start_label});
+}
+
+void PatchForLoopBranchQuads(unsigned int start_label) {
+    auto loop_branch_quads = loop_branch_quads_by_start_label[start_label];
+
+    auto expr_jump_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto loop_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto exit_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto branch_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back(); 
+
+    auto exprs_start_label = exprs_start_label_by_start_label[start_label]; // e.g the "i++" expression in the "for (i; i < 2; i++)" stmt
+                                                                            // has an first quad with a label. Its value is stored in this label.
+    PatchJumpQuad(expr_jump_quad, exprs_start_label);
+
+    auto logical_expr_start_label = logical_expr_start_label_by_start_label[start_label];   // e.g the "i<2" expression in the "for (i; i < 2; i++)" stmt
+                                                                                            // has a first quad with a label. Its value is stored in
+                                                                                            //this label.
+    PatchJumpQuad(loop_quad, logical_expr_start_label);
+    PatchJumpQuad(exit_quad, expr_jump_quad->label+1);
+    PatchBranchQuad(branch_quad, loop_quad->label + 1);
+}
+
+void PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad) {
+    break_jump_quads_by_start_label[start_label].push_back(break_jump_quad);
+}
+
+void PatchLoopBreakJumpQuads(unsigned int start_label, unsigned int patch_label) {
+    auto loop_break_jump_quads = break_jump_quads_by_start_label[start_label];
+
+    for (auto loop_break_jump_quad : loop_break_jump_quads)
+        PatchJumpQuad(loop_break_jump_quad, patch_label);
+}
+
+void PushLoopContinueJumpQuad(unsigned int start_label, Quad* continue_jump_quad) {
+    continue_jump_quads_by_start_label[start_label].push_back(continue_jump_quad);
+}
+
+void PatchWhileLoopContinueJumpQuads(unsigned int start_label) {
+    auto loop_continue_jump_quads = continue_jump_quads_by_start_label[start_label];
+
+    auto jump_label = TopLoopStartLabel();
+    for (auto loop_continue_jump_quad : loop_continue_jump_quads)
+        PatchJumpQuad(loop_continue_jump_quad, jump_label);
+}
+
+void PatchForLoopContinueJumpQuads(unsigned int start_label) {
+    auto loop_continue_jump_quads = continue_jump_quads_by_start_label[start_label];
+
+    auto exprs_start_label = exprs_start_label_by_start_label[start_label];
+    for (auto loop_continue_jump_quad : loop_continue_jump_quads)
+        PatchJumpQuad(loop_continue_jump_quad, exprs_start_label);
+}
+
+std::map<unsigned int, Quad*> jump_quad_by_if_stmt; // Maps the depth of an if statement with its exit jump quad.
+
+void MapIfStmtJumpQuad(unsigned int if_stmt, Quad* exit_quad) {
+    jump_quad_by_if_stmt.insert({if_stmt, exit_quad});
+}
+
+void PatchIfStmtJumpQuad(unsigned int if_stmt, unsigned int patch_label) {
+    auto branch_quad = jump_quad_by_if_stmt[if_stmt];
+    PatchBranchQuad(branch_quad, patch_label);
+    jump_quad_by_if_stmt.erase(if_stmt);
+}
+
+std::map<unsigned int, std::list<Quad*>> else_jump_quads_by_if_stmt; // Maps the depth of an if statement with its else stmts jump quads.
+
+void PushElseJumpQuad(unsigned int if_stmt, Quad* else_jump_quad) {
+    else_jump_quads_by_if_stmt[if_stmt].push_back(else_jump_quad);
+}
+
+void PatchElseJumpQuad(unsigned int if_stmt) {
+    auto else_jump_quads = else_jump_quads_by_if_stmt[if_stmt];
+    auto else_jump_quad = else_jump_quads.back();
+    else_jump_quads.pop_back();
+    PatchJumpQuad(else_jump_quad, GetBackQuadLabel() + 1);
+}
+
 
 /* ---------------------- Temp -------------------------- */
 
@@ -275,9 +470,15 @@ std::string NewTempName() {
     return  "^" + std::to_string(temp_counter);
 }
 
+void IncreaseTemp() {
+    temp_counter++;
+}
+
 Symbol* NewTemp() {
     std::string name = NewTempName();
     Symbol* sym = program_stack.LookupHiddenVariable(name);
+
+    IncreaseTemp();
 
     if (sym == nullptr)
     {   
@@ -285,16 +486,12 @@ Symbol* NewTemp() {
         if (ScopeIsGlobal())
             new_temp = InsertGlobalVariable(name.c_str(), TEMP_LINE);
         else    
-            new_temp = InsertLocalVariable(name.c_str(), TEMP_LINE)   ; 
+            new_temp = InsertLocalVariable(name.c_str(), TEMP_LINE); 
 
         return new_temp;
     } else {
         return sym;
     }
-}
-
-void IncreaseTemp() {
-    temp_counter++;
 }
 
 void ResetTemp() {
