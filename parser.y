@@ -791,7 +791,7 @@ whilestmt:  WHILE               {
                                     
                                     PushLoopBranchQuad(top_loop_start_label, loop_quad);
 
-                                    PatchLoopBranchQuads(top_loop_start_label);
+                                    PatchWhileLoopBranchQuads(top_loop_start_label);
                                     PatchLoopBreakJumpQuads(top_loop_start_label, loop_quad->label + 1);
 
                                     PopLoopStartLabel();
@@ -803,7 +803,13 @@ whilestmt:  WHILE               {
 forstmt:    FOR                                     {
                                                         PushLoopStartLabel(GetBackQuadLabel() + 1);
                                                     }
-            '(' elist ';' expr ';' elist ')' stmt   {
+            '(' elist ';' expr ';'                  {
+                                                        auto top_loop_start_label = TopLoopStartLabel();
+
+                                                        auto branch_quad = Emit(IF_EQ_t, $6, new BoolConstant(true), nullptr, yylineno);
+                                                        auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                    }
+            elist ')' stmt                          {
                                                         ResetTemp();
                                                         PopLoopStartLabel();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 

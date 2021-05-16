@@ -325,7 +325,7 @@ void PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad) {
     loop_branch_quads_by_start_label[start_label].push_back(branch_quad);
 }
 
-void PatchLoopBranchQuads(unsigned int start_label) {
+void PatchWhileLoopBranchQuads(unsigned int start_label) {
     auto loop_branch_quads = loop_branch_quads_by_start_label[start_label];
 
     auto loop_quad = loop_branch_quads.back();
