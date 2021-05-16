@@ -800,6 +800,37 @@ TEST_F(QuadTest, if_elseif_else) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
+TEST_F(QuadTest, if_else_many_nested) {
+    expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
+                "2:   JUMP 16 [line 1]\n"
+                "3:   IF_EQ 2 'true' 5 [line 1]\n"
+                "4:   JUMP 13 [line 1]\n"
+                "5:   IF_EQ a 0 7 [line 1]\n"
+                "6:   JUMP 9 [line 1]\n"
+                "7:   ASSIGN ^0 'true' [line 1]\n"
+                "8:   JUMP 10 [line 1]\n"
+                "9:   ASSIGN ^0 'false' [line 1]\n"
+                "10:   IF_EQ ^0 'true' 12 [line 1]\n"
+                "11:   JUMP 13 [line 1]\n"
+                "12:   JUMP 13 [line 1]\n"
+                "13:   ASSIGN x 2 [line 1]\n"
+                "14:   ASSIGN ^0 x [line 1]\n"
+                "15:   JUMP 27 [line 2]\n"
+                "16:   IF_GREATER x 0 18 [line 3]\n"
+                "17:   JUMP 20 [line 3]\n"
+                "18:   ASSIGN ^0 'true' [line 3]\n"
+                "19:   JUMP 21 [line 3]\n"
+                "20:   ASSIGN ^0 'false' [line 3]\n"
+                "21:   IF_EQ ^0 'true' 23 [line 3]\n"
+                "22:   JUMP 24 [line 3]\n"
+                "23:   JUMP 27 [line 4]\n"
+                "24:   IF_EQ x 'true' 26 [line 4]\n"
+                "25:   JUMP 27 [line 4]\n"
+                "26:   JUMP 27 [line 5]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

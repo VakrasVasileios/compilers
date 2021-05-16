@@ -289,7 +289,8 @@ Maps the exit jump quad of an if statement with the if statements' depth.
 */
 void                MapIfStmtJumpQuad(unsigned int if_stmt_depth, Quad* exit_quad);
 /*
-Patches the mapped, with the if statement's depth, exit jump quad of the if statement .
+Patches the mapped, with the if statement's depth, exit jump quad of the if statement.
+Unmaps the exit jump quad with the if statement's depth.
 */
 void                PatchIfStmtJumpQuad(unsigned int if_stmt_depth, unsigned int patch_label);
 /*
