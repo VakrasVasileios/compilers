@@ -253,9 +253,21 @@ Pushes a jump quad from a break statement to the mapped list of a loop's first q
 */
 void                PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad);
 /*
+Pushes a jump quad from a continue statement to the mapped list of a loop's first quad start label.
+*/
+void                PushLoopContinueJumpQuad(unsigned int start_label, Quad* continue_jump_quad);
+/*
 Patches the mapped, to a loop's first quad start label, jump quads from break statements.
 */
 void                PatchLoopBreakJumpQuads(unsigned int start_label, unsigned int patch_label);
+/*
+Patches the mapped, to a while loop's first quad start label, jump quads from continue statements.
+*/
+void                PatchWhileLoopContinueJumpQuads(unsigned int start_label);
+/*
+Patches the mapped, to a for loop's first quad start label, jump quads from continue statements.
+*/
+void                PatchForLoopContinueJumpQuads(unsigned int start_label);
 
 
 /* ---------------------- Temp -------------------------- */

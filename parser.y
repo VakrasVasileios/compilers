@@ -119,7 +119,7 @@ stmt:         expr ';'              {
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                             auto jump_label = TopLoopStartLabel();
-                                            PatchJumpQuad(jump_quad, jump_label);
+                                            PushLoopContinueJumpQuad(jump_label, jump_quad);
                                         }
                                         
                                         DLOG("stmt -> continue;");
@@ -784,7 +784,7 @@ whilestmt:  WHILE               {
                                     PushLoopBranchQuad(top_loop_start_label, exit_quad);
                                 }
             stmt                { 
-                                    unsigned int top_loop_start_label = PopLoopStartLabel();
+                                    unsigned int top_loop_start_label = TopLoopStartLabel();
 
                                     auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                     
@@ -792,6 +792,9 @@ whilestmt:  WHILE               {
 
                                     PatchWhileLoopBranchQuads(top_loop_start_label);
                                     PatchLoopBreakJumpQuads(top_loop_start_label, loop_quad->label + 1);
+                                    PatchWhileLoopContinueJumpQuads(top_loop_start_label);
+
+                                    PopLoopStartLabel();
 
                                     ResetTemp();
 
@@ -834,6 +837,7 @@ forstmt:    FOR                                     {
 
                                                         PatchForLoopBranchQuads(top_loop_start_label);
                                                         PatchLoopBreakJumpQuads(top_loop_start_label, GetBackQuadLabel() + 1);
+                                                        PatchForLoopContinueJumpQuads(top_loop_start_label);
 
                                                         ResetTemp();
 

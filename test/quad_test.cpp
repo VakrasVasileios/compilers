@@ -505,6 +505,191 @@ TEST_F(QuadTest, for_simple) {
     GTEST_ASSERT_EQ(expected, actual);                
 }
 
+TEST_F(QuadTest, for_simple_with_stmts) {
+    expected =  "1:   ASSIGN i 0 [line 1]\n"
+                "2:   ASSIGN ^0 i [line 1]\n"
+                "3:   IF_LESS i 20 5 [line 1]\n"
+                "4:   JUMP 7 [line 1]\n"
+                "5:   ASSIGN ^1 'true' [line 1]\n"
+                "6:   JUMP 8 [line 1]\n"
+                "7:   ASSIGN ^1 'false' [line 1]\n"
+                "8:   IF_EQ ^1 'true' 13 [line 1]\n"
+                "9:   JUMP 16 [line 1]\n"
+                "10:   ASSIGN ^2 i [line 1]\n"
+                "11:   ADD i i 1 [line 1]\n"
+                "12:   JUMP 3 [line 1]\n"
+                "13:   ASSIGN x 9 [line 2]\n"
+                "14:   ASSIGN ^3 x [line 2]\n"
+                "15:   JUMP 10 [line 5]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_simple_with_stmts.asc");    
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(QuadTest, for_many_nested) {
+    expected =  "1:   ASSIGN i 0 [line 1]\n"
+                "2:   ASSIGN ^0 i [line 1]\n"
+                "3:   IF_LESS i 20 5 [line 1]\n"
+                "4:   JUMP 7 [line 1]\n"
+                "5:   ASSIGN ^1 'true' [line 1]\n"
+                "6:   JUMP 8 [line 1]\n"
+                "7:   ASSIGN ^1 'false' [line 1]\n"
+                "8:   IF_EQ ^1 'true' 13 [line 1]\n"
+                "9:   JUMP 40 [line 1]\n"
+                "10:   ASSIGN ^2 i [line 1]\n"
+                "11:   ADD i i 1 [line 1]\n"
+                "12:   JUMP 3 [line 1]\n"
+                "13:   ASSIGN i 0 [line 2]\n"
+                "14:   ASSIGN ^3 i [line 2]\n"
+                "15:   IF_LESS i 20 17 [line 2]\n"
+                "16:   JUMP 19 [line 2]\n"
+                "17:   ASSIGN ^4 'true' [line 2]\n"
+                "18:   JUMP 20 [line 2]\n"
+                "19:   ASSIGN ^4 'false' [line 2]\n"
+                "20:   IF_EQ ^4 'true' 25 [line 2]\n"
+                "21:   JUMP 39 [line 2]\n"
+                "22:   ASSIGN ^5 i [line 2]\n"
+                "23:   ADD i i 1 [line 2]\n"
+                "24:   JUMP 15 [line 2]\n"
+                "25:   ASSIGN i 0 [line 2]\n"
+                "26:   ASSIGN ^6 i [line 2]\n"
+                "27:   IF_LESS i 20 29 [line 2]\n"
+                "28:   JUMP 31 [line 2]\n"
+                "29:   ASSIGN ^7 'true' [line 2]\n"
+                "30:   JUMP 32 [line 2]\n"
+                "31:   ASSIGN ^7 'false' [line 2]\n"
+                "32:   IF_EQ ^7 'true' 37 [line 2]\n"
+                "33:   JUMP 38 [line 2]\n"
+                "34:   ASSIGN ^8 i [line 2]\n"
+                "35:   ADD i i 1 [line 2]\n"
+                "36:   JUMP 27 [line 2]\n"
+                "37:   JUMP 34 [line 2]\n"
+                "38:   JUMP 22 [line 2]\n"
+                "39:   JUMP 10 [line 3]\n"
+                "40:   ASSIGN i 0 [line 6]\n"
+                "41:   ASSIGN ^0 i [line 6]\n"
+                "42:   IF_LESS i 20 44 [line 6]\n"
+                "43:   JUMP 46 [line 6]\n"
+                "44:   ASSIGN ^1 'true' [line 6]\n"
+                "45:   JUMP 47 [line 6]\n"
+                "46:   ASSIGN ^1 'false' [line 6]\n"
+                "47:   IF_EQ ^1 'true' 52 [line 6]\n"
+                "48:   JUMP 53 [line 6]\n"
+                "49:   ASSIGN ^2 i [line 6]\n"
+                "50:   ADD i i 1 [line 6]\n"
+                "51:   JUMP 42 [line 6]\n"
+                "52:   JUMP 49 [line 6]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_many_nested.asc");    
+    GTEST_ASSERT_EQ(expected, actual);           
+}
+
+TEST_F(QuadTest, for_continue_single) {
+    expected =  "1:   IF_LESS i 0 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 11 [line 1]\n"
+                "7:   JUMP 13 [line 1]\n"
+                "8:   ASSIGN ^1 i [line 1]\n"
+                "9:   ADD i i 1 [line 1]\n"
+                "10:   JUMP 1 [line 1]\n"
+                "11:   JUMP 8 [line 2]\n"
+                "12:   JUMP 8 [line 3]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_continue_single.asc");    
+    GTEST_ASSERT_EQ(expected, actual);               
+}
+
+TEST_F(QuadTest, for_continue_many_nested) {
+    expected =  "1:   IF_LESS i 0 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 11 [line 1]\n"
+                "7:   JUMP 34 [line 1]\n"
+                "8:   ASSIGN ^1 i [line 1]\n"
+                "9:   ADD i i 1 [line 1]\n"
+                "10:   JUMP 1 [line 1]\n"
+                "11:   JUMP 8 [line 2]\n"
+                "12:   JUMP 8 [line 2]\n"
+                "13:   JUMP 8 [line 3]\n"
+                "14:   JUMP 8 [line 3]\n"
+                "15:   JUMP 8 [line 3]\n"
+                "16:   JUMP 8 [line 3]\n"
+                "17:   JUMP 8 [line 3]\n"
+                "18:   JUMP 8 [line 3]\n"
+                "19:   IF_LESS i 0 21 [line 4]\n"
+                "20:   JUMP 23 [line 4]\n"
+                "21:   ASSIGN ^0 'true' [line 4]\n"
+                "22:   JUMP 24 [line 4]\n"
+                "23:   ASSIGN ^0 'false' [line 4]\n"
+                "24:   IF_EQ ^0 'true' 29 [line 4]\n"
+                "25:   JUMP 33 [line 4]\n"
+                "26:   ASSIGN ^1 i [line 4]\n"
+                "27:   ADD i i 1 [line 4]\n"
+                "28:   JUMP 19 [line 4]\n"
+                "29:   JUMP 26 [line 4]\n"
+                "30:   JUMP 26 [line 4]\n"
+                "31:   JUMP 26 [line 4]\n"
+                "32:   JUMP 26 [line 4]\n"
+                "33:   JUMP 8 [line 5]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_continue_many_nested.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, for_break_single) {
+    expected =  "1:   IF_LESS i 8 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 11 [line 1]\n"
+                "7:   JUMP 13 [line 1]\n"
+                "8:   ASSIGN ^1 i [line 1]\n"
+                "9:   ADD i i 1 [line 1]\n"
+                "10:   JUMP 1 [line 1]\n"
+                "11:   JUMP 13 [line 2]\n"
+                "12:   JUMP 8 [line 3]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_break_single.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, for_break_many_nested) {
+    expected =  "1:   IF_LESS i 8 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 11 [line 1]\n"
+                "7:   JUMP 33 [line 1]\n"
+                "8:   ASSIGN ^1 i [line 1]\n"
+                "9:   ADD i i 1 [line 1]\n"
+                "10:   JUMP 1 [line 1]\n"
+                "11:   JUMP 33 [line 2]\n"
+                "12:   JUMP 33 [line 3]\n"
+                "13:   JUMP 33 [line 3]\n"
+                "14:   JUMP 33 [line 3]\n"
+                "15:   JUMP 33 [line 3]\n"
+                "16:   JUMP 33 [line 3]\n"
+                "17:   JUMP 33 [line 3]\n"
+                "18:   JUMP 33 [line 3]\n"
+                "19:   IF_GREATER j 0 21 [line 4]\n"
+                "20:   JUMP 23 [line 4]\n"
+                "21:   ASSIGN ^0 'true' [line 4]\n"
+                "22:   JUMP 24 [line 4]\n"
+                "23:   ASSIGN ^0 'false' [line 4]\n"
+                "24:   IF_EQ ^0 'true' 29 [line 4]\n"
+                "25:   JUMP 32 [line 4]\n"
+                "26:   ASSIGN ^1 j [line 4]\n"
+                "27:   ADD j j 1 [line 4]\n"
+                "28:   JUMP 19 [line 4]\n"
+                "29:   JUMP 32 [line 4]\n"
+                "30:   JUMP 32 [line 4]\n"
+                "31:   JUMP 26 [line 4]\n"
+                "32:   JUMP 8 [line 5]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_break_many_nested.asc");    
+    GTEST_ASSERT_EQ(expected, actual);             
+}
 
 /*  ------------ Arithmetic --------------   */
 
@@ -539,7 +724,6 @@ TEST_F(QuadTest, plusplus_suffix) {
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
-
 
 #ifdef TESTING
 int main(int argc, char* argv[])

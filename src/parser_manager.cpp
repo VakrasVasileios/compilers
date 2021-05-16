@@ -321,6 +321,9 @@ std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;  // m
 std::map<unsigned int, std::list<Quad*>> break_jump_quads_by_start_label;   // maps a loop's first quad start label with the 
                                                                             // loops body break statements.
 
+std::map<unsigned int, std::list<Quad*>> continue_jump_quads_by_start_label;    // maps a loop's first quad start label with the 
+                                                                                // loops body continue statements.                                                                          
+
 void PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad) {
     loop_branch_quads_by_start_label[start_label].push_back(branch_quad);
 }
@@ -381,7 +384,7 @@ void PatchForLoopBranchQuads(unsigned int start_label) {
                                                                                             //this label.
     PatchJumpQuad(loop_quad, logical_expr_start_label);
     PatchJumpQuad(exit_quad, expr_jump_quad->label+1);
-    PatchBranchQuad(branch_quad, expr_jump_quad->label);
+    PatchBranchQuad(branch_quad, loop_quad->label + 1);
 }
 
 void PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad) {
@@ -393,6 +396,26 @@ void PatchLoopBreakJumpQuads(unsigned int start_label, unsigned int patch_label)
 
     for (auto loop_break_jump_quad : loop_break_jump_quads)
         PatchJumpQuad(loop_break_jump_quad, patch_label);
+}
+
+void PushLoopContinueJumpQuad(unsigned int start_label, Quad* continue_jump_quad) {
+    continue_jump_quads_by_start_label[start_label].push_back(continue_jump_quad);
+}
+
+void PatchWhileLoopContinueJumpQuads(unsigned int start_label) {
+    auto loop_continue_jump_quads = continue_jump_quads_by_start_label[start_label];
+
+    auto jump_label = TopLoopStartLabel();
+    for (auto loop_continue_jump_quad : loop_continue_jump_quads)
+        PatchJumpQuad(loop_continue_jump_quad, jump_label);
+}
+
+void PatchForLoopContinueJumpQuads(unsigned int start_label) {
+    auto loop_continue_jump_quads = continue_jump_quads_by_start_label[start_label];
+
+    auto exprs_start_label = exprs_start_label_by_start_label[start_label];
+    for (auto loop_continue_jump_quad : loop_continue_jump_quads)
+        PatchJumpQuad(loop_continue_jump_quad, exprs_start_label);
 }
 
 /* ---------------------- Temp -------------------------- */
