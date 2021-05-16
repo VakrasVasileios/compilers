@@ -232,15 +232,15 @@ bool IsAtCurrentScope(Symbol* symbol) {
 
 unsigned int if_cnt = 0;
 
-unsigned int GetIfStmtDepth() {
+unsigned int GetIfStmt() {
     return if_cnt;
 }
 
-void IncreaseIfStmtDepth() {
+void IncreaseIfStmt() {
     if_cnt++;
 }
 
-void DecreaseIfStmtDepth() {
+void DecreaseIfStmt() {
     if_cnt--;
 }
 
@@ -436,24 +436,24 @@ void PatchForLoopContinueJumpQuads(unsigned int start_label) {
 
 std::map<unsigned int, Quad*> jump_quad_by_if_stmt; // Maps the depth of an if statement with its exit jump quad.
 
-void MapIfStmtJumpQuad(unsigned int if_stmt_depth, Quad* exit_quad) {
-    jump_quad_by_if_stmt.insert({if_stmt_depth, exit_quad});
+void MapIfStmtJumpQuad(unsigned int if_stmt, Quad* exit_quad) {
+    jump_quad_by_if_stmt.insert({if_stmt, exit_quad});
 }
 
-void PatchIfStmtJumpQuad(unsigned int if_stmt_depth, unsigned int patch_label) {
-    auto branch_quad = jump_quad_by_if_stmt[if_stmt_depth];
+void PatchIfStmtJumpQuad(unsigned int if_stmt, unsigned int patch_label) {
+    auto branch_quad = jump_quad_by_if_stmt[if_stmt];
     PatchBranchQuad(branch_quad, patch_label);
-    jump_quad_by_if_stmt.erase(if_stmt_depth);
+    jump_quad_by_if_stmt.erase(if_stmt);
 }
 
 std::map<unsigned int, std::list<Quad*>> else_jump_quads_by_if_stmt; // Maps the depth of an if statement with its else stmts jump quads.
 
-void PushElseJumpQuad(unsigned int if_stmt_depth, Quad* else_jump_quad) {
-    else_jump_quads_by_if_stmt[if_stmt_depth].push_back(else_jump_quad);
+void PushElseJumpQuad(unsigned int if_stmt, Quad* else_jump_quad) {
+    else_jump_quads_by_if_stmt[if_stmt].push_back(else_jump_quad);
 }
 
-void PatchElseJumpQuad(unsigned int if_stmt_depth) {
-    auto else_jump_quads = else_jump_quads_by_if_stmt[if_stmt_depth];
+void PatchElseJumpQuad(unsigned int if_stmt) {
+    auto else_jump_quads = else_jump_quads_by_if_stmt[if_stmt];
     auto else_jump_quad = else_jump_quads.back();
     else_jump_quads.pop_back();
     PatchJumpQuad(else_jump_quad, GetBackQuadLabel() + 1);

@@ -755,15 +755,15 @@ idlist:     ID      {
             ;
 
 ifstmt:     IF '(' expr ')'                 {
-                                                IncreaseIfStmtDepth();
+                                                IncreaseIfStmt();
 
-                                                auto if_stmt_depth = GetIfStmtDepth();
+                                                auto if_stmt = GetIfStmt();
 
                                                 auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
                                                 PatchBranchQuad(branch_quad, branch_quad->label + 2);
 
                                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
-                                                MapIfStmtJumpQuad(if_stmt_depth, jump_quad);
+                                                MapIfStmtJumpQuad(if_stmt, jump_quad);
                                             }
             stmt                            {
                                                 ResetTemp();
@@ -774,31 +774,31 @@ ifstmt:     IF '(' expr ')'                 {
             ;
 
 elsestmt:   ELSE            {
-                                auto if_stmt_depth = GetIfStmtDepth();
+                                auto if_stmt = GetIfStmt();
 
                                 auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                PushElseJumpQuad(if_stmt_depth, else_jump_quad);
+                                PushElseJumpQuad(if_stmt, else_jump_quad);
 
                                 auto patch_label = GetBackQuadLabel() + 1;
-                                PatchIfStmtJumpQuad(if_stmt_depth, patch_label);
+                                PatchIfStmtJumpQuad(if_stmt, patch_label);
                             }
             stmt            {
-                                auto if_stmt_depth = GetIfStmtDepth();
-                                PatchElseJumpQuad(if_stmt_depth);
+                                auto if_stmt = GetIfStmt();
+                                PatchElseJumpQuad(if_stmt);
 
-                                DecreaseIfStmtDepth();
+                                DecreaseIfStmt();
 
                                 ResetTemp();
 
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
-                                auto if_stmt_depth = GetIfStmtDepth();
+                                auto if_stmt = GetIfStmt();
 
                                 auto patch_label = GetBackQuadLabel() + 1;
-                                PatchIfStmtJumpQuad(if_stmt_depth, patch_label);
+                                PatchIfStmtJumpQuad(if_stmt, patch_label);
 
-                                DecreaseIfStmtDepth();
+                                DecreaseIfStmt();
                                 DLOG("elsestmt -> EMPTY");
                             }
             ;

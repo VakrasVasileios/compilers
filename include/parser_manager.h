@@ -162,17 +162,17 @@ bool                IsVariable(Symbol* entry);
 /* ---------------------- Conditional -------------------------- */ 
 
 /*
-Returns a read/write access to the depth of the current if statement. 
+Returns a read/write access to the counter of the current if statement. 
 */
-unsigned int        GetIfStmtDepth();
+unsigned int        GetIfStmt();
 /*
-Increases the depth of the current if statement.
+Increases the counter of the current if statement.
 */
-void                IncreaseIfStmtDepth();
+void                IncreaseIfStmt();
 /*
-Decreases the depth of the current if statement.
+Decreases the counter of the current if statement.
 */
-void                DecreaseIfStmtDepth();
+void                DecreaseIfStmt();
 
 
 /* ---------------------- Loop -------------------------- */
@@ -285,22 +285,22 @@ Patches the mapped, to a for loop's first quad start label, jump quads from cont
 */
 void                PatchForLoopContinueJumpQuads(unsigned int start_label);
 /*
-Maps the exit jump quad of an if statement with the if statements' depth.
+Maps the exit jump quad of an if statement with the if statement.
 */
-void                MapIfStmtJumpQuad(unsigned int if_stmt_depth, Quad* exit_quad);
+void                MapIfStmtJumpQuad(unsigned int if_stmt, Quad* exit_quad);
 /*
-Patches the mapped, with the if statement's depth, exit jump quad of the if statement.
-Unmaps the exit jump quad with the if statement's depth.
+Patches the mapped, with the if statement, exit jump quad of the if statement.
+Unmaps the exit jump quad with the if statement.
 */
-void                PatchIfStmtJumpQuad(unsigned int if_stmt_depth, unsigned int patch_label);
+void                PatchIfStmtJumpQuad(unsigned int if_stmt, unsigned int patch_label);
 /*
-Pushes a jump quad from a else statement to the mapped list of an if statement's depth.
+Pushes a jump quad from a else statement to the mapped list of an if statement.
 */
-void                PushElseJumpQuad(unsigned int if_stmt_depth, Quad* else_jump_quad);
+void                PushElseJumpQuad(unsigned int if_stmt, Quad* else_jump_quad);
 /*
-Patches the most recent mapped, to an if statement's depth, else jump quad.
+Patches the most recent mapped, to an if statement, else jump quad.
 */
-void                PatchElseJumpQuad(unsigned int if_stmt_depth);
+void                PatchElseJumpQuad(unsigned int if_stmt);
 
 
 /* ---------------------- Temp -------------------------- */
