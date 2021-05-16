@@ -894,6 +894,7 @@ returnstmt: RETURN      {
 int yyerror(std::string yaccProvidedMessage) {
     std::cout << yaccProvidedMessage << ": at line " << yylineno << ", before token: " << yytext << std::endl;
     std::cout << "INPUT NOT VALID" << std::endl;
+    SignalError();
     return 1;
 }
 
