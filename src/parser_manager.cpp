@@ -228,6 +228,22 @@ bool IsAtCurrentScope(Symbol* symbol) {
 }
 
 
+/* ---------------------- Conditional -------------------------- */ 
+
+unsigned int if_cnt = 0;
+
+unsigned int GetIfStmtDepth() {
+    return if_cnt;
+}
+
+void IncreaseIfStmtDepth() {
+    if_cnt++;
+}
+
+void DecreaseIfStmtDepth() {
+    if_cnt--;
+}
+
 /* ---------------------- Loop -------------------------- */
 
 std::stack<unsigned int> loop_start_labels;  // provides a stack of loop start labels,
@@ -417,6 +433,19 @@ void PatchForLoopContinueJumpQuads(unsigned int start_label) {
     for (auto loop_continue_jump_quad : loop_continue_jump_quads)
         PatchJumpQuad(loop_continue_jump_quad, exprs_start_label);
 }
+
+std::map<unsigned int, Quad*> jump_quad_by_if_stmt; // Maps the depth of an if statement with its exit jum quad.
+
+void MapIfStmtJumpQuad(unsigned int if_stmt_depth, Quad* exit_quad) {
+    jump_quad_by_if_stmt.insert({if_stmt_depth, exit_quad});
+}
+
+void PatchIfStmtJumpQuad(unsigned int if_stmt_depth) {
+    auto branch_quad = jump_quad_by_if_stmt[if_stmt_depth];
+    auto patch_label = GetBackQuadLabel() + 1;
+    PatchBranchQuad(branch_quad, patch_label);
+}
+
 
 /* ---------------------- Temp -------------------------- */
 

@@ -159,6 +159,22 @@ It's a checked runtime error for the entry to be null.
 bool                IsVariable(Symbol* entry);
 
 
+/* ---------------------- Conditional -------------------------- */ 
+
+/*
+Returns a read/write access to the depth of the current if statement. 
+*/
+unsigned int        GetIfStmtDepth();
+/*
+Increases the depth of the current if statement.
+*/
+void                IncreaseIfStmtDepth();
+/*
+Decreases the depth of the current if statement.
+*/
+void                DecreaseIfStmtDepth();
+
+
 /* ---------------------- Loop -------------------------- */
 
 /*
@@ -268,6 +284,14 @@ void                PatchWhileLoopContinueJumpQuads(unsigned int start_label);
 Patches the mapped, to a for loop's first quad start label, jump quads from continue statements.
 */
 void                PatchForLoopContinueJumpQuads(unsigned int start_label);
+/*
+Maps the exit jump quad of an if statement with the if statements' depth.
+*/
+void                MapIfStmtJumpQuad(unsigned int if_stmt_depth, Quad* exit_quad);
+/*
+Patches the mapped, with the if statement's depth, exit jump quad of the if statement .
+*/
+void                PatchIfStmtJumpQuad(unsigned int if_stmt_depth);
 
 
 /* ---------------------- Temp -------------------------- */

@@ -691,6 +691,57 @@ TEST_F(QuadTest, for_break_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
+
+/* ------------- Conditional -------------   */
+
+TEST_F(QuadTest, if_simple) {
+    expected =  "1:   IF_EQ x 'true' 3 [line 1]\n"
+                "2:   JUMP 3 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_simple.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, if_expr) {
+    expected =  "1:   IF_GREATER x 3 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 8 [line 1]\n"
+                "7:   JUMP 8 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_expr.asc");    
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, if_stmts) {
+    expected =  "1:   IF_LESS 3 x 3 [line 1]\n"
+                "2:   JUMP 5 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n"
+                "6:   IF_EQ ^0 'true' 8 [line 1]\n"
+                "7:   JUMP 10 [line 1]\n"
+                "8:   ASSIGN a f [line 5]\n"
+                "9:   ASSIGN ^1 a [line 5]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_stmts.asc");    
+    GTEST_ASSERT_EQ(expected, actual);              
+}
+
+TEST_F(QuadTest, if_nested_many) {
+    expected =  "1:   IF_EQ a 'true' 3 [line 1]\n"
+                "2:   JUMP 11 [line 1]\n"
+                "3:   IF_EQ sz 'true' 5 [line 2]\n"
+                "4:   JUMP 11 [line 2]\n"
+                "5:   IF_EQ z 'true' 7 [line 3]\n"
+                "6:   JUMP 9 [line 3]\n"
+                "7:   ASSIGN s 9 [line 4]\n"
+                "8:   ASSIGN ^0 s [line 4]\n"
+                "9:   ASSIGN k 0 [line 7]\n"
+                "10:   ASSIGN ^0 k [line 7]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_nested_many.asc");    
+    GTEST_ASSERT_EQ(expected, actual);                  
+}
+
 /*  ------------ Arithmetic --------------   */
 
 // TEST_F(QuadTest, arithmetic_simple) {

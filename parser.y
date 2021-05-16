@@ -754,7 +754,24 @@ idlist:     ID      {
                     }
             ;
 
-ifstmt:     IF '(' expr ')' stmt            {
+ifstmt:     IF '(' expr ')'                 {
+                                                IncreaseIfStmtDepth();
+
+                                                auto if_stmt_depth = GetIfStmtDepth();
+
+                                                auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
+                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
+
+                                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
+                                                MapIfStmtJumpQuad(if_stmt_depth, jump_quad);
+                                            }
+            stmt                            {
+                                                auto if_stmt_depth = GetIfStmtDepth();
+
+                                                PatchIfStmtJumpQuad(if_stmt_depth);
+
+                                                DecreaseIfStmtDepth(); //?0
+
                                                 ResetTemp();
                                             }
             elsestmt                        {
