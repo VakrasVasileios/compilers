@@ -525,7 +525,15 @@ term:         '(' expr ')'          {
                                         else if (!symbol->is_active())
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of increment operator with non variable type");    
+                                            SIGNALERROR("Use of increment operator with non variable type");   
+                                        else {
+                                            auto temp = NewTemp(); 
+                                               
+                                            Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
+                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);
+                                            
+                                            $$ = temp;
+                                        }     
 
                                         DLOG("term -> ++lvalue"); 
                                     }
@@ -536,15 +544,15 @@ term:         '(' expr ')'          {
                                         else if (!symbol->is_active())
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of increment operator with non variable type");    
+                                            SIGNALERROR("Use of increment operator with non variable type");   
+                                        else {
+                                            auto temp = NewTemp(); 
 
-                                        auto temp = NewTemp(); 
+                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
+                                            Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
 
-                                        Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
-                                        Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
-
-                                        $$ = temp;
-
+                                            $$ = temp;
+                                        }     
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
