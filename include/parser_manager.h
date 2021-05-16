@@ -221,19 +221,33 @@ In case that no quads have been previously emitted, zero is returned.
 unsigned int        GetBackQuadLabel();
 /*
 Pushes a standard loop branch quad to the mapped list of a loop's first quad start label.
-Standard loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
-2: jump quad, that jumps to the start of the loop, and a 3: jump quad that exits the loop in case
-the branch quad is evaluated as false.
 */
 void                PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad);
 /*
-Patches the mapped loop branch quad list from of a loop's first quad start label
+Patches the mapped while loop branch quad list with a loop's first quad start label
 with the start label.
-Standard loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
+Standard while loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
 2: jump quad, that jumps to the start of the loop, and a 3: jump quad that exits the loop in case
 the branch quad is evaluated as false.
 */
 void                PatchWhileLoopBranchQuads(unsigned int start_label);
+/*
+Maps the label of the first quad of a loop statement with the the first quad of the logical expression with which it's evaluated.
+*/
+void                MapLogicalExpressionStartLabel(unsigned int start_label, unsigned int logical_expr_start_label);
+/*
+Maps the label of the first quad of a loop statement with the the first quad of the expressions before its body.
+*/
+void                MapExpressionsStartLabel(unsigned int start_label, unsigned int exprs_start_label);
+/*
+Patches the mapped for loop branch quad list with a loop's first quad start label
+with the start label and the mapped expressions first quads.
+Standard for loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
+2: jump quad, that jumps to the start of the logical evaluation, a 3: jump quad that exits the loop in case
+the branch quad is evaluated as false, and a 4: jump quad that jumps to the start quad of the expressions before the
+body of the for statement. 
+*/
+void                PatchForLoopBranchQuads(unsigned int start_label);
 /*
 Pushes a jump quad from a break statement to the mapped list of a loop's first quad start label.
 */

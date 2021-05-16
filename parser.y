@@ -784,8 +784,7 @@ whilestmt:  WHILE               {
                                     PushLoopBranchQuad(top_loop_start_label, exit_quad);
                                 }
             stmt                { 
-                                    ResetTemp();
-                                    unsigned int top_loop_start_label = TopLoopStartLabel();
+                                    unsigned int top_loop_start_label = PopLoopStartLabel();
 
                                     auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                     
@@ -794,7 +793,7 @@ whilestmt:  WHILE               {
                                     PatchWhileLoopBranchQuads(top_loop_start_label);
                                     PatchLoopBreakJumpQuads(top_loop_start_label, loop_quad->label + 1);
 
-                                    PopLoopStartLabel();
+                                    ResetTemp();
 
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
@@ -803,15 +802,41 @@ whilestmt:  WHILE               {
 forstmt:    FOR                                     {
                                                         PushLoopStartLabel(GetBackQuadLabel() + 1);
                                                     }
-            '(' elist ';' expr ';'                  {
+            '(' elist ';'                           {
+                                                        auto top_loop_start_label = TopLoopStartLabel();
+                                                        auto logical_expr_start_label = GetBackQuadLabel() + 1;
+
+                                                        MapLogicalExpressionStartLabel(top_loop_start_label, logical_expr_start_label);
+                                                    }
+            expr ';'                                {
                                                         auto top_loop_start_label = TopLoopStartLabel();
 
-                                                        auto branch_quad = Emit(IF_EQ_t, $6, new BoolConstant(true), nullptr, yylineno);
+                                                        auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr, yylineno);
+                                                        PushLoopBranchQuad(top_loop_start_label, branch_quad);
+
                                                         auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                        PushLoopBranchQuad(top_loop_start_label, exit_quad);
+
+                                                        auto exprs_start_label = GetBackQuadLabel() + 1;
+                                                        MapExpressionsStartLabel(top_loop_start_label, exprs_start_label);
                                                     }
-            elist ')' stmt                          {
+            elist ')'                               {
+                                                        auto top_loop_start_label = TopLoopStartLabel();
+
+                                                        auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                        PushLoopBranchQuad(top_loop_start_label, loop_quad);
+                                                    }
+            stmt                                    {
+                                                        auto top_loop_start_label = PopLoopStartLabel();
+
+                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);  
+                                                        PushLoopBranchQuad(top_loop_start_label, expr_jump_quad);
+
+                                                        PatchForLoopBranchQuads(top_loop_start_label);
+                                                        PatchLoopBreakJumpQuads(top_loop_start_label, GetBackQuadLabel() + 1);
+
                                                         ResetTemp();
-                                                        PopLoopStartLabel();
+
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }
             ;

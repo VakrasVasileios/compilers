@@ -315,7 +315,7 @@ unsigned int GetBackQuadLabel() {
         return quads.back()->label;
 }
 
-std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;  // maps a loop's first quad start label with the 3 
+std::map<unsigned int, std::list<Quad*>> loop_branch_quads_by_start_label;  // maps a loop's first quad start label with the 
                                                                             // standard loop branch quads.
 
 std::map<unsigned int, std::list<Quad*>> break_jump_quads_by_start_label;   // maps a loop's first quad start label with the 
@@ -340,6 +340,48 @@ void PatchWhileLoopBranchQuads(unsigned int start_label) {
     PatchJumpQuad(loop_quad, start_label);
     PatchJumpQuad(exit_quad, loop_quad->label + 1);
     PatchBranchQuad(branch_quad, branch_quad->label + 2);
+}
+
+std::map<unsigned int, unsigned int> logical_expr_start_label_by_start_label;   // maps the label of the first quad of a for statement
+                                                                                // with the logical expression with which the statement is evaluated.
+
+std::map<unsigned int, unsigned int> exprs_start_label_by_start_label;    // maps the label of the first quad of a for statement
+                                                                                    // with the first quad of the list of expressions be- 
+                                                                                    // -fore the main body of the statement.
+
+void MapLogicalExpressionStartLabel(unsigned int start_label, unsigned int logical_expr_start_label) {
+    logical_expr_start_label_by_start_label.insert({start_label, logical_expr_start_label});
+}
+
+void MapExpressionsStartLabel(unsigned int start_label, unsigned int exprs_start_label) {
+    exprs_start_label_by_start_label.insert({start_label, exprs_start_label});
+}
+
+void PatchForLoopBranchQuads(unsigned int start_label) {
+    auto loop_branch_quads = loop_branch_quads_by_start_label[start_label];
+
+    auto expr_jump_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto loop_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto exit_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back();
+
+    auto branch_quad = loop_branch_quads.back();
+    loop_branch_quads.pop_back(); 
+
+    auto exprs_start_label = exprs_start_label_by_start_label[start_label]; // e.g the "i++" expression in the "for (i; i < 2; i++)" stmt
+                                                                            // has an first quad with a label. Its value is stored in this label.
+    PatchJumpQuad(expr_jump_quad, exprs_start_label);
+
+    auto logical_expr_start_label = logical_expr_start_label_by_start_label[start_label];   // e.g the "i<2" expression in the "for (i; i < 2; i++)" stmt
+                                                                                            // has a first quad with a label. Its value is stored in
+                                                                                            //this label.
+    PatchJumpQuad(loop_quad, logical_expr_start_label);
+    PatchJumpQuad(exit_quad, expr_jump_quad->label+1);
+    PatchBranchQuad(branch_quad, expr_jump_quad->label);
 }
 
 void PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad) {
