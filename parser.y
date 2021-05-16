@@ -898,8 +898,9 @@ int main(int argc, char** argv) {
 
     #if defined LOGQUADS
         if (NoErrorSignaled()) 
-            LogQuads(std::cout); 
-    #elif defined LOGSYMTABLE
+            LogQuads(std::cout);
+    #endif         
+    #if defined LOGSYMTABLE
         if (NoErrorSignaled()) 
             LogSymbolTable(std::cout); 
     #endif

@@ -37,7 +37,7 @@ flex: $(FLEXTRGT).l
 	flex --outfile=$(FLEXTRGT).cpp $<
 
 scanner: $(BLDSRC)
-	$(CC) $(CFLAGS) -o $@ $(BLDSRC) $(SRC)
+	$(CC) $(CFLAGS) -DLOGQUADS -DLOGSYMTABLE -o $@ $(BLDSRC) $(SRC)
 
 quads: yacc flex $(BLDSRC)
 	$(CC) $(CFLAGS) -DLOGQUADS -o scanner $(BLDSRC) $(SRC)
