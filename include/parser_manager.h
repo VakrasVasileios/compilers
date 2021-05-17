@@ -211,7 +211,6 @@ Patches a branch quad's arg2 with a label.
 It's a checked runtime error for the quad to be null.
 */
 void                PatchBranchQuad(Quad* branch_quad, int label);
-
 /*
 Maps a function definition with its initial jump quad.
 */
@@ -220,16 +219,16 @@ void                MapJumpQuad(FunctionDef* func_def, Quad* jump_quad);
 Patches a function definition's previously inserted jump quad label.
 It's a runtime error for the function definition to not be mapped with a jump quad.
 */
-void                PatchJumpQuad(FunctionDef* func_def, int label);
+void                PatchFuncDefJumpQuad(FunctionDef* func_def, int label);
 /*
 Pushes a jump quad to the mapped list of a function definition.
 */
-void                PushJumpQuad(FunctionDef* func_def, Quad* jump_quad);
+void                PushFuncDefJumpQuad(FunctionDef* func_def, Quad* jump_quad);
 /*
 Patches the mapped jump quad list from return statements of a function definition
 with a label.
 */
-void                PatchJumpQuadList(FunctionDef* func_def, int label);
+void                PatchFuncDefJumpQuadList(FunctionDef* func_def, int label);
 /*
 Returns a read/write access to the label of the last quad from the emitted quads list.
 In case that no quads have been previously emitted, zero is returned.
