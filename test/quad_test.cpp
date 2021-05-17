@@ -869,6 +869,20 @@ TEST_F(QuadTest, aithmetic_not) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
+TEST_F(QuadTest, minusminus_prefix) {
+    expected =  "1:   SUB a a 1 [line 1]\n"
+                "2:   ASSIGN ^0 a [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
+    GTEST_ASSERT_EQ(expected, actual);             
+}
+
+TEST_F(QuadTest, minusminus_suffix) {
+    expected =  "1:   ASSIGN ^0 a [line 1]\n"
+                "2:   SUB a a 1 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
+    GTEST_ASSERT_EQ(expected, actual);             
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {

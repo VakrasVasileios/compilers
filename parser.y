@@ -587,7 +587,15 @@ term:         '(' expr ')'          {
                                         else if (!symbol->is_active())
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of decrement operator with non variable type");    
+                                            SIGNALERROR("Use of decrement operator with non variable type");   
+                                        else {
+                                            auto temp = NewTemp(); 
+                                               
+                                            Emit(SUB_t, symbol, symbol, new IntConstant(1), yylineno);
+                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno); 
+
+                                            $$ = temp;
+                                        }     
                                         DLOG("term -> --lvaule");
                                     }
             | lvalue MINUSMINUS     { 
@@ -598,6 +606,16 @@ term:         '(' expr ')'          {
                                             SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
                                             SIGNALERROR("Use of decrement operator with non variable type");
+                                        else {
+                                            {
+                                            auto temp = NewTemp(); 
+                                               
+                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
+                                            Emit(SUB_t, symbol, symbol, new IntConstant(1), yylineno);
+
+                                            $$ = temp;
+                                        } 
+                                        }    
                                         DLOG("term -> lvalue--");
                                     }
             | primary               {   
