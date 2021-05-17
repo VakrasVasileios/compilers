@@ -175,25 +175,6 @@ Decreases the counter of the current if statement.
 void                DecreaseIfStmt();
 
 
-/* ---------------------- Loop -------------------------- */
-
-/*
-Returns a read access to the loop depth.
-*/
-unsigned int        GetLoopDepth();
-/*
-Pushes the label of the first quad of a loop statement to the stack of loop statements.
-*/
-void                PushLoopStartLabel(unsigned int start_label);
-/*
-Returns a read/write access to the label of the first quad of the top loop statement from the stack of loop statements.
-*/
-unsigned int        TopLoopStartLabel();
-/*
-Pops a read/write access to the label of the first quad of the top loop statement from the stack of loop statements.
-*/
-unsigned int        PopLoopStartLabel();
-
 /* ---------------------- Quad -------------------------- */
 
 /*
@@ -234,55 +215,7 @@ Returns a read/write access to the label of the last quad from the emitted quads
 In case that no quads have been previously emitted, zero is returned.
 */
 unsigned int        GetBackQuadLabel();
-/*
-Pushes a standard loop branch quad to the mapped list of a loop's first quad start label.
-*/
-void                PushLoopBranchQuad(unsigned int start_label, Quad* branch_quad);
-/*
-Patches the mapped while loop branch quad list with a loop's first quad start label
-with the start label.
-Standard while loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
-2: jump quad, that jumps to the start of the loop, and a 3: jump quad that exits the loop in case
-the branch quad is evaluated as false.
-*/
-void                PatchWhileLoopBranchQuads(unsigned int start_label);
-/*
-Maps the label of the first quad of a loop statement with the the first quad of the logical expression with which it's evaluated.
-*/
-void                MapLogicalExpressionStartLabel(unsigned int start_label, unsigned int logical_expr_start_label);
-/*
-Maps the label of the first quad of a loop statement with the the first quad of the expressions before its body.
-*/
-void                MapExpressionsStartLabel(unsigned int start_label, unsigned int exprs_start_label);
-/*
-Patches the mapped for loop branch quad list with a loop's first quad start label
-with the start label and the mapped expressions first quads.
-Standard for loop branch quads consist of a 1: branch quad, which evaluates a statement and jumps to a
-2: jump quad, that jumps to the start of the logical evaluation, a 3: jump quad that exits the loop in case
-the branch quad is evaluated as false, and a 4: jump quad that jumps to the start quad of the expressions before the
-body of the for statement. 
-*/
-void                PatchForLoopBranchQuads(unsigned int start_label);
-/*
-Pushes a jump quad from a break statement to the mapped list of a loop's first quad start label.
-*/
-void                PushLoopBreakJumpQuad(unsigned int start_label, Quad* break_jump_quad);
-/*
-Pushes a jump quad from a continue statement to the mapped list of a loop's first quad start label.
-*/
-void                PushLoopContinueJumpQuad(unsigned int start_label, Quad* continue_jump_quad);
-/*
-Patches the mapped, to a loop's first quad start label, jump quads from break statements.
-*/
-void                PatchLoopBreakJumpQuads(unsigned int start_label, unsigned int patch_label);
-/*
-Patches the mapped, to a while loop's first quad start label, jump quads from continue statements.
-*/
-void                PatchWhileLoopContinueJumpQuads(unsigned int start_label);
-/*
-Patches the mapped, to a for loop's first quad start label, jump quads from continue statements.
-*/
-void                PatchForLoopContinueJumpQuads(unsigned int start_label);
+
 /*
 Maps the exit jump quad of an if statement with the if statement.
 */

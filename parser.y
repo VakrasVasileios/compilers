@@ -40,11 +40,16 @@
 
     std::stack<LoopStmt*>   loop_stmts;
     std::stack<WhileStmt*>  while_stmts;
-
-    std::map<Statement*, std::list<Quad*>>  unpatched_quads_by_stmt;
+    std::stack<ForStmt*>    for_stmts;
 
     std::map<LoopStmt*, std::list<Quad*>>   unpatched_break_quads_by_loop_stmt;
     std::map<LoopStmt*, std::list<Quad*>>   unpatched_continue_quads_by_loop_stmt;
+
+    std::map<WhileStmt*, std::list<Quad*>>  unpatched_while_quads_by_while_stmt;
+
+    std::map<ForStmt*, std::list<Quad*>>    unpatched_for_quads_by_for_stmt;
+    std::map<ForStmt*, unsigned int>        logical_expr_first_quad_label_by_for_stmt;  
+    std::map<ForStmt*, unsigned int>        exprs_first_quad_label_by_for_stmt;   
 %}
 
 %union {                                                    
@@ -1106,15 +1111,15 @@ whilestmt:  WHILE               {
                                     auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
                                     auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
 
-                                    unpatched_quads_by_stmt[top_while_stmt].push_back(branch_quad);
-                                    unpatched_quads_by_stmt[top_while_stmt].push_back(exit_quad);
+                                    unpatched_while_quads_by_while_stmt[top_while_stmt].push_back(branch_quad);
+                                    unpatched_while_quads_by_while_stmt[top_while_stmt].push_back(exit_quad);
                                 }
             stmt                { 
                                     auto top_while_stmt = while_stmts.top();
 
                                     auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
 
-                                    auto top_while_stmt_unpatched_quads = unpatched_quads_by_stmt[top_while_stmt];
+                                    auto top_while_stmt_unpatched_quads = unpatched_while_quads_by_while_stmt[top_while_stmt];
 
                                     auto exit_quad = top_while_stmt_unpatched_quads.back();
                                     top_while_stmt_unpatched_quads.pop_back();
@@ -1138,6 +1143,7 @@ whilestmt:  WHILE               {
                                         PatchJumpQuad(top_while_stmt_unpatched_continue_quad, top_while_stmt_first_quad_label);    
 
                                     while_stmts.pop();
+                                    loop_stmts.pop();
 
                                     ResetTemp();
 
@@ -1146,41 +1152,73 @@ whilestmt:  WHILE               {
             ;
 
 forstmt:    FOR                                     {
-                                                        PushLoopStartLabel(GetBackQuadLabel() + 1);
-                                                    }
-            '(' elist ';'                           {
-                                                        auto top_loop_start_label = TopLoopStartLabel();
-                                                        auto logical_expr_start_label = GetBackQuadLabel() + 1;
+                                                        auto first_quad_label = GetBackQuadLabel() + 1;
+                                                        auto for_stmt = new ForStmt(first_quad_label);
 
-                                                        MapLogicalExpressionStartLabel(top_loop_start_label, logical_expr_start_label);
+                                                        for_stmts.push(for_stmt);
+                                                        loop_stmts.push(for_stmt);
+                                                    }                   
+            '(' elist ';'                           {
+                                                        auto top_for_stmt = for_stmts.top();
+
+                                                        auto logical_expr_first_quad_label = GetBackQuadLabel() + 1;
+                                                        logical_expr_first_quad_label_by_for_stmt.insert({top_for_stmt, logical_expr_first_quad_label});
                                                     }
             expr ';'                                {
-                                                        auto top_loop_start_label = TopLoopStartLabel();
+                                                        auto top_for_stmt = for_stmts.top();
 
                                                         auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr, yylineno);
-                                                        PushLoopBranchQuad(top_loop_start_label, branch_quad);
+                                                        unpatched_for_quads_by_for_stmt[top_for_stmt].push_back(branch_quad);
 
                                                         auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                                        PushLoopBranchQuad(top_loop_start_label, exit_quad);
+                                                        unpatched_for_quads_by_for_stmt[top_for_stmt].push_back(exit_quad);
 
-                                                        auto exprs_start_label = GetBackQuadLabel() + 1;
-                                                        MapExpressionsStartLabel(top_loop_start_label, exprs_start_label);
+                                                        auto exprs_first_quad_label = GetBackQuadLabel() + 1;
+                                                        exprs_first_quad_label_by_for_stmt.insert({top_for_stmt, exprs_first_quad_label});
                                                     }
             elist ')'                               {
-                                                        auto top_loop_start_label = TopLoopStartLabel();
+                                                        auto top_for_stmt = for_stmts.top();
 
                                                         auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                                        PushLoopBranchQuad(top_loop_start_label, loop_quad);
+                                                        unpatched_for_quads_by_for_stmt[top_for_stmt].push_back(loop_quad);
                                                     }
             stmt                                    {
-                                                        auto top_loop_start_label = PopLoopStartLabel();
+                                                        auto top_for_stmt = for_stmts.top();
 
-                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);  
-                                                        PushLoopBranchQuad(top_loop_start_label, expr_jump_quad);
+                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
 
-                                                        PatchForLoopBranchQuads(top_loop_start_label);
-                                                        PatchLoopBreakJumpQuads(top_loop_start_label, GetBackQuadLabel() + 1);
-                                                        PatchForLoopContinueJumpQuads(top_loop_start_label);
+                                                        auto top_for_stmt_unpatched_for_quads = unpatched_for_quads_by_for_stmt[top_for_stmt];
+
+                                                        auto loop_quad = top_for_stmt_unpatched_for_quads.back();
+                                                        top_for_stmt_unpatched_for_quads.pop_back();
+
+                                                        auto exit_quad = top_for_stmt_unpatched_for_quads.back();
+                                                        top_for_stmt_unpatched_for_quads.pop_back();
+
+                                                        auto branch_quad = top_for_stmt_unpatched_for_quads.back();
+                                                        top_for_stmt_unpatched_for_quads.pop_back(); 
+
+                                                        auto top_for_stmt_exprs_first_quad_label = exprs_first_quad_label_by_for_stmt[top_for_stmt];    // e.g the "i++" expression in the "for (i; i < 2; i++)" stmt
+                                                                                                                                                        // has an first quad with a label. Its value is stored in this label.
+                                                        PatchJumpQuad(expr_jump_quad, top_for_stmt_exprs_first_quad_label);
+
+                                                        auto top_for_stmt_logical_expr_first_quad_label = logical_expr_first_quad_label_by_for_stmt[top_for_stmt];      // e.g the "i<2" expression in the "for (i; i < 2; i++)" stmt
+                                                                                                                                                                        // has a first quad with a label. Its value is stored in
+                                                                                                                                                                        //this label.
+                                                        PatchJumpQuad(loop_quad, top_for_stmt_logical_expr_first_quad_label);
+                                                        PatchJumpQuad(exit_quad, expr_jump_quad->label+1);
+                                                        PatchBranchQuad(branch_quad, loop_quad->label + 1);
+
+                                                        auto top_for_stmt_unpatched_break_quads = unpatched_break_quads_by_loop_stmt[top_for_stmt];
+                                                        for (auto top_for_stmt_unpatched_break_quad : top_for_stmt_unpatched_break_quads)
+                                                            PatchJumpQuad(top_for_stmt_unpatched_break_quad, GetBackQuadLabel() + 1);
+
+                                                        auto top_for_stmt_unpatched_continue_quads = unpatched_continue_quads_by_loop_stmt[top_for_stmt];
+                                                        for (auto top_for_stmt_unpatched_continue_quad : top_for_stmt_unpatched_continue_quads)
+                                                            PatchJumpQuad(top_for_stmt_unpatched_continue_quad, top_for_stmt_exprs_first_quad_label);
+
+                                                        for_stmts.pop();
+                                                        loop_stmts.pop();    
 
                                                         ResetTemp();
 
