@@ -859,6 +859,16 @@ TEST_F(QuadTest, arithmetic_uminus_bool) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
+TEST_F(QuadTest, aithmetic_not) {
+    expected =  "1:   IF_EQ 1 'true' 5 [line 1]\n"
+                "2:   JUMP 3 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/not.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {

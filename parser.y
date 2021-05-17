@@ -526,6 +526,22 @@ term:         '(' expr ')'          {
                                         DLOG("term -> -expr");
                                     }
             | NOT expr              {
+                                        auto equal_quad = Emit(IF_EQ_t, $2, new BoolConstant(true),  nullptr, yylineno);
+                                        PatchBranchQuad(equal_quad, equal_quad->label + 4);
+
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 1);
+
+                                        auto temp = NewTemp();
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+
+                                        $$ = temp;
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
