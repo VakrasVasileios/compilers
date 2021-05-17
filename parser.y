@@ -5,6 +5,13 @@
     #include "include/parser_manager.h"
     #include "include/debuglog.h"
     #include <assert.h>
+
+
+    #include <stack>
+    #include "include/statement/statement.h"
+    #include "include/statement/for_stmt.h"
+    #include "include/statement/while_stmt.h"
+    #include "include/statement/loop_stmt.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -30,6 +37,14 @@
 
         #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
     #endif
+
+    std::stack<LoopStmt*>   loop_stmts;
+    std::stack<WhileStmt*>  while_stmts;
+
+    std::map<Statement*, std::list<Quad*>>  unpatched_quads_by_stmt;
+
+    std::map<LoopStmt*, std::list<Quad*>>   unpatched_break_quads_by_loop_stmt;
+    std::map<LoopStmt*, std::list<Quad*>>   unpatched_continue_quads_by_loop_stmt;
 %}
 
 %union {                                                    
@@ -104,22 +119,25 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> returnstmt");
                                     }
             | BREAK ';'             { 
-                                        if(GetLoopDepth() == 0) {
+                                        if(loop_stmts.size() == 0) {
                                             SIGNALERROR("invalid keyword BREAK outside of loop");
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            auto jump_label = TopLoopStartLabel();
-                                            PushLoopBreakJumpQuad(jump_label, jump_quad);
+
+                                            auto top_loop_stmt = loop_stmts.top();
+                                            unpatched_break_quads_by_loop_stmt[top_loop_stmt].push_back(jump_quad);
                                         }
+
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
-                                        if(GetLoopDepth() == 0) {
+                                        if(loop_stmts.size() == 0) {
                                             SIGNALERROR("invalid keyword CONTINUE outside of loop");
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            auto jump_label = TopLoopStartLabel();
-                                            PushLoopContinueJumpQuad(jump_label, jump_quad);
+
+                                            auto top_loop_stmt = loop_stmts.top();
+                                            unpatched_continue_quads_by_loop_stmt[top_loop_stmt].push_back(jump_quad);
                                         }
                                         
                                         DLOG("stmt -> continue;");
@@ -1076,29 +1094,50 @@ elsestmt:   ELSE            {
             ;
 
 whilestmt:  WHILE               { 
-                                    PushLoopStartLabel(GetBackQuadLabel() + 1);
+                                    auto first_quad_label = GetBackQuadLabel() + 1;
+                                    auto while_stmt = new WhileStmt(first_quad_label);
+
+                                    while_stmts.push(while_stmt);
+                                    loop_stmts.push(while_stmt);
                                 }
             '(' expr ')'        {
-                                    auto top_loop_start_label = TopLoopStartLabel();
+                                    auto top_while_stmt = while_stmts.top();
 
                                     auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
                                     auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
 
-                                    PushLoopBranchQuad(top_loop_start_label, branch_quad);
-                                    PushLoopBranchQuad(top_loop_start_label, exit_quad);
+                                    unpatched_quads_by_stmt[top_while_stmt].push_back(branch_quad);
+                                    unpatched_quads_by_stmt[top_while_stmt].push_back(exit_quad);
                                 }
             stmt                { 
-                                    unsigned int top_loop_start_label = TopLoopStartLabel();
+                                    auto top_while_stmt = while_stmts.top();
 
                                     auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                    
-                                    PushLoopBranchQuad(top_loop_start_label, loop_quad);
 
-                                    PatchWhileLoopBranchQuads(top_loop_start_label);
-                                    PatchLoopBreakJumpQuads(top_loop_start_label, loop_quad->label + 1);
-                                    PatchWhileLoopContinueJumpQuads(top_loop_start_label);
+                                    auto top_while_stmt_unpatched_quads = unpatched_quads_by_stmt[top_while_stmt];
 
-                                    PopLoopStartLabel();
+                                    auto exit_quad = top_while_stmt_unpatched_quads.back();
+                                    top_while_stmt_unpatched_quads.pop_back();
+
+                                    auto branch_quad = top_while_stmt_unpatched_quads.back();
+                                    top_while_stmt_unpatched_quads.pop_back();
+
+                                    auto top_while_stmt_first_quad_label = top_while_stmt->get_first_quad_label();
+                                    PatchJumpQuad(loop_quad, top_while_stmt_first_quad_label);
+
+                                    PatchJumpQuad(exit_quad, loop_quad->label + 1);
+
+                                    PatchBranchQuad(branch_quad, branch_quad->label + 2);
+
+                                    auto top_while_stmt_unpatched_break_quads = unpatched_break_quads_by_loop_stmt[top_while_stmt];
+                                    for (auto top_while_stmt_unpatched_break_quad : top_while_stmt_unpatched_break_quads)
+                                        PatchJumpQuad(top_while_stmt_unpatched_break_quad, loop_quad->label + 1);
+
+                                    auto top_while_stmt_unpatched_continue_quads = unpatched_continue_quads_by_loop_stmt[top_while_stmt];
+                                    for (auto top_while_stmt_unpatched_continue_quad : top_while_stmt_unpatched_continue_quads)
+                                        PatchJumpQuad(top_while_stmt_unpatched_continue_quad, top_while_stmt_first_quad_label);    
+
+                                    while_stmts.pop();
 
                                     ResetTemp();
 
