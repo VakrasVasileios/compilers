@@ -513,6 +513,16 @@ term:         '(' expr ')'          {
                                         DLOG("term -> (expr)");
                                     }
             | '-' expr %prec UMINUS {
+                                        auto symbol = $2;
+                                        if (symbol->get_type() == CONST_BOOL) {
+                                            SIGNALERROR("Illegal use of unary minus on constant boolean");
+                                        }
+                                        else {
+                                            auto temp = NewTemp();
+                                            Emit(UMINUS_t, temp, symbol, nullptr, yylineno);
+                                            $$ = symbol;
+                                        }
+
                                         DLOG("term -> -expr");
                                     }
             | NOT expr              {

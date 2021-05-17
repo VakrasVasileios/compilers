@@ -847,6 +847,18 @@ TEST_F(QuadTest, arithmetic_plusplus_prefix) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
+TEST_F(QuadTest, arithmetic_uminus) {
+    expected = "1:   UMINUS ^0 1 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
+TEST_F(QuadTest, arithmetic_uminus_bool) {
+    expected = "Error, in line: 1: Illegal use of unary minus on constant boolean\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
