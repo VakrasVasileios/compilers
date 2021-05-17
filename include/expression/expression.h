@@ -16,14 +16,10 @@ enum ExprType {
     CONST_STR,  //string constant.
     CONST_NIL,  //NIL constant.
 
-    ARITH_EXPR,
-    BOOL_EXPR,
-    ASSIGN_EXPR,
-    NEWTABLE_EXPR,
-    TABLE_ITEM,
+    FUNCTION_CALL,
 
-    FUNCTION_DEF,
-    FUNCTION_CALL
+    NEWTABLE_EXPR,
+    TABLE_ITEM
 };
 
 /*
@@ -40,10 +36,6 @@ public:
 protected:
     Expression(ExprType _type) : type(_type) {};
     ~Expression() = default;
-    /*
-    Returns a read access to this Expression type as a string.
-    */
-    std::string             TypeToString(void) const;
     /*
     Logs this Expression.
     */

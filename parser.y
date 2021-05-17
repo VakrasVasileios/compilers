@@ -2,16 +2,37 @@
     #include <stdio.h>
     #include <string>
     #include <iostream>
-    #include "include/parser_manager.h"
     #include "include/debuglog.h"
-    #include <assert.h>
-
-
     #include <stack>
     #include "include/statement/statement.h"
     #include "include/statement/for_stmt.h"
     #include "include/statement/while_stmt.h"
     #include "include/statement/loop_stmt.h"
+    #include "include/statement/func_def_stmt.h"
+    #include <fstream>
+    #include <string>
+    #include <list>
+    #include <map>
+    #include <iostream>
+    #include <assert.h>
+    #include "include/symbol_table.h"
+    #include "include/expression/library_function.h"
+    #include "include/expression/user_function.h"
+    #include "include/expression/local_variable.h"
+    #include "include/expression/global_variable.h"
+    #include "include/expression/formal_variable.h"
+    #include "include/expression/symbol.h"
+    #include "include/expression/function_call.h"
+    #include "include/expression/bool_constant.h"
+    #include "include/expression/constant.h"
+    #include "include/expression/nil_constant.h"
+    #include "include/expression/string_constant.h"
+    #include "include/expression/double_constant.h"
+    #include "include/expression/int_constant.h"
+    #include "include/expression/numeric_constant.h"
+    #include "include/instruction_opcodes.h"
+    #include "include/quad.h"
+    #include "include/program_stack.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -19,6 +40,10 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+
+    bool        error_flag = false;
+    inline bool NoErrorSignaled() { return error_flag == false; }
+    inline void SignalError() { error_flag = 1; }
 
     #if !defined TEST
         #define     SIGNALERROR(message)  \
@@ -38,9 +63,121 @@
         #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
     #endif
 
-    std::stack<LoopStmt*>   loop_stmts;
-    std::stack<WhileStmt*>  while_stmts;
-    std::stack<ForStmt*>    for_stmts;
+    #define OUT_OF_SCOPE  -1
+    #define LIB_FUNC_LINE  0
+    #define TEMP_LINE 0
+
+    const unsigned int          global_scope = 0;
+    unsigned int                current_scope = OUT_OF_SCOPE;
+    
+    SymbolTable                 symbol_table;
+    ProgramStack                program_stack;  // the top element returns a read/write reference to the most recent block.
+
+    unsigned int                program_var_offset = 0;
+    unsigned int                formal_args_offset = 0;
+
+    std::list<FormalVariable*>  stashed_formal_arguments;
+    
+    unsigned int                anonymus_funcs_counter = 0;
+    unsigned int                temp_counter = 0;
+
+    std::vector<Quad*>          quads;
+
+    void                IncreaseScope();
+    void                DecreaseScope();
+    void                HideLowerScopes();
+    void                EnableLowerScopes();
+    inline bool         ScopeIsGlobal() { return current_scope == global_scope;}
+
+    void                InitLibraryFunctions(); 
+    Symbol*             InsertLocalVariable(const char* name, unsigned int line);
+    Symbol*             InsertGlobalVariable(const char* name, unsigned int line);
+    Symbol*             InsertUserFunction(const char* name, unsigned int line);
+    Symbol*             InsertUserFunction(unsigned int line);
+    void                PushStashedFormalArguments();
+    void                StashFormalArgument(const char* name, unsigned int line);
+    inline bool         IsLibraryFunction(Symbol* symbol)   { return symbol->get_type() == LIB_FUNC; }
+    inline bool         IsUserFunction(Symbol* symbol)      { return symbol->get_type() == USER_FUNC; }
+    inline bool         IsVariable(Symbol* symbol)          { return symbol->get_type() == VAR; }
+    inline bool         IsGlobalVar(Symbol* symbol)         { return IsVariable(symbol) && symbol->get_scope() == global_scope; }
+    inline bool         IsAtCurrentScope(Symbol* symbol)    { return symbol->get_scope() == current_scope; }
+
+    Symbol*             NewTemp();
+    void                ResetTemp();
+
+    Quad*               Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
+    unsigned int        GetBackQuadLabel();
+
+    /*    TO REMOVE START */
+    unsigned int if_cnt = 0;
+
+    unsigned int GetIfStmt() {
+        return if_cnt;
+    }
+
+    void IncreaseIfStmt() {
+        if_cnt++;
+    }
+
+    void DecreaseIfStmt() {
+        if_cnt--;
+    }
+
+    std::map<unsigned int, Quad*> jump_quad_by_if_stmt; // Maps the depth of an if statement with its exit jump quad.
+
+    void MapIfStmtJumpQuad(unsigned int if_stmt, Quad* exit_quad) {
+        jump_quad_by_if_stmt.insert({if_stmt, exit_quad});
+    }
+
+    void PatchIfStmtJumpQuad(unsigned int if_stmt, unsigned int patch_label) {
+        auto branch_quad = jump_quad_by_if_stmt[if_stmt];
+        //PatchBranchQuad(branch_quad, patch_label);
+        branch_quad->arg2 = new IntConstant(patch_label);
+        jump_quad_by_if_stmt.erase(if_stmt);
+    }
+
+    std::map<unsigned int, std::list<Quad*>> else_jump_quads_by_if_stmt; // Maps the depth of an if statement with its else stmts jump quads.
+
+    void PushElseJumpQuad(unsigned int if_stmt, Quad* else_jump_quad) {
+        else_jump_quads_by_if_stmt[if_stmt].push_back(else_jump_quad);
+    }
+
+    void PatchElseJumpQuad(unsigned int if_stmt) {
+        auto else_jump_quads = else_jump_quads_by_if_stmt[if_stmt];
+        auto else_jump_quad = else_jump_quads.back();
+        else_jump_quads.pop_back();
+        //PatchJumpQuad(else_jump_quad, GetBackQuadLabel() + 1);
+        else_jump_quad->result = new IntConstant(GetBackQuadLabel() + 1);
+    }
+
+
+    std::stack<FunctionCall*> call_stack; // provides the call stack containing all the active call stack frames.
+
+    unsigned int GetCallDepth() {
+        return call_stack.size();
+    }
+
+    void PushCallStackFrame(FunctionCall* function_call) {
+        assert(function_call != nullptr);
+        call_stack.push(function_call);
+    }
+
+    FunctionCall* PopCallStackFrame() {
+        auto top_call = call_stack.top();
+        call_stack.pop();
+        return top_call;
+    }
+
+    void PushCallParam(Expression* expr) {
+        call_stack.top()->IncludeParameter(expr);
+    }
+    /*    TO REMOVE END */
+    
+
+    std::stack<LoopStmt*>       loop_stmts;
+    std::stack<WhileStmt*>      while_stmts;
+    std::stack<ForStmt*>        for_stmts;
+    std::stack<FuncDefStmt*>    func_def_stmts;
 
     std::map<LoopStmt*, std::list<Quad*>>   unpatched_break_quads_by_loop_stmt;
     std::map<LoopStmt*, std::list<Quad*>>   unpatched_continue_quads_by_loop_stmt;
@@ -293,17 +430,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");   
                                         // else{
                                             auto greater_quad = Emit(IF_GREATER_t, $1, $3, nullptr, yylineno);
-                                            PatchBranchQuad(greater_quad, greater_quad->label + 2);
+                                            greater_quad->PatchBranchQuad(greater_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -329,17 +466,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");   
                                         // else{
                                             auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr, yylineno);
-                                            PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
+                                            greater_equal_quad->PatchBranchQuad(greater_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -364,17 +501,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr, yylineno);
-                                            PatchBranchQuad(less_quad, less_quad->label + 2);
+                                            less_quad->PatchBranchQuad(less_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -399,17 +536,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr, yylineno);
-                                            PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
+                                            less_equal_quad->PatchBranchQuad(less_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -434,17 +571,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr, yylineno);
-                                            PatchBranchQuad(equal_quad, equal_quad->label + 2);
+                                            equal_quad->PatchBranchQuad(equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -469,17 +606,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr, yylineno);
-                                            PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
+                                            not_equal_quad->PatchBranchQuad(not_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -550,17 +687,17 @@ term:         '(' expr ')'          {
                                     }
             | NOT expr              {
                                         auto equal_quad = Emit(IF_EQ_t, $2, new BoolConstant(true),  nullptr, yylineno);
-                                        PatchBranchQuad(equal_quad, equal_quad->label + 4);
+                                        equal_quad->PatchBranchQuad(equal_quad->label + 4);
 
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 1);
+                                        jump_quad->PatchJumpQuad(jump_quad->label + 1);
 
                                         auto temp = NewTemp();
 
                                         Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        jump_quad->PatchJumpQuad(jump_quad->label + 2);
 
                                         Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -687,7 +824,7 @@ primary:      lvalue                {
 lvalue:       ID                    {
                                         Symbol* symbol;
                                         if (ScopeIsGlobal()) {
-                                            symbol = LookupGlobal($1);
+                                            symbol = program_stack.LookupGlobal($1);
                                             if(symbol == nullptr) {
                                                 symbol = InsertGlobalVariable($1, yylineno);
                                             }
@@ -697,7 +834,7 @@ lvalue:       ID                    {
                                             $$ = symbol;
                                         }
                                         else {
-                                            symbol = Lookup($1);
+                                            symbol = program_stack.Lookup($1);
                                             if (symbol == nullptr) {
                                                 symbol = InsertLocalVariable($1, yylineno);
                                             }
@@ -709,7 +846,7 @@ lvalue:       ID                    {
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
-                                        auto symbol = Lookup($2);
+                                        auto symbol = program_stack.Lookup($2);
                                         if (symbol == nullptr) { 
                                             symbol = InsertLocalVariable($2, yylineno);
                                         }
@@ -734,7 +871,7 @@ lvalue:       ID                    {
                                         DLOG("lvalue -> local id");
                                     }
             | COLONCOLON ID         {
-                                        auto symbol = LookupGlobal($2);
+                                        auto symbol = program_stack.LookupGlobal($2);
                                         if (symbol == nullptr || !symbol->is_active()) 
                                             SIGNALERROR("No global variable with id: " + std::string($2));
 
@@ -917,28 +1054,32 @@ funcdef:    FUNCTION
                 '(' idlist ')'  
                             {
                                 auto function = InsertUserFunction(yylineno);
-                                auto function_def = new FunctionDef(function);
-                                PushFuncDef(function_def);
+
+                                auto func_def_stmt = new FuncDefStmt(function);
+
+                                func_def_stmts.push(func_def_stmt);
                                 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                 Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
 
-                                MapJumpQuad(function_def, jump_quad);
+                                func_def_stmt->set_func_start_jump_quad(jump_quad);
 
                                 HideLowerScopes();
 
                                 $<sym>$ = function;
                             }
             block           {
-                                auto func_def = PopFuncDef();
-                                auto function = func_def->get_sym();
+                                auto top_func_def = func_def_stmts.top();
+                                auto function = top_func_def->get_sym();
                                 
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
 
-                                PatchFuncDefJumpQuad(func_def, func_end_quad->label + 1);
-                                PatchFuncDefJumpQuadList(func_def, func_end_quad->label);
+                                top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
+                                top_func_def->PatchReturnJumpQuads(func_end_quad->label);
 
                                 EnableLowerScopes();
+
+                                func_def_stmts.pop();
 
                                 $<sym>$ = function;
                                 DLOG("funcdef -> function (idlist) block "); 
@@ -946,7 +1087,7 @@ funcdef:    FUNCTION
             | FUNCTION ID 
                 '(' idlist ')'
                             {
-                                auto symbol = Lookup($2);
+                                auto symbol = program_stack.Lookup($2);
                                 if (symbol == nullptr) {
                                     auto function = InsertUserFunction($2, yylineno);
                                     symbol = function;
@@ -971,26 +1112,30 @@ funcdef:    FUNCTION
                                         symbol = function;
                                     }
                                 }
-                                auto function_def = new FunctionDef(symbol);
-                                PushFuncDef(function_def);
+                                auto func_def_stmt = new FuncDefStmt(symbol); //May want to move to else
+                                func_def_stmts.push(func_def_stmt);
 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                 Emit(FUNCSTART_t, symbol, nullptr, nullptr, yylineno);
 
-                                MapJumpQuad(function_def, jump_quad);
+                                func_def_stmt->set_func_start_jump_quad(jump_quad);
 
                                 HideLowerScopes();
 
                                 $<sym>$ = symbol;
                             }
             block           { 
-                                auto func_def =  PopFuncDef();
+                                auto top_func_def =  func_def_stmts.top();
                                 Symbol* function;
-                                if (func_def != nullptr) {
-                                    function = func_def->get_sym();
+                                if (top_func_def != nullptr) {
+                                    function = top_func_def->get_sym();
+                                    
                                     auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
-                                    PatchFuncDefJumpQuad(func_def, func_end_quad->label + 1);
-                                    PatchFuncDefJumpQuadList(func_def, func_end_quad->label);
+                                    
+                                    top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
+                                    top_func_def->PatchReturnJumpQuads(func_end_quad->label);
+
+                                    func_def_stmts.pop();
                                 }
                                 
                                 EnableLowerScopes();
@@ -1055,7 +1200,7 @@ ifstmt:     IF '(' expr ')'                 {
                                                 auto if_stmt = GetIfStmt();
 
                                                 auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
-                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
+                                                branch_quad->PatchBranchQuad(branch_quad->label + 2);
 
                                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
                                                 MapIfStmtJumpQuad(if_stmt, jump_quad);
@@ -1128,19 +1273,19 @@ whilestmt:  WHILE               {
                                     top_while_stmt_unpatched_quads.pop_back();
 
                                     auto top_while_stmt_first_quad_label = top_while_stmt->get_first_quad_label();
-                                    PatchJumpQuad(loop_quad, top_while_stmt_first_quad_label);
+                                    loop_quad->PatchJumpQuad(top_while_stmt_first_quad_label);
 
-                                    PatchJumpQuad(exit_quad, loop_quad->label + 1);
+                                    exit_quad->PatchJumpQuad(loop_quad->label + 1);
 
-                                    PatchBranchQuad(branch_quad, branch_quad->label + 2);
+                                    branch_quad->PatchBranchQuad(branch_quad->label + 2);
 
                                     auto top_while_stmt_unpatched_break_quads = unpatched_break_quads_by_loop_stmt[top_while_stmt];
                                     for (auto top_while_stmt_unpatched_break_quad : top_while_stmt_unpatched_break_quads)
-                                        PatchJumpQuad(top_while_stmt_unpatched_break_quad, loop_quad->label + 1);
+                                        top_while_stmt_unpatched_break_quad->PatchJumpQuad(loop_quad->label + 1);
 
                                     auto top_while_stmt_unpatched_continue_quads = unpatched_continue_quads_by_loop_stmt[top_while_stmt];
                                     for (auto top_while_stmt_unpatched_continue_quad : top_while_stmt_unpatched_continue_quads)
-                                        PatchJumpQuad(top_while_stmt_unpatched_continue_quad, top_while_stmt_first_quad_label);    
+                                        top_while_stmt_unpatched_continue_quad->PatchJumpQuad(top_while_stmt_first_quad_label);    
 
                                     while_stmts.pop();
                                     loop_stmts.pop();
@@ -1200,22 +1345,22 @@ forstmt:    FOR                                     {
 
                                                         auto top_for_stmt_exprs_first_quad_label = exprs_first_quad_label_by_for_stmt[top_for_stmt];    // e.g the "i++" expression in the "for (i; i < 2; i++)" stmt
                                                                                                                                                         // has an first quad with a label. Its value is stored in this label.
-                                                        PatchJumpQuad(expr_jump_quad, top_for_stmt_exprs_first_quad_label);
+                                                        expr_jump_quad->PatchJumpQuad(top_for_stmt_exprs_first_quad_label);
 
                                                         auto top_for_stmt_logical_expr_first_quad_label = logical_expr_first_quad_label_by_for_stmt[top_for_stmt];      // e.g the "i<2" expression in the "for (i; i < 2; i++)" stmt
                                                                                                                                                                         // has a first quad with a label. Its value is stored in
                                                                                                                                                                         //this label.
-                                                        PatchJumpQuad(loop_quad, top_for_stmt_logical_expr_first_quad_label);
-                                                        PatchJumpQuad(exit_quad, expr_jump_quad->label+1);
-                                                        PatchBranchQuad(branch_quad, loop_quad->label + 1);
+                                                        loop_quad->PatchJumpQuad(top_for_stmt_logical_expr_first_quad_label);
+                                                        exit_quad->PatchJumpQuad(expr_jump_quad->label+1);
+                                                        branch_quad->PatchBranchQuad(loop_quad->label + 1);
 
                                                         auto top_for_stmt_unpatched_break_quads = unpatched_break_quads_by_loop_stmt[top_for_stmt];
                                                         for (auto top_for_stmt_unpatched_break_quad : top_for_stmt_unpatched_break_quads)
-                                                            PatchJumpQuad(top_for_stmt_unpatched_break_quad, GetBackQuadLabel() + 1);
+                                                            top_for_stmt_unpatched_break_quad->PatchJumpQuad(GetBackQuadLabel() + 1);
 
                                                         auto top_for_stmt_unpatched_continue_quads = unpatched_continue_quads_by_loop_stmt[top_for_stmt];
                                                         for (auto top_for_stmt_unpatched_continue_quad : top_for_stmt_unpatched_continue_quads)
-                                                            PatchJumpQuad(top_for_stmt_unpatched_continue_quad, top_for_stmt_exprs_first_quad_label);
+                                                            top_for_stmt_unpatched_continue_quad->PatchJumpQuad(top_for_stmt_exprs_first_quad_label);
 
                                                         for_stmts.pop();
                                                         loop_stmts.pop();    
@@ -1227,29 +1372,34 @@ forstmt:    FOR                                     {
             ;
 
 returnstmt: RETURN      {
-                            if (GetFuncDefDepth() == 0) {
+                            if (func_def_stmts.size() == 0) {
                                 SIGNALERROR("Invalid return, used outside a function block");
+                            } else {
+                                auto top_func_def = func_def_stmts.top();
+
+                                Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
+                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+
+                                top_func_def->PushReturnJumpQuad(return_jump_quad);
                             }
-
-                            Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
-                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-
-                            PushFuncDefJumpQuad(TopFuncDef(), jump_quad);
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
                         }
-            | RETURN    {
-                            if (GetFuncDefDepth() == 0) 
-                                SIGNALERROR("Invalid return, used outside a function block");
-                        }
+            | RETURN    
             expr ';'    {
-                            Emit(RET_t, $3, nullptr, nullptr, yylineno);
-                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                            if (func_def_stmts.size() == 0) 
+                                SIGNALERROR("Invalid return, used outside a function block");
+                            else {
+                                auto top_func_def = func_def_stmts.top();
 
-                            PushFuncDefJumpQuad(TopFuncDef(), jump_quad);
+                                Emit(RET_t, $2, nullptr, nullptr, yylineno);
+                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
 
-                            DLOG("returnstmt -> RETURN expr;");
+                                top_func_def->PushReturnJumpQuad(return_jump_quad);
+
+                                DLOG("returnstmt -> RETURN expr;");
+                            }    
                         }
             ;
 
@@ -1279,14 +1429,183 @@ int main(int argc, char** argv) {
     yyparse();
 
     #if defined LOGQUADS
-        if (NoErrorSignaled()) 
-            LogQuads(std::cout);
+        if (NoErrorSignaled()) {
+            for (auto quad : quads) 
+                std::cout << *quad << std::endl;
+        }
     #endif         
     #if defined LOGSYMTABLE
         if (NoErrorSignaled()) 
-            LogSymbolTable(std::cout); 
+            std::cout << symbol_table; 
     #endif
 
     return 0;
 }
 #endif
+
+void IncreaseScope() {
+    Block* new_block = new Block();
+    symbol_table.Insert(++current_scope, new_block);
+    program_stack.Push(new_block);
+}
+
+void DecreaseScope() {
+    program_stack.Top()->Deactivate();
+    program_stack.Pop();
+    --current_scope;
+}
+
+void HideLowerScopes() {
+    if (current_scope != global_scope)
+        program_stack.Top()->Deactivate();
+    if (current_scope > 1)
+        program_stack.DeactivateLowerScopes();
+}
+
+void EnableLowerScopes() {
+    program_stack.ActivateLowerScopes();
+}
+
+void InitLibraryFunctions() {
+    IncreaseScope(); 
+    program_stack.Top()->Insert(new LibraryFunction("print", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("input", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("objectmemberkeys", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("objecttotalmembers", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("objectcopy", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("totalarguments", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("argument", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("typeof", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("strtonum", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("sqrt", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("cos", LIB_FUNC_LINE, global_scope, program_var_offset++));
+    program_stack.Top()->Insert(new LibraryFunction("sin", LIB_FUNC_LINE, global_scope, program_var_offset++));
+}
+
+Symbol* InsertLocalVariable(const char* name, unsigned int line) {
+    assert(name != nullptr);
+
+    Symbol* symbol;
+    if (func_def_stmts.size() == 0) {
+        symbol = new LocalVariable(name, line, current_scope, PROGRAM_VAR, program_var_offset++);
+    }
+    else {
+        symbol = new LocalVariable(name, line, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());  
+        func_def_stmts.top()->IncreaseOffset();
+    }
+    program_stack.Top()->Insert(symbol);
+
+    return symbol;
+}
+Symbol* InsertGlobalVariable(const char* name, unsigned int line) {
+    assert(name != nullptr);
+
+    Symbol* symbol = new GlobalVariable(name, line, current_scope, program_var_offset++);
+    program_stack.Top()->Insert(symbol);
+    
+    return symbol;
+}
+
+Symbol* InsertUserFunction(const char* name, unsigned int line) {
+    assert(name != nullptr);
+
+    Symbol* symbol;
+    if (func_def_stmts.size() == 0) {
+        symbol = new UserFunction(name, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
+    }
+    else {
+        symbol = new UserFunction(name, line, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), stashed_formal_arguments);  
+        func_def_stmts.top()->IncreaseOffset();
+    }
+    program_stack.Top()->Insert(symbol);
+
+    return symbol;
+}
+
+Symbol* InsertUserFunction(unsigned int line) {
+    std::string an = "$";
+    an += std::to_string(++anonymus_funcs_counter);
+    Symbol* symbol;
+    if (func_def_stmts.size() == 0) {
+        symbol = new UserFunction(an, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
+    }
+    else {
+        symbol = new UserFunction(an, line, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), stashed_formal_arguments);  
+        func_def_stmts.top()->IncreaseOffset();
+    }
+    program_stack.Top()->Insert(symbol);
+    
+    return symbol;
+}
+
+void PushStashedFormalArguments(void) { 
+    for (auto i : stashed_formal_arguments) {
+        program_stack.Top()->Insert(i);
+    }
+    stashed_formal_arguments.clear();
+    formal_args_offset = 0;
+}
+
+bool
+IsStashed(const char* name) {
+    assert(name != nullptr);
+    std::string wanted = name;
+    for (auto i : stashed_formal_arguments) {
+        if (i->get_id() == wanted) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void StashFormalArgument(const char* name, unsigned int line) {
+    assert(name != nullptr);
+    if (!IsStashed(name))
+        stashed_formal_arguments.push_back(new FormalVariable(name, line, current_scope + 1, formal_args_offset++));
+    else {
+        std::cout << "Error, formal argument " << name << " already declared, in line: " << line << std::endl;
+        SignalError();
+    }
+}
+
+std::string NewTempName() {
+    return  "^" + std::to_string(temp_counter++);
+}
+
+Symbol* NewTemp() {
+    std::string name = NewTempName();
+    Symbol* sym = program_stack.LookupHiddenVariable(name);
+
+    if (sym == nullptr)
+    {   
+        Symbol* new_temp;
+        if (ScopeIsGlobal())
+            new_temp = InsertGlobalVariable(name.c_str(), TEMP_LINE);
+        else    
+            new_temp = InsertLocalVariable(name.c_str(), TEMP_LINE); 
+
+        return new_temp;
+    } else {
+        return sym;
+    }
+}
+
+void ResetTemp() {
+    temp_counter = 0;
+}
+
+Quad*
+Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
+    unsigned int label = quads.size() + 1;
+    Quad* q = new quad(op, result, arg1, arg2, label, line);
+    quads.push_back(q);
+
+    return q;
+}
+
+unsigned int GetBackQuadLabel() {
+    if (quads.size() == 0)
+        return 0;
+    else     
+        return quads.back()->label;
+}

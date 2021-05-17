@@ -5,7 +5,8 @@
  * @brief The type of a statement.
 **/
 enum StmtType {
-    Loop_t
+    Loop_t,
+    FUNC_DEF_t
 };
 
 /**
