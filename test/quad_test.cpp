@@ -1,8 +1,5 @@
 #include <gtest/gtest.h>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <array>
+#include "../util/exec/exec.h"
 
 class QuadTest : public ::testing::Test {
    protected:
@@ -11,19 +8,6 @@ class QuadTest : public ::testing::Test {
 
     void SetUp() override {}
     void TearDown() override {}   
-
-    std::string exec(const char* cmd) {
-        std::array<char, 128> buffer;
-        std::string result;
-        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-        if (!pipe) {
-            throw std::runtime_error("popen() failed!");
-        }
-        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-            result += buffer.data();
-        }
-        return result;
-    }
 };
 
 /*  ------------ Assign --------------   */
@@ -316,6 +300,7 @@ TEST_F(QuadTest, return_many_and_nested) {
 }
 
 /*  ------------ Logical -----------------   */
+
 TEST_F(QuadTest, logical_greater_simple) {
     expected =  "1:   IF_GREATER 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
@@ -326,7 +311,7 @@ TEST_F(QuadTest, logical_greater_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, equal_simple) {
+TEST_F(QuadTest, logical_equal_simple) {
     expected =  "1:   IF_EQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -336,7 +321,7 @@ TEST_F(QuadTest, equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, greater_equal_simple) {
+TEST_F(QuadTest, logical_greater_equal_simple) {
     expected =  "1:   IF_GREATEREQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -346,17 +331,7 @@ TEST_F(QuadTest, greater_equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, greater_simple) {
-    expected =  "1:   IF_GREATER 3 2 3 [line 1]\n"
-                "2:   JUMP 5 [line 1]\n"
-                "3:   ASSIGN ^0 'true' [line 1]\n"
-                "4:   JUMP 6 [line 1]\n"
-                "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/greater_simple.asc");    
-    GTEST_ASSERT_EQ(expected, actual);     
-}
-
-TEST_F(QuadTest, less_equal_simple) {
+TEST_F(QuadTest, logical_less_equal_simple) {
     expected =  "1:   IF_LESSEQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -366,7 +341,7 @@ TEST_F(QuadTest, less_equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, less_simple) {
+TEST_F(QuadTest, logical_less_simple) {
     expected =  "1:   IF_LESS 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -376,7 +351,7 @@ TEST_F(QuadTest, less_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, not_equal_simple) {
+TEST_F(QuadTest, logical_not_equal_simple) {
     expected =  "1:   IF_NOTEQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -389,7 +364,7 @@ TEST_F(QuadTest, not_equal_simple) {
 
 /* ------------- Loop -------------------  */
 
-TEST_F(QuadTest, while_simple) {
+TEST_F(QuadTest, loop_while_simple) {
     expected =  "1:   IF_GREATER 2 6 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -402,7 +377,7 @@ TEST_F(QuadTest, while_simple) {
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
-TEST_F(QuadTest, while_simple_with_stms) {
+TEST_F(QuadTest, loop_while_simple_with_stms) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 6 [line 1]\n"
                 "3:   ASSIGN x 9 [line 2]\n"
@@ -412,7 +387,7 @@ TEST_F(QuadTest, while_simple_with_stms) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
-TEST_F(QuadTest, while_many_nested) {
+TEST_F(QuadTest, loop_while_many_nested) {
     expected =  "1:   IF_LESS x 0 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -436,7 +411,7 @@ TEST_F(QuadTest, while_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, while_continue_single) {
+TEST_F(QuadTest, loop_while_continue_single) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   JUMP 1 [line 2]\n"
@@ -445,7 +420,7 @@ TEST_F(QuadTest, while_continue_single) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(QuadTest, while_continue_many_nested) {
+TEST_F(QuadTest, loop_while_continue_many_nested) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 29 [line 1]\n"
                 "3:   JUMP 1 [line 2]\n"
@@ -478,7 +453,7 @@ TEST_F(QuadTest, while_continue_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, while_break_single) {
+TEST_F(QuadTest, loop_while_break_single) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   JUMP 5 [line 2]\n"
@@ -487,7 +462,7 @@ TEST_F(QuadTest, while_break_single) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(QuadTest, for_simple) {
+TEST_F(QuadTest, loop_for_simple) {
     expected =  "1:   ASSIGN i 0 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n"
                 "3:   IF_LESS i 20 5 [line 1]\n"
@@ -505,7 +480,7 @@ TEST_F(QuadTest, for_simple) {
     GTEST_ASSERT_EQ(expected, actual);                
 }
 
-TEST_F(QuadTest, for_simple_with_stmts) {
+TEST_F(QuadTest, loop_for_simple_with_stmts) {
     expected =  "1:   ASSIGN i 0 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n"
                 "3:   IF_LESS i 20 5 [line 1]\n"
@@ -525,7 +500,7 @@ TEST_F(QuadTest, for_simple_with_stmts) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, for_many_nested) {
+TEST_F(QuadTest, loop_for_many_nested) {
     expected =  "1:   ASSIGN i 0 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n"
                 "3:   IF_LESS i 20 5 [line 1]\n"
@@ -582,7 +557,7 @@ TEST_F(QuadTest, for_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);           
 }
 
-TEST_F(QuadTest, for_continue_single) {
+TEST_F(QuadTest, loop_for_continue_single) {
     expected =  "1:   IF_LESS i 0 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -599,7 +574,7 @@ TEST_F(QuadTest, for_continue_single) {
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
-TEST_F(QuadTest, for_continue_many_nested) {
+TEST_F(QuadTest, loop_for_continue_many_nested) {
     expected =  "1:   IF_LESS i 0 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -637,7 +612,7 @@ TEST_F(QuadTest, for_continue_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, for_break_single) {
+TEST_F(QuadTest, loop_for_break_single) {
     expected =  "1:   IF_LESS i 8 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -654,7 +629,7 @@ TEST_F(QuadTest, for_break_single) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, for_break_many_nested) {
+TEST_F(QuadTest, loop_for_break_many_nested) {
     expected =  "1:   IF_LESS i 8 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -858,11 +833,54 @@ TEST_F(QuadTest, if_else_many_nested) {
 //     GTEST_ASSERT_EQ(expected, actual); 
 // }
 
-TEST_F(QuadTest, plusplus_suffix) {
+TEST_F(QuadTest, arithmetic_plusplus_suffix) {
     expected =  "1:   ASSIGN ^0 i [line 1]\n"
                 "2:   ADD i i 1 [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(QuadTest, arithmetic_plusplus_prefix) {
+    expected =  "1:   ADD i i 1 [line 1]\n"
+                "2:   ASSIGN ^0 i [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
+    GTEST_ASSERT_EQ(expected, actual);             
+}
+
+TEST_F(QuadTest, arithmetic_uminus) {
+    expected = "1:   UMINUS ^0 1 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
+TEST_F(QuadTest, arithmetic_uminus_bool) {
+    expected = "Error, in line: 1: Illegal use of unary minus on constant boolean\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
+TEST_F(QuadTest, aithmetic_not) {
+    expected =  "1:   IF_EQ 1 'true' 5 [line 1]\n"
+                "2:   JUMP 3 [line 1]\n"
+                "3:   ASSIGN ^0 'true' [line 1]\n"
+                "4:   JUMP 6 [line 1]\n"
+                "5:   ASSIGN ^0 'false' [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/not.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
+TEST_F(QuadTest, minusminus_prefix) {
+    expected =  "1:   SUB a a 1 [line 1]\n"
+                "2:   ASSIGN ^0 a [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
+    GTEST_ASSERT_EQ(expected, actual);             
+}
+
+TEST_F(QuadTest, minusminus_suffix) {
+    expected =  "1:   ASSIGN ^0 a [line 1]\n"
+                "2:   SUB a a 1 [line 1]\n";
+    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
+    GTEST_ASSERT_EQ(expected, actual);             
 }
 
 #ifdef TESTING
