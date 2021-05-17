@@ -20,26 +20,28 @@ typedef struct quad {
 
     quad(Iopcode _op, Expression* _res, Expression* _arg1, Expression* _arg2, unsigned int _label, unsigned int _line)
     : op(_op), result(_res), arg1(_arg1), arg2(_arg2), label(_label), line(_line) {};
-    /**
-     * @brief Patches this jump Quad label.
-     * It's a checked runtime error for this Quad to
-     * not have a Jump op code.
-     * 
-     * @param label the label to patch this jump Quad
-     * label, greater or equal to zero
-    **/ 
-    void                    PatchJumpQuad(const unsigned int label);
-    /**
-     * @brief Patches this branch Quad arg2.
-     * It's a checked runtime error for this Quad to
-     * not have a Branch op code.
-     * 
-     * @param label the label to patch this branch Quad
-     * arg2, greater or equal to zero
-    **/ 
-    void                    PatchBranchQuad(const unsigned int label);
-
+   
     friend std::ostream&    operator<<(std::ostream& os, const quad _quad);
 } Quad;
+
+/**
+ * @brief Patches a jump Quad's label.
+ * 
+ * @param jump_quad the jump quad to patch, not null
+ * and with a Jump opcode.
+ * @param label the label to patch the jump Quad
+ * label, greater or equal to zero
+**/ 
+void    PatchJumpQuad(Quad* jump_quad, const unsigned int label);
+
+/**
+ * @brief Patches a branch Quad's arg2.
+ * 
+ * @param branch_quad the branch quad to patch, not null
+ * and with a Branch opcode.
+ * @param label the label to patch the branch Quad's
+ * arg2, greater or equal to zero
+**/ 
+void    PatchBranchQuad(Quad* branch_quad, const unsigned int label);
 
 #endif

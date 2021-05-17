@@ -430,17 +430,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");   
                                         // else{
                                             auto greater_quad = Emit(IF_GREATER_t, $1, $3, nullptr, yylineno);
-                                            greater_quad->PatchBranchQuad(greater_quad->label + 2);
+                                            PatchBranchQuad(greater_quad, greater_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -466,17 +466,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");   
                                         // else{
                                             auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr, yylineno);
-                                            greater_equal_quad->PatchBranchQuad(greater_equal_quad->label + 2);
+                                            PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -501,17 +501,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr, yylineno);
-                                            less_quad->PatchBranchQuad(less_quad->label + 2);
+                                            PatchBranchQuad(less_quad, less_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -536,17 +536,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr, yylineno);
-                                            less_equal_quad->PatchBranchQuad(less_equal_quad->label + 2);
+                                            PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -571,17 +571,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr, yylineno);
-                                            equal_quad->PatchBranchQuad(equal_quad->label + 2);
+                                            PatchBranchQuad(equal_quad, equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -606,17 +606,17 @@ expr:         assignexpr            {
                                         //     LOGWARNING("Entries must be type of Number");
                                         // else{
                                             auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr, yylineno);
-                                            not_equal_quad->PatchBranchQuad(not_equal_quad->label + 2);
+                                            PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 3);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                             jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                            jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -687,17 +687,17 @@ term:         '(' expr ')'          {
                                     }
             | NOT expr              {
                                         auto equal_quad = Emit(IF_EQ_t, $2, new BoolConstant(true),  nullptr, yylineno);
-                                        equal_quad->PatchBranchQuad(equal_quad->label + 4);
+                                        PatchBranchQuad(equal_quad, equal_quad->label + 4);
 
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                        jump_quad->PatchJumpQuad(jump_quad->label + 1);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 1);
 
                                         auto temp = NewTemp();
 
                                         Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
 
                                         jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                        jump_quad->PatchJumpQuad(jump_quad->label + 2);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
                                         Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
 
@@ -1200,7 +1200,7 @@ ifstmt:     IF '(' expr ')'                 {
                                                 auto if_stmt = GetIfStmt();
 
                                                 auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
-                                                branch_quad->PatchBranchQuad(branch_quad->label + 2);
+                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
 
                                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
                                                 MapIfStmtJumpQuad(if_stmt, jump_quad);
@@ -1273,19 +1273,19 @@ whilestmt:  WHILE               {
                                     top_while_stmt_unpatched_quads.pop_back();
 
                                     auto top_while_stmt_first_quad_label = top_while_stmt->get_first_quad_label();
-                                    loop_quad->PatchJumpQuad(top_while_stmt_first_quad_label);
+                                    PatchJumpQuad(loop_quad, top_while_stmt_first_quad_label);
 
-                                    exit_quad->PatchJumpQuad(loop_quad->label + 1);
+                                    PatchJumpQuad(exit_quad, loop_quad->label + 1);
 
-                                    branch_quad->PatchBranchQuad(branch_quad->label + 2);
+                                    PatchBranchQuad(branch_quad, branch_quad->label + 2);
 
                                     auto top_while_stmt_unpatched_break_quads = unpatched_break_quads_by_loop_stmt[top_while_stmt];
                                     for (auto top_while_stmt_unpatched_break_quad : top_while_stmt_unpatched_break_quads)
-                                        top_while_stmt_unpatched_break_quad->PatchJumpQuad(loop_quad->label + 1);
+                                        PatchJumpQuad(top_while_stmt_unpatched_break_quad, loop_quad->label + 1);
 
                                     auto top_while_stmt_unpatched_continue_quads = unpatched_continue_quads_by_loop_stmt[top_while_stmt];
                                     for (auto top_while_stmt_unpatched_continue_quad : top_while_stmt_unpatched_continue_quads)
-                                        top_while_stmt_unpatched_continue_quad->PatchJumpQuad(top_while_stmt_first_quad_label);    
+                                        PatchJumpQuad(top_while_stmt_unpatched_continue_quad, top_while_stmt_first_quad_label);    
 
                                     while_stmts.pop();
                                     loop_stmts.pop();
@@ -1345,22 +1345,22 @@ forstmt:    FOR                                     {
 
                                                         auto top_for_stmt_exprs_first_quad_label = exprs_first_quad_label_by_for_stmt[top_for_stmt];    // e.g the "i++" expression in the "for (i; i < 2; i++)" stmt
                                                                                                                                                         // has an first quad with a label. Its value is stored in this label.
-                                                        expr_jump_quad->PatchJumpQuad(top_for_stmt_exprs_first_quad_label);
+                                                        PatchJumpQuad(expr_jump_quad, top_for_stmt_exprs_first_quad_label);
 
                                                         auto top_for_stmt_logical_expr_first_quad_label = logical_expr_first_quad_label_by_for_stmt[top_for_stmt];      // e.g the "i<2" expression in the "for (i; i < 2; i++)" stmt
                                                                                                                                                                         // has a first quad with a label. Its value is stored in
                                                                                                                                                                         //this label.
-                                                        loop_quad->PatchJumpQuad(top_for_stmt_logical_expr_first_quad_label);
-                                                        exit_quad->PatchJumpQuad(expr_jump_quad->label+1);
-                                                        branch_quad->PatchBranchQuad(loop_quad->label + 1);
+                                                        PatchJumpQuad(loop_quad, top_for_stmt_logical_expr_first_quad_label);
+                                                        PatchJumpQuad(exit_quad, expr_jump_quad->label+1);
+                                                        PatchBranchQuad(branch_quad, loop_quad->label + 1);
 
                                                         auto top_for_stmt_unpatched_break_quads = unpatched_break_quads_by_loop_stmt[top_for_stmt];
                                                         for (auto top_for_stmt_unpatched_break_quad : top_for_stmt_unpatched_break_quads)
-                                                            top_for_stmt_unpatched_break_quad->PatchJumpQuad(GetBackQuadLabel() + 1);
+                                                            PatchJumpQuad(top_for_stmt_unpatched_break_quad, GetBackQuadLabel() + 1);
 
                                                         auto top_for_stmt_unpatched_continue_quads = unpatched_continue_quads_by_loop_stmt[top_for_stmt];
                                                         for (auto top_for_stmt_unpatched_continue_quad : top_for_stmt_unpatched_continue_quads)
-                                                            top_for_stmt_unpatched_continue_quad->PatchJumpQuad(top_for_stmt_exprs_first_quad_label);
+                                                            PatchJumpQuad(top_for_stmt_unpatched_continue_quad, top_for_stmt_exprs_first_quad_label);
 
                                                         for_stmts.pop();
                                                         loop_stmts.pop();    

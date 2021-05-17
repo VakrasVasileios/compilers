@@ -27,7 +27,7 @@ FuncDefStmt:: set_func_start_jump_quad(Quad* jump_quad) {
 
 void 
 FuncDefStmt:: PatchFuncStartJumpQuad(const unsigned int patch_label) {
-    func_start_jump_quad->PatchJumpQuad(patch_label);
+    PatchJumpQuad(func_start_jump_quad, patch_label);
 }
 
 void 
@@ -38,5 +38,5 @@ FuncDefStmt:: PushReturnJumpQuad(Quad* return_jump_quad) {
 void
 FuncDefStmt:: PatchReturnJumpQuads(const unsigned int patch_label) {
     for (auto return_jum_quad : return_jump_quads)
-        return_jum_quad->PatchJumpQuad(patch_label);
+        PatchJumpQuad(return_jum_quad, patch_label);
 }

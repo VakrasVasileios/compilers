@@ -1,15 +1,6 @@
 #include "../include/quad.h"
 #include <assert.h>
 
-void
-Quad:: PatchJumpQuad(const unsigned int label) {
-    result = new IntConstant(label);
-}
-
-void 
-Quad:: PatchBranchQuad(const unsigned int label) {
-    arg2 = new IntConstant(label);
-}
 
 std::ostream&
 operator<<(std::ostream& os, const quad _quad) {
@@ -23,4 +14,12 @@ operator<<(std::ostream& os, const quad _quad) {
     os << "[line " << std::to_string(_quad.line) << "]";
 
     return os;
+}
+
+void PatchJumpQuad(Quad* jump_quad, const unsigned int label) {
+    jump_quad->result = new IntConstant(label);
+}
+
+void PatchBranchQuad(Quad* branch_quad, const unsigned int label) {
+    branch_quad->arg2 = new IntConstant(label);
 }
