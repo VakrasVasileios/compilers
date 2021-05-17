@@ -912,8 +912,8 @@ funcdef:    FUNCTION
                                 
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
 
-                                PatchJumpQuad(func_def, func_end_quad->label + 1);
-                                PatchJumpQuadList(func_def, func_end_quad->label);
+                                PatchFuncDefJumpQuad(func_def, func_end_quad->label + 1);
+                                PatchFuncDefJumpQuadList(func_def, func_end_quad->label);
 
                                 EnableLowerScopes();
 
@@ -966,8 +966,8 @@ funcdef:    FUNCTION
                                 if (func_def != nullptr) {
                                     function = func_def->get_sym();
                                     auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
-                                    PatchJumpQuad(func_def, func_end_quad->label + 1);
-                                    PatchJumpQuadList(func_def, func_end_quad->label);
+                                    PatchFuncDefJumpQuad(func_def, func_end_quad->label + 1);
+                                    PatchFuncDefJumpQuadList(func_def, func_end_quad->label);
                                 }
                                 
                                 EnableLowerScopes();
@@ -1157,7 +1157,7 @@ returnstmt: RETURN      {
                             Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
 
-                            PushJumpQuad(TopFuncDef(), jump_quad);
+                            PushFuncDefJumpQuad(TopFuncDef(), jump_quad);
                         } 
             ';'         {
                             DLOG("returnstmt -> RETURN;"); 
@@ -1170,7 +1170,7 @@ returnstmt: RETURN      {
                             Emit(RET_t, $3, nullptr, nullptr, yylineno);
                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
 
-                            PushJumpQuad(TopFuncDef(), jump_quad);
+                            PushFuncDefJumpQuad(TopFuncDef(), jump_quad);
 
                             DLOG("returnstmt -> RETURN expr;");
                         }

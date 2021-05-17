@@ -1,7 +1,5 @@
 link_directories(${compilers_SOURCE_DIR}/libs)
 link_directories(${compilers_SOURCE_DIR}/src)
-link_directories(${compilers_SOURCE_DIR}/util)
-
 add_subdirectory(${compilers_SOURCE_DIR}/util/exec test)
 
 add_executable(parser_test parser_test.cpp)
