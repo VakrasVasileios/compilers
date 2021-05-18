@@ -14,7 +14,7 @@ Soultatos Stefanos
 
 * <b>build</b>
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;phase3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table
-    output and the quad.txt file for the phase 3
+    output and the quad.txt file, at the /build directory, for the phase 3
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;r_syntax_analysis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table
     output (includes colored error/warning messages and temp values)
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;r_intermediate_code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the intermediate code (includes colored error/warning messages)
