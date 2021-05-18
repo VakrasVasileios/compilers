@@ -1455,10 +1455,8 @@ void StashFormalArgument(const char* name, unsigned int line) {
     assert(name != nullptr);
     if (!IsStashed(name))
         stashed_formal_arguments.push_back(new FormalVariable(name, line, current_scope + 1, formal_args_offset++));
-    else {
-        std::cout << "Error, formal argument " << name << " already declared, in line: " << line << std::endl;
-        SignalError();
-    }
+    else 
+        SIGNALERROR("formal argument " << name << " already declared, in line: " << line);
 }
 
 std::string NewTempName() {
