@@ -2,7 +2,7 @@
 #include "string"
 #include "assert.h"
 
-std::string IOpCodeToString(Iopcode _op) {
+std::string IopcodeToString(Iopcode _op) {
     switch(_op) {
         case ASSIGN_t:
             return "ASSIGN";

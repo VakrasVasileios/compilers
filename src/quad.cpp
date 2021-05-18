@@ -1,10 +1,9 @@
 #include "../include/quad.h"
 #include <assert.h>
 
-
 std::ostream&
 operator<<(std::ostream& os, const quad _quad) {
-    os << std::to_string(_quad.label) << ":   " << IOpCodeToString(_quad.op) << " ";
+    os << std::to_string(_quad.label) << ":   " << IopcodeToString(_quad.op) << " ";
     if (_quad.result != nullptr)
         os << _quad.result << " ";
     if(_quad.arg1 != nullptr)
