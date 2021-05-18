@@ -17,7 +17,7 @@ protected:
 TEST_F(InterCodeSuite, assign_simple) {
    expected =   "1:   ASSIGN x 2 [line 1]\n"
                 "2:   ASSIGN ^0 x [line 1]\n";
-   actual = exec("./scanner ../../test/files/phase3_tests/assign/simple.asc");
+   actual = exec("./d_intermediate_code ../../test/files/phase3_tests/assign/simple.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -36,7 +36,7 @@ TEST_F(InterCodeSuite, assign_calls_nested) {
                 "12:   GETRETVAL ^1 [line 7]\n"
                 "13:   ASSIGN x ^1 [line 7]\n"
                 "14:   ASSIGN ^2 x [line 7]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/assign/calls_nested.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/assign/calls_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -47,7 +47,7 @@ TEST_F(InterCodeSuite, functions_single) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/single.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/single.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -64,7 +64,7 @@ TEST_F(InterCodeSuite, functions_many) {
                 "10:   JUMP 13 [line 17]\n"
                 "11:   FUNCSTART r [line 17]\n"
                 "12:   FUNCEND r [line 18]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/many.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/many.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -87,7 +87,7 @@ TEST_F(InterCodeSuite, functions_nested) {
                 "16:   JUMP 19 [line 16]\n"
                 "17:   FUNCSTART e [line 16]\n"
                 "18:   FUNCEND e [line 27]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/nested.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -98,7 +98,7 @@ TEST_F(InterCodeSuite, functions_shadowed) {
                 "4:   FUNCSTART lkdland [line 2]\n"
                 "5:   FUNCEND lkdland [line 3]\n"
                 "6:   FUNCEND lkdland [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/shadowed.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/shadowed.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -112,14 +112,14 @@ TEST_F(InterCodeSuite, functions_anonymous) {
                 "7:   FUNCSTART $2 [line 4]\n"
                 "8:   FUNCEND $2 [line 5]\n"
                 "9:   FUNCEND $1 [line 6]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/anonymous.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/anonymous.asc");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
 TEST_F(InterCodeSuite, functions_call_warning) {
     expected =  "1:   CALL g [line 1]\n"
                 "2:   GETRETVAL ^0 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_warning.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_warning.asc");
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
@@ -129,7 +129,7 @@ TEST_F(InterCodeSuite, functions_call_noparameters) {
                 "3:   FUNCEND f [line 2]\n"
                 "4:   CALL f [line 4]\n"
                 "5:   GETRETVAL ^0 [line 4]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_no_parameters.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_no_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);          
 }
 
@@ -140,7 +140,7 @@ TEST_F(InterCodeSuite, functions_call_parameters) {
                 "4:   PARAM 0 [line 4]\n"
                 "5:   CALL f [line 4]\n"
                 "6:   GETRETVAL ^0 [line 4]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_parameters.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
@@ -170,13 +170,13 @@ TEST_F(InterCodeSuite, functions_call_with_symbol_parameters) {
                 "20:   PARAM c [line 12]\n"
                 "21:   CALL f [line 12]\n"
                 "22:   GETRETVAL ^0 [line 12]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(InterCodeSuite, functions_call_less_parameters) {
     expected = "Error, in line: 4: Too few arguments passed to function: f, defined in line: 1\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_less_parameters.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_less_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -204,7 +204,7 @@ TEST_F(InterCodeSuite, functions_call_nested) {
                 "19:   PARAM ^1 [line 12]\n"
                 "20:   CALL f [line 12]\n"
                 "21:   GETRETVAL ^2 [line 12]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_nested.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -217,7 +217,7 @@ TEST_F(InterCodeSuite, functions_call_more_parameters) {
                 "5:   PARAM a [line 5]\n"
                 "6:   CALL f [line 5]\n"
                 "7:   GETRETVAL ^0 [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_more_parameters.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_more_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -228,7 +228,7 @@ TEST_F(InterCodeSuite, functions_call_function_def) {
                 "4:   PARAM 1 [line 1]\n"
                 "5:   CALL f [line 1]\n"
                 "6:   GETRETVAL ^0 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_function_def.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_function_def.asc");
     GTEST_ASSERT_EQ(expected, actual);        
 }
 
@@ -242,7 +242,7 @@ TEST_F(InterCodeSuite, functions_call_nested_with_func_def) {
                 "7:   PARAM ^0 [line 1]\n"
                 "8:   CALL g [line 1]\n"
                 "9:   GETRETVAL ^1 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -254,7 +254,7 @@ TEST_F(InterCodeSuite, functions_call_anonymous_func_def) {
                 "5:   PARAM 1 [line 1]\n"
                 "6:   CALL $1 [line 1]\n"
                 "7:   GETRETVAL ^0 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 /*  ------------ Return --------------   */
@@ -265,7 +265,7 @@ TEST_F(InterCodeSuite, return_void) {
                 "3:   RETURN [line 2]\n"
                 "4:   JUMP 5 [line 2]\n"
                 "5:   FUNCEND f [line 3]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/return/return_void.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/return/return_void.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -276,7 +276,7 @@ TEST_F(InterCodeSuite, return_symbol) {
                 "3:   RETURN x [line 6]\n"
                 "4:   JUMP 5 [line 6]\n"
                 "5:   FUNCEND f [line 7]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/return/return_symbol.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/return/return_symbol.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -297,7 +297,7 @@ TEST_F(InterCodeSuite, return_many_and_nested) {
                 "14:   RETURN ^0 [line 6]\n"
                 "15:   JUMP 16 [line 6]\n"
                 "16:   FUNCEND MPIFTEKI [line 7]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/return/return_many_and_nested.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/return/return_many_and_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -309,7 +309,7 @@ TEST_F(InterCodeSuite, logical_greater_simple) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/greater_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/greater_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -319,7 +319,7 @@ TEST_F(InterCodeSuite, logical_equal_simple) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/equal_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/equal_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -329,7 +329,7 @@ TEST_F(InterCodeSuite, logical_greater_equal_simple) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/greater_equal_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/greater_equal_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -339,7 +339,7 @@ TEST_F(InterCodeSuite, logical_less_equal_simple) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/less_equal_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/less_equal_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -349,7 +349,7 @@ TEST_F(InterCodeSuite, logical_less_simple) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/less_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/less_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -359,7 +359,7 @@ TEST_F(InterCodeSuite, logical_not_equal_simple) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/logical/not_equal_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/not_equal_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -375,7 +375,7 @@ TEST_F(InterCodeSuite, loop_while_simple) {
                 "6:   IF_EQ ^0 'true' 8 [line 1]\n"
                 "7:   JUMP 9 [line 1]\n"
                 "8:   JUMP 1 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/while_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
@@ -385,7 +385,7 @@ TEST_F(InterCodeSuite, loop_while_simple_with_stms) {
                 "3:   ASSIGN x 9 [line 2]\n"
                 "4:   ASSIGN ^0 x [line 2]\n"
                 "5:   JUMP 1 [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");    
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -409,7 +409,7 @@ TEST_F(InterCodeSuite, loop_while_many_nested) {
                 "17:   IF_EQ s 'true' 19 [line 9]\n"
                 "18:   JUMP 20 [line 9]\n"
                 "19:   JUMP 17 [line 10]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_many_nested.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/while_many_nested.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -418,7 +418,7 @@ TEST_F(InterCodeSuite, loop_while_continue_single) {
                 "2:   JUMP 5 [line 1]\n"
                 "3:   JUMP 1 [line 2]\n"
                 "4:   JUMP 1 [line 3]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_continue_single.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/while_continue_single.asc");    
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
@@ -451,7 +451,7 @@ TEST_F(InterCodeSuite, loop_while_continue_many_nested) {
                 "26:   JUMP 16 [line 10]\n"
                 "27:   JUMP 16 [line 15]\n"
                 "28:   JUMP 1 [line 20]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_continue_many_nested.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/while_continue_many_nested.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -460,7 +460,7 @@ TEST_F(InterCodeSuite, loop_while_break_single) {
                 "2:   JUMP 5 [line 1]\n"
                 "3:   JUMP 5 [line 2]\n"
                 "4:   JUMP 1 [line 3]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/while_break_single.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/while_break_single.asc");    
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
@@ -478,7 +478,7 @@ TEST_F(InterCodeSuite, loop_for_simple) {
                 "11:   ADD i i 1 [line 1]\n"
                 "12:   JUMP 3 [line 1]\n"
                 "13:   JUMP 10 [line 2]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);                
 }
 
@@ -498,7 +498,7 @@ TEST_F(InterCodeSuite, loop_for_simple_with_stmts) {
                 "13:   ASSIGN x 9 [line 2]\n"
                 "14:   ASSIGN ^3 x [line 2]\n"
                 "15:   JUMP 10 [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_simple_with_stmts.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_simple_with_stmts.asc");    
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -555,7 +555,7 @@ TEST_F(InterCodeSuite, loop_for_many_nested) {
                 "50:   ADD i i 1 [line 6]\n"
                 "51:   JUMP 42 [line 6]\n"
                 "52:   JUMP 49 [line 6]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_many_nested.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_many_nested.asc");    
     GTEST_ASSERT_EQ(expected, actual);           
 }
 
@@ -572,7 +572,7 @@ TEST_F(InterCodeSuite, loop_for_continue_single) {
                 "10:   JUMP 1 [line 1]\n"
                 "11:   JUMP 8 [line 2]\n"
                 "12:   JUMP 8 [line 3]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_continue_single.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_continue_single.asc");    
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
@@ -610,7 +610,7 @@ TEST_F(InterCodeSuite, loop_for_continue_many_nested) {
                 "31:   JUMP 26 [line 4]\n"
                 "32:   JUMP 26 [line 4]\n"
                 "33:   JUMP 8 [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_continue_many_nested.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_continue_many_nested.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -627,7 +627,7 @@ TEST_F(InterCodeSuite, loop_for_break_single) {
                 "10:   JUMP 1 [line 1]\n"
                 "11:   JUMP 13 [line 2]\n"
                 "12:   JUMP 8 [line 3]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_break_single.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_break_single.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -664,7 +664,7 @@ TEST_F(InterCodeSuite, loop_for_break_many_nested) {
                 "30:   JUMP 32 [line 4]\n"
                 "31:   JUMP 26 [line 4]\n"
                 "32:   JUMP 8 [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/loop/for_break_many_nested.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/loop/for_break_many_nested.asc");    
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
@@ -674,7 +674,7 @@ TEST_F(InterCodeSuite, loop_for_break_many_nested) {
 TEST_F(InterCodeSuite, if_simple) {
     expected =  "1:   IF_EQ x 'true' 3 [line 1]\n"
                 "2:   JUMP 3 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_simple.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -686,7 +686,7 @@ TEST_F(InterCodeSuite, if_expr) {
                 "5:   ASSIGN ^0 'false' [line 1]\n"
                 "6:   IF_EQ ^0 'true' 8 [line 1]\n"
                 "7:   JUMP 8 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_expr.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_expr.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -700,7 +700,7 @@ TEST_F(InterCodeSuite, if_stmts) {
                 "7:   JUMP 10 [line 1]\n"
                 "8:   ASSIGN a f [line 5]\n"
                 "9:   ASSIGN ^1 a [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_stmts.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_stmts.asc");    
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -715,7 +715,7 @@ TEST_F(InterCodeSuite, if_nested_many) {
                 "8:   ASSIGN ^0 s [line 4]\n"
                 "9:   ASSIGN k 0 [line 7]\n"
                 "10:   ASSIGN ^0 k [line 7]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_nested_many.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_nested_many.asc");    
     GTEST_ASSERT_EQ(expected, actual);                  
 }
 
@@ -727,7 +727,7 @@ TEST_F(InterCodeSuite, if_else) {
                 "5:   ASSIGN ^0 b [line 2]\n"
                 "6:   ASSIGN a x [line 2]\n"
                 "7:   ASSIGN ^0 a [line 2]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_else.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_else.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -741,7 +741,7 @@ TEST_F(InterCodeSuite, if_elseif) {
                 "7:   JUMP 10 [line 2]\n"
                 "8:   ASSIGN x 3 [line 2]\n"
                 "9:   ASSIGN ^0 x [line 2]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_elseif.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_elseif.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -773,7 +773,7 @@ TEST_F(InterCodeSuite, if_elseif_else) {
                 "25:   JUMP 28 [line 6]\n"
                 "26:   ASSIGN x 3 [line 6]\n"
                 "27:   ASSIGN ^0 x [line 6]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_elseif_else.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_elseif_else.asc");    
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -804,7 +804,7 @@ TEST_F(InterCodeSuite, if_else_many_nested) {
                 "24:   IF_EQ x 'true' 26 [line 4]\n"
                 "25:   JUMP 27 [line 4]\n"
                 "26:   JUMP 27 [line 5]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");    
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -816,7 +816,7 @@ TEST_F(InterCodeSuite, if_else_many_nested) {
 //                 "3:   MUL ^0 8 o [line 3]\n"
 //                 "4:   MOD ^0 3 6 [line 4]\n"
 //                 "5:   DIV ^0 1 1 [line 5]\n";
-//     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/simple.asc");
+//     actual = exec("./d_intermediate_code ../test/files/phase3_tests/arithmetic/simple.asc");
 //     GTEST_ASSERT_EQ(expected, actual); 
 // }
 
@@ -825,39 +825,39 @@ TEST_F(InterCodeSuite, if_else_many_nested) {
 //                 "2:   ADD ^0 ^0 8 [line 1]\n"
 //                 "3:   ADD ^0 ^0 9 [line 1]\n"
 //                 "4:   ADD ^0 ^0 u [line 1]\n";
-//     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/spaghetti.asc");
+//     actual = exec("./d_intermediate_code ../test/files/phase3_tests/arithmetic/spaghetti.asc");
 //     GTEST_ASSERT_EQ(expected, actual); 
 // }
 
 // TEST_F(QuadTest, arithmetic_function_id_error) {
 //     expected =  "Error, in line: 4: Use of addition with non variable type\n";
-//     actual = exec("./scanner ../test/files/phase3_tests/arithmetic/function_id_error.asc");
+//     actual = exec("./d_intermediate_code ../test/files/phase3_tests/arithmetic/function_id_error.asc");
 //     GTEST_ASSERT_EQ(expected, actual); 
 // }
 
 TEST_F(InterCodeSuite, arithmetic_plusplus_suffix) {
     expected =  "1:   ASSIGN ^0 i [line 1]\n"
                 "2:   ADD i i 1 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(InterCodeSuite, arithmetic_plusplus_prefix) {
     expected =  "1:   ADD i i 1 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
 TEST_F(InterCodeSuite, arithmetic_uminus) {
     expected = "1:   UMINUS ^0 1 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/uminus.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
 TEST_F(InterCodeSuite, arithmetic_uminus_bool) {
     expected = "Error, in line: 1: Illegal use of unary minus on constant boolean\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
@@ -867,21 +867,21 @@ TEST_F(InterCodeSuite, aithmetic_not) {
                 "3:   ASSIGN ^0 'true' [line 1]\n"
                 "4:   JUMP 6 [line 1]\n"
                 "5:   ASSIGN ^0 'false' [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/not.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/not.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
 TEST_F(InterCodeSuite, minusminus_prefix) {
     expected =  "1:   SUB a a 1 [line 1]\n"
                 "2:   ASSIGN ^0 a [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
 TEST_F(InterCodeSuite, minusminus_suffix) {
     expected =  "1:   ASSIGN ^0 a [line 1]\n"
                 "2:   SUB a a 1 [line 1]\n";
-    actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
