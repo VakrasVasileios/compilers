@@ -4,11 +4,11 @@
     #include <iostream>
     #include "include/debuglog.h"
     #include <stack>
-    #include "include/statement/statement.h"
     #include "include/statement/for_stmt.h"
     #include "include/statement/while_stmt.h"
     #include "include/statement/loop_stmt.h"
     #include "include/statement/func_def_stmt.h"
+     #include "include/statement/if_stmt.h"
     #include <fstream>
     #include <string>
     #include <list>
@@ -107,49 +107,6 @@
 
     Quad*               Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
     unsigned int        GetBackQuadLabel();
-
-    /*    TO REMOVE START */
-    unsigned int if_cnt = 0;
-
-    unsigned int GetIfStmt() {
-        return if_cnt;
-    }
-
-    void IncreaseIfStmt() {
-        if_cnt++;
-    }
-
-    void DecreaseIfStmt() {
-        if_cnt--;
-    }
-
-    std::map<unsigned int, Quad*> jump_quad_by_if_stmt; // Maps the depth of an if statement with its exit jump quad.
-
-    void MapIfStmtJumpQuad(unsigned int if_stmt, Quad* exit_quad) {
-        jump_quad_by_if_stmt.insert({if_stmt, exit_quad});
-    }
-
-    void PatchIfStmtJumpQuad(unsigned int if_stmt, unsigned int patch_label) {
-        auto branch_quad = jump_quad_by_if_stmt[if_stmt];
-        //PatchBranchQuad(branch_quad, patch_label);
-        branch_quad->arg2 = new IntConstant(patch_label);
-        jump_quad_by_if_stmt.erase(if_stmt);
-    }
-
-    std::map<unsigned int, std::list<Quad*>> else_jump_quads_by_if_stmt; // Maps the depth of an if statement with its else stmts jump quads.
-
-    void PushElseJumpQuad(unsigned int if_stmt, Quad* else_jump_quad) {
-        else_jump_quads_by_if_stmt[if_stmt].push_back(else_jump_quad);
-    }
-
-    void PatchElseJumpQuad(unsigned int if_stmt) {
-        auto else_jump_quads = else_jump_quads_by_if_stmt[if_stmt];
-        auto else_jump_quad = else_jump_quads.back();
-        else_jump_quads.pop_back();
-        //PatchJumpQuad(else_jump_quad, GetBackQuadLabel() + 1);
-        else_jump_quad->result = new IntConstant(GetBackQuadLabel() + 1);
-    }
-    /*    TO REMOVE END */
     
     std::stack<FunctionCall*>   call_exprs;
 
@@ -158,6 +115,8 @@
     std::stack<ForStmt*>        for_stmts;
 
     std::stack<FuncDefStmt*>    func_def_stmts;  
+
+    std::stack<IfStmt*>         if_stmts;
 %}
 
 %union {                                                    
@@ -966,7 +925,8 @@ methodcall: DOTDOT ID '(' elist ')' {
 
 multelist:  ',' expr multelist  {
                                     if (call_exprs.size() != 0) {
-                                        call_exprs.top()->IncludeParameter($2);
+                                        auto top_call = call_exprs.top();
+                                        top_call->IncludeParameter($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
                                     }
                                     DLOG("multelist -> ,expr multelist");
@@ -978,7 +938,8 @@ multelist:  ',' expr multelist  {
 
 elist:      expr multelist  {
                                 if (call_exprs.size() != 0) {
-                                    call_exprs.top()->IncludeParameter($1);
+                                    auto top_call = call_exprs.top();
+                                    top_call->IncludeParameter($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
                                 }
                                              
@@ -1170,15 +1131,14 @@ idlist:     ID      {
             ;
 
 ifstmt:     IF '(' expr ')'                 {
-                                                IncreaseIfStmt();
-
-                                                auto if_stmt = GetIfStmt();
+                                                auto if_stmt = new IfStmt();
+                                                if_stmts.push(if_stmt);
 
                                                 auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
-                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
-
                                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
-                                                MapIfStmtJumpQuad(if_stmt, jump_quad);
+
+                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
+                                                if_stmt->set_if_jump_quad(jump_quad);
                                             }
             stmt                            {
                                                 ResetTemp();
@@ -1189,31 +1149,31 @@ ifstmt:     IF '(' expr ')'                 {
             ;
 
 elsestmt:   ELSE            {
-                                auto if_stmt = GetIfStmt();
+                                auto top_if_stmt = if_stmts.top();
 
                                 auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                PushElseJumpQuad(if_stmt, else_jump_quad);
+                                top_if_stmt->PushElseJumpQuad(else_jump_quad);
 
-                                auto patch_label = GetBackQuadLabel() + 1;
-                                PatchIfStmtJumpQuad(if_stmt, patch_label);
+                                top_if_stmt->PatchIfJumpQuad(GetBackQuadLabel() + 1);
                             }
             stmt            {
-                                auto if_stmt = GetIfStmt();
-                                PatchElseJumpQuad(if_stmt);
+                                auto top_if_stmt = if_stmts.top();
 
-                                DecreaseIfStmt();
+                                top_if_stmt->PatchElseJumpQuad(GetBackQuadLabel() + 1);
+                                top_if_stmt->PopElseJumpQuad();
+
+                                if_stmts.pop();
 
                                 ResetTemp();
 
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
-                                auto if_stmt = GetIfStmt();
+                                auto top_if_stmt = if_stmts.top();
 
-                                auto patch_label = GetBackQuadLabel() + 1;
-                                PatchIfStmtJumpQuad(if_stmt, patch_label);
+                                top_if_stmt->PatchIfJumpQuad( GetBackQuadLabel() + 1);
 
-                                DecreaseIfStmt();
+                                if_stmts.pop();
                                 DLOG("elsestmt -> EMPTY");
                             }
             ;

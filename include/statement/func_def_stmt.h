@@ -1,7 +1,6 @@
 #ifndef FUNCTIONDEF_H
 #define FUNCTIONDEF_H
 
-#include "statement.h"
 #include "../expression/symbol.h"
 #include <list>
 #include "../quad.h"
@@ -11,9 +10,9 @@
  * @brief A function definition statement.
  * 
 **/ 
-class FuncDefStmt final : public Statement {
+class FuncDefStmt final {
 public:
-    FuncDefStmt(Symbol* sym) : Statement(FUNC_DEF_t), sym(sym)  {};
+    FuncDefStmt(Symbol* sym) : sym(sym)  {};
     ~FuncDefStmt() = default;
     /**
      * @brief Returns a read access to this FuncDefStmt symbol that is defined.

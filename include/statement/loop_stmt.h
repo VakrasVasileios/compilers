@@ -1,7 +1,6 @@
 #ifndef LOOPSTATEMENT_H
 #define LOOPSTATEMENT_H
 
-#include "statement.h"
 #include <list>
 #include "../quad.h"
 
@@ -16,7 +15,7 @@ enum LoopType {
 /**
  * @brief An abstract statement of loop type.
 **/
-class LoopStmt : public Statement {
+class LoopStmt {
 public:
     /**
      * @brief Returns a read access to the type of this LoopStatement.
@@ -76,7 +75,7 @@ public:
     virtual void    PatchContinueJumpQuads() = 0;
 protected:
     LoopStmt(LoopType loop_type, unsigned int first_quad_label)
-        : Statement(Loop_t), loop_type(loop_type), first_quad_label(first_quad_label) {};
+        : loop_type(loop_type), first_quad_label(first_quad_label) {};
     ~LoopStmt() = default;
 
     std::list<Quad*>    loop_quads;
