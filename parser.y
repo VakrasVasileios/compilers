@@ -86,7 +86,6 @@
     void                IncreaseScope();
     void                DecreaseScope();
     void                HideLowerScopes();
-    void                EnableLowerScopes();
     inline bool         ScopeIsGlobal() { return current_scope == global_scope;}
 
     void                InitLibraryFunctions(); 
@@ -1013,7 +1012,7 @@ funcdef:    FUNCTION
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
                                 top_func_def->PatchReturnJumpQuads(func_end_quad->label);
 
-                                EnableLowerScopes();
+                                program_stack.ActivateLowerScopes();
 
                                 func_def_stmts.pop();
 
@@ -1074,7 +1073,7 @@ funcdef:    FUNCTION
                                     func_def_stmts.pop();
                                 }
                                 
-                                EnableLowerScopes();
+                                program_stack.ActivateLowerScopes();
 
                                 $<sym>$ = function;
 
@@ -1353,10 +1352,6 @@ void HideLowerScopes() {
         program_stack.Top()->Deactivate();
     if (current_scope > 1)
         program_stack.DeactivateLowerScopes();
-}
-
-void EnableLowerScopes() {
-    program_stack.ActivateLowerScopes();
 }
 
 void InitLibraryFunctions() {
