@@ -38,7 +38,7 @@
     unsigned int                current_scope = OUT_OF_SCOPE;
     
     SymbolTable                 symbol_table;
-    ProgramStack                program_stack;  // the top element returns a read/write reference to the most recent block.
+    ProgramStack                program_stack;  
 
     unsigned int                program_var_offset = 0;
     unsigned int                formal_args_offset = 0;
@@ -50,29 +50,29 @@
 
     std::vector<Quad*>          quads;
 
-    void                IncreaseScope();
-    void                DecreaseScope();
-    void                HideLowerScopes();
-    inline bool         ScopeIsGlobal() { return current_scope == global_scope;}
+    void                        IncreaseScope();
+    void                        DecreaseScope();
+    void                        HideLowerScopes();
+    inline bool                 ScopeIsGlobal() { return current_scope == global_scope;}
 
-    void                InitLibraryFunctions(); 
-    Symbol*             InsertLocalVariable(const char* name, unsigned int line);
-    Symbol*             InsertGlobalVariable(const char* name, unsigned int line);
-    Symbol*             InsertUserFunction(const char* name, unsigned int line);
-    Symbol*             InsertUserFunction(unsigned int line);
-    void                PushStashedFormalArguments();
-    void                StashFormalArgument(const char* name, unsigned int line);
-    inline bool         IsLibraryFunction(Symbol* symbol)   { return symbol->get_type() == LIB_FUNC; }
-    inline bool         IsUserFunction(Symbol* symbol)      { return symbol->get_type() == USER_FUNC; }
-    inline bool         IsVariable(Symbol* symbol)          { return symbol->get_type() == VAR; }
-    inline bool         IsGlobalVar(Symbol* symbol)         { return IsVariable(symbol) && symbol->get_scope() == global_scope; }
-    inline bool         IsAtCurrentScope(Symbol* symbol)    { return symbol->get_scope() == current_scope; }
+    void                        InitLibraryFunctions(); 
+    Symbol*                     InsertLocalVariable(const char* name, unsigned int line);
+    Symbol*                     InsertGlobalVariable(const char* name, unsigned int line);
+    Symbol*                     InsertUserFunction(const char* name, unsigned int line);
+    Symbol*                     InsertUserFunction(unsigned int line);
+    void                        PushStashedFormalArguments();
+    void                        StashFormalArgument(const char* name, unsigned int line);
+    inline bool                 IsLibraryFunction(Symbol* symbol)   { return symbol->get_type() == LIB_FUNC; }
+    inline bool                 IsUserFunction(Symbol* symbol)      { return symbol->get_type() == USER_FUNC; }
+    inline bool                 IsVariable(Symbol* symbol)          { return symbol->get_type() == VAR; }
+    inline bool                 IsGlobalVar(Symbol* symbol)         { return IsVariable(symbol) && symbol->get_scope() == global_scope; }
+    inline bool                 IsAtCurrentScope(Symbol* symbol)    { return symbol->get_scope() == current_scope; }
 
-    Symbol*             NewTemp();
-    void                ResetTemp();
+    Symbol*                     NewTemp();
+    void                        ResetTemp();
 
-    Quad*               Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
-    unsigned int        GetBackQuadLabel();
+    Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
+    unsigned int                GetBackQuadLabel();
     
     std::stack<FunctionCall*>   call_exprs;
 
@@ -1291,11 +1291,22 @@ int main(int argc, char** argv) {
             for (auto quad : quads) 
                 std::cout << *quad << std::endl;
         }
-    #endif         
+    #endif 
+            
     #if defined LOGSYMTABLE
         if (NoErrorSignaled()) 
             std::cout << symbol_table; 
     #endif
+    
+    #if defined LOGQUADSTXT
+        const char *path="../quads.txt";
+        std::ofstream quad_file(path);
+        if (NoErrorSignaled()) {
+            for (auto quad : quads) 
+                quad_file << *quad << std::endl;
+        }
+        quad_file.close();
+    #endif  
 
     return 0;
 }
