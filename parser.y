@@ -1048,7 +1048,7 @@ funcdef:    FUNCTION
                                         symbol = function;
                                     }
                                 }
-                                auto func_def_stmt = new FuncDefStmt(symbol); //May want to move to else
+                                auto func_def_stmt = new FuncDefStmt(symbol); 
                                 func_def_stmts.push(func_def_stmt);
 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);

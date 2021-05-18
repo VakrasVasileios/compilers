@@ -13,6 +13,7 @@ ProgramStack:: Top() {
 
 void 
 ProgramStack:: Push(Block* block) {
+    PRECONDITION(block != nullptr);
     block_list.push_back(block);
 }
 

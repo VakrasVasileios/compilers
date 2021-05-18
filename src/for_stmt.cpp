@@ -38,10 +38,12 @@ ForStmt:: get_exprs_first_quad_label() const {
 
 void 
 ForStmt:: set_logical_expr_first_quad_label(const unsigned int label) {
+    PRECONDITION(label >= 0);
     logical_expr_first_quad_label = label;
 }
 
 void
 ForStmt:: set_exprs_first_quad_label(const unsigned int label) {
+    PRECONDITION(label >= 0);
     exprs_first_quad_label = label;
 }

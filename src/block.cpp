@@ -32,17 +32,13 @@ Block:: Lookup(std::string id) {
 }
 
 bool
-Block:: IsAFunctionEntry(Symbol* entry) {
-    return entry->get_type() == LIB_FUNC || entry->get_type() == USER_FUNC;
-}
-
-bool
 Block:: IsHiddenVariable(Symbol* entry) {
     return entry->get_id().at(0) == '^';
 }
 
 void 
 Block:: Insert(Symbol* entry) {
+    PRECONDITION(entry != nullptr);
     entries.push_back(entry);
 }
 

@@ -5,6 +5,7 @@
 #include "expression/function.h"
 #include <list>
 #include <string>
+#include "../util/contract/contract.h"
 
 
 /**

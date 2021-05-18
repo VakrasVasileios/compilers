@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "block.h"
+#include "../util/contract/contract.h"
 
 
 /**
@@ -26,7 +27,8 @@ public:
     /**
      * @brief Inserts a block at a scope on this SymbolTable.
      * 
-     * @param scope the scope on which to insert a block, not null
+     * @param scope the scope on which to insert a block, greater
+     * or equal to zero.
      * @param block the block to be inserted, not null 
     **/ 
     void                            Insert(unsigned int scope, Block* block);

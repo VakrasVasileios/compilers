@@ -3,6 +3,7 @@
 
 #include "expression/symbol.h"
 #include "expression/function.h"
+#include "../util/contract/contract.h"
 #include <list>
 
 /**
@@ -34,6 +35,8 @@ class Block final {
          * Returns a read/write access to a reference of the symbol if it's found,
         *  else nullptr.
         * 
+        *  @param id the id with which to search for a symbol on this Block
+        * 
         *  @return a read/write access to a reference of the symbol if it's found,
         *  else nullptr
         **/ 
@@ -57,7 +60,6 @@ class Block final {
     private:
        std::list<Symbol*> entries;
 
-       static bool                     IsAFunctionEntry(Symbol* entry);
        static bool                     IsHiddenVariable(Symbol* entry);
 };
 

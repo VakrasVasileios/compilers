@@ -7,6 +7,8 @@ SymbolTable:: get_blocks_table() const {
 
 void
 SymbolTable:: Insert(unsigned int scope, Block* block) {  
+    PRECONDITION(scope >= 0);
+    PRECONDITION(block != nullptr);
     blocks_table.push_back(std::list<Block*>());
     blocks_table[scope].push_back(block);
 }

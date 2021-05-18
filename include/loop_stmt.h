@@ -3,6 +3,7 @@
 
 #include <list>
 #include "quad.h"
+#include "../util/contract/contract.h"
 
 /**
  * @brief The type of a loop statement.
