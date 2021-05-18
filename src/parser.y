@@ -1462,8 +1462,7 @@ Symbol* NewTemp() {
     }
 }
 
-Quad*
-Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
+Quad* Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
     unsigned int label = quads.size() + 1;
     Quad* q = new quad(op, result, arg1, arg2, label, line);
     quads.push_back(q);
