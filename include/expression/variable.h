@@ -3,9 +3,9 @@
 
 #include "symbol.h"
 
-/*
-Provides a variable symbol.
-*/
+/**
+ * @brief A variable symbol expression.
+**/ 
 class Variable : public Symbol {   
 protected:
     Variable(std::string id, unsigned int line, unsigned int scope, ScopeSpace space, unsigned int offset)

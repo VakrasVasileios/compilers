@@ -3,13 +3,19 @@
 
 #include "constant.h"
 
-/*
-Provides a bool constant expression.
-*/
+/**
+ * @brief A bool constant expression.
+**/ 
 class BoolConstant final : public Constant {
 public:
     BoolConstant(bool value) : Constant(CONST_BOOL), value(value) {};
     ~BoolConstant() = default;
+    /**
+     * @brief Returns a read access to this BoolConstant value.
+     * 
+     * @return a read access to this BoolConstant value.
+    **/ 
+    bool      get_value() const;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:

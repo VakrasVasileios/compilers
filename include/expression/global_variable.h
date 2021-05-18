@@ -3,10 +3,11 @@
 
 #include "variable.h"
 
-/*
-Provides a global variable symbol.
-This symbol has a global scope space.
-*/
+/**
+ * @brief A global variable symbol expression.
+ * Has a program var scope space.
+ * 
+**/ 
 class GlobalVariable final : public Variable {
 public:
     GlobalVariable(std::string id, unsigned int line, unsigned int scope, unsigned int offset)

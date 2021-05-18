@@ -1,5 +1,10 @@
 #include "../../include/expression/bool_constant.h"
 
+bool
+BoolConstant:: get_value() const {
+    return value;
+}
+
 std::string
 BoolConstant:: value_to_string() const {
     if (value)

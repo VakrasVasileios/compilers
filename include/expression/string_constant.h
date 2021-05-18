@@ -3,13 +3,17 @@
 
 #include "constant.h"
 
-/*
-Provides a string constant expression.
-*/
+/**
+ * @brief A string constant expression.
+**/ 
 class StringConstant final : public Constant {
 public:
     StringConstant(std::string value) : Constant(CONST_STR), value(value) {};
     ~StringConstant() = default;
+    /**
+     * @brief Returns a read access to this StringConstant value.
+    **/ 
+    std::string     get_value() const;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override; 
 private:

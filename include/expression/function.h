@@ -5,14 +5,16 @@
 #include "formal_variable.h"
 #include <list>
 
-/*
-Provides a function symbol.
-*/
+/**
+ * @brief A function symbol expression.
+**/ 
 class Function : public Symbol {
 public:
-    /*
-    Returns a read access to this Function arguments.
-    */
+    /**
+     * @brief Returns a read access to this Function formal arguments.
+     * 
+     * @return a read access to this Function formal arguments, not null
+    **/ 
     std::list<FormalVariable*>  get_formal_arguments() const; 
 protected:
     Function(ExprType type, std::string id, unsigned int line, unsigned int scope, ScopeSpace space, unsigned int offset) : 

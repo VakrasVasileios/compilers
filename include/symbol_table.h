@@ -4,9 +4,10 @@
 #include <vector>
 #include "block.h"
 
-/*
-Provides a table of block lists across many scopes.
-*/
+
+/**
+ * @brief A table of block lists across many scopes.
+**/ 
 class SymbolTable final {
 public:
     SymbolTable() = default;
@@ -14,10 +15,20 @@ public:
     /*
     Returns this SymbolTable blocks table.
     */
+    /**
+     * @brief Returns a read access to this SymbolTable blocks table,
+     * not null
+     * 
+     * @return a read access to this SymbolTable blocks table,
+     * not null
+    **/ 
     std::vector<std::list<Block*> > get_blocks_table() const;
-    /*
-    Inserts block at a scope on this SymbolTable.
-    */
+    /**
+     * @brief Inserts a block at a scope on this SymbolTable.
+     * 
+     * @param scope the scope on which to insert a block, not null
+     * @param block the block to be inserted, not null 
+    **/ 
     void                            Insert(unsigned int scope, Block* block);
 
     friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbol_table);

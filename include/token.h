@@ -8,6 +8,9 @@
 
 #define logtoken(token) std::cout << token->numline << ": #" << token->numToken << "\t\"" << token->content << "\"  " << token->type << std::endl
 
+/**
+ * @brief A token.
+**/ 
 typedef struct alpha_token_t {
     unsigned int            numline;
     unsigned int            numToken;
@@ -25,6 +28,10 @@ token::alpha_token_t(unsigned int line, unsigned int num, const std::string& _co
 
 std::vector<token*> tokenList;
 
+/**
+ * @brief Logs the list of tokens.
+ * 
+**/ 
 void logTokenList() {
     for(int i=0; i < tokenList.size(); i++)
         logtoken(tokenList.at(i));

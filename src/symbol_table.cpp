@@ -15,7 +15,7 @@ bool
 SymbolTable:: ContainsAnEntry(std::list<Block*> blockList) {
     bool contains = false;
     for (auto block : blockList) {
-        if (!block->get_entries().empty())
+        if (!block->get_symbols().empty())
             contains = true;
     }
     return contains;
