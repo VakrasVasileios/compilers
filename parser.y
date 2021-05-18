@@ -149,34 +149,14 @@
         //PatchJumpQuad(else_jump_quad, GetBackQuadLabel() + 1);
         else_jump_quad->result = new IntConstant(GetBackQuadLabel() + 1);
     }
-
-
-    std::stack<FunctionCall*> call_stack; // provides the call stack containing all the active call stack frames.
-
-    unsigned int GetCallDepth() {
-        return call_stack.size();
-    }
-
-    void PushCallStackFrame(FunctionCall* function_call) {
-        assert(function_call != nullptr);
-        call_stack.push(function_call);
-    }
-
-    FunctionCall* PopCallStackFrame() {
-        auto top_call = call_stack.top();
-        call_stack.pop();
-        return top_call;
-    }
-
-    void PushCallParam(Expression* expr) {
-        call_stack.top()->IncludeParameter(expr);
-    }
     /*    TO REMOVE END */
     
+    std::stack<FunctionCall*>   call_exprs;
 
     std::stack<LoopStmt*>       loop_stmts;
     std::stack<WhileStmt*>      while_stmts;
     std::stack<ForStmt*>        for_stmts;
+
     std::stack<FuncDefStmt*>    func_def_stmts;  
 %}
 
@@ -896,28 +876,28 @@ call:       call  '(' elist ')'             {
             | lvalue                        {
                                                 
                                                 auto called_symbol = $1;
-                                                auto function_call = new FunctionCall(called_symbol, std::list<Expression*>());
+                                                auto func_call = new FunctionCall(called_symbol, std::list<Expression*>());
                                                 
-                                                PushCallStackFrame(function_call);
+                                                call_exprs.push(func_call);
 
-                                                $<funcCall>$ = function_call;
+                                                $<funcCall>$ = func_call;
                                             }
             callsuffix                      {
-                                                auto function_call = PopCallStackFrame();
-                                                auto called_symbol = function_call->get_called_symbol();
+                                                auto top_func_call = call_exprs.top();
+                                                auto called_symbol = top_func_call->get_called_symbol();
 
-                                                $<funcCall>$ = function_call;
+                                                $<funcCall>$ = top_func_call;
 
                                                 auto temp_value = NewTemp();
                         
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr, yylineno);    
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
 
-                                                function_call->set_ret_val(temp_value->get_id());
+                                                top_func_call->set_ret_val(temp_value->get_id());
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
-                                                    auto call_args_num = function_call->get_params().size();
+                                                    auto call_args_num = top_func_call->get_params().size();
 
                                                     if (call_args_num < args_num)
                                                         SIGNALERROR("Too few arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
@@ -925,38 +905,42 @@ call:       call  '(' elist ')'             {
                                                         LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                 }
 
+                                                call_exprs.pop();
+
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')'               {                                                
                                                 auto called_symbol = $2;
-                                                auto function_call = new FunctionCall(called_symbol, std::list<Expression*>());
+                                                auto func_call = new FunctionCall(called_symbol, std::list<Expression*>());
 
-                                                PushCallStackFrame(function_call);
+                                                call_exprs.push(func_call);
 
-                                                $<funcCall>$ = function_call;
+                                                $<funcCall>$ = func_call;
                                             }
             '(' elist ')'                   {
-                                                auto function_call = PopCallStackFrame();
-                                                auto called_symbol = function_call->get_called_symbol();
+                                                auto func_call = call_exprs.top();
+                                                auto called_symbol = func_call->get_called_symbol();
 
-                                                $<funcCall>$ = function_call;
+                                                $<funcCall>$ = func_call;
 
                                                 auto temp_value = NewTemp();
 
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr, yylineno);
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
 
-                                                function_call->set_ret_val(temp_value->get_id());
+                                                func_call->set_ret_val(temp_value->get_id());
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
-                                                    auto call_args_num = function_call->get_params().size();
+                                                    auto call_args_num = func_call->get_params().size();
 
                                                     if (call_args_num < args_num)
                                                         SIGNALERROR("Too few arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                     else if (call_args_num > args_num)
                                                         LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
                                                 }
+
+                                                call_exprs.pop();
 
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
@@ -981,8 +965,8 @@ methodcall: DOTDOT ID '(' elist ')' {
             ;
 
 multelist:  ',' expr multelist  {
-                                    if (GetCallDepth() != 0) {
-                                        PushCallParam($2);
+                                    if (call_exprs.size() != 0) {
+                                        call_exprs.top()->IncludeParameter($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
                                     }
                                     DLOG("multelist -> ,expr multelist");
@@ -993,8 +977,8 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (GetCallDepth() != 0) {
-                                    PushCallParam($1);
+                                if (call_exprs.size() != 0) {
+                                    call_exprs.top()->IncludeParameter($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
                                 }
                                              
