@@ -1,9 +1,9 @@
 #ifndef FUNCTIONDEF_H
 #define FUNCTIONDEF_H
 
-#include "../expression/symbol.h"
+#include "expression/symbol.h"
 #include <list>
-#include "../quad.h"
+#include "quad.h"
 
 
 /**

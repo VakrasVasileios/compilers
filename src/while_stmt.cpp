@@ -1,4 +1,4 @@
-#include "../../include/statement/while_stmt.h"
+#include "../include/while_stmt.h"
 
 void
 WhileStmt:: PatchLoopQuads() {

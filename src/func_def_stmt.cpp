@@ -1,4 +1,4 @@
-#include "../../include/statement/func_def_stmt.h"
+#include "../include/func_def_stmt.h"
 
 Symbol*   
 FuncDefStmt:: get_sym() const {

@@ -1,4 +1,4 @@
-#include "../../include/statement/if_stmt.h"
+#include "../include/if_stmt.h"
 
 Quad*
 IfStmt:: get_if_jump_quad() const {

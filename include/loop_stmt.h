@@ -2,7 +2,7 @@
 #define LOOPSTATEMENT_H
 
 #include <list>
-#include "../quad.h"
+#include "quad.h"
 
 /**
  * @brief The type of a loop statement.

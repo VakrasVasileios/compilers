@@ -2,7 +2,7 @@
 #define IFSTMT_H
 
 #include <list>
-#include "../quad.h"
+#include "quad.h"
 
 /**
  * @brief An if statement.

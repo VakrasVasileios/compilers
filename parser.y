@@ -4,11 +4,11 @@
     #include <iostream>
     #include "include/debuglog.h"
     #include <stack>
-    #include "include/statement/for_stmt.h"
-    #include "include/statement/while_stmt.h"
-    #include "include/statement/loop_stmt.h"
-    #include "include/statement/func_def_stmt.h"
-     #include "include/statement/if_stmt.h"
+    #include "include/for_stmt.h"
+    #include "include/while_stmt.h"
+    #include "include/loop_stmt.h"
+    #include "include/func_def_stmt.h"
+     #include "include/if_stmt.h"
     #include <fstream>
     #include <string>
     #include <list>

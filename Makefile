@@ -3,8 +3,7 @@ YACCTRGT = parser
 CC = g++
 CFLAGS = -std=c++11
 SRC +=  src/*.cpp \
-		src/expression/*.cpp \
-		src/statement/*.cpp
+		src/expression/*.cpp 
 
 BLDSRC += $(FLEXTRGT).cpp $(YACCTRGT).cpp
 BLDHEADERS = $(BLDSRC:.cpp=.hpp)

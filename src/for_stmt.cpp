@@ -1,4 +1,4 @@
-#include "../../include/statement/for_stmt.h"
+#include "../include/for_stmt.h"
 
 void
 ForStmt:: PatchLoopQuads() {
