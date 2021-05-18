@@ -4,18 +4,18 @@
 
 std::list<Symbol*>
 Block:: get_symbols() const {
-    return entries;
+    return symbols;
 }
 
 void
 Block:: Activate() {
-    for(auto entry : entries) 
+    for(auto entry : symbols) 
         entry->set_active(true);
 }
 
 void
 Block:: Deactivate() {
-    for(auto entry : entries) {
+    for(auto entry : symbols) {
         if (entry->get_type() == VAR)
             entry->set_active(false);
     }
@@ -23,7 +23,7 @@ Block:: Deactivate() {
 
 Symbol*
 Block:: Lookup(std::string id) {
-    for(auto entry : entries) {
+    for(auto entry : symbols) {
         if (entry->get_id() == id) 
             return entry;
     }
@@ -39,28 +39,28 @@ Block:: IsHiddenVariable(Symbol* entry) {
 void 
 Block:: Insert(Symbol* entry) {
     PRECONDITION(entry != nullptr);
-    entries.push_back(entry);
+    symbols.push_back(entry);
 }
 
 bool
 Block:: ContainsOnlyHiddenVars() {
     unsigned int hidden_var_count = 0;
-    for (auto entry : entries) {
+    for (auto entry : symbols) {
         if (IsHiddenVariable(entry))
             hidden_var_count++;
     } 
 
-    return hidden_var_count == entries.size();
+    return hidden_var_count == symbols.size();
 }
 
 std::ostream&
 operator<<(std::ostream& os, const Block block) {
     #if !defined TEST
-        for(auto entry : block.entries) {
+        for(auto entry : block.symbols) {
             os << entry << "\n";
         }
     #else 
-        for(auto entry : block.entries) {
+        for(auto entry : block.symbols) {
             if (!block.IsHiddenVariable(entry))
             {
                 os << entry << "\n";

@@ -5,8 +5,8 @@ include_directories(${compilers_SOURCE_DIR}/include)
 find_package(BISON 2.4.1)
 find_package(FLEX 2.5.35)
 
-BISON_TARGET(parser_trgt parser.y ${compilers_SOURCE_DIR}/build/parser.cpp)
-FLEX_TARGET(scanner_trgt scanner.l ${compilers_SOURCE_DIR}/build/scanner.cpp)
+BISON_TARGET(parser_trgt parser.y ${compilers_SOURCE_DIR}/build/src/parser.cpp)
+FLEX_TARGET(scanner_trgt scanner.l ${compilers_SOURCE_DIR}/build/src/scanner.cpp)
 ADD_FLEX_BISON_DEPENDENCY(scanner_trgt parser_trgt)
 
 # Release mode executables

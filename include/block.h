@@ -58,9 +58,9 @@ class Block final {
 
         friend std::ostream&    operator<<(std::ostream& os, const Block block);
     private:
-       std::list<Symbol*> entries;
-
-       static bool                     IsHiddenVariable(Symbol* entry);
+       std::list<Symbol*>       symbols;
+        
+       static bool              IsHiddenVariable(Symbol* entry);
 };
 
 #endif

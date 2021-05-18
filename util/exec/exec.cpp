@@ -1,8 +1,7 @@
 #include "exec.h"
 
 std::string exec(const char* cmd) {
-    assert (cmd != nullptr);
-    
+    PRECONDITION(cmd != nullptr);
     std::array<char, 128> buffer;
     std::string result;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);

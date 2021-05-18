@@ -16,7 +16,7 @@ public:
 
     ~UserFunction() = default;    
 
-    std::ostream&                       LogSymbol(std::ostream& os) const override;
+    std::ostream&   LogSymbol(std::ostream& os) const override;
 };
 
 #endif

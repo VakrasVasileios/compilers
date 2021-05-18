@@ -9,8 +9,8 @@
     extern FILE* yyin;
 
     bool        error_flag = false;
-    inline bool NoErrorSignaled() { return error_flag == false; }
-    inline void SignalError() { error_flag = 1; }
+    inline bool NoErrorSignaled()       { return error_flag == false; }
+    inline void SignalError()           { error_flag = 1; }
 
     #if !defined TEST
         #define     SIGNALERROR(message)  \
@@ -49,11 +49,21 @@
     unsigned int                temp_counter = 0;
 
     std::vector<Quad*>          quads;
+    
+    std::stack<FunctionCall*>   call_exprs;
+
+    std::stack<LoopStmt*>       loop_stmts;
+    std::stack<WhileStmt*>      while_stmts;
+    std::stack<ForStmt*>        for_stmts;
+
+    std::stack<FuncDefStmt*>    func_def_stmts;  
+
+    std::stack<IfStmt*>         if_stmts;
 
     void                        IncreaseScope();
     void                        DecreaseScope();
     void                        HideLowerScopes();
-    inline bool                 ScopeIsGlobal() { return current_scope == global_scope;}
+    inline bool                 ScopeIsGlobal()                     { return current_scope == global_scope;}
 
     void                        InitLibraryFunctions(); 
     Symbol*                     InsertLocalVariable(const char* name, unsigned int line);
@@ -69,20 +79,17 @@
     inline bool                 IsAtCurrentScope(Symbol* symbol)    { return symbol->get_scope() == current_scope; }
 
     Symbol*                     NewTemp();
-    void                        ResetTemp();
+    inline void                 ResetTemp()                         { temp_counter = 0; }
 
     Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
-    unsigned int                GetBackQuadLabel();
-    
-    std::stack<FunctionCall*>   call_exprs;
+    unsigned int                NextQuadLabel();
 
-    std::stack<LoopStmt*>       loop_stmts;
-    std::stack<WhileStmt*>      while_stmts;
-    std::stack<ForStmt*>        for_stmts;
+    inline bool                 InLoop()                            { return loop_stmts.size() != 0; }
+    inline bool                 InFuncDef()                         { return func_def_stmts.size() != 0; } 
+    inline bool                 InFunctionCall()                    { return call_exprs.size() != 0; }
 
-    std::stack<FuncDefStmt*>    func_def_stmts;  
-
-    std::stack<IfStmt*>         if_stmts;
+    void                        LogSymTable(std::ostream& output);
+    void                        LogQuads(std::ostream& output);
 %}
 
 %union {                                                    
@@ -157,7 +164,7 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> returnstmt");
                                     }
             | BREAK ';'             { 
-                                        if(loop_stmts.size() == 0) {
+                                        if(!InLoop()) {
                                             SIGNALERROR("invalid keyword BREAK outside of loop");
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
@@ -169,7 +176,7 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
-                                        if(loop_stmts.size() == 0) {
+                                        if(!InLoop()) {
                                             SIGNALERROR("invalid keyword CONTINUE outside of loop");
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
@@ -1120,12 +1127,12 @@ elsestmt:   ELSE            {
                                 auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                 top_if_stmt->PushElseJumpQuad(else_jump_quad);
 
-                                top_if_stmt->PatchIfJumpQuad(GetBackQuadLabel() + 1);
+                                top_if_stmt->PatchIfJumpQuad(NextQuadLabel());
                             }
             stmt            {
                                 auto top_if_stmt = if_stmts.top();
 
-                                top_if_stmt->PatchElseJumpQuad(GetBackQuadLabel() + 1);
+                                top_if_stmt->PatchElseJumpQuad(NextQuadLabel());
                                 top_if_stmt->PopElseJumpQuad();
 
                                 if_stmts.pop();
@@ -1137,7 +1144,7 @@ elsestmt:   ELSE            {
             |               {
                                 auto top_if_stmt = if_stmts.top();
 
-                                top_if_stmt->PatchIfJumpQuad( GetBackQuadLabel() + 1);
+                                top_if_stmt->PatchIfJumpQuad( NextQuadLabel());
 
                                 if_stmts.pop();
                                 DLOG("elsestmt -> EMPTY");
@@ -1145,7 +1152,7 @@ elsestmt:   ELSE            {
             ;
 
 whilestmt:  WHILE               { 
-                                    auto first_quad_label = GetBackQuadLabel() + 1;
+                                    auto first_quad_label = NextQuadLabel();
                                     auto while_stmt = new WhileStmt(first_quad_label);
 
                                     while_stmts.push(while_stmt);
@@ -1168,7 +1175,7 @@ whilestmt:  WHILE               {
                                     top_while_stmt->PushLoopQuad(loop_quad);
                                     
                                     top_while_stmt->PatchLoopQuads();
-                                    top_while_stmt->PatchBreakJumpQuads(GetBackQuadLabel() + 1);
+                                    top_while_stmt->PatchBreakJumpQuads(NextQuadLabel());
                                     top_while_stmt->PatchContinueJumpQuads();
                                        
                                     while_stmts.pop();
@@ -1181,7 +1188,7 @@ whilestmt:  WHILE               {
             ;
 
 forstmt:    FOR                                     {
-                                                        auto first_quad_label = GetBackQuadLabel() + 1;
+                                                        auto first_quad_label = NextQuadLabel();
                                                         auto for_stmt = new ForStmt(first_quad_label);
 
                                                         for_stmts.push(for_stmt);
@@ -1190,7 +1197,7 @@ forstmt:    FOR                                     {
             '(' elist ';'                           {
                                                         auto top_for_stmt = for_stmts.top();
 
-                                                        auto logical_expr_first_quad_label = GetBackQuadLabel() + 1;
+                                                        auto logical_expr_first_quad_label = NextQuadLabel();
                                                         top_for_stmt->set_logical_expr_first_quad_label(logical_expr_first_quad_label);
                                                     }
             expr ';'                                {
@@ -1202,7 +1209,7 @@ forstmt:    FOR                                     {
                                                         auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
                                                         top_for_stmt->PushLoopQuad(exit_quad);
 
-                                                        auto exprs_first_quad_label = GetBackQuadLabel() + 1;
+                                                        auto exprs_first_quad_label = NextQuadLabel();
                                                         top_for_stmt->set_exprs_first_quad_label(exprs_first_quad_label);
                                                     }
             elist ')'                               {
@@ -1218,7 +1225,7 @@ forstmt:    FOR                                     {
                                                         top_for_stmt->PushLoopQuad(expr_jump_quad);
 
                                                         top_for_stmt->PatchLoopQuads();
-                                                        top_for_stmt->PatchBreakJumpQuads(GetBackQuadLabel() + 1);
+                                                        top_for_stmt->PatchBreakJumpQuads(NextQuadLabel());
                                                         top_for_stmt->PatchContinueJumpQuads();
  
                                                         for_stmts.pop();
@@ -1231,7 +1238,7 @@ forstmt:    FOR                                     {
             ;
 
 returnstmt: RETURN      {
-                            if (func_def_stmts.size() == 0) {
+                            if (!InFuncDef()) {
                                 SIGNALERROR("Invalid return, used outside a function block");
                             } else {
                                 auto top_func_def = func_def_stmts.top();
@@ -1247,7 +1254,7 @@ returnstmt: RETURN      {
                         }
             | RETURN    
             expr ';'    {
-                            if (func_def_stmts.size() == 0) 
+                            if (!InFuncDef()) 
                                 SIGNALERROR("Invalid return, used outside a function block");
                             else {
                                 auto top_func_def = func_def_stmts.top();
@@ -1288,27 +1295,35 @@ int main(int argc, char** argv) {
 
     #if defined LOGQUADS
         if (NoErrorSignaled()) {
-            for (auto quad : quads) 
-                std::cout << *quad << std::endl;
+            LogQuads(std::cout);
         }
     #endif 
             
     #if defined LOGSYMTABLE
         if (NoErrorSignaled()) 
-            std::cout << symbol_table; 
+            LogSymTable(std::cout);
     #endif
     
     #if defined LOGQUADSTXT
-        const char *path="../quads.txt";
-        std::ofstream quad_file(path);
         if (NoErrorSignaled()) {
-            for (auto quad : quads) 
-                quad_file << *quad << std::endl;
+            const char *path="../quads.txt";
+            std::ofstream quad_file(path);
+            LogQuads(quad_file);
+            quad_file.close();
         }
-        quad_file.close();
     #endif  
 
     return 0;
+}
+
+void LogSymTable(std::ostream& output) {
+    output << symbol_table;
+}
+
+void LogQuads(std::ostream& output) {
+    for (auto quad : quads) {
+        output << *quad << std::endl;
+    }
 }
 
 void IncreaseScope() {
@@ -1348,9 +1363,8 @@ void InitLibraryFunctions() {
 
 Symbol* InsertLocalVariable(const char* name, unsigned int line) {
     assert(name != nullptr);
-
     Symbol* symbol;
-    if (func_def_stmts.size() == 0) {
+    if (!InFuncDef()) {
         symbol = new LocalVariable(name, line, current_scope, PROGRAM_VAR, program_var_offset++);
     }
     else {
@@ -1363,7 +1377,6 @@ Symbol* InsertLocalVariable(const char* name, unsigned int line) {
 }
 Symbol* InsertGlobalVariable(const char* name, unsigned int line) {
     assert(name != nullptr);
-
     Symbol* symbol = new GlobalVariable(name, line, current_scope, program_var_offset++);
     program_stack.Top()->Insert(symbol);
     
@@ -1372,9 +1385,8 @@ Symbol* InsertGlobalVariable(const char* name, unsigned int line) {
 
 Symbol* InsertUserFunction(const char* name, unsigned int line) {
     assert(name != nullptr);
-
     Symbol* symbol;
-    if (func_def_stmts.size() == 0) {
+    if (!InFuncDef()) {
         symbol = new UserFunction(name, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
     }
     else {
@@ -1390,7 +1402,7 @@ Symbol* InsertUserFunction(unsigned int line) {
     std::string an = "$";
     an += std::to_string(++anonymus_funcs_counter);
     Symbol* symbol;
-    if (func_def_stmts.size() == 0) {
+    if (!InFuncDef()) {
         symbol = new UserFunction(an, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
     }
     else {
@@ -1430,9 +1442,7 @@ void StashFormalArgument(const char* name, unsigned int line) {
         SIGNALERROR("formal argument " << name << " already declared, in line: " << line);
 }
 
-std::string NewTempName() {
-    return  "^" + std::to_string(temp_counter++);
-}
+inline std::string NewTempName() { return  "^" + std::to_string(temp_counter++); }
 
 Symbol* NewTemp() {
     std::string name = NewTempName();
@@ -1452,10 +1462,6 @@ Symbol* NewTemp() {
     }
 }
 
-void ResetTemp() {
-    temp_counter = 0;
-}
-
 Quad*
 Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
     unsigned int label = quads.size() + 1;
@@ -1465,9 +1471,9 @@ Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigne
     return q;
 }
 
-unsigned int GetBackQuadLabel() {
+unsigned int NextQuadLabel() {
     if (quads.size() == 0)
-        return 0;
+        return 1;
     else     
-        return quads.back()->label;
+        return quads.back()->label + 1;
 }

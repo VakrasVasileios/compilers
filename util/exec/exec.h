@@ -5,11 +5,10 @@
 #include <stdexcept>
 #include <string>
 #include <array>
-#include <assert.h>
+#include "../contract/contract.h"
 
 /**
  * @brief Executes a command from the current working directory.
- * It's a checked runtime error for the cmd parameter to be null.
  * 
  * @param cmd the command that is to be executed, not null
  * 
