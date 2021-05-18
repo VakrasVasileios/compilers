@@ -1,25 +1,27 @@
 #include <gtest/gtest.h>
 #include "../util/exec/exec.h"
 
-class QuadTest : public ::testing::Test {
-   protected:
+/**
+ * @brief Test suite for the intermediate code
+ * production.
+ * 
+**/ 
+class InterCodeSuite : public ::testing::Test {
+protected:
     std::string expected;
-    std::string actual;  
-
-    void SetUp() override {}
-    void TearDown() override {}   
+    std::string actual;    
 };
 
 /*  ------------ Assign --------------   */
 
-TEST_F(QuadTest, assign_simple) {
+TEST_F(InterCodeSuite, assign_simple) {
    expected =   "1:   ASSIGN x 2 [line 1]\n"
                 "2:   ASSIGN ^0 x [line 1]\n";
    actual = exec("./scanner ../../test/files/phase3_tests/assign/simple.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, assign_calls_nested) {
+TEST_F(InterCodeSuite, assign_calls_nested) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n"
@@ -41,7 +43,7 @@ TEST_F(QuadTest, assign_calls_nested) {
 
 /*  ------------ Function --------------   */
 
-TEST_F(QuadTest, functions_single) {
+TEST_F(InterCodeSuite, functions_single) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n";
@@ -49,7 +51,7 @@ TEST_F(QuadTest, functions_single) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, functions_many) {
+TEST_F(InterCodeSuite, functions_many) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n"
@@ -66,7 +68,7 @@ TEST_F(QuadTest, functions_many) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, functions_nested) {
+TEST_F(InterCodeSuite, functions_nested) {
     expected =  "1:   JUMP 16 [line 5]\n"
                 "2:   FUNCSTART a [line 5]\n"
                 "3:   JUMP 12 [line 6]\n"
@@ -89,7 +91,7 @@ TEST_F(QuadTest, functions_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, functions_shadowed) {
+TEST_F(InterCodeSuite, functions_shadowed) {
     expected =  "1:   JUMP 7 [line 1]\n"
                 "2:   FUNCSTART lkdland [line 1]\n"
                 "3:   JUMP 6 [line 2]\n"
@@ -100,7 +102,7 @@ TEST_F(QuadTest, functions_shadowed) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, functions_anonymous) {
+TEST_F(InterCodeSuite, functions_anonymous) {
     expected =  "1:   JUMP 10 [line 1]\n"
                 "2:   FUNCSTART $1 [line 1]\n"
                 "3:   JUMP 6 [line 2]\n"
@@ -114,14 +116,14 @@ TEST_F(QuadTest, functions_anonymous) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
-TEST_F(QuadTest, functions_call_warning) {
+TEST_F(InterCodeSuite, functions_call_warning) {
     expected =  "1:   CALL g [line 1]\n"
                 "2:   GETRETVAL ^0 [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/functions/call_warning.asc");
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
-TEST_F(QuadTest, functions_call_noparameters) {
+TEST_F(InterCodeSuite, functions_call_noparameters) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n"
@@ -131,7 +133,7 @@ TEST_F(QuadTest, functions_call_noparameters) {
     GTEST_ASSERT_EQ(expected, actual);          
 }
 
-TEST_F(QuadTest, functions_call_parameters) {
+TEST_F(InterCodeSuite, functions_call_parameters) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n"
@@ -142,7 +144,7 @@ TEST_F(QuadTest, functions_call_parameters) {
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
-TEST_F(QuadTest, functions_call_with_symbol_parameters) {
+TEST_F(InterCodeSuite, functions_call_with_symbol_parameters) {
     expected =  "Warning, in line: 10: Too many arguments passed to function: f, defined in line: 1\n"
                 "Warning, in line: 11: Too many arguments passed to function: f, defined in line: 1\n"
                 "Warning, in line: 12: Too many arguments passed to function: f, defined in line: 1\n"
@@ -172,13 +174,13 @@ TEST_F(QuadTest, functions_call_with_symbol_parameters) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, functions_call_less_parameters) {
+TEST_F(InterCodeSuite, functions_call_less_parameters) {
     expected = "Error, in line: 4: Too few arguments passed to function: f, defined in line: 1\n";
     actual = exec("./scanner ../../test/files/phase3_tests/functions/call_less_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, functions_call_nested) {
+TEST_F(InterCodeSuite, functions_call_nested) {
     expected =  "Warning, in line: 10: Too many arguments passed to function: g, defined in line: 6\n"
                 "Warning, in line: 12: Too many arguments passed to function: g, defined in line: 6\n"
                 "1:   JUMP 4 [line 2]\n"
@@ -206,7 +208,7 @@ TEST_F(QuadTest, functions_call_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, functions_call_more_parameters) {
+TEST_F(InterCodeSuite, functions_call_more_parameters) {
     expected =  "Warning, in line: 5: Too many arguments passed to function: f, defined in line: 1\n"
                 "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
@@ -219,7 +221,7 @@ TEST_F(QuadTest, functions_call_more_parameters) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, functions_call_function_def) {
+TEST_F(InterCodeSuite, functions_call_function_def) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 1]\n"
@@ -230,7 +232,7 @@ TEST_F(QuadTest, functions_call_function_def) {
     GTEST_ASSERT_EQ(expected, actual);        
 }
 
-TEST_F(QuadTest, functions_call_nested_with_func_def) {
+TEST_F(InterCodeSuite, functions_call_nested_with_func_def) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART x [line 1]\n"
                 "3:   FUNCEND x [line 1]\n"
@@ -244,7 +246,7 @@ TEST_F(QuadTest, functions_call_nested_with_func_def) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
-TEST_F(QuadTest, functions_call_anonymous_func_def) {
+TEST_F(InterCodeSuite, functions_call_anonymous_func_def) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART $1 [line 1]\n"
                 "3:   FUNCEND $1 [line 1]\n"
@@ -257,7 +259,7 @@ TEST_F(QuadTest, functions_call_anonymous_func_def) {
 }
 /*  ------------ Return --------------   */
 
-TEST_F(QuadTest, return_void) {
+TEST_F(InterCodeSuite, return_void) {
     expected =  "1:   JUMP 6 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   RETURN [line 2]\n"
@@ -268,7 +270,7 @@ TEST_F(QuadTest, return_void) {
 }
 
 
-TEST_F(QuadTest, return_symbol) {
+TEST_F(InterCodeSuite, return_symbol) {
     expected =  "1:   JUMP 6 [line 5]\n"
                 "2:   FUNCSTART f [line 5]\n"
                 "3:   RETURN x [line 6]\n"
@@ -278,7 +280,7 @@ TEST_F(QuadTest, return_symbol) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, return_many_and_nested) {
+TEST_F(InterCodeSuite, return_many_and_nested) {
     expected =  "1:   JUMP 17 [line 1]\n"
                 "2:   FUNCSTART MPIFTEKI [line 1]\n"
                 "3:   RETURN [line 2]\n"
@@ -301,7 +303,7 @@ TEST_F(QuadTest, return_many_and_nested) {
 
 /*  ------------ Logical -----------------   */
 
-TEST_F(QuadTest, logical_greater_simple) {
+TEST_F(InterCodeSuite, logical_greater_simple) {
     expected =  "1:   IF_GREATER 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -311,7 +313,7 @@ TEST_F(QuadTest, logical_greater_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, logical_equal_simple) {
+TEST_F(InterCodeSuite, logical_equal_simple) {
     expected =  "1:   IF_EQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -321,7 +323,7 @@ TEST_F(QuadTest, logical_equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, logical_greater_equal_simple) {
+TEST_F(InterCodeSuite, logical_greater_equal_simple) {
     expected =  "1:   IF_GREATEREQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -331,7 +333,7 @@ TEST_F(QuadTest, logical_greater_equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, logical_less_equal_simple) {
+TEST_F(InterCodeSuite, logical_less_equal_simple) {
     expected =  "1:   IF_LESSEQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -341,7 +343,7 @@ TEST_F(QuadTest, logical_less_equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, logical_less_simple) {
+TEST_F(InterCodeSuite, logical_less_simple) {
     expected =  "1:   IF_LESS 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -351,7 +353,7 @@ TEST_F(QuadTest, logical_less_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
-TEST_F(QuadTest, logical_not_equal_simple) {
+TEST_F(InterCodeSuite, logical_not_equal_simple) {
     expected =  "1:   IF_NOTEQ 3 2 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -364,7 +366,7 @@ TEST_F(QuadTest, logical_not_equal_simple) {
 
 /* ------------- Loop -------------------  */
 
-TEST_F(QuadTest, loop_while_simple) {
+TEST_F(InterCodeSuite, loop_while_simple) {
     expected =  "1:   IF_GREATER 2 6 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -377,7 +379,7 @@ TEST_F(QuadTest, loop_while_simple) {
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
-TEST_F(QuadTest, loop_while_simple_with_stms) {
+TEST_F(InterCodeSuite, loop_while_simple_with_stms) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 6 [line 1]\n"
                 "3:   ASSIGN x 9 [line 2]\n"
@@ -387,7 +389,7 @@ TEST_F(QuadTest, loop_while_simple_with_stms) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
-TEST_F(QuadTest, loop_while_many_nested) {
+TEST_F(InterCodeSuite, loop_while_many_nested) {
     expected =  "1:   IF_LESS x 0 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -411,7 +413,7 @@ TEST_F(QuadTest, loop_while_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, loop_while_continue_single) {
+TEST_F(InterCodeSuite, loop_while_continue_single) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   JUMP 1 [line 2]\n"
@@ -420,7 +422,7 @@ TEST_F(QuadTest, loop_while_continue_single) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(QuadTest, loop_while_continue_many_nested) {
+TEST_F(InterCodeSuite, loop_while_continue_many_nested) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 29 [line 1]\n"
                 "3:   JUMP 1 [line 2]\n"
@@ -453,7 +455,7 @@ TEST_F(QuadTest, loop_while_continue_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, loop_while_break_single) {
+TEST_F(InterCodeSuite, loop_while_break_single) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   JUMP 5 [line 2]\n"
@@ -462,7 +464,7 @@ TEST_F(QuadTest, loop_while_break_single) {
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(QuadTest, loop_for_simple) {
+TEST_F(InterCodeSuite, loop_for_simple) {
     expected =  "1:   ASSIGN i 0 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n"
                 "3:   IF_LESS i 20 5 [line 1]\n"
@@ -480,7 +482,7 @@ TEST_F(QuadTest, loop_for_simple) {
     GTEST_ASSERT_EQ(expected, actual);                
 }
 
-TEST_F(QuadTest, loop_for_simple_with_stmts) {
+TEST_F(InterCodeSuite, loop_for_simple_with_stmts) {
     expected =  "1:   ASSIGN i 0 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n"
                 "3:   IF_LESS i 20 5 [line 1]\n"
@@ -500,7 +502,7 @@ TEST_F(QuadTest, loop_for_simple_with_stmts) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, loop_for_many_nested) {
+TEST_F(InterCodeSuite, loop_for_many_nested) {
     expected =  "1:   ASSIGN i 0 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n"
                 "3:   IF_LESS i 20 5 [line 1]\n"
@@ -557,7 +559,7 @@ TEST_F(QuadTest, loop_for_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);           
 }
 
-TEST_F(QuadTest, loop_for_continue_single) {
+TEST_F(InterCodeSuite, loop_for_continue_single) {
     expected =  "1:   IF_LESS i 0 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -574,7 +576,7 @@ TEST_F(QuadTest, loop_for_continue_single) {
     GTEST_ASSERT_EQ(expected, actual);               
 }
 
-TEST_F(QuadTest, loop_for_continue_many_nested) {
+TEST_F(InterCodeSuite, loop_for_continue_many_nested) {
     expected =  "1:   IF_LESS i 0 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -612,7 +614,7 @@ TEST_F(QuadTest, loop_for_continue_many_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, loop_for_break_single) {
+TEST_F(InterCodeSuite, loop_for_break_single) {
     expected =  "1:   IF_LESS i 8 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -629,7 +631,7 @@ TEST_F(QuadTest, loop_for_break_single) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, loop_for_break_many_nested) {
+TEST_F(InterCodeSuite, loop_for_break_many_nested) {
     expected =  "1:   IF_LESS i 8 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -669,14 +671,14 @@ TEST_F(QuadTest, loop_for_break_many_nested) {
 
 /* ------------- Conditional -------------   */
 
-TEST_F(QuadTest, if_simple) {
+TEST_F(InterCodeSuite, if_simple) {
     expected =  "1:   IF_EQ x 'true' 3 [line 1]\n"
                 "2:   JUMP 3 [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/conditional/if_simple.asc");    
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, if_expr) {
+TEST_F(InterCodeSuite, if_expr) {
     expected =  "1:   IF_GREATER x 3 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -688,7 +690,7 @@ TEST_F(QuadTest, if_expr) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, if_stmts) {
+TEST_F(InterCodeSuite, if_stmts) {
     expected =  "1:   IF_LESS 3 x 3 [line 1]\n"
                 "2:   JUMP 5 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -702,7 +704,7 @@ TEST_F(QuadTest, if_stmts) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
-TEST_F(QuadTest, if_nested_many) {
+TEST_F(InterCodeSuite, if_nested_many) {
     expected =  "1:   IF_EQ a 'true' 3 [line 1]\n"
                 "2:   JUMP 11 [line 1]\n"
                 "3:   IF_EQ sz 'true' 5 [line 2]\n"
@@ -717,7 +719,7 @@ TEST_F(QuadTest, if_nested_many) {
     GTEST_ASSERT_EQ(expected, actual);                  
 }
 
-TEST_F(QuadTest, if_else) {
+TEST_F(InterCodeSuite, if_else) {
     expected =  "1:   IF_EQ a 'true' 3 [line 1]\n"
                 "2:   JUMP 4 [line 1]\n"
                 "3:   JUMP 8 [line 2]\n"
@@ -729,7 +731,7 @@ TEST_F(QuadTest, if_else) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, if_elseif) {
+TEST_F(InterCodeSuite, if_elseif) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 6 [line 1]\n"
                 "3:   ASSIGN x 2 [line 1]\n"
@@ -743,7 +745,7 @@ TEST_F(QuadTest, if_elseif) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, if_elseif_else) {
+TEST_F(InterCodeSuite, if_elseif_else) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 6 [line 1]\n"
                 "3:   ASSIGN x 2 [line 1]\n"
@@ -775,7 +777,7 @@ TEST_F(QuadTest, if_elseif_else) {
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(QuadTest, if_else_many_nested) {
+TEST_F(InterCodeSuite, if_else_many_nested) {
     expected =  "1:   IF_EQ 1 'true' 3 [line 1]\n"
                 "2:   JUMP 16 [line 1]\n"
                 "3:   IF_EQ 2 'true' 5 [line 1]\n"
@@ -833,33 +835,33 @@ TEST_F(QuadTest, if_else_many_nested) {
 //     GTEST_ASSERT_EQ(expected, actual); 
 // }
 
-TEST_F(QuadTest, arithmetic_plusplus_suffix) {
+TEST_F(InterCodeSuite, arithmetic_plusplus_suffix) {
     expected =  "1:   ASSIGN ^0 i [line 1]\n"
                 "2:   ADD i i 1 [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(QuadTest, arithmetic_plusplus_prefix) {
+TEST_F(InterCodeSuite, arithmetic_plusplus_prefix) {
     expected =  "1:   ADD i i 1 [line 1]\n"
                 "2:   ASSIGN ^0 i [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(QuadTest, arithmetic_uminus) {
+TEST_F(InterCodeSuite, arithmetic_uminus) {
     expected = "1:   UMINUS ^0 1 [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
-TEST_F(QuadTest, arithmetic_uminus_bool) {
+TEST_F(InterCodeSuite, arithmetic_uminus_bool) {
     expected = "Error, in line: 1: Illegal use of unary minus on constant boolean\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
-TEST_F(QuadTest, aithmetic_not) {
+TEST_F(InterCodeSuite, aithmetic_not) {
     expected =  "1:   IF_EQ 1 'true' 5 [line 1]\n"
                 "2:   JUMP 3 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -869,14 +871,14 @@ TEST_F(QuadTest, aithmetic_not) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
-TEST_F(QuadTest, minusminus_prefix) {
+TEST_F(InterCodeSuite, minusminus_prefix) {
     expected =  "1:   SUB a a 1 [line 1]\n"
                 "2:   ASSIGN ^0 a [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(QuadTest, minusminus_suffix) {
+TEST_F(InterCodeSuite, minusminus_suffix) {
     expected =  "1:   ASSIGN ^0 a [line 1]\n"
                 "2:   SUB a a 1 [line 1]\n";
     actual = exec("./scanner ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
