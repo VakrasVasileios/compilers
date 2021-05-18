@@ -4,6 +4,6 @@ Alpha Compiler is a cpp project, which given an input src file written in 'alpha
 
 
 ## Contributing
-Vakras Vasileios
-Gregory Papas
+Vakras Vasileios  
+Gregory Papas  
 Soultatos Stefanos
