@@ -1,38 +1,5 @@
 %{
-    #include <stdio.h>
-    #include <string>
-    #include <iostream>
-    #include "../include/debuglog.h"
-    #include <stack>
-    #include "../include/for_stmt.h"
-    #include "../include/while_stmt.h"
-    #include "../include/loop_stmt.h"
-    #include "../include/func_def_stmt.h"
-     #include "../include/if_stmt.h"
-    #include <fstream>
-    #include <string>
-    #include <list>
-    #include <map>
-    #include <iostream>
-    #include <assert.h>
-    #include "../include/symbol_table.h"
-    #include "../include/expression/library_function.h"
-    #include "../include/expression/user_function.h"
-    #include "../include/expression/local_variable.h"
-    #include "../include/expression/global_variable.h"
-    #include "../include/expression/formal_variable.h"
-    #include "../include/expression/symbol.h"
-    #include "../include/expression/function_call.h"
-    #include "../include/expression/bool_constant.h"
-    #include "../include/expression/constant.h"
-    #include "../include/expression/nil_constant.h"
-    #include "../include/expression/string_constant.h"
-    #include "../include/expression/double_constant.h"
-    #include "../include/expression/int_constant.h"
-    #include "../include/expression/numeric_constant.h"
-    #include "../include/instruction_opcodes.h"
-    #include "../include/quad.h"
-    #include "../include/program_stack.h"
+    #include "../include/parser_deps.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -1304,7 +1271,6 @@ int yyerror(std::string yaccProvidedMessage) {
     return 1;
 }
 
-#ifndef TESTING
 int main(int argc, char** argv) {
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
@@ -1333,7 +1299,6 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-#endif
 
 void IncreaseScope() {
     Block* new_block = new Block();
