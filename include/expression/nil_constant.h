@@ -3,13 +3,20 @@
 
 #include "constant.h"
 
-/*
-Provides a nill constant expression.
-*/
+/**
+ * @brief A NILL constant expression.
+**/ 
 class NilConstant final : public Constant {
 public:
     NilConstant(std::nullptr_t value) : Constant(CONST_NIL), value(value) {};
     ~NilConstant() = default;
+    /**
+     * @brief Returns a read access to this NilConstant value.
+     * 
+     * @return a read access to this NilConstant value, null
+     * 
+    **/ 
+    std::nullptr_t  get_value() const;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;    
 private:

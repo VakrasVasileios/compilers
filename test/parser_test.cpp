@@ -1,26 +1,12 @@
 #include <gtest/gtest.h>
 #include "../util/exec/exec.h"
 
-/*
-Provides a test class for testing the output of the parser.
-*/
 class ParserTest : public ::testing::Test {
    protected:
-      /*
-      The expected output.
-      */
       std::string expected;
-      /*
-      The actual output.
-      */
       std::string actual;
-      /*
-      The output of the parsing of the library functions.
-      */
       std::string libfunc_out;
-      /*
-      Runs before every test.
-      */
+
       void SetUp() override {
          libfunc_out ="-----------     Scope #0     -----------\n"
                     "[library function] \"print\" (line 0) (scope 0)\n"
@@ -36,9 +22,7 @@ class ParserTest : public ::testing::Test {
                     "[library function] \"cos\" (line 0) (scope 0)\n"
                     "[library function] \"sin\" (line 0) (scope 0)\n";
       }
-      /*
-      Runs after every test.
-      */
+  
       void TearDown() override {}   
 };
 
@@ -120,7 +104,7 @@ TEST_F(ParserTest, Error10) {
 }
 
 TEST_F(ParserTest, Error11) {
-  expected = "Error, formal argument x already declared, in line: 1\n";
+  expected = "Error, in line: 1: formal argument x already declared, in line: 1\n";
   actual = exec("./scanner ../../test/files/phase2_tests/Errors/Error11.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }

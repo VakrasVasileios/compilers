@@ -3,7 +3,7 @@
 
 
 std::list<Symbol*>
-Block:: get_entries() const {
+Block:: get_symbols() const {
     return entries;
 }
 

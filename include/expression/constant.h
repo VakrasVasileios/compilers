@@ -5,9 +5,9 @@
 #include <string>
 #include <ostream>
 
-/*
-Provides a constant expression.
-*/
+/**
+ * @brief A constant expression.
+**/ 
 class Constant : public Expression {
 protected:
     Constant(ExprType type) : Expression(type){};

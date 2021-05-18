@@ -5,35 +5,45 @@
 #include "symbol.h"
 #include <list>
 
-/*
-Provides a function call that always resides at the top
-call stack frame. 
-*/
+/**
+ * @brief A function call expression.
+**/ 
 class FunctionCall final : public Expression {
 public:
     FunctionCall(Symbol* called_symbol, std::list<Expression*> params)
     : Expression(FUNCTION_CALL), called_symbol(called_symbol), params(params) {};
 
     ~FunctionCall() = default;
-    /*
-    Returns this FunctionCall called symbol.
-    */
+    /**
+     * @brief Returns a read access to this FunctionCall called symbol.
+     * 
+     * @return a read access to this FunctionCall called symbol, can be null
+    **/ 
     Symbol*                get_called_symbol() const;
-    /*
-    Returns this FunctionCall passed parameters list.
-    */
+    /**
+     * @brief Returns a read access to this FunctionCall parameters.
+     * 
+     * @return a read access to this FunctionCall parameters, not null
+     * 
+    **/ 
     std::list<Expression*>  get_params() const;
-    /*
-    Includes a parameter to this FunctionCall.
-    */
+    /**
+     * @brief Includes a parameter to this FunctionCall.
+     * 
+     * @param param the parameter to be included to this FunctionCall, can be null
+    **/ 
     void                    IncludeParameter(Expression* param);
-    /*
-    Returns a read access to this FunctionCall return value.
-    */
+    /**
+     * @brief Returns a read access to this FunctionCall return value.
+     * 
+     * @return a read access to this FunctionCall return value, can be null
+    **/ 
     std::string             get_ret_val() const;
-    /*
-    Sets this FunctionCall return value.
-    */
+    /**
+     * @brief Sets this FunctionCall return value.
+     * 
+     * @param ret_val the return value to set his FunctionCall return value, can be null
+    **/ 
     void                    set_ret_val(const std::string ret_val);
 protected:
     std::ostream&           LogExpression(std::ostream& os) const override;

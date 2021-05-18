@@ -3,10 +3,9 @@
 
 #include "variable.h"
 
-/*
-Provides a global variable symbol.
-This symbol has a local scope space.
-*/
+/**
+ * @brief A local variable symbol expression.
+**/ 
 class LocalVariable final : public Variable {
 public:
     LocalVariable(std::string id, unsigned int line, unsigned int scope, ScopeSpace space, unsigned int offset)

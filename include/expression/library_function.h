@@ -3,9 +3,10 @@
 
 #include "function.h"
 
-/*
-Provides a library function.
-*/
+/**
+ * @brief A library function symbol expression.
+ * Has a program var scope space.
+**/ 
 class LibraryFunction final : public Function {
 public:
     LibraryFunction(std::string id, unsigned int line, unsigned int scope, unsigned int offset)

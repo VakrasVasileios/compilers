@@ -3,13 +3,19 @@
 
 #include "numeric_constant.h"
 
-/*
-Provides a double constant expression.
-*/
+/**
+ * @brief A double constant.
+**/ 
 class DoubleConstant final : public NumericConstant {
 public:
     DoubleConstant(double value) : NumericConstant(), value(value) {};
     ~DoubleConstant() = default;
+    /**
+     * @brief Returns a read access to this DoubleConstant value.
+     * 
+     * @return a read access to this DoubleConstant value
+    **/ 
+    double          get_value() const;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:

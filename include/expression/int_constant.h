@@ -3,13 +3,20 @@
 
 #include "numeric_constant.h"
 
-/*
-Provides an int constant expression.
-*/
+/**
+ * @brief An int constant expression.
+ * 
+**/ 
 class IntConstant final : public NumericConstant {
 public:
     IntConstant(int value) : NumericConstant(), value(value) {};
     ~IntConstant() = default;
+    /**
+     * @brief Returns a read access to this IntConstant value.
+     * 
+     * @return a read access to this IntConstant value
+    **/ 
+    int             get_value() const;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:

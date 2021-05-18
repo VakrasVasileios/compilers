@@ -37,7 +37,7 @@ Symbol:: set_active(bool active) {
 }
 
 std::string
-Symbol:: SpaceToString() const {
+Symbol:: space_to_string() const {
     switch (space) {
         case PROGRAM_VAR:
             return "PROGRAM_VAR";
