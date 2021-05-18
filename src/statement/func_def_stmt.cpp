@@ -37,6 +37,6 @@ FuncDefStmt:: PushReturnJumpQuad(Quad* return_jump_quad) {
 
 void
 FuncDefStmt:: PatchReturnJumpQuads(const unsigned int patch_label) {
-    for (auto return_jum_quad : return_jump_quads)
-        PatchJumpQuad(return_jum_quad, patch_label);
+    for (auto return_jump_quad : return_jump_quads)
+        PatchJumpQuad(return_jump_quad, patch_label);
 }

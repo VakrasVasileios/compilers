@@ -2,9 +2,10 @@
 #define FUNCTIONDEF_H
 
 #include "statement.h"
-#include "../quad.h"
 #include "../expression/symbol.h"
 #include <list>
+#include "../quad.h"
+
 
 /**
  * @brief A function definition statement.

@@ -10,6 +10,9 @@ class WhileStmt final : public LoopStmt {
 public:
     WhileStmt(unsigned int first_quad_label) : LoopStmt(WHILE_t, first_quad_label) {};
     ~WhileStmt() = default;
+
+    void    PatchLoopQuads() override;
+    void    PatchContinueJumpQuads() override;
 };
 
 #endif

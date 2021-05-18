@@ -1,6 +1,7 @@
 #ifndef STATEMENT_H
 #define STATEMENT_H
 
+
 /**
  * @brief The type of a statement.
 **/
