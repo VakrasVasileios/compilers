@@ -908,7 +908,8 @@ multelist:  ',' expr multelist  {
                                         auto top_call = call_exprs.top();
                                         top_call->IncludeParameter($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
-                                    } else if (InTableMakeElems()) {
+                                    } 
+                                    if (InTableMakeElems()) {
                                         auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
                                         top_tablemake_elems_expr->AddElement($2);
                                     }
@@ -925,7 +926,8 @@ elist:      expr multelist  {
                                     auto top_call = call_exprs.top();
                                     top_call->IncludeParameter($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
-                                } else if (InTableMakeElems()) {
+                                }
+                                if (InTableMakeElems()) {
                                     auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
                                     top_tablemake_elems_expr->AddElement($1);
                                 }
