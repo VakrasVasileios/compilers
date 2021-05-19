@@ -13,7 +13,7 @@ ADD_FLEX_BISON_DEPENDENCY(scanner_trgt parser_trgt)
 add_executable(phase3
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
-  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp tablemake_stmt.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -24,7 +24,7 @@ target_link_libraries(phase3 expression)
 add_executable(r_intermediate_code
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
-  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp tablemake_stmt.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -34,7 +34,7 @@ target_link_libraries(r_intermediate_code expression)
 add_executable(r_syntax_analysis
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
-  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp tablemake_stmt.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -45,7 +45,7 @@ target_link_libraries(r_syntax_analysis expression)
 add_executable(d_intermediate_code
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
-  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp tablemake_stmt.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -56,7 +56,7 @@ target_link_libraries(d_intermediate_code expression)
 add_executable(d_syntax_analysis
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
-  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp tablemake_stmt.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )

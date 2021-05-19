@@ -861,7 +861,7 @@ TEST_F(InterCodeSuite, arithmetic_uminus_bool) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
-TEST_F(InterCodeSuite, aithmetic_not) {
+TEST_F(InterCodeSuite, arithmetic_not) {
     expected =  "1:   IF_EQ 1 'true' 5 [line 1]\n"
                 "2:   JUMP 3 [line 1]\n"
                 "3:   ASSIGN ^0 'true' [line 1]\n"
@@ -871,18 +871,27 @@ TEST_F(InterCodeSuite, aithmetic_not) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
-TEST_F(InterCodeSuite, minusminus_prefix) {
+TEST_F(InterCodeSuite, arithmetic_minusminus_prefix) {
     expected =  "1:   SUB a a 1 [line 1]\n"
                 "2:   ASSIGN ^0 a [line 1]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
 }
 
-TEST_F(InterCodeSuite, minusminus_suffix) {
+TEST_F(InterCodeSuite, arithmetic_minusminus_suffix) {
     expected =  "1:   ASSIGN ^0 a [line 1]\n"
                 "2:   SUB a a 1 [line 1]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);             
+}
+
+/*  ------------ Table --------------   */
+
+TEST_F(InterCodeSuite, table_tablemake_list_single) {
+    expected =  "1:   TABLECREATE ^0 [line 1]\n"
+                "2:   TABLESETELEM ^0 0 1 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_list_single.asc");
+    GTEST_ASSERT_EQ(expected, actual);              
 }
 
 #ifdef TESTING

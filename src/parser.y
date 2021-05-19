@@ -60,6 +60,8 @@
 
     std::stack<IfStmt*>         if_stmts;
 
+    std::stack<TableMakeStmt*>  tablemake_stmts;
+
     void                        IncreaseScope();
     void                        DecreaseScope();
     void                        HideLowerScopes();
@@ -87,6 +89,8 @@
     inline bool                 InLoop()                            { return loop_stmts.size() != 0; }
     inline bool                 InFuncDef()                         { return func_def_stmts.size() != 0; } 
     inline bool                 InFunctionCall()                    { return call_exprs.size() != 0; }
+    inline bool                 InFuncCall()                        { return call_exprs.size() != 0; }
+    inline bool                 InTableMake()                       { return tablemake_stmts.size() != 0; }
 
     void                        LogSymTable(std::ostream& output);
     void                        LogQuads(std::ostream& output);
@@ -897,11 +901,15 @@ methodcall: DOTDOT ID '(' elist ')' {
             ;
 
 multelist:  ',' expr multelist  {
-                                    if (call_exprs.size() != 0) {
+                                    if (InFuncCall()) {
                                         auto top_call = call_exprs.top();
                                         top_call->IncludeParameter($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
+                                    } else if (InTableMake()) {
+                                        auto top_tablemake_stmt = tablemake_stmts.top();
+                                        top_tablemake_stmt->AddElement($2);
                                     }
+
                                     DLOG("multelist -> ,expr multelist");
                                 }
             |                   {
@@ -910,10 +918,13 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (call_exprs.size() != 0) {
+                                if (InFuncCall()) {
                                     auto top_call = call_exprs.top();
                                     top_call->IncludeParameter($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
+                                } else if (InTableMake()) {
+                                    auto top_tablemake_stmt = tablemake_stmts.top();
+                                    top_tablemake_stmt->AddElement($1);
                                 }
                                              
                                 DLOG("elist -> expr multelist");
@@ -923,7 +934,19 @@ elist:      expr multelist  {
                             }
             ;
 
-objectdef:  '[' elist ']'       {
+objectdef:  '['                 {
+                                    auto tablemake_stmt = new TableMakeStmt();
+                                    tablemake_stmts.push(tablemake_stmt);
+                                }
+             elist ']'          {
+                                    auto temp = NewTemp();
+                                    Emit(TABLECREATE_t, temp, nullptr, nullptr, yylineno);
+
+                                    auto top_tablemake_stmt = tablemake_stmts.top();
+
+                                    unsigned int elem_cnt = 0;
+                                    for (auto element : top_tablemake_stmt->get_elements())
+                                        Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element, yylineno);
                                     DLOG("objectdef -> [elist]");
                                 }
             | '[' indexed ']'   { 

@@ -31,6 +31,7 @@
 #include "loop_stmt.h"
 #include "func_def_stmt.h"
 #include "if_stmt.h"
+#include "tablemake_stmt.h"
 
 
 
