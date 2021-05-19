@@ -60,8 +60,8 @@
 
     std::stack<IfStmt*>         if_stmts;
 
-    std::stack<TableMakeElemsStmt*>  tablemake_elems_stmts;
-    std::stack<TableMakePairsStmt*>  tablemake_pairs_stmts;
+    std::stack<TableMakeElems*>  tablemake_elems_exprs;
+    std::stack<TableMakePairs*>  tablemake_pairs_exprs;
 
     void                        IncreaseScope();
     void                        DecreaseScope();
@@ -91,7 +91,7 @@
     inline bool                 InFuncDef()                         { return func_def_stmts.size() != 0; } 
     inline bool                 InFunctionCall()                    { return call_exprs.size() != 0; }
     inline bool                 InFuncCall()                        { return call_exprs.size() != 0; }
-    inline bool                 InTableMake()                       { return tablemake_elems_stmts.size() != 0; }
+    inline bool                 InTableMakeElems()                  { return tablemake_elems_exprs.size() != 0; }
 
     void                        LogSymTable(std::ostream& output);
     void                        LogQuads(std::ostream& output);
@@ -105,6 +105,7 @@
     class Constant*         con;
     class FunctionCall*     funcCall;
     class Symbol*           sym;
+    class TableMake*        tablemake;
 }
 
 %start program
@@ -121,6 +122,7 @@
 %type <sym> lvalue funcdef
 %type <stringValue> member
 %type <funcCall> call
+%type <tablemake> objectdef
 
 %right      '='
 %left       OR
@@ -906,9 +908,9 @@ multelist:  ',' expr multelist  {
                                         auto top_call = call_exprs.top();
                                         top_call->IncludeParameter($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
-                                    } else if (InTableMake()) {
-                                        auto top_tablemake_elems_stmt = tablemake_elems_stmts.top();
-                                        top_tablemake_elems_stmt->AddElement($2);
+                                    } else if (InTableMakeElems()) {
+                                        auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
+                                        top_tablemake_elems_expr->AddElement($2);
                                     }
 
                                     DLOG("multelist -> ,expr multelist");
@@ -923,9 +925,9 @@ elist:      expr multelist  {
                                     auto top_call = call_exprs.top();
                                     top_call->IncludeParameter($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
-                                } else if (InTableMake()) {
-                                    auto top_tablemake_elems_stmt = tablemake_elems_stmts.top();
-                                    top_tablemake_elems_stmt->AddElement($1);
+                                } else if (InTableMakeElems()) {
+                                    auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
+                                    top_tablemake_elems_expr->AddElement($1);
                                 }
                                              
                                 DLOG("elist -> expr multelist");
@@ -936,36 +938,45 @@ elist:      expr multelist  {
             ;
 
 objectdef:  '['                 {
-                                    auto tablemake_elems_stmt = new TableMakeElemsStmt();
-                                    tablemake_elems_stmts.push(tablemake_elems_stmt);
+                                    auto tablemake_elems_expr = new TableMakeElems();
+                                    tablemake_elems_exprs.push(tablemake_elems_expr);
                                 }
              elist ']'          {
                                     auto temp = NewTemp();
                                     Emit(TABLECREATE_t, temp, nullptr, nullptr, yylineno);
 
-                                    auto top_tablemake_elems_stmt = tablemake_elems_stmts.top();
+                                    auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
+
+                                    top_tablemake_elems_expr->set_table(temp);
 
                                     unsigned int elem_cnt = 0;
-                                    for (auto element : top_tablemake_elems_stmt->get_elements())
+                                    for (auto element : top_tablemake_elems_expr->get_elements())
                                         Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element, yylineno);
 
-                                    tablemake_elems_stmts.pop();    
+                                    tablemake_elems_exprs.pop();  
+
+                                    $$ = top_tablemake_elems_expr; 
 
                                     DLOG("objectdef -> [elist]");
                                 }
             | '['               {
-                                    auto tablemake_pairs_stmt = new TableMakePairsStmt();
-                                    tablemake_pairs_stmts.push(tablemake_pairs_stmt);
+                                    auto tablemake_pairs_expr = new TableMakePairs();
+                                    tablemake_pairs_exprs.push(tablemake_pairs_expr);
                                 }
             indexed ']'         { 
                                     auto temp = NewTemp();
                                     Emit(TABLECREATE_t, temp, nullptr, nullptr, yylineno);
 
-                                    auto top_tablemake_pairs_stmt = tablemake_pairs_stmts.top();
-                                    for (auto pair : top_tablemake_pairs_stmt->get_pairs())
+                                    auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
+
+                                    top_tablemake_pairs_expr->set_table(temp);
+
+                                    for (auto pair : top_tablemake_pairs_expr->get_pairs())
                                         Emit(TABLESETELEM_t, temp, pair.first, pair.second, yylineno);
 
-                                    tablemake_elems_stmts.pop();
+                                    tablemake_pairs_exprs.pop();
+
+                                    $$ = top_tablemake_pairs_expr;
                                         
                                     DLOG("objectdef -> [indexed]");
                                 }
@@ -985,8 +996,8 @@ indexed:    indexedelem multindexed {
             ;
 
 indexedelem:'{' expr ':' expr '}'   {
-                                        auto top_tablemake_pairs_stmt = tablemake_pairs_stmts.top();
-                                        top_tablemake_pairs_stmt->AddPair($2, $4);
+                                        auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
+                                        top_tablemake_pairs_expr->AddPair($2, $4);
 
                                         DLOG("indexedelem -> { expr : expr }"); 
                                     }

@@ -7,5 +7,5 @@ StringConstant:: get_value() const {
 
 std::ostream&
 StringConstant:: LogExpression(std::ostream& os) const {
-    return os << value;
+    return os << "\"" << value << "\"";
 }

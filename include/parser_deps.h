@@ -22,6 +22,9 @@
 #include "expression/double_constant.h"
 #include "expression/int_constant.h"
 #include "expression/numeric_constant.h"
+#include "expression/tablemake.h"
+#include "expression/tablemake_elems.h"
+#include "expression/tablemake_pairs.h"
 #include "symbol_table.h"
 #include "program_stack.h"
 #include "instruction_opcodes.h"
@@ -31,8 +34,6 @@
 #include "loop_stmt.h"
 #include "func_def_stmt.h"
 #include "if_stmt.h"
-#include "tablemake_elems_stmt.h"
-#include "tablemake_pairs_stmt.h"
 
 
 #endif

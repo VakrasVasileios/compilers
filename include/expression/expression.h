@@ -19,7 +19,8 @@ enum ExprType {
 
     FUNCTION_CALL,
 
-    TABLE_ITEM
+    TABLE_ITEM,
+    TABLE_MAKE
 };
 
 /**
