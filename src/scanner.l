@@ -113,7 +113,7 @@ ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
                             c = yyinput();
                         }
 
-                        yylval.stringValue = const_cast<char*>(str.c_str());
+                        yylval.stringValue = strdup(const_cast<char*>(str.c_str()));
                         return STRING;
                     }                    
 

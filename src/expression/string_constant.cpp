@@ -1,5 +1,7 @@
 #include "../../include/expression/string_constant.h"
 
+#include <iostream>
+
 std::string 
 StringConstant:: get_value() const {
     return value;

@@ -40,6 +40,24 @@ TEST_F(InterCodeSuite, assign_calls_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(InterCodeSuite, assign_string) {
+    expected =  "1:   ASSIGN a \"2\" [line 1]\n"
+                "2:   ASSIGN ^0 a [line 1]\n"
+                "3:   ASSIGN a \"adsad\" [line 2]\n"
+                "4:   ASSIGN ^0 a [line 2]\n"
+                "5:   ASSIGN a \"2ads\" [line 3]\n"
+                "6:   ASSIGN ^0 a [line 3]\n"
+                "7:   ASSIGN a \"2z\" [line 4]\n"
+                "8:   ASSIGN ^0 a [line 4]\n"
+                "9:   ASSIGN a \"222\" [line 5]\n"
+                "10:   ASSIGN ^0 a [line 5]\n"
+                "11:   ASSIGN a \"21\" [line 6]\n"
+                "12:   ASSIGN ^0 a [line 6]\n"
+                "13:   ASSIGN a \"2111\" [line 7]\n"
+                "14:   ASSIGN ^0 a [line 7]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/assign/string.asc");
+    GTEST_ASSERT_EQ(expected, actual);             
+}
 
 /*  ------------ Function --------------   */
 
@@ -934,6 +952,34 @@ TEST_F(InterCodeSuite, table_tablemake_pairs_macaroni) {
                 "9:   ASSIGN ^2 circle [line 1]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_pairs_macaroni.asc");
     GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, table_tablemake_nested) {
+    expected =  "1:   TABLECREATE ^0 [line 1]\n"
+                "2:   TABLESETELEM ^0 0 1 [line 1]\n"
+                "3:   TABLESETELEM ^0 1 2 [line 1]\n"
+                "4:   TABLESETELEM ^0 2 3 [line 1]\n"
+                "5:   TABLECREATE ^1 [line 1]\n"
+                "6:   TABLESETELEM ^1 1 0 [line 1]\n"
+                "7:   TABLECREATE ^2 [line 1]\n"
+                "8:   TABLESETELEM ^2 0 ^1 [line 1]\n"
+                "9:   TABLESETELEM ^2 1 0 [line 1]\n"
+                "10:   ASSIGN s 2 [line 1]\n"
+                "11:   ASSIGN ^3 s [line 1]\n"
+                "12:   TABLECREATE ^4 [line 1]\n"
+                "13:   TABLESETELEM ^4 ^3 9 [line 1]\n"
+                "14:   TABLECREATE ^5 [line 1]\n"
+                "15:   TABLESETELEM ^5 0 \"s\" [line 1]\n"
+                "16:   TABLESETELEM ^5 1 ^4 [line 1]\n"
+                "17:   TABLECREATE ^6 [line 1]\n"
+                "18:   TABLESETELEM ^6 0 7 [line 1]\n"
+                "19:   TABLECREATE ^7 [line 1]\n"
+                "20:   TABLESETELEM ^7 0 ^0 [line 1]\n"
+                "21:   TABLESETELEM ^7 1 ^2 [line 1]\n"
+                "22:   TABLESETELEM ^7 2 ^5 [line 1]\n"
+                "23:   TABLESETELEM ^7 3 ^6 [line 1]\n";
+                actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_nested.asc");
+                GTEST_ASSERT_EQ(expected, actual);  
 }
 
 #ifdef TESTING

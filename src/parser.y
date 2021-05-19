@@ -1120,7 +1120,7 @@ const:        INTNUM    {
                             DLOG("const -> DOUBLENUM"); 
                         }
             | STRING    { 
-                            $$ = new StringConstant($1);
+                            $$ = new StringConstant(std::string($1));
                             DLOG("const -> STRING"); 
                         }
             | NIL       { 
