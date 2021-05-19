@@ -914,6 +914,14 @@ TEST_F(InterCodeSuite, table_tablemake_pairs_single) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(InterCodeSuite, table_tablemake_pairs_many) {
+    expected =  "1:   TABLECREATE ^0 [line 1]\n"
+                "2:   TABLESETELEM ^0 x 0 [line 1]\n"
+                "3:   TABLESETELEM ^0 x 0 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_pairs_many.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
