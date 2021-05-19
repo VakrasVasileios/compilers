@@ -31,9 +31,8 @@
 #include "loop_stmt.h"
 #include "func_def_stmt.h"
 #include "if_stmt.h"
-#include "tablemake_stmt.h"
-
-
+#include "tablemake_elems_stmt.h"
+#include "tablemake_pairs_stmt.h"
 
 
 #endif
