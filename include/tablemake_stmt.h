@@ -37,7 +37,7 @@ public:
      * @param elem the element to add to this TableMakeStmt list
      * of inserted elements, not null
      */
-    void                            AddElement(Expression* elem);
+    void                      AddElement(Expression* elem);
 private:
     std::list<Expression*> elements;
 };

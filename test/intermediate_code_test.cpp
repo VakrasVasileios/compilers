@@ -894,6 +894,19 @@ TEST_F(InterCodeSuite, table_tablemake_list_single) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
+TEST_F(InterCodeSuite, table_tablemake_list_many) {
+    expected =  "1:   CALL f [line 1]\n"
+                "2:   GETRETVAL ^0 [line 1]\n"
+                "3:   TABLECREATE ^1 [line 1]\n"
+                "4:   TABLESETELEM ^1 0 1 [line 1]\n"
+                "5:   TABLESETELEM ^1 1 3 [line 1]\n"
+                "6:   TABLESETELEM ^1 2 s [line 1]\n"
+                "7:   TABLESETELEM ^1 3 0 [line 1]\n"
+                "8:   TABLESETELEM ^1 4 ^0 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_list_many.asc");
+    GTEST_ASSERT_EQ(expected, actual);               
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {

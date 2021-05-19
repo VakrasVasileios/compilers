@@ -3,7 +3,7 @@
 void    
 TableMakeStmt:: AddElement(Expression* elem) {
     PRECONDITION(elem != nullptr);
-    elements.push_back(elem);
+    elements.push_front(elem);
 }
 
 std::list<Expression*>

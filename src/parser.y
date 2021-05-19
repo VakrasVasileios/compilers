@@ -947,6 +947,7 @@ objectdef:  '['                 {
                                     unsigned int elem_cnt = 0;
                                     for (auto element : top_tablemake_stmt->get_elements())
                                         Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element, yylineno);
+
                                     DLOG("objectdef -> [elist]");
                                 }
             | '[' indexed ']'   { 
