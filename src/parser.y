@@ -6,8 +6,11 @@
     #include <stack>
     #include <string>
     #include "../include/debuglog.h"
-    #include "../include/expression/symbol.h"
     #include "../include/expression/primary.h"
+    #include "../include/expression/arithmetic_expr.h"
+    #include "../include/expression/bool_expr.h"
+    #include "../include/expression/assign_expr.h"
+    #include "../include/expression/symbol.h"
     #include "../include/expression/bool_constant.h"
     #include "../include/expression/constant.h"
     #include "../include/expression/nil_constant.h"
@@ -50,8 +53,6 @@
 
     std::vector<Quad*>          quads;
     
-    std::stack<Call*>           call_exprs;
-
     std::stack<LoopStmt*>       loop_stmts;
     std::stack<WhileStmt*>      while_stmts;
     std::stack<ForStmt*>        for_stmts;
@@ -60,6 +61,7 @@
 
     std::stack<IfStmt*>         if_stmts;
 
+    std::stack<Call*>           call_exprs;
     std::stack<TableMakeElems*> tablemake_elems_exprs;
     std::stack<TableMakePairs*> tablemake_pairs_exprs;
 
@@ -106,6 +108,8 @@
 
     class Expression*           expr;
 
+    class AssignExpr*           assignexpr;
+
     class Primary*              prim;
     class Constant*             con;
     class Call*                 call;
@@ -124,14 +128,17 @@
 
 %type <stringValue> member
 
-%type <funcdef>  funcdef 
+%type <funcdef>     funcdef 
 
-%type <expr> term expr assignexpr
-%type <prim> primary
-%type <con> const
-%type <sym> lvalue 
-%type <call> call
-%type <tablemake> objectdef
+%type <expr>        term expr
+
+%type <assignexpr>  assignexpr
+
+%type <prim>        primary
+%type <con>         const
+%type <sym>         lvalue 
+%type <call>        call
+%type <tablemake>   objectdef
 
 %right      '='
 %left       OR
@@ -215,10 +222,7 @@ stmt:         expr ';'              {
             ;
 
 expr:         assignexpr            {
-                                        auto temp = NewTemp();
-                                        Emit(ASSIGN_t, temp, $1, nullptr);
-
-                                        $$ = temp;
+                                        $$ = $1;
 
                                         DLOG("expr -> assignexpr");
                                     }
@@ -695,15 +699,16 @@ term:         '(' expr ')'          {
             ;
 
 assignexpr:   lvalue '=' expr       {
-                                        
                                         auto symbol = $1;
                                         if (symbol != nullptr) {
                                             if (IsLibraryFunction(symbol) || IsUserFunction(symbol)) {
                                                 SignalError("Functions are constant their value cannot be changed");
                                             }
                                             else {
-                                                auto assign_quad = Emit(ASSIGN_t, symbol, nullptr, $3);
-                                                $$ = assign_quad->result;
+                                                Emit(ASSIGN_t, symbol, $3, nullptr);
+                                                auto temp = NewTemp();
+                                                Emit(ASSIGN_t, temp, symbol, nullptr);
+                                                $$ = new AssignExpr(temp, symbol, $3);
                                             }
                                         }
                                             
@@ -1055,7 +1060,7 @@ funcdef:    FUNCTION        {
                                         SignalError("Name collision with function " + std::string($2) + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                     }
                                     else{
-                                        symbol = DefineNewSymbol(USER_FUNC, $2);
+                                        symbol = DefineNewSymbol(USER_FUNC, $2);  // shadow user function
                                     }
                                 }
                                 auto func_def_stmt = new FuncDefStmt(symbol); 

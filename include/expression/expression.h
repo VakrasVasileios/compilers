@@ -8,17 +8,18 @@
  * 
 **/ 
 enum ExprType {
+    ASSIGN,
+    BOOL,
+    ARITHMETIC,
+    
     LIB_FUNC,   
     USER_FUNC, 
     VAR,        
-
     CONST_NUM,  
     CONST_BOOL, 
     CONST_STR,  
     CONST_NIL,  
-
     CALL,
-
     TABLE_ITEM,
     TABLE_MAKE
 };
