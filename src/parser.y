@@ -100,7 +100,8 @@
     char*                       stringValue;
     int                         intValue;
     double                      doubleValue;
-    class Expression*           expression;
+    class Expression*           expr;
+    class Primary*              prim;
     class Constant*             con;
     class Call*                 call;
     class Symbol*               sym;
@@ -116,10 +117,12 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <expression> primary term expr assignexpr
+%type <stringValue> member
+
+%type <expr> term expr assignexpr
+%type <prim> primary
 %type <con> const
 %type <sym> lvalue funcdef
-%type <stringValue> member
 %type <call> call
 %type <tablemake> objectdef
 
