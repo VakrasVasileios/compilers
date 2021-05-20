@@ -7,6 +7,7 @@
     #include <string>
     #include "../include/debuglog.h"
     #include "../include/expression/symbol.h"
+    #include "../include/expression/primary.h"
     #include "../include/expression/bool_constant.h"
     #include "../include/expression/constant.h"
     #include "../include/expression/nil_constant.h"
@@ -100,7 +101,11 @@
     char*                       stringValue;
     int                         intValue;
     double                      doubleValue;
+
+    class FuncDefStmt*          funcdef;
+
     class Expression*           expr;
+
     class Primary*              prim;
     class Constant*             con;
     class Call*                 call;
@@ -119,10 +124,12 @@
 
 %type <stringValue> member
 
+%type <funcdef>  funcdef 
+
 %type <expr> term expr assignexpr
 %type <prim> primary
 %type <con> const
-%type <sym> lvalue funcdef
+%type <sym> lvalue 
 %type <call> call
 %type <tablemake> objectdef
 
@@ -713,10 +720,13 @@ primary:      lvalue                {
                                         DLOG("primary -> call");
                                     }
             | objectdef             {
+                                        $$ = $1;
                                         DLOG("primary -> objectdef");
                                     }
-            | '(' funcdef ')'       {
-                                        $$ = $2;
+            | '(' funcdef ')'       {   
+                                        auto func_def = $2;
+                                        auto func = func_def->get_sym();
+                                        $$ = func;
                                         DLOG("primary -> (funcdef)");
                                     }
             | const                 {
@@ -827,8 +837,9 @@ call:       call  '(' elist ')'             {
 
                                                 DLOG("call -> lvalue callsuffix");
                                             }
-            | '(' funcdef ')'               {                                                
-                                                auto called_symbol = $2;
+            | '(' funcdef ')'               {                       
+                                                auto func_def = $2;                         
+                                                auto called_symbol = func_def->get_sym();
                                                 auto call = new Call(called_symbol);
 
                                                 call_exprs.push(call);
@@ -1004,8 +1015,7 @@ funcdef:    FUNCTION        {
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
-                                $<sym>$ = anonymous_function;
-
+                                $<funcdef>$ = func_def_stmt;
                             }
             '(' idlist ')'  {
                                 HideLowerScopes();
@@ -1023,7 +1033,7 @@ funcdef:    FUNCTION        {
 
                                 func_def_stmts.pop();
 
-                                $<sym>$ = anonymous_function;
+                                $<funcdef>$ = top_func_def;
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
             | FUNCTION ID   {
@@ -1056,7 +1066,7 @@ funcdef:    FUNCTION        {
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
-                                $<sym>$ = symbol;
+                                $<funcdef>$ = func_def_stmt;
                             }
             '(' idlist ')'  {
                                 HideLowerScopes();
@@ -1074,7 +1084,7 @@ funcdef:    FUNCTION        {
                                 
                                 program_stack.ActivateLowerScopes();
 
-                                $<sym>$ = function;
+                                $<funcdef>$ = top_func_def;
 
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
