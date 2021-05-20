@@ -22,7 +22,7 @@ public:
      * @brief Destroys this ArithmeticExpr object.
      * 
      */
-    ~ArithmeticExpr() = default;
+    ~ArithmeticExpr() = default;    
 };
 
 #endif 

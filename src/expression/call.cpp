@@ -25,6 +25,11 @@ Call:: set_ret_val(Expression* ret_val) {
     this->ret_val = ret_val; 
 }
 
+std::string 
+Call::to_string() const {
+    return ret_val->to_string();
+}
+
 std::ostream&
 Call:: LogExpression(std::ostream& os) const {
     return os << ret_val;

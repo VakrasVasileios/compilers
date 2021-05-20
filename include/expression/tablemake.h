@@ -23,6 +23,7 @@ public:
      * @param table_ the table to set this created table, not null 
      */
     void            set_table(Symbol* table_);
+    std::string     to_string() const override;
 protected:
     /**
      * @brief Constructs a new TableMake object.

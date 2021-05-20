@@ -88,15 +88,19 @@
     Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2);
     unsigned int                NextQuadLabel();
 
-    bool                        IsLibraryFunction(Expression* symbol);
-    bool                        IsUserFunction(Expression* symbol);
-    bool                        IsVariable(Expression* symbol);
+    bool                        IsLibraryFunction(Expression* expr);
+    bool                        IsUserFunction(Expression* expr);
+    bool                        IsVariable(Expression* expr);
+    bool                        IsConstString(Expression* expr);
+    bool                        IsConstBool(Expression* expr);
     bool                        IsGlobalVar(Symbol* symbol);
     bool                        IsAtCurrentScope(Symbol* symbol);
     bool                        InLoop();
     bool                        InFuncDef();
     bool                        InCall();
     bool                        InTableMakeElems();
+
+    bool                        IsValidArithmeticExpr(Expression* expr1, Expression* expr2);
 %}
 
 %union {                                                    
@@ -223,117 +227,66 @@ stmt:         expr ';'              {
 
 expr:         assignexpr            {
                                         $$ = $1;
-
                                         DLOG("expr -> assignexpr");
                                     }
             | expr '+' expr         {
-                                        auto entry1 = $1;
-                                        auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of addition with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");        
-                                        // else{
-                                            auto _t1 = NewTemp(); 
-                                            $$ = _t1;
-                                            Emit(ADD_t, _t1, entry1, entry2);
-                                        //} 
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                            auto temp = NewTemp();
+                                            Emit(ADD_t, temp, expr1, expr2);
+
+                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr + expr");
                                     }
             | expr '-' expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of subtraction with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");       
-                                        // else{
-                                            // auto _t1 = NewTemp(); 
-                                            // $$ = _t1;
-                                            // Emit(SUB_t, _t1, entry1, entry2, yylineno);
-                                        //} 
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                            auto temp = NewTemp();
+                                            Emit(SUB_t, temp, expr1, expr2);
+
+                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        } 
                                         DLOG("expr -> expr - expr");
                                     }
             | expr '*' expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of multiplication with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");     
-                                        // else{
-                                            // auto _t1 = NewTemp(); 
-                                            // $$ = _t1;
-                                            // Emit(MUL_t, _t1, entry1, entry2, yylineno);
-                                        //} 
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                            auto temp = NewTemp();
+                                            Emit(MUL_t, temp, expr1, expr2);
+
+                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr * expr");
                                     }
             | expr '/' expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of division with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");       
-                                        // else{
-                                            // auto _t1 = NewTemp(); 
-                                            // $$ = _t1;
-                                            // Emit(DIV_t, _t1, entry1, entry2, yylineno);
-                                        //} 
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                            auto temp = NewTemp();
+                                            Emit(DIV_t, temp, expr1, expr2);
+
+                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr / expr");
                                     }
             | expr '%' expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of modulo with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");     
-                                        // else{
-                                            // auto _t1 = NewTemp(); 
-                                            // $$ = _t1;
-                                            // Emit(MOD_t, _t1, entry1, entry2, yylineno);
-                                        //} 
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                            auto temp = NewTemp();
+                                            Emit(MOD_t, temp, expr1, expr2);
+
+                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        } 
                                         DLOG("expr -> expr % expr");
                                     }
             | expr '>' expr         {
@@ -1543,16 +1496,24 @@ unsigned int NextQuadLabel() {
         return quads.back()->label + 1;
 }
 
-inline bool IsLibraryFunction(Expression* symbol) {
-    return symbol->get_type() == LIB_FUNC; 
+inline bool IsLibraryFunction(Expression* expr) {
+    return expr->get_type() == LIB_FUNC; 
 }
 
-inline bool IsUserFunction(Expression* symbol) {
-    return symbol->get_type() == USER_FUNC; 
+inline bool IsUserFunction(Expression* expr) {
+    return expr->get_type() == USER_FUNC; 
 }
 
-inline bool IsVariable(Expression* symbol) {
-    return symbol->get_type() == VAR;
+inline bool IsVariable(Expression* expr) {
+    return expr->get_type() == VAR;
+}
+
+inline bool IsConstString(Expression* expr) {
+    return expr->get_type() == CONST_STR;
+}
+
+inline bool IsConstBool(Expression* expr) {
+    return expr->get_type() == CONST_BOOL;
 }
 
 inline bool IsGlobalVar(Symbol* symbol) { 
@@ -1577,4 +1538,43 @@ inline bool InCall() {
 
 inline bool InTableMakeElems() { 
     return tablemake_elems_exprs.size() != 0; 
+}
+
+bool IsValidArithmeticExpr(Expression* expr1, Expression* expr2) {
+    bool is_valid = true;
+
+    if (IsLibraryFunction(expr1)) {
+        SignalError("Invalid use of arithmetic operator on library function " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsLibraryFunction(expr2)) {
+        SignalError("Invalid use of arithmetic operator on library function " + expr2->to_string());
+        is_valid = false;
+    }
+    if (IsUserFunction(expr1)) {
+        SignalError("Invalid use of arithmetic operator on user function " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsUserFunction(expr2)) {
+        SignalError("Invalid use of arithmetic operator on user function " + expr2->to_string());
+        is_valid = false;
+    }
+    if (IsConstString(expr1)) {
+        SignalError("Invalid use of arithmetic operator on const string " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsConstString(expr2)) {
+        SignalError("Invalid use of arithmetic operator on const string " + expr2->to_string());
+        is_valid = false;
+    }
+    if (IsConstBool(expr1)) {
+        SignalError("Invalid use of arithmetic operator on const bool " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsConstBool(expr2)) {
+        SignalError("Invalid use of arithmetic operator on const bool " + expr2->to_string());
+        is_valid = false;
+    }
+
+    return is_valid;                
 }

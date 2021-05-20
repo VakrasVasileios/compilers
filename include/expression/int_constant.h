@@ -17,6 +17,7 @@ public:
      * @return a read access to this IntConstant value
     **/ 
     int             get_value() const;
+    std::string     to_string() const override;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:

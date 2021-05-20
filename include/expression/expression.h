@@ -38,6 +38,14 @@ public:
     ExprType                get_type() const;
    
     friend std::ostream&    operator << (std::ostream& os, const Expression* expression);
+    /**
+     * @brief Returns a read access to this Expression as a 
+     * string.
+     * 
+     * @return a read access to this Expression as a 
+     * string.
+     */
+    virtual std::string     to_string() const = 0;
 protected:
     Expression(ExprType _type) : type(_type) {};
     ~Expression() = default;

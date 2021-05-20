@@ -5,15 +5,15 @@ BoolConstant:: get_value() const {
     return value;
 }
 
-std::string
-BoolConstant:: value_to_string() const {
+std::string     
+BoolConstant::to_string() const {
     if (value)
         return "\'true\'";
     else
-        return "\'false\'";    
+        return "\'false\'";   
 }
 
 std::ostream&
 BoolConstant:: LogExpression(std::ostream& os) const {
-    return os << value_to_string();
+    return os << to_string();
 }

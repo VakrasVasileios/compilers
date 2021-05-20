@@ -828,30 +828,35 @@ TEST_F(InterCodeSuite, if_else_many_nested) {
 
 /*  ------------ Arithmetic --------------   */
 
-// TEST_F(QuadTest, arithmetic_simple) {
-//     expected =  "1:   ADD ^0 x 9 [line 1]\n"
-//                 "2:   SUB ^0 a 0 [line 2]\n"
-//                 "3:   MUL ^0 8 o [line 3]\n"
-//                 "4:   MOD ^0 3 6 [line 4]\n"
-//                 "5:   DIV ^0 1 1 [line 5]\n";
-//     actual = exec("./d_intermediate_code ../test/files/phase3_tests/arithmetic/simple.asc");
-//     GTEST_ASSERT_EQ(expected, actual); 
-// }
+TEST_F(InterCodeSuite, arithmetic_simple) {
+    expected =  "1:   ADD ^0 x 9 [line 1]\n"
+                "2:   SUB ^0 a 0 [line 2]\n"
+                "3:   MUL ^0 8 o [line 3]\n"
+                "4:   MOD ^0 3 6 [line 4]\n"
+                "5:   DIV ^0 1 1 [line 5]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/simple.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
 
-// TEST_F(QuadTest, arithmetic_spaghetti) {
-//     expected =  "1:   ADD ^0 x 9 [line 1]\n"
-//                 "2:   ADD ^0 ^0 8 [line 1]\n"
-//                 "3:   ADD ^0 ^0 9 [line 1]\n"
-//                 "4:   ADD ^0 ^0 u [line 1]\n";
-//     actual = exec("./d_intermediate_code ../test/files/phase3_tests/arithmetic/spaghetti.asc");
-//     GTEST_ASSERT_EQ(expected, actual); 
-// }
+TEST_F(InterCodeSuite, arithmetic_spaghetti) {
+    expected =  "1:   ADD ^0 x 9 [line 1]\n"
+                "2:   ADD ^1 ^0 8 [line 1]\n"
+                "3:   ADD ^2 ^1 9 [line 1]\n"
+                "4:   ADD ^3 ^2 u [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/spaghetti.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
 
-// TEST_F(QuadTest, arithmetic_function_id_error) {
-//     expected =  "Error, in line: 4: Use of addition with non variable type\n";
-//     actual = exec("./d_intermediate_code ../test/files/phase3_tests/arithmetic/function_id_error.asc");
-//     GTEST_ASSERT_EQ(expected, actual); 
-// }
+TEST_F(InterCodeSuite, arithmetic_errors) {
+    expected =  "Error, in line: 4: Invalid use of arithmetic operator on user function f\n"
+                "Error, in line: 6: Invalid use of arithmetic operator on const bool \'true\'\n"
+                "Error, in line: 6: Invalid use of arithmetic operator on const bool \'false\'\n"
+                "Error, in line: 8: Invalid use of arithmetic operator on const string \"a\"\n"
+                "Error, in line: 10: Invalid use of arithmetic operator on library function print\n";
+                
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/errors.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
 
 TEST_F(InterCodeSuite, arithmetic_plusplus_suffix) {
     expected =  "1:   ASSIGN ^0 i [line 1]\n"

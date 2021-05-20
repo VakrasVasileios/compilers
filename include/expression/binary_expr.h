@@ -32,6 +32,8 @@ public:
      * hand operand expression
      */
     Expression*     get_right_hand_operand() const;
+
+    std::string     to_string() const override;
 protected:
     /**
      * @brief Constructs a new BinaryExpr object.
@@ -59,7 +61,7 @@ private:
     Expression*     verify_operand(Expression* operand);  
     Expression*     verify_result(Expression* result);   
 
-    virtual std::ostream&   LogExpression(std::ostream& os) const;
+    std::ostream&   LogExpression(std::ostream& os) const override;
 };
 
 

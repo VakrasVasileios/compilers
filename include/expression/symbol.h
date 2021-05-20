@@ -129,6 +129,7 @@ public:
     void                        AddFormalArg(Symbol* formal_arg);                   
 
     friend std::ostream&        operator<<(std::ostream& os, const Symbol* symbol);    
+    std::string                 to_string() const override;
 private:
     const std::string           id;
     const unsigned int          line;
@@ -145,7 +146,7 @@ private:
     unsigned int                verify_offset(unsigned int offset);
     bool                        is_state_valid();
     std::string                 space_to_string() const;
-    std::string                 to_string() const;
+    std::string                 sym_to_string() const;
     std::ostream&               LogExpression(std::ostream& os) const override;
 };
 

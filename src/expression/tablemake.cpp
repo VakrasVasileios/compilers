@@ -11,6 +11,11 @@ TableMake:: set_table(Symbol* table_) {
     table = table_;
 }
 
+std::string
+TableMake::to_string() const {
+    return table->to_string();
+}
+
 std::ostream&
 TableMake::LogExpression(std::ostream& os) const {
     return os << table->get_id();

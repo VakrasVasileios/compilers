@@ -14,6 +14,7 @@ public:
      * @brief Returns a read access to this StringConstant value.
     **/ 
     std::string     get_value() const;
+    std::string     to_string() const override;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override; 
 private:

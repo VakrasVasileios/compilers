@@ -62,6 +62,11 @@ Symbol:: AddFormalArg(Symbol* formal_arg) {
     INVARIANT(is_state_valid());
 }
 
+std::string
+Symbol:: to_string() const {
+    return id;
+}
+
 ExprType
 Symbol:: verify_type(ExprType type) {
     PRECONDITION(type == VAR || type == LIB_FUNC || type == USER_FUNC);
@@ -119,7 +124,7 @@ Symbol:: space_to_string() const {
 }
 
 std::string 
-Symbol::to_string() const {
+Symbol:: sym_to_string() const {
     switch (get_type()) {
         case LIB_FUNC:
             return "library function";

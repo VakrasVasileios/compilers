@@ -14,6 +14,11 @@ BinaryExpr:: get_right_hand_operand() const {
     return right_hand_operand;
 }
 
+std::string
+BinaryExpr::to_string() const {
+    return result->to_string();
+}
+
 ExprType      
 BinaryExpr::verify_type(ExprType type) {
     PRECONDITION(type == ASSIGN || type == ARITHMETIC || type == BOOL);

@@ -45,6 +45,8 @@ public:
      * @param ret_val the return value to set his Call return value, can be null
     **/ 
     void                    set_ret_val(Expression* ret_val);
+    
+    std::string             to_string() const override;
 protected:
     std::ostream&           LogExpression(std::ostream& os) const override;
 private:

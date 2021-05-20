@@ -16,6 +16,7 @@ public:
      * @return a read access to this DoubleConstant value
     **/ 
     double          get_value() const;
+    std::string     to_string() const override;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:
