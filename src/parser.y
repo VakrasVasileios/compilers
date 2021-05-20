@@ -1436,19 +1436,21 @@ void InitLibraryFunctions() {
     DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
 }
 
-Symbol* NewSymbol(ExprType type, const char* name) {
-    assert (name != nullptr);
+Symbol* NewSymbol(ExprType type, const char* id) {
+    assert (id != nullptr);
     if (InFuncDef()) {
-        return new Symbol(type, name, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());
+        auto new_symbol = new Symbol(type, id, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());
         func_def_stmts.top()->IncreaseOffset();
+        
+        return new_symbol;
     }
     else {
-        return new Symbol(type, name, yylineno, current_scope, PROGRAM_VAR, program_var_offset++);
+        return new Symbol(type, id, yylineno, current_scope, PROGRAM_VAR, program_var_offset++);
     }
 }
 
-Symbol* DefineNewSymbol(ExprType type, const char* name) {
-    auto new_symbol = NewSymbol(type, name);
+Symbol* DefineNewSymbol(ExprType type, const char* id) {
+    auto new_symbol = NewSymbol(type, id);
     DefineSymbol(new_symbol);
 
     return new_symbol;
@@ -1499,12 +1501,12 @@ inline void ResetTemp() {
 }
 
 Symbol* NewTemp() {
-    std::string name = NewTempName();
+    std::string id = NewTempName();
 
-    auto new_temp = program_stack.Top()->Lookup(name);
+    auto new_temp = program_stack.Top()->Lookup(id);
 
     if (new_temp == nullptr)  
-        new_temp = DefineNewSymbol(VAR, name.c_str());
+        new_temp = DefineNewSymbol(VAR, id.c_str());
 
     return new_temp;
 }
