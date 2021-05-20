@@ -17,7 +17,7 @@ enum ExprType {
     CONST_STR,  
     CONST_NIL,  
 
-    FUNCTION_CALL,
+    CALL,
 
     TABLE_ITEM,
     TABLE_MAKE

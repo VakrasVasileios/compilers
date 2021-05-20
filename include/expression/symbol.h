@@ -1,7 +1,7 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include "expression.h"
+#include "primary.h"
 #include <string>
 #include <iostream>
 #include <list>
@@ -20,10 +20,10 @@ enum ScopeSpace {
 };
 
 /**
- * @brief A symbol expression with an id.
+ * @brief An lvalue primary expression.
  * 
 **/ 
-class Symbol final : public Expression {
+class Symbol final : public Primary {
 public:
     /**
      * @brief Constructs a new Symbol object.
@@ -40,7 +40,7 @@ public:
      * or equal to zero.
      */
     Symbol(ExprType type, std::string id, unsigned int line, unsigned int scope , ScopeSpace space, unsigned int offset) :
-        Expression(verify_type(type)), id(verify_id(id)), line(verify_line(line)), scope(verify_scope(scope)),
+        Primary(verify_type(type)), id(verify_id(id)), line(verify_line(line)), scope(verify_scope(scope)),
         active(true), space(space), offset(verify_offset(offset)) {};
     /**
      * @brief Destroys this Symbol object.

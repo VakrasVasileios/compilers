@@ -1,17 +1,17 @@
 #ifndef CALL_H
 #define CALL_H
 
-#include "expression.h"
+#include "primary.h"
 #include "symbol.h"
 #include <list>
 
 /**
- * @brief A call expression.
+ * @brief A call primary expression.
 **/ 
-class Call final : public Expression {
+class Call final : public Primary {
 public:
     Call(Symbol* called_symbol)
-    : Expression(FUNCTION_CALL), called_symbol(called_symbol) {};
+    : Primary(CALL), called_symbol(called_symbol) {};
 
     ~Call() = default;
     /**

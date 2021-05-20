@@ -1,16 +1,15 @@
 #ifndef TABLEMAKE_H
 #define TABLEMAKE_H
 
-#include "expression.h"
+#include "primary.h"
 #include "symbol.h"
 #include "../../util/contract/contract.h"
 
 /**
- * @brief A table make expression, for making
- * tables.
+ * @brief A table make primary expression.
  * 
  */
-class TableMake : public Expression {
+class TableMake : public Primary {
 public:
     /**
      * @brief Returns a read access to this TableMake created table.
@@ -29,7 +28,7 @@ protected:
      * @brief Constructs a new TableMake object.
      * 
      */
-    TableMake() : Expression(TABLE_MAKE) {};
+    TableMake() : Primary(TABLE_MAKE) {};
     /**
      * @brief Destroys this TableMakeobject.
      * 
