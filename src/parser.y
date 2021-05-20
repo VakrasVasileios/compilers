@@ -74,9 +74,11 @@
     void                        DecreaseScope();
     void                        HideLowerScopes();
 
+    void                        DefineSymbol(Symbol* symbol);
     Symbol*                     DefineNewSymbol(ExprType type, const char* symbol);
     Symbol*                     DefineNewAnonymousFunc();
-    void                        DefineNewFormalArg(const char* name);
+    void                        StashFormalArgument(Symbol* symbol);
+    void                        DefineStashedFormalArguments();
 
     Symbol*                     NewTemp();
     void                        ResetTemp();
@@ -982,6 +984,7 @@ indexedelem:'{' expr ':' expr '}'   {
 
 block:      '{'         {
                             IncreaseScope();
+                            DefineStashedFormalArguments();
                         }
             stmts '}'   {
                             DecreaseScope();
@@ -989,23 +992,21 @@ block:      '{'         {
                         }
             ;
 
-funcdef:    FUNCTION 
-                '(' idlist ')'  
-                            {
+funcdef:    FUNCTION        {
                                 auto anonymous_function = DefineNewAnonymousFunc();
-
                                 auto func_def_stmt = new FuncDefStmt(anonymous_function);
-
                                 func_def_stmts.push(func_def_stmt);
-                                
+
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                 Emit(FUNCSTART_t, anonymous_function, nullptr, nullptr);
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
-                                HideLowerScopes();
-
                                 $<sym>$ = anonymous_function;
+
+                            }
+            '(' idlist ')'  {
+                                HideLowerScopes();
                             }
             block           {
                                 auto top_func_def = func_def_stmts.top();
@@ -1023,9 +1024,7 @@ funcdef:    FUNCTION
                                 $<sym>$ = anonymous_function;
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
-            | FUNCTION ID 
-                '(' idlist ')'
-                            {
+            | FUNCTION ID   {
                                 auto symbol = program_stack.Lookup($2);
                                 if (symbol == nullptr) {
                                     symbol = DefineNewSymbol(USER_FUNC, $2);
@@ -1055,14 +1054,14 @@ funcdef:    FUNCTION
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
-                                HideLowerScopes();
-
                                 $<sym>$ = symbol;
+                            }
+            '(' idlist ')'  {
+                                HideLowerScopes();
                             }
             block           { 
                                 auto top_func_def =  func_def_stmts.top();
-                                Symbol* function;
-                                function = top_func_def->get_sym();
+                                auto function = top_func_def->get_sym();
                                 
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr);
                                 
@@ -1106,7 +1105,19 @@ const:        INTNUM    {
             ;
 
 multid:     ',' ID  {
-                        DefineNewFormalArg($2);
+                        auto top_func_def_stmt = func_def_stmts.top();
+                        auto func = top_func_def_stmt->get_sym();
+                        auto offset = func->get_formal_arguments().size();
+
+                        auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset);
+
+                        if (func->HasFormalArg(new_formal_arg)) {
+                            SignalError("formal argument " + std::string($2) + " already declared");
+                        }
+                        else {
+                            func->AddFormalArg(new_formal_arg);
+                            StashFormalArgument(new_formal_arg);       
+                        }
                     } 
             multid  {
                         DLOG("multid -> , id multid");
@@ -1117,7 +1128,19 @@ multid:     ',' ID  {
             ;
 
 idlist:     ID      {
-                        DefineNewFormalArg($1);
+                        auto top_func_def_stmt = func_def_stmts.top();
+                        auto func = top_func_def_stmt->get_sym();
+                        auto offset = func->get_formal_arguments().size();
+
+                        auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset);
+
+                        if (func->HasFormalArg(new_formal_arg)) {
+                            SignalError("formal argument " + std::string($1) + " already declared");
+                        }
+                        else {
+                            func->AddFormalArg(new_formal_arg);   
+                            StashFormalArgument(new_formal_arg);  
+                        }
                     } 
             multid  { 
                         DLOG("idlist -> id multid"); 
@@ -1415,10 +1438,13 @@ void InitLibraryFunctions() {
 
 Symbol* NewSymbol(ExprType type, const char* name) {
     assert (name != nullptr);
-    if (InFuncDef())
+    if (InFuncDef()) {
         return new Symbol(type, name, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());
-    else
+        func_def_stmts.top()->IncreaseOffset();
+    }
+    else {
         return new Symbol(type, name, yylineno, current_scope, PROGRAM_VAR, program_var_offset++);
+    }
 }
 
 Symbol* DefineNewSymbol(ExprType type, const char* name) {
@@ -1448,26 +1474,18 @@ Symbol* DefineNewAnonymousFunc() {
     return new_an_func;
 }
 
-Symbol* NewFormalArg(Symbol* func, const char* name) {
-    assert (func != nullptr);
-    assert (name != nullptr);
-    auto offset = func->get_formal_arguments().size();
+std::list<Symbol*>  stashed_formal_arguments;
 
-    return new Symbol(VAR, name, yylineno, current_scope + 1, FORMAL_ARG, offset);
+void DefineStashedFormalArguments() { 
+    for (auto i : stashed_formal_arguments) {
+        DefineSymbol(i);
+    }
+    stashed_formal_arguments.clear();
 }
 
-void DefineNewFormalArg(const char* name) {
-    assert (name != nullptr);
-    auto top_func_def_stmt = func_def_stmts.top();
-    auto func = top_func_def_stmt->get_sym();
-
-    auto new_formal_arg = NewFormalArg(func, name);
-
-    if (func->HasFormalArg(new_formal_arg))
-        SignalError("formal argument " + std::string(name) + " already declared");
-    else
-        func->AddFormalArg(new_formal_arg);     
-    DefineSymbol(new_formal_arg);
+void StashFormalArgument(Symbol* symbol) {
+    assert(symbol != nullptr);
+    stashed_formal_arguments.push_back(symbol);
 }
 
 unsigned int temp_counter = 0;

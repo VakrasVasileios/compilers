@@ -106,7 +106,7 @@ TEST_F(SyntaxAnalysisSuite, Error10) {
 }
 
 TEST_F(SyntaxAnalysisSuite, Error11) {
-  expected = "Error, in line: 1: formal argument x already declared, in line: 1\n";
+  expected = "Error, in line: 1: formal argument x already declared\n";
   actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error11.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
@@ -224,9 +224,9 @@ TEST_F(SyntaxAnalysisSuite, GlobalAndLocal) {
             "[user function] \"IsOdd\" (line 22) (scope 0)\n"
             "[user function] \"CanDivideByTen\" (line 29) (scope 0)\n"
             "[user function] \"PrintParityOfNumbers\" (line 36) (scope 0)\n"
-            "[local variable] \"even\" (line 56) (scope 0)\n"
-            "[local variable] \"odd\" (line 56) (scope 0)\n"
-            "[local variable] \"cnt\" (line 56) (scope 0)\n"
+            "[global variable] \"even\" (line 56) (scope 0)\n"
+            "[global variable] \"odd\" (line 56) (scope 0)\n"
+            "[global variable] \"cnt\" (line 56) (scope 0)\n"
             "[user function] \"Print\" (line 68) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
             "[formal variable] \"con\" (line 7) (scope 1)\n"
@@ -298,12 +298,6 @@ TEST_F(SyntaxAnalysisSuite, GlobalAndLocal) {
 //     GTEST_ASSERT_EQ(expected, actual);
 //  }
 
- TEST_F(SyntaxAnalysisSuite, Tree) {
-   expected = "syntax error: at line 1, before token: /\n"
-            "INPUT NOT VALID\n";
-   actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Tree.asc");
-   GTEST_ASSERT_EQ(expected, actual);
- }
 
 #ifdef TESTING
 int main(int argc, char* argv[])
