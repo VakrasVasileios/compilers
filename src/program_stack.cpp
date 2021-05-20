@@ -45,11 +45,6 @@ ProgramStack:: LookupGlobal(std::string name) {
     return block->Lookup(name);
 }
 
-Symbol*
-ProgramStack:: LookupHiddenVariable(std::string name) {
-    return Top()->Lookup(name);
-}
-
 void
 ProgramStack:: ActivateLowerScopes() {
     auto iter = block_list.begin();

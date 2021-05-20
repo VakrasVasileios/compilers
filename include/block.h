@@ -2,7 +2,6 @@
 #define BLOCK_H
 
 #include "expression/symbol.h"
-#include "expression/function.h"
 #include "../util/contract/contract.h"
 #include <list>
 

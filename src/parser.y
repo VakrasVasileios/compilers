@@ -1,5 +1,32 @@
 %{
-    #include "../include/parser_deps.h"
+    #include <stdio.h>
+    #include <iostream>
+    #include <fstream>
+    #include <list>
+    #include <stack>
+    #include <string>
+    #include "../include/debuglog.h"
+    #include "../include/expression/symbol.h"
+    #include "../include/expression/function_call.h"
+    #include "../include/expression/bool_constant.h"
+    #include "../include/expression/constant.h"
+    #include "../include/expression/nil_constant.h"
+    #include "../include/expression/string_constant.h"
+    #include "../include/expression/double_constant.h"
+    #include "../include/expression/int_constant.h"
+    #include "../include/expression/numeric_constant.h"
+    #include "../include/expression/tablemake.h"
+    #include "../include/expression/tablemake_elems.h"
+    #include "../include/expression/tablemake_pairs.h"
+    #include "../include/symbol_table.h"
+    #include "../include/program_stack.h"
+    #include "../include/instruction_opcodes.h"
+    #include "../include/quad.h"
+    #include "../include/for_stmt.h"
+    #include "../include/while_stmt.h"
+    #include "../include/loop_stmt.h"
+    #include "../include/func_def_stmt.h"
+    #include "../include/if_stmt.h"
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -8,31 +35,9 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    bool        error_flag = false;
-    inline bool NoErrorSignaled()       { return error_flag == false; }
-    inline void SignalError()           { error_flag = 1; }
-
-    #if !defined TEST
-        #define     SIGNALERROR(message)  \
-            do { \
-                std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << message << std::endl; \
-                SignalError(); \
-            } while (0)
-
-        #define     LOGWARNING(message) std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << message << std::endl 
-    #else 
-        #define     SIGNALERROR(message)  \
-            do { \
-                std::cout << "Error, in line: " << yylineno << ": " << message << std::endl; \
-                SignalError(); \
-            } while (0)
-
-        #define     LOGWARNING(message) std::cout << "Warning, in line: " << yylineno << ": " << message << std::endl 
-    #endif
-
-    #define OUT_OF_SCOPE  -1
-    #define LIB_FUNC_LINE  0
-    #define TEMP_LINE 0
+    #define OUT_OF_SCOPE   -1
+    #define LIB_FUNC_LINE   0
+    #define TEMP_LINE       0
 
     const unsigned int          global_scope = 0;
     unsigned int                current_scope = OUT_OF_SCOPE;
@@ -41,12 +46,6 @@
     ProgramStack                program_stack;  
 
     unsigned int                program_var_offset = 0;
-    unsigned int                formal_args_offset = 0;
-
-    std::list<FormalVariable*>  stashed_formal_arguments;
-    
-    unsigned int                anonymus_funcs_counter = 0;
-    unsigned int                temp_counter = 0;
 
     std::vector<Quad*>          quads;
     
@@ -60,52 +59,51 @@
 
     std::stack<IfStmt*>         if_stmts;
 
-    std::stack<TableMakeElems*>  tablemake_elems_exprs;
-    std::stack<TableMakePairs*>  tablemake_pairs_exprs;
+    std::stack<TableMakeElems*> tablemake_elems_exprs;
+    std::stack<TableMakePairs*> tablemake_pairs_exprs;
+
+    bool                        NoErrorSignaled();
+    void                        SignalError(std::string msg);
+    void                        LogWarning(std::string msg);
+    void                        LogQuads(std::ostream& output);
+    void                        LogSymTable(std::ostream& output);
+                           
+    void                        InitLibraryFunctions();
 
     void                        IncreaseScope();
     void                        DecreaseScope();
     void                        HideLowerScopes();
-    inline bool                 ScopeIsGlobal()                     { return current_scope == global_scope;}
 
-    void                        InitLibraryFunctions(); 
-    Symbol*                     InsertLocalVariable(const char* name, unsigned int line);
-    Symbol*                     InsertGlobalVariable(const char* name, unsigned int line);
-    Symbol*                     InsertUserFunction(const char* name, unsigned int line);
-    Symbol*                     InsertUserFunction(unsigned int line);
-    void                        PushStashedFormalArguments();
-    void                        StashFormalArgument(const char* name, unsigned int line);
-    inline bool                 IsLibraryFunction(Symbol* symbol)   { return symbol->get_type() == LIB_FUNC; }
-    inline bool                 IsUserFunction(Symbol* symbol)      { return symbol->get_type() == USER_FUNC; }
-    inline bool                 IsVariable(Symbol* symbol)          { return symbol->get_type() == VAR; }
-    inline bool                 IsGlobalVar(Symbol* symbol)         { return IsVariable(symbol) && symbol->get_scope() == global_scope; }
-    inline bool                 IsAtCurrentScope(Symbol* symbol)    { return symbol->get_scope() == current_scope; }
+    Symbol*                     DefineNewSymbol(ExprType type, const char* symbol);
+    Symbol*                     DefineNewAnonymousFunc();
+    void                        DefineNewFormalArg(const char* name);
 
     Symbol*                     NewTemp();
-    inline void                 ResetTemp()                         { temp_counter = 0; }
-
-    Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line);
+    void                        ResetTemp();
+    Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2);
     unsigned int                NextQuadLabel();
 
-    inline bool                 InLoop()                            { return loop_stmts.size() != 0; }
-    inline bool                 InFuncDef()                         { return func_def_stmts.size() != 0; } 
-    inline bool                 InFunctionCall()                    { return call_exprs.size() != 0; }
-    inline bool                 InFuncCall()                        { return call_exprs.size() != 0; }
-    inline bool                 InTableMakeElems()                  { return tablemake_elems_exprs.size() != 0; }
-
-    void                        LogSymTable(std::ostream& output);
-    void                        LogQuads(std::ostream& output);
+    bool                        IsLibraryFunction(Expression* symbol);
+    bool                        IsUserFunction(Expression* symbol);
+    bool                        IsVariable(Expression* symbol);
+    bool                        IsGlobalVar(Symbol* symbol);
+    bool                        IsAtCurrentScope(Symbol* symbol);
+    bool                        InLoop();
+    bool                        InFuncDef();
+    bool                        InFunctionCall();
+    bool                        InFuncCall();
+    bool                        InTableMakeElems();
 %}
 
 %union {                                                    
-    char*                   stringValue;
-    int                     intValue;
-    double                  doubleValue;
-    class Expression*       expression;
-    class Constant*         con;
-    class FunctionCall*     funcCall;
-    class Symbol*           sym;
-    class TableMake*        tablemake;
+    char*                       stringValue;
+    int                         intValue;
+    double                      doubleValue;
+    class Expression*           expression;
+    class Constant*             con;
+    class FunctionCall*         funcCall;
+    class Symbol*               sym;
+    class TableMake*            tablemake;
 }
 
 %start program
@@ -172,9 +170,9 @@ stmt:         expr ';'              {
                                     }
             | BREAK ';'             { 
                                         if(!InLoop()) {
-                                            SIGNALERROR("invalid keyword BREAK outside of loop");
+                                            SignalError("invalid keyword BREAK outside of loop");
                                         } else {
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             auto top_loop_stmt = loop_stmts.top();
                                             top_loop_stmt->PushBreakJumpQuad(jump_quad);
@@ -184,9 +182,9 @@ stmt:         expr ';'              {
                                     }
             | CONTINUE ';'          {
                                         if(!InLoop()) {
-                                            SIGNALERROR("invalid keyword CONTINUE outside of loop");
+                                            SignalError("invalid keyword CONTINUE outside of loop");
                                         } else {
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             auto top_loop_stmt = loop_stmts.top();
                                             top_loop_stmt->PushContinueJumpQuad(jump_quad);
@@ -207,7 +205,7 @@ stmt:         expr ';'              {
 
 expr:         assignexpr            {
                                         auto temp = NewTemp();
-                                        Emit(ASSIGN_t, temp, $1, nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, $1, nullptr);
 
                                         $$ = temp;
 
@@ -217,21 +215,21 @@ expr:         assignexpr            {
                                         auto entry1 = $1;
                                         auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of addition with non variable type");
+                                        //     SignalError("Use of addition with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");        
+                                        //     LogWarning("Entries must be type of Number");        
                                         // else{
                                             auto _t1 = NewTemp(); 
                                             $$ = _t1;
-                                            Emit(ADD_t, _t1, entry1, entry2, yylineno);
+                                            Emit(ADD_t, _t1, entry1, entry2);
                                         //} 
                                         DLOG("expr -> expr + expr");
                                     }
@@ -239,17 +237,17 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of subtraction with non variable type");
+                                        //     SignalError("Use of subtraction with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");       
+                                        //     LogWarning("Entries must be type of Number");       
                                         // else{
                                             // auto _t1 = NewTemp(); 
                                             // $$ = _t1;
@@ -261,17 +259,17 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of multiplication with non variable type");
+                                        //     SignalError("Use of multiplication with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");     
+                                        //     LogWarning("Entries must be type of Number");     
                                         // else{
                                             // auto _t1 = NewTemp(); 
                                             // $$ = _t1;
@@ -283,17 +281,17 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of division with non variable type");
+                                        //     SignalError("Use of division with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");       
+                                        //     LogWarning("Entries must be type of Number");       
                                         // else{
                                             // auto _t1 = NewTemp(); 
                                             // $$ = _t1;
@@ -305,17 +303,17 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of modulo with non variable type");
+                                        //     SignalError("Use of modulo with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");     
+                                        //     LogWarning("Entries must be type of Number");     
                                         // else{
                                             // auto _t1 = NewTemp(); 
                                             // $$ = _t1;
@@ -327,32 +325,32 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of > with non variable type");
+                                        //     SignalError("Use of > with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");   
+                                        //     LogWarning("Entries must be type of Number");   
                                         // else{
-                                            auto greater_quad = Emit(IF_GREATER_t, $1, $3, nullptr, yylineno);
+                                            auto greater_quad = Emit(IF_GREATER_t, $1, $3, nullptr);
                                             PatchBranchQuad(greater_quad, greater_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                             $$ = temp;
                                         //} 
@@ -363,32 +361,32 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of >= with non variable type");
+                                        //     SignalError("Use of >= with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");   
+                                        //     LogWarning("Entries must be type of Number");   
                                         // else{
-                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr, yylineno);
+                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr);
                                             PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                             $$ = temp;
                                         //} 
@@ -398,32 +396,32 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of < with non variable type");
+                                        //     SignalError("Use of < with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");
+                                        //     LogWarning("Entries must be type of Number");
                                         // else{
-                                            auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr, yylineno);
+                                            auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr);
                                             PatchBranchQuad(less_quad, less_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                             $$ = temp;
                                         //} 
@@ -433,32 +431,32 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of <= with non variable type");
+                                        //     SignalError("Use of <= with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");
+                                        //     LogWarning("Entries must be type of Number");
                                         // else{
-                                            auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr, yylineno);
+                                            auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr);
                                             PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                             $$ = temp;
                                         //} 
@@ -468,32 +466,32 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of == with non variable type");
+                                        //     SignalError("Use of == with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");
+                                        //     LogWarning("Entries must be type of Number");
                                         // else{
-                                            auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr, yylineno);
+                                            auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr);
                                             PatchBranchQuad(equal_quad, equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                             $$ = temp;
                                         //}
@@ -503,32 +501,32 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of != with non variable type");
+                                        //     SignalError("Use of != with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");
+                                        //     LogWarning("Entries must be type of Number");
                                         // else{
-                                            auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr, yylineno);
+                                            auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr);
                                             PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
                                             auto temp = NewTemp();
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                             $$ = temp;
                                        // } 
@@ -538,17 +536,17 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of AND with non variable type");
+                                        //     SignalError("Use of AND with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");
+                                        //     LogWarning("Entries must be type of Number");
                                         // else{
                                         //     //  TODO
                                         // }
@@ -558,17 +556,17 @@ expr:         assignexpr            {
                                         // auto entry1 = $1;
                                         // auto entry2 = $3;
                                         // if(entry1 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if (!entry1->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
+                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
                                         // else if(entry2 == nullptr)
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!entry2->is_active())
-                                        //     SIGNALERROR("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
+                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
                                         // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SIGNALERROR("Use of OR with non variable type");
+                                        //     SignalError("Use of OR with non variable type");
                                         // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LOGWARNING("Entries must be type of Number");
+                                        //     LogWarning("Entries must be type of Number");
                                         // else{
                                         //     //  TODO
                                         // }
@@ -585,48 +583,46 @@ term:         '(' expr ')'          {
             | '-' expr %prec UMINUS {
                                         auto symbol = $2;
                                         if (symbol->get_type() == CONST_BOOL) {
-                                            SIGNALERROR("Illegal use of unary minus on constant boolean");
+                                            SignalError("Illegal use of unary minus on constant boolean");
                                         }
                                         else {
                                             auto temp = NewTemp();
-                                            Emit(UMINUS_t, temp, symbol, nullptr, yylineno);
+                                            Emit(UMINUS_t, temp, symbol, nullptr);
                                             $$ = symbol;
                                         }
 
                                         DLOG("term -> -expr");
                                     }
             | NOT expr              {
-                                        auto equal_quad = Emit(IF_EQ_t, $2, new BoolConstant(true),  nullptr, yylineno);
+                                        auto equal_quad = Emit(IF_EQ_t, $2, new BoolConstant(true),  nullptr);
                                         PatchBranchQuad(equal_quad, equal_quad->label + 4);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 1);
 
                                         auto temp = NewTemp();
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr, yylineno);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
                                         $$ = temp;
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
-                                        if(symbol == nullptr)
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                        else if (!symbol->is_active())
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        if (!symbol->is_active())
+                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of increment operator with non variable type");   
+                                            SignalError("Use of increment operator with non variable type");   
                                         else {
                                             auto temp = NewTemp(); 
                                                
-                                            Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
-                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);
+                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                            Emit(ASSIGN_t, temp, symbol, nullptr);
                                             
                                             $$ = temp;
                                         }     
@@ -635,34 +631,30 @@ term:         '(' expr ')'          {
                                     }
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
-                                        if(symbol == nullptr)
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                        else if (!symbol->is_active())
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        if (!symbol->is_active())
+                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of increment operator with non variable type");   
+                                            SignalError("Use of increment operator with non variable type");   
                                         else {
                                             auto temp = NewTemp(); 
 
-                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
-                                            Emit(ADD_t, symbol, symbol, new IntConstant(1), yylineno);
+                                            Emit(ASSIGN_t, temp, symbol, nullptr);    
+                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
 
                                             $$ = temp;
                                         }     
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
-                                        if(symbol == nullptr)
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                        else if (!symbol->is_active())
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        if (!symbol->is_active())
+                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of decrement operator with non variable type");   
+                                            SignalError("Use of decrement operator with non variable type");   
                                         else {
                                             auto temp = NewTemp(); 
                                                
-                                            Emit(SUB_t, symbol, symbol, new IntConstant(1), yylineno);
-                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno); 
+                                            Emit(SUB_t, symbol, symbol, new IntConstant(1));
+                                            Emit(ASSIGN_t, temp, symbol, nullptr); 
 
                                             $$ = temp;
                                         }     
@@ -670,18 +662,16 @@ term:         '(' expr ')'          {
                                     }
             | lvalue MINUSMINUS     { 
                                         auto symbol = $1;
-                                        if(symbol == nullptr)
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                        else if (!symbol->is_active())
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
+                                        if (!symbol->is_active())
+                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
                                         else if (!IsVariable(symbol))
-                                            SIGNALERROR("Use of decrement operator with non variable type");
+                                            SignalError("Use of decrement operator with non variable type");
                                         else {
                                             {
                                             auto temp = NewTemp(); 
                                                
-                                            Emit(ASSIGN_t, temp, symbol, nullptr, yylineno);    
-                                            Emit(SUB_t, symbol, symbol, new IntConstant(1), yylineno);
+                                            Emit(ASSIGN_t, temp, symbol, nullptr);    
+                                            Emit(SUB_t, symbol, symbol, new IntConstant(1));
 
                                             $$ = temp;
                                         } 
@@ -698,10 +688,10 @@ assignexpr:   lvalue '=' expr       {
                                         auto symbol = $1;
                                         if (symbol != nullptr) {
                                             if (IsLibraryFunction(symbol) || IsUserFunction(symbol)) {
-                                                SIGNALERROR("Functions are constant their value cannot be changed");
+                                                SignalError("Functions are constant their value cannot be changed");
                                             }
                                             else {
-                                                auto assign_quad = Emit(ASSIGN_t, symbol, nullptr, $3, yylineno);
+                                                auto assign_quad = Emit(ASSIGN_t, symbol, nullptr, $3);
                                                 $$ = assign_quad->result;
                                             }
                                         }
@@ -732,50 +722,35 @@ primary:      lvalue                {
             ;
 
 lvalue:       ID                    {
-                                        Symbol* symbol;
-                                        if (ScopeIsGlobal()) {
-                                            symbol = program_stack.LookupGlobal($1);
-                                            if(symbol == nullptr) {
-                                                symbol = InsertGlobalVariable($1, yylineno);
-                                            }
-                                            else if (!symbol->is_active()) {
-                                                SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                            }
-                                            $$ = symbol;
+                                        auto symbol = program_stack.Lookup($1);
+                                        if (symbol == nullptr) {
+                                            symbol = DefineNewSymbol(VAR, $1);
+                                        } else if (!symbol->is_active()) {
+                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                         }
-                                        else {
-                                            symbol = program_stack.Lookup($1);
-                                            if (symbol == nullptr) {
-                                                symbol = InsertLocalVariable($1, yylineno);
-                                            }
-                                            else if (!symbol->is_active()) {
-                                                SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                            }
-                                            $$ = symbol;
-                                        }
+                                        $$ = symbol;
+
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
                                         auto symbol = program_stack.Lookup($2);
                                         if (symbol == nullptr) { 
-                                            symbol = InsertLocalVariable($2, yylineno);
+                                            symbol = DefineNewSymbol(VAR, $2);
                                         }
                                         else if (!symbol->is_active()) {
-                                            SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                         }
                                         else if (IsGlobalVar(symbol)) {
-                                            symbol = InsertLocalVariable($2, yylineno);
+                                            symbol = DefineNewSymbol(VAR, $2);
                                         }
                                         else if (IsUserFunction(symbol)){
-                                            if(IsAtCurrentScope(symbol)) {
-                                                SIGNALERROR("Attempting to redefine a previously declared user function");
-                                            }
-                                            else {
-                                                symbol = InsertLocalVariable($2, yylineno);
-                                            }    
+                                            if(IsAtCurrentScope(symbol)) 
+                                                SignalError("Attempting to redefine a previously declared user function");
+                                            else 
+                                                symbol = DefineNewSymbol(VAR, $2);
                                         }
                                         else if (IsLibraryFunction(symbol)) {
-                                            SIGNALERROR("Attempting to redefine a library function");
+                                            SignalError("Attempting to redefine a library function");
                                         }
                                         $$ = symbol;
                                         DLOG("lvalue -> local id");
@@ -783,7 +758,7 @@ lvalue:       ID                    {
             | COLONCOLON ID         {
                                         auto symbol = program_stack.LookupGlobal($2);
                                         if (symbol == nullptr || !symbol->is_active()) 
-                                            SIGNALERROR("No global variable with id: " + std::string($2));
+                                            SignalError("No global variable with id: " + std::string($2));
 
                                         $$ = symbol;
                                         DLOG("lvalue -> ::id");
@@ -829,19 +804,19 @@ call:       call  '(' elist ')'             {
 
                                                 auto temp_value = NewTemp();
                         
-                                                Emit(CALL_t, called_symbol, nullptr, nullptr, yylineno);    
-                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
+                                                Emit(CALL_t, called_symbol, nullptr, nullptr);    
+                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
                                                 top_func_call->set_ret_val(temp_value->get_id());
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
-                                                    auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
+                                                    auto args_num = called_symbol->get_formal_arguments().size();
                                                     auto call_args_num = top_func_call->get_params().size();
 
                                                     if (call_args_num < args_num)
-                                                        SIGNALERROR("Too few arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                        SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                     else if (call_args_num > args_num)
-                                                        LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                        LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                 }
 
                                                 call_exprs.pop();
@@ -864,19 +839,19 @@ call:       call  '(' elist ')'             {
 
                                                 auto temp_value = NewTemp();
 
-                                                Emit(CALL_t, called_symbol, nullptr, nullptr, yylineno);
-                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr, yylineno);
+                                                Emit(CALL_t, called_symbol, nullptr, nullptr);
+                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
                                                 func_call->set_ret_val(temp_value->get_id());
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
-                                                    auto args_num = static_cast<Function*>(called_symbol)->get_formal_arguments().size();
+                                                    auto args_num = called_symbol->get_formal_arguments().size();
                                                     auto call_args_num = func_call->get_params().size();
 
                                                     if (call_args_num < args_num)
-                                                        SIGNALERROR("Too few arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                        SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                     else if (call_args_num > args_num)
-                                                        LOGWARNING("Too many arguments passed to function: " << called_symbol->get_id() << ", defined in line: " << std::to_string(called_symbol->get_line()));
+                                                        LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                 }
 
                                                 call_exprs.pop();
@@ -907,7 +882,7 @@ multelist:  ',' expr multelist  {
                                     if (InFuncCall()) {
                                         auto top_call = call_exprs.top();
                                         top_call->IncludeParameter($2);
-                                        Emit(PARAM_t, $2, nullptr, nullptr, yylineno);
+                                        Emit(PARAM_t, $2, nullptr, nullptr);
                                     } 
                                     if (InTableMakeElems()) {
                                         auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
@@ -925,7 +900,7 @@ elist:      expr multelist  {
                                 if (InFuncCall()) {
                                     auto top_call = call_exprs.top();
                                     top_call->IncludeParameter($1);
-                                    Emit(PARAM_t, $1, nullptr, nullptr, yylineno);
+                                    Emit(PARAM_t, $1, nullptr, nullptr);
                                 }
                                 if (InTableMakeElems()) {
                                     auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
@@ -945,7 +920,7 @@ objectdef:  '['                 {
                                 }
              elist ']'          {
                                     auto temp = NewTemp();
-                                    Emit(TABLECREATE_t, temp, nullptr, nullptr, yylineno);
+                                    Emit(TABLECREATE_t, temp, nullptr, nullptr);
 
                                     auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
 
@@ -953,7 +928,7 @@ objectdef:  '['                 {
 
                                     unsigned int elem_cnt = 0;
                                     for (auto element : top_tablemake_elems_expr->get_elements())
-                                        Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element, yylineno);
+                                        Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element);
 
                                     tablemake_elems_exprs.pop();  
 
@@ -967,14 +942,14 @@ objectdef:  '['                 {
                                 }
             indexed ']'         { 
                                     auto temp = NewTemp();
-                                    Emit(TABLECREATE_t, temp, nullptr, nullptr, yylineno);
+                                    Emit(TABLECREATE_t, temp, nullptr, nullptr);
 
                                     auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
 
                                     top_tablemake_pairs_expr->set_table(temp);
 
                                     for (auto pair : top_tablemake_pairs_expr->get_pairs())
-                                        Emit(TABLESETELEM_t, temp, pair.first, pair.second, yylineno);
+                                        Emit(TABLESETELEM_t, temp, pair.first, pair.second);
 
                                     tablemake_pairs_exprs.pop();
 
@@ -1007,7 +982,6 @@ indexedelem:'{' expr ':' expr '}'   {
 
 block:      '{'         {
                             IncreaseScope();
-                            PushStashedFormalArguments();
                         }
             stmts '}'   {
                             DecreaseScope();
@@ -1018,26 +992,26 @@ block:      '{'         {
 funcdef:    FUNCTION 
                 '(' idlist ')'  
                             {
-                                auto function = InsertUserFunction(yylineno);
+                                auto anonymous_function = DefineNewAnonymousFunc();
 
-                                auto func_def_stmt = new FuncDefStmt(function);
+                                auto func_def_stmt = new FuncDefStmt(anonymous_function);
 
                                 func_def_stmts.push(func_def_stmt);
                                 
-                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                Emit(FUNCSTART_t, function, nullptr, nullptr, yylineno);
+                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                Emit(FUNCSTART_t, anonymous_function, nullptr, nullptr);
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
                                 HideLowerScopes();
 
-                                $<sym>$ = function;
+                                $<sym>$ = anonymous_function;
                             }
             block           {
                                 auto top_func_def = func_def_stmts.top();
-                                auto function = top_func_def->get_sym();
+                                auto anonymous_function = top_func_def->get_sym();
                                 
-                                auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
+                                auto func_end_quad = Emit(FUNCEND_t, anonymous_function, nullptr, nullptr);
 
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
                                 top_func_def->PatchReturnJumpQuads(func_end_quad->label);
@@ -1046,7 +1020,7 @@ funcdef:    FUNCTION
 
                                 func_def_stmts.pop();
 
-                                $<sym>$ = function;
+                                $<sym>$ = anonymous_function;
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
             | FUNCTION ID 
@@ -1054,34 +1028,30 @@ funcdef:    FUNCTION
                             {
                                 auto symbol = program_stack.Lookup($2);
                                 if (symbol == nullptr) {
-                                    auto function = InsertUserFunction($2, yylineno);
-                                    symbol = function;
+                                    symbol = DefineNewSymbol(USER_FUNC, $2);
                                 }
                                 else if (!symbol->is_active()) {
-                                    SIGNALERROR("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                    SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                 }
                                 else {
                                     if (IsVariable(symbol)) {
-                                        SIGNALERROR(std::string($2) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
+                                        SignalError(std::string($2) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
                                     }
                                     else if (IsLibraryFunction(symbol)) {
-                                        SIGNALERROR(std::string($2) + " library function cannot be shadowed by a user function");
+                                        SignalError(std::string($2) + " library function cannot be shadowed by a user function");
                                     }
                                     else if (IsAtCurrentScope(symbol)) {
-                                        std::string message =  "Name collision with function " +  std::string($2) + ", previously defined in line: ";
-                                        message += std::to_string(symbol->get_line());
-                                        SIGNALERROR(message);
+                                        SignalError("Name collision with function " + std::string($2) + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                     }
                                     else{
-                                        auto function = InsertUserFunction($2, yylineno); //Shadow user function. 
-                                        symbol = function;
+                                        symbol = DefineNewSymbol(USER_FUNC, $2);
                                     }
                                 }
                                 auto func_def_stmt = new FuncDefStmt(symbol); 
                                 func_def_stmts.push(func_def_stmt);
 
-                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
-                                Emit(FUNCSTART_t, symbol, nullptr, nullptr, yylineno);
+                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                Emit(FUNCSTART_t, symbol, nullptr, nullptr);
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
@@ -1092,16 +1062,14 @@ funcdef:    FUNCTION
             block           { 
                                 auto top_func_def =  func_def_stmts.top();
                                 Symbol* function;
-                                if (top_func_def != nullptr) {
-                                    function = top_func_def->get_sym();
-                                    
-                                    auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr, yylineno);
-                                    
-                                    top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
-                                    top_func_def->PatchReturnJumpQuads(func_end_quad->label);
+                                function = top_func_def->get_sym();
+                                
+                                auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr);
+                                
+                                top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
+                                top_func_def->PatchReturnJumpQuads(func_end_quad->label);
 
-                                    func_def_stmts.pop();
-                                }
+                                func_def_stmts.pop();
                                 
                                 program_stack.ActivateLowerScopes();
 
@@ -1138,7 +1106,7 @@ const:        INTNUM    {
             ;
 
 multid:     ',' ID  {
-                        StashFormalArgument($2, yylineno);
+                        DefineNewFormalArg($2);
                     } 
             multid  {
                         DLOG("multid -> , id multid");
@@ -1149,7 +1117,7 @@ multid:     ',' ID  {
             ;
 
 idlist:     ID      {
-                        StashFormalArgument($1, yylineno);
+                        DefineNewFormalArg($1);
                     } 
             multid  { 
                         DLOG("idlist -> id multid"); 
@@ -1163,8 +1131,8 @@ ifstmt:     IF '(' expr ')'                 {
                                                 auto if_stmt = new IfStmt();
                                                 if_stmts.push(if_stmt);
 
-                                                auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr, yylineno);
-                                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
+                                                auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr);
+                                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr); 
 
                                                 PatchBranchQuad(branch_quad, branch_quad->label + 2);
                                                 if_stmt->set_if_jump_quad(jump_quad);
@@ -1180,7 +1148,7 @@ ifstmt:     IF '(' expr ')'                 {
 elsestmt:   ELSE            {
                                 auto top_if_stmt = if_stmts.top();
 
-                                auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                 top_if_stmt->PushElseJumpQuad(else_jump_quad);
 
                                 top_if_stmt->PatchIfJumpQuad(NextQuadLabel());
@@ -1217,8 +1185,8 @@ whilestmt:  WHILE               {
             '(' expr ')'        {
                                     auto top_while_stmt = while_stmts.top();
 
-                                    auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr, yylineno);
-                                    auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr);
+                                    auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                     top_while_stmt->PushLoopQuad(branch_quad);
                                     top_while_stmt->PushLoopQuad(exit_quad);
@@ -1226,7 +1194,7 @@ whilestmt:  WHILE               {
             stmt                { 
                                     auto top_while_stmt = while_stmts.top();
 
-                                    auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                    auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                     top_while_stmt->PushLoopQuad(loop_quad);
                                     
@@ -1259,10 +1227,10 @@ forstmt:    FOR                                     {
             expr ';'                                {
                                                         auto top_for_stmt = for_stmts.top();
 
-                                                        auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr, yylineno);
+                                                        auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr);
                                                         top_for_stmt->PushLoopQuad(branch_quad);
 
-                                                        auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                        auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                                         top_for_stmt->PushLoopQuad(exit_quad);
 
                                                         auto exprs_first_quad_label = NextQuadLabel();
@@ -1271,13 +1239,13 @@ forstmt:    FOR                                     {
             elist ')'                               {
                                                         auto top_for_stmt = for_stmts.top();
 
-                                                        auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                                        auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                                         top_for_stmt->PushLoopQuad(loop_quad);
                                                     }
             stmt                                    {
                                                         auto top_for_stmt = for_stmts.top();
 
-                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno); 
+                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr); 
                                                         top_for_stmt->PushLoopQuad(expr_jump_quad);
 
                                                         top_for_stmt->PatchLoopQuads();
@@ -1295,12 +1263,12 @@ forstmt:    FOR                                     {
 
 returnstmt: RETURN      {
                             if (!InFuncDef()) {
-                                SIGNALERROR("Invalid return, used outside a function block");
+                                SignalError("Invalid return, used outside a function block");
                             } else {
                                 auto top_func_def = func_def_stmts.top();
 
-                                Emit(RET_t, nullptr, nullptr, nullptr, yylineno);
-                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                Emit(RET_t, nullptr, nullptr, nullptr);
+                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                 top_func_def->PushReturnJumpQuad(return_jump_quad);
                             }
@@ -1311,12 +1279,12 @@ returnstmt: RETURN      {
             | RETURN    
             expr ';'    {
                             if (!InFuncDef()) 
-                                SIGNALERROR("Invalid return, used outside a function block");
+                                SignalError("Invalid return, used outside a function block");
                             else {
                                 auto top_func_def = func_def_stmts.top();
 
-                                Emit(RET_t, $2, nullptr, nullptr, yylineno);
-                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                Emit(RET_t, $2, nullptr, nullptr);
+                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                 top_func_def->PushReturnJumpQuad(return_jump_quad);
 
@@ -1328,12 +1296,10 @@ returnstmt: RETURN      {
 %%
 
 int yyerror(std::string yaccProvidedMessage) {
-    std::cout << yaccProvidedMessage << ": at line " << yylineno << ", before token: " << yytext << std::endl;
-    std::cout << "INPUT NOT VALID" << std::endl;
-    SignalError();
+    SignalError(yaccProvidedMessage);
     return 1;
 }
-
+ 
 int main(int argc, char** argv) {
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
@@ -1372,7 +1338,31 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void LogSymTable(std::ostream& output) {
+bool error_flag = false;
+
+inline bool NoErrorSignaled() {
+    return error_flag == false;
+}  
+
+void SignalError(std::string msg) {
+    #if !defined TEST
+        std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << msg << std::endl;
+    #else
+        std::cout << "Error, in line: " << yylineno << ": " << msg << std::endl; 
+    #endif    
+
+    error_flag = 1;
+}
+
+void LogWarning(std::string msg) {
+    #if !defined TEST
+        std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << msg << std::endl;
+    #else
+        std::cout << "Warning, in line: " << yylineno << ": " << msg << std::endl ;
+    #endif
+}
+
+inline void LogSymTable(std::ostream& output) {
     output << symbol_table;
 }
 
@@ -1401,126 +1391,109 @@ void HideLowerScopes() {
         program_stack.DeactivateLowerScopes();
 }
 
+void DefineSymbol(Symbol* symbol) {
+    assert(symbol != nullptr);
+    program_stack.Top()->Insert(symbol);
+}
+
 void InitLibraryFunctions() {
     IncreaseScope(); 
-    program_stack.Top()->Insert(new LibraryFunction("print", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("input", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("objectmemberkeys", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("objecttotalmembers", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("objectcopy", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("totalarguments", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("argument", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("typeof", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("strtonum", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("sqrt", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("cos", LIB_FUNC_LINE, global_scope, program_var_offset++));
-    program_stack.Top()->Insert(new LibraryFunction("sin", LIB_FUNC_LINE, global_scope, program_var_offset++));
+
+    DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, PROGRAM_VAR,program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
 }
 
-Symbol* InsertLocalVariable(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    Symbol* symbol;
-    if (!InFuncDef()) {
-        symbol = new LocalVariable(name, line, current_scope, PROGRAM_VAR, program_var_offset++);
-    }
-    else {
-        symbol = new LocalVariable(name, line, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());  
-        func_def_stmts.top()->IncreaseOffset();
-    }
-    program_stack.Top()->Insert(symbol);
-
-    return symbol;
-}
-Symbol* InsertGlobalVariable(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    Symbol* symbol = new GlobalVariable(name, line, current_scope, program_var_offset++);
-    program_stack.Top()->Insert(symbol);
-    
-    return symbol;
+Symbol* NewSymbol(ExprType type, const char* name) {
+    assert (name != nullptr);
+    if (InFuncDef())
+        return new Symbol(type, name, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());
+    else
+        return new Symbol(type, name, yylineno, current_scope, PROGRAM_VAR, program_var_offset++);
 }
 
-Symbol* InsertUserFunction(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    Symbol* symbol;
-    if (!InFuncDef()) {
-        symbol = new UserFunction(name, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
-    }
-    else {
-        symbol = new UserFunction(name, line, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), stashed_formal_arguments);  
-        func_def_stmts.top()->IncreaseOffset();
-    }
-    program_stack.Top()->Insert(symbol);
+Symbol* DefineNewSymbol(ExprType type, const char* name) {
+    auto new_symbol = NewSymbol(type, name);
+    DefineSymbol(new_symbol);
 
-    return symbol;
+    return new_symbol;
 }
 
-Symbol* InsertUserFunction(unsigned int line) {
+unsigned int anonymus_funcs_counter = 0;
+
+std::string NewAnonymousFuncName() {
     std::string an = "$";
     an += std::to_string(++anonymus_funcs_counter);
-    Symbol* symbol;
-    if (!InFuncDef()) {
-        symbol = new UserFunction(an, line, current_scope, PROGRAM_VAR, program_var_offset++, stashed_formal_arguments);
-    }
-    else {
-        symbol = new UserFunction(an, line, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), stashed_formal_arguments);  
-        func_def_stmts.top()->IncreaseOffset();
-    }
-    program_stack.Top()->Insert(symbol);
-    
-    return symbol;
+
+    return an;
 }
 
-void PushStashedFormalArguments(void) { 
-    for (auto i : stashed_formal_arguments) {
-        program_stack.Top()->Insert(i);
-    }
-    stashed_formal_arguments.clear();
-    formal_args_offset = 0;
+Symbol* NewAnonymousFunc() {
+    return NewSymbol(USER_FUNC, NewAnonymousFuncName().c_str());
 }
 
-bool
-IsStashed(const char* name) {
-    assert(name != nullptr);
-    std::string wanted = name;
-    for (auto i : stashed_formal_arguments) {
-        if (i->get_id() == wanted) {
-            return true;
-        }
-    }
-    return false;
+Symbol* DefineNewAnonymousFunc() {
+    auto new_an_func = NewAnonymousFunc();
+    DefineSymbol(new_an_func);
+
+    return new_an_func;
 }
 
-void StashFormalArgument(const char* name, unsigned int line) {
-    assert(name != nullptr);
-    if (!IsStashed(name))
-        stashed_formal_arguments.push_back(new FormalVariable(name, line, current_scope + 1, formal_args_offset++));
-    else 
-        SIGNALERROR("formal argument " << name << " already declared, in line: " << line);
+Symbol* NewFormalArg(Symbol* func, const char* name) {
+    assert (func != nullptr);
+    assert (name != nullptr);
+    auto offset = func->get_formal_arguments().size();
+
+    return new Symbol(VAR, name, yylineno, current_scope + 1, FORMAL_ARG, offset);
 }
 
-inline std::string NewTempName() { return  "^" + std::to_string(temp_counter++); }
+void DefineNewFormalArg(const char* name) {
+    assert (name != nullptr);
+    auto top_func_def_stmt = func_def_stmts.top();
+    auto func = top_func_def_stmt->get_sym();
+
+    auto new_formal_arg = NewFormalArg(func, name);
+
+    if (func->HasFormalArg(new_formal_arg))
+        SignalError("formal argument " + std::string(name) + " already declared");
+    else
+        func->AddFormalArg(new_formal_arg);     
+    DefineSymbol(new_formal_arg);
+}
+
+unsigned int temp_counter = 0;
+
+inline std::string NewTempName() {
+    return  "^" + std::to_string(temp_counter++); 
+}
+
+inline void ResetTemp() { 
+    temp_counter = 0; 
+}
 
 Symbol* NewTemp() {
     std::string name = NewTempName();
-    Symbol* sym = program_stack.LookupHiddenVariable(name);
 
-    if (sym == nullptr)
-    {   
-        Symbol* new_temp;
-        if (ScopeIsGlobal())
-            new_temp = InsertGlobalVariable(name.c_str(), TEMP_LINE);
-        else    
-            new_temp = InsertLocalVariable(name.c_str(), TEMP_LINE); 
+    auto new_temp = program_stack.Top()->Lookup(name);
 
-        return new_temp;
-    } else {
-        return sym;
-    }
+    if (new_temp == nullptr)  
+        new_temp = DefineNewSymbol(VAR, name.c_str());
+
+    return new_temp;
 }
 
-Quad* Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2, unsigned int line) {
+Quad* Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2) {
     unsigned int label = quads.size() + 1;
-    Quad* q = new quad(op, result, arg1, arg2, label, line);
+    Quad* q = new quad(op, result, arg1, arg2, label, yylineno);
     quads.push_back(q);
 
     return q;
@@ -1531,4 +1504,44 @@ unsigned int NextQuadLabel() {
         return 1;
     else     
         return quads.back()->label + 1;
+}
+
+inline bool IsLibraryFunction(Expression* symbol) {
+    return symbol->get_type() == LIB_FUNC; 
+}
+
+inline bool IsUserFunction(Expression* symbol) {
+    return symbol->get_type() == USER_FUNC; 
+}
+
+inline bool IsVariable(Expression* symbol) {
+    return symbol->get_type() == VAR;
+}
+
+inline bool IsGlobalVar(Symbol* symbol) { 
+    return IsVariable(symbol) && symbol->get_scope() == global_scope; 
+}
+
+inline bool IsAtCurrentScope(Symbol* symbol) {
+    return symbol->get_scope() == current_scope;
+}
+    
+inline bool InLoop() {
+    return loop_stmts.size() != 0; 
+}
+
+inline bool InFuncDef() { 
+    return func_def_stmts.size() != 0; 
+} 
+
+inline bool InFunctionCall() { 
+    return call_exprs.size() != 0; 
+}
+
+inline bool InFuncCall() {
+    return call_exprs.size() != 0;
+}
+
+inline bool InTableMakeElems() { 
+    return tablemake_elems_exprs.size() != 0; 
 }

@@ -2,7 +2,6 @@
 #define PROGRAMSTACK_H
 
 #include "block.h"
-#include "expression/function.h"
 #include <list>
 #include <string>
 #include "../util/contract/contract.h"
@@ -64,16 +63,6 @@ public:
      * 
     **/ 
     Symbol*             LookupGlobal(std::string name);
-    /**
-     * @brief Searches for a hidden symbol with a name on this ProgramStack,
-     * across the current scope. Returns a read/write access to the symbol if it's found,
-     * else nullptr.
-     * 
-     * @return a read/write access to the hidden symbol if it's found,
-     * else nullptr.
-     * 
-    **/ 
-    Symbol*             LookupHiddenVariable(std::string name);
     /**
      * @brief Activates all of the blocks at the lower scopes of this ProgramStack.
      * 

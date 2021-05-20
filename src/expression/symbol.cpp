@@ -44,7 +44,7 @@ Symbol:: set_active(bool active) {
 bool
 Symbol:: HasFormalArg(Symbol* formal_arg) {
     PRECONDITION(formal_arg != nullptr);
-    PRECONDITION(formal_arg->get_type() == FORMAL_ARG);
+    PRECONDITION(formal_arg->get_space() == FORMAL_ARG);
     std::string wanted = formal_arg->get_id();
     for (auto i : formal_arguments) {
         if (i->get_id() == wanted) {
