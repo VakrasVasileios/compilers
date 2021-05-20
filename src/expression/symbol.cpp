@@ -143,7 +143,7 @@ Symbol:: sym_to_string() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Symbol* symbol) {
-    return os   << "[" << symbol->to_string() << "]"
+    return os   << "[" << symbol->sym_to_string() << "]"
                 << " \"" << symbol->get_id() << "\""
                 << " (line " << symbol->get_line() << ")" 
                 << " (scope " << symbol->get_scope() << ")";

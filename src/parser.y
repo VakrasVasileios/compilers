@@ -5,7 +5,6 @@
     #include <list>
     #include <stack>
     #include <string>
-    #include "../include/debuglog.h"
     #include "../include/expression/primary.h"
     #include "../include/expression/arithmetic_expr.h"
     #include "../include/expression/bool_expr.h"
@@ -31,6 +30,12 @@
     #include "../include/loop_stmt.h"
     #include "../include/func_def_stmt.h"
     #include "../include/if_stmt.h"
+
+    #ifdef DELOG
+        #define DLOG(message) std::cout << message << std::endl
+    #else
+        #define DLOG(message)
+    #endif
     
     int yyerror(std::string yaccProvidedMessage);
     int yylex(void);
@@ -449,16 +454,17 @@ expr:         assignexpr            {
                                         auto expr2 = $3;
                                         
                                         if (IsValidBoolExpr(expr1, expr2)) {  //TODO
-
                                         }
                                         DLOG("expr -> assignexpr");
                                     }
             | term                  {
+                                        $$ = $1;
                                         DLOG("expr -> term");
                                     }
             ;
 
 term:         '(' expr ')'          {
+                                        $$ = $2;
                                         DLOG("term -> (expr)");
                                     }
             | '-' expr %prec UMINUS {

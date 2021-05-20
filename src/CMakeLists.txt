@@ -10,6 +10,18 @@ FLEX_TARGET(scanner_trgt scanner.l ${compilers_SOURCE_DIR}/build/src/scanner.cpp
 ADD_FLEX_BISON_DEPENDENCY(scanner_trgt parser_trgt)
 
 # Release mode executables
+add_executable(dlog
+  block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
+  for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
+  loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  ${BISON_parser_trgt_OUTPUTS}
+  ${FLEX_scanner_trgt_OUTPUTS}
+)
+target_compile_definitions(dlog PRIVATE DELOG=1)
+target_link_libraries(dlog expression)
+
+
+
 add_executable(phase3
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
