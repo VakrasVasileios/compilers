@@ -10,8 +10,8 @@
 **/ 
 class Call final : public Expression {
 public:
-    Call(Symbol* called_symbol, std::list<Expression*> params)
-    : Expression(FUNCTION_CALL), called_symbol(called_symbol), params(params) {};
+    Call(Symbol* called_symbol)
+    : Expression(FUNCTION_CALL), called_symbol(called_symbol) {};
 
     ~Call() = default;
     /**
@@ -38,19 +38,19 @@ public:
      * 
      * @return a read access to this Call return value, can be null
     **/ 
-    std::string             get_ret_val() const;
+    Expression*             get_ret_val() const;
     /**
      * @brief Sets this Call return value.
      * 
      * @param ret_val the return value to set his Call return value, can be null
     **/ 
-    void                    set_ret_val(const std::string ret_val);
+    void                    set_ret_val(Expression* ret_val);
 protected:
     std::ostream&           LogExpression(std::ostream& os) const override;
 private:
     Symbol*                 called_symbol; 
     std::list<Expression*>  params;  
-    std::string             ret_val;
+    Expression*             ret_val;
 };
 
 #endif

@@ -791,7 +791,7 @@ call:       call  '(' elist ')'             {
             | lvalue                        {
                                                 
                                                 auto called_symbol = $1;
-                                                auto call = new Call(called_symbol, std::list<Expression*>());
+                                                auto call = new Call(called_symbol);
                                                 
                                                 call_exprs.push(call);
 
@@ -801,14 +801,12 @@ call:       call  '(' elist ')'             {
                                                 auto top_call = call_exprs.top();
                                                 auto called_symbol = top_call->get_called_symbol();
 
-                                                $<call>$ = top_call;
-
                                                 auto temp_value = NewTemp();
                         
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);    
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
-                                                top_call->set_ret_val(temp_value->get_id());
+                                                top_call->set_ret_val(temp_value);
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = called_symbol->get_formal_arguments().size();
@@ -822,11 +820,13 @@ call:       call  '(' elist ')'             {
 
                                                 call_exprs.pop();
 
+                                                $<call>$ = top_call;
+
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')'               {                                                
                                                 auto called_symbol = $2;
-                                                auto call = new Call(called_symbol, std::list<Expression*>());
+                                                auto call = new Call(called_symbol);
 
                                                 call_exprs.push(call);
 
@@ -836,14 +836,12 @@ call:       call  '(' elist ')'             {
                                                 auto top_call = call_exprs.top();
                                                 auto called_symbol = top_call->get_called_symbol();
 
-                                                $<call>$ = top_call;
-
                                                 auto temp_value = NewTemp();
 
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
-                                                top_call->set_ret_val(temp_value->get_id());
+                                                top_call->set_ret_val(temp_value);
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = called_symbol->get_formal_arguments().size();
@@ -856,6 +854,8 @@ call:       call  '(' elist ')'             {
                                                 }
 
                                                 call_exprs.pop();
+
+                                                $<call>$ = top_call;
 
                                                 DLOG("call -> (funcdef)(elist)");
                                             }

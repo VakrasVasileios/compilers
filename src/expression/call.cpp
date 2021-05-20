@@ -15,13 +15,13 @@ Call:: IncludeParameter(Expression* param) {
     params.push_back(param);
 }
 
-std::string 
+Expression*
 Call:: get_ret_val() const {
     return ret_val;
 }
 
 void
-Call:: set_ret_val(const std::string ret_val) {
+Call:: set_ret_val(Expression* ret_val) {
     this->ret_val = ret_val; 
 }
 
