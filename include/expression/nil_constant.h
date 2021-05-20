@@ -20,7 +20,7 @@ public:
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;    
 private:
-    std::nullptr_t value;    
+    std::nullptr_t  value;    
 };
 
 #endif

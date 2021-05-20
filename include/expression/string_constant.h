@@ -17,7 +17,7 @@ public:
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override; 
 private:
-    std::string value;
+    std::string     value;
 };
 
 #endif

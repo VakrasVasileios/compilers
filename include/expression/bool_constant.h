@@ -15,12 +15,12 @@ public:
      * 
      * @return a read access to this BoolConstant value.
     **/ 
-    bool      get_value() const;
+    bool            get_value() const;
 protected:
     std::ostream&   LogExpression(std::ostream& os) const override;     
 private:
-    bool        value;   
-    std::string value_to_string() const; 
+    bool            value;   
+    std::string     value_to_string() const; 
 };
 
 #endif

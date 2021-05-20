@@ -7,7 +7,6 @@
     #include <string>
     #include "../include/debuglog.h"
     #include "../include/expression/symbol.h"
-    #include "../include/expression/function_call.h"
     #include "../include/expression/bool_constant.h"
     #include "../include/expression/constant.h"
     #include "../include/expression/nil_constant.h"
@@ -15,6 +14,7 @@
     #include "../include/expression/double_constant.h"
     #include "../include/expression/int_constant.h"
     #include "../include/expression/numeric_constant.h"
+    #include "../include/expression/call.h"
     #include "../include/expression/tablemake.h"
     #include "../include/expression/tablemake_elems.h"
     #include "../include/expression/tablemake_pairs.h"
@@ -49,7 +49,7 @@
 
     std::vector<Quad*>          quads;
     
-    std::stack<FunctionCall*>   call_exprs;
+    std::stack<Call*>           call_exprs;
 
     std::stack<LoopStmt*>       loop_stmts;
     std::stack<WhileStmt*>      while_stmts;
@@ -92,8 +92,7 @@
     bool                        IsAtCurrentScope(Symbol* symbol);
     bool                        InLoop();
     bool                        InFuncDef();
-    bool                        InFunctionCall();
-    bool                        InFuncCall();
+    bool                        InCall();
     bool                        InTableMakeElems();
 %}
 
@@ -103,7 +102,7 @@
     double                      doubleValue;
     class Expression*           expression;
     class Constant*             con;
-    class FunctionCall*         funcCall;
+    class Call*                 call;
     class Symbol*               sym;
     class TableMake*            tablemake;
 }
@@ -121,7 +120,7 @@
 %type <con> const
 %type <sym> lvalue funcdef
 %type <stringValue> member
-%type <funcCall> call
+%type <call> call
 %type <tablemake> objectdef
 
 %right      '='
@@ -792,28 +791,28 @@ call:       call  '(' elist ')'             {
             | lvalue                        {
                                                 
                                                 auto called_symbol = $1;
-                                                auto func_call = new FunctionCall(called_symbol, std::list<Expression*>());
+                                                auto call = new Call(called_symbol, std::list<Expression*>());
                                                 
-                                                call_exprs.push(func_call);
+                                                call_exprs.push(call);
 
-                                                $<funcCall>$ = func_call;
+                                                $<call>$ = call;
                                             }
             callsuffix                      {
-                                                auto top_func_call = call_exprs.top();
-                                                auto called_symbol = top_func_call->get_called_symbol();
+                                                auto top_call = call_exprs.top();
+                                                auto called_symbol = top_call->get_called_symbol();
 
-                                                $<funcCall>$ = top_func_call;
+                                                $<call>$ = top_call;
 
                                                 auto temp_value = NewTemp();
                         
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);    
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
-                                                top_func_call->set_ret_val(temp_value->get_id());
+                                                top_call->set_ret_val(temp_value->get_id());
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = called_symbol->get_formal_arguments().size();
-                                                    auto call_args_num = top_func_call->get_params().size();
+                                                    auto call_args_num = top_call->get_params().size();
 
                                                     if (call_args_num < args_num)
                                                         SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
@@ -827,28 +826,28 @@ call:       call  '(' elist ')'             {
                                             }
             | '(' funcdef ')'               {                                                
                                                 auto called_symbol = $2;
-                                                auto func_call = new FunctionCall(called_symbol, std::list<Expression*>());
+                                                auto call = new Call(called_symbol, std::list<Expression*>());
 
-                                                call_exprs.push(func_call);
+                                                call_exprs.push(call);
 
-                                                $<funcCall>$ = func_call;
+                                                $<call>$ = call;
                                             }
             '(' elist ')'                   {
-                                                auto func_call = call_exprs.top();
-                                                auto called_symbol = func_call->get_called_symbol();
+                                                auto top_call = call_exprs.top();
+                                                auto called_symbol = top_call->get_called_symbol();
 
-                                                $<funcCall>$ = func_call;
+                                                $<call>$ = top_call;
 
                                                 auto temp_value = NewTemp();
 
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
-                                                func_call->set_ret_val(temp_value->get_id());
+                                                top_call->set_ret_val(temp_value->get_id());
 
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = called_symbol->get_formal_arguments().size();
-                                                    auto call_args_num = func_call->get_params().size();
+                                                    auto call_args_num = top_call->get_params().size();
 
                                                     if (call_args_num < args_num)
                                                         SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
@@ -881,7 +880,7 @@ methodcall: DOTDOT ID '(' elist ')' {
             ;
 
 multelist:  ',' expr multelist  {
-                                    if (InFuncCall()) {
+                                    if (InCall()) {
                                         auto top_call = call_exprs.top();
                                         top_call->IncludeParameter($2);
                                         Emit(PARAM_t, $2, nullptr, nullptr);
@@ -899,7 +898,7 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
-                                if (InFuncCall()) {
+                                if (InCall()) {
                                     auto top_call = call_exprs.top();
                                     top_call->IncludeParameter($1);
                                     Emit(PARAM_t, $1, nullptr, nullptr);
@@ -1554,11 +1553,7 @@ inline bool InFuncDef() {
     return func_def_stmts.size() != 0; 
 } 
 
-inline bool InFunctionCall() { 
-    return call_exprs.size() != 0; 
-}
-
-inline bool InFuncCall() {
+inline bool InCall() {
     return call_exprs.size() != 0;
 }
 

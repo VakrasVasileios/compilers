@@ -37,7 +37,7 @@ protected:
     ~TableMake() = default;
     std::ostream&   LogExpression(std::ostream& os) const override; 
 private:
-    Symbol*     table;
+    Symbol*         table;
 };
 
 #endif
