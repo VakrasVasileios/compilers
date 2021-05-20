@@ -21,6 +21,9 @@
     #include "../include/expression/tablemake.h"
     #include "../include/expression/tablemake_elems.h"
     #include "../include/expression/tablemake_pairs.h"
+    #include "../include/expression/table_item.h"
+    #include "../include/expression/mapped_table_item.h"
+    #include "../include/expression/indexed_table_item.h"
     #include "../include/symbol_table.h"
     #include "../include/program_stack.h"
     #include "../include/instruction_opcodes.h"
@@ -125,6 +128,7 @@
     class Call*                 call;
     class Symbol*               sym;
     class TableMake*            tablemake;
+    class TableItem*            tableitem;
 }
 
 %start program
@@ -135,8 +139,6 @@
 %token <stringValue>    STRING ID 
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
-
-%type <stringValue> member
 
 %type <funcdef>     funcdef 
 
@@ -149,6 +151,7 @@
 %type <sym>         lvalue 
 %type <call>        call
 %type <tablemake>   objectdef
+%type <tableitem>   member
 
 %right      '='
 %left       OR
@@ -655,19 +658,26 @@ lvalue:       ID                    {
                                         DLOG("lvalue -> ::id");
                                     }
             | member                {
+                                        auto address = ($1)->get_address();
+                                        $$ = address;
                                         DLOG("lvalue -> member");
                                     }
             ;
 
 member:     lvalue '.' ID           {
-                                        $$=$3;
+                                        auto item = $1;
+                                        auto value = new StringConstant(std::string($3));
+                                        auto temp = NewTemp();
+
+                                        Emit(TABLEGETELEM_t, temp, item, value);
+
+                                        $$ = new MappedTableItem(temp, item, value);
                                         DLOG("member -> lvalue.id");
                                     }
             | lvalue '[' expr ']'   {
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {
-                                        $$=$3;
                                         DLOG("member -> call.id");
                                     }
             | call '[' expr ']'     {

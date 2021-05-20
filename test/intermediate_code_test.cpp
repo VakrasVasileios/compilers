@@ -991,8 +991,14 @@ TEST_F(InterCodeSuite, table_tablemake_nested) {
                 "21:   TABLESETELEM ^7 1 ^2 [line 1]\n"
                 "22:   TABLESETELEM ^7 2 ^5 [line 1]\n"
                 "23:   TABLESETELEM ^7 3 ^6 [line 1]\n";
-                actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_nested.asc");
-                GTEST_ASSERT_EQ(expected, actual);  
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_nested.asc");
+    GTEST_ASSERT_EQ(expected, actual);  
+}
+
+TEST_F(InterCodeSuite, tablemake_item_simple) {
+    expected = "1:   TABLEGETELEM ^0 a \"o\" [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemember_item_simple.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
 }
 
 #ifdef TESTING
