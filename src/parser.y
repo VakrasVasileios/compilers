@@ -101,6 +101,7 @@
     bool                        InTableMakeElems();
 
     bool                        IsValidArithmeticExpr(Expression* expr1, Expression* expr2);
+    bool                        IsValidBoolExpr(Expression* expr1, Expression* expr2);
 %}
 
 %union {                                                    
@@ -290,22 +291,11 @@ expr:         assignexpr            {
                                         DLOG("expr -> expr % expr");
                                     }
             | expr '>' expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of > with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");   
-                                        // else{
-                                            auto greater_quad = Emit(IF_GREATER_t, $1, $3, nullptr);
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidBoolExpr(expr1, expr2)) {
+                                            auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
                                             PatchBranchQuad(greater_quad, greater_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -320,28 +310,16 @@ expr:         assignexpr            {
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = temp;
-                                        //} 
+                                            $$ = new BoolExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
 
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of >= with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");   
-                                        // else{
-                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, $1, $3, nullptr);
+                                        if (IsValidBoolExpr(expr1, expr2)) {
+                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
                                             PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -356,27 +334,16 @@ expr:         assignexpr            {
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = temp;
-                                        //} 
+                                            $$ = new BoolExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr >= expr");
                                     }
             | expr '<' expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of < with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");
-                                        // else{
-                                            auto less_quad = Emit(IF_LESS_t, $1, $3, nullptr);
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidBoolExpr(expr1, expr2)) {
+                                            auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
                                             PatchBranchQuad(less_quad, less_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -391,27 +358,16 @@ expr:         assignexpr            {
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = temp;
-                                        //} 
+                                            $$ = new BoolExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of <= with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");
-                                        // else{
-                                            auto less_equal_quad = Emit(IF_LESSEQ_t, $1, $3, nullptr);
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidBoolExpr(expr1, expr2)) {
+                                            auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
                                             PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -426,26 +382,15 @@ expr:         assignexpr            {
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = temp;
-                                        //} 
+                                            $$ = new BoolExpr(temp, expr1, expr2);
+                                        }
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of == with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");
-                                        // else{
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidBoolExpr(expr1, expr2)) {
                                             auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr);
                                             PatchBranchQuad(equal_quad, equal_quad->label + 2);
 
@@ -461,27 +406,17 @@ expr:         assignexpr            {
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = temp;
-                                        //}
+                                            $$ = new BoolExpr(temp, expr1, expr2);
+                                        }
+
                                         DLOG("expr -> expr == expr");
                                     }
             | expr NOTEQUAL expr    {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of != with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");
-                                        // else{
-                                            auto not_equal_quad = Emit(IF_NOTEQ_t, $1, $3, nullptr);
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidBoolExpr(expr1, expr2)) {
+                                            auto not_equal_quad = Emit(IF_NOTEQ_t,  expr1, expr2, nullptr);
                                             PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
 
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -496,48 +431,26 @@ expr:         assignexpr            {
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = temp;
-                                       // } 
+                                            $$ = new BoolExpr(temp, expr1, expr2);
+                                        } 
                                         DLOG("expr -> expr != expr");
                                     }
             | expr AND expr         {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of AND with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");
-                                        // else{
-                                        //     //  TODO
-                                        // }
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+
+                                        if (IsValidBoolExpr(expr1, expr2)) {  //TODO
+
+                                        }
                                         DLOG("expr -> expr and expr");
                                     }
             | expr OR expr          {
-                                        // auto entry1 = $1;
-                                        // auto entry2 = $3;
-                                        // if(entry1 == nullptr)
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if (!entry1->is_active())
-                                        //     SignalError("Cannot access " + entry1->get_id() + ", previously defined in line: " + std::to_string(entry1->get_line()));
-                                        // else if(entry2 == nullptr)
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!entry2->is_active())
-                                        //     SignalError("Cannot access " + entry2->get_id() + ", previously defined in line: " + std::to_string(entry2->get_line()));
-                                        // else if (!IsVariable(entry1) || (!IsVariable(entry2))
-                                        //     SignalError("Use of OR with non variable type");
-                                        // else if(entry1->get_type()!=CONTST_NUM || entry2->get_type()!=CONST_NUM)
-                                        //     LogWarning("Entries must be type of Number");
-                                        // else{
-                                        //     //  TODO
-                                        // }
+                                        auto expr1 = $1;
+                                        auto expr2 = $3;
+                                        
+                                        if (IsValidBoolExpr(expr1, expr2)) {  //TODO
+
+                                        }
                                         DLOG("expr -> assignexpr");
                                     }
             | term                  {
@@ -1573,6 +1486,45 @@ bool IsValidArithmeticExpr(Expression* expr1, Expression* expr2) {
     }
     if (IsConstBool(expr2)) {
         SignalError("Invalid use of arithmetic operator on const bool " + expr2->to_string());
+        is_valid = false;
+    }
+
+    return is_valid;                
+}
+
+bool IsValidBoolExpr(Expression* expr1, Expression* expr2) {
+    bool is_valid = true;
+
+    if (IsLibraryFunction(expr1)) {
+        SignalError("Invalid use of comparison operator on library function " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsLibraryFunction(expr2)) {
+        SignalError("Invalid use of comparison operator on library function " + expr2->to_string());
+        is_valid = false;
+    }
+    if (IsUserFunction(expr1)) {
+        SignalError("Invalid use of comparison operator on user function " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsUserFunction(expr2)) {
+        SignalError("Invalid use of comparison operator on user function " + expr2->to_string());
+        is_valid = false;
+    }
+    if (IsConstString(expr1)) {
+        SignalError("Invalid use of comparison operator on const string " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsConstString(expr2)) {
+        SignalError("Invalid use of comparison operator on const string " + expr2->to_string());
+        is_valid = false;
+    }
+    if (IsConstBool(expr1)) {
+        SignalError("Invalid use of comparison operator on const bool " + expr1->to_string());
+        is_valid = false;
+    }
+    if (IsConstBool(expr2)) {
+        SignalError("Invalid use of comparison operator on const bool " + expr2->to_string());
         is_valid = false;
     }
 

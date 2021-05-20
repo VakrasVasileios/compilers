@@ -381,6 +381,14 @@ TEST_F(InterCodeSuite, logical_not_equal_simple) {
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
+TEST_F(InterCodeSuite, logical_errors) {
+    expected =  "Error, in line: 1: Invalid use of comparison operator on const string \"string\"\n"
+                "Error, in line: 3: Invalid use of comparison operator on const bool \'true\'\n"
+                "Error, in line: 5: Invalid use of comparison operator on library function print\n"
+                "Error, in line: 9: Invalid use of comparison operator on user function s\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/errors.asc");    
+    GTEST_ASSERT_EQ(expected, actual);             
+}
 
 /* ------------- Loop -------------------  */
 
