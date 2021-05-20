@@ -995,11 +995,18 @@ TEST_F(InterCodeSuite, table_tablemake_nested) {
     GTEST_ASSERT_EQ(expected, actual);  
 }
 
-TEST_F(InterCodeSuite, tablemake_item_simple) {
+TEST_F(InterCodeSuite, tablemember_item_simple) {
     expected = "1:   TABLEGETELEM ^0 a \"o\" [line 1]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemember_item_simple.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
+
+TEST_F(InterCodeSuite, tableelem_item_seq) {
+    expected =  "1:   TABLEGETELEM ^0 a \"b\" [line 1]\n"
+                "2:   TABLEGETELEM ^1 ^0 \"o\" [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_item_seq.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}            
 
 #ifdef TESTING
 int main(int argc, char* argv[])
