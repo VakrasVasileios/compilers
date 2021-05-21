@@ -685,6 +685,13 @@ member:     lvalue '.' ID           {
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {
+                                        auto item = ($1)->get_ret_val();
+                                        auto value = new StringConstant(std::string($3));
+                                        auto temp = NewTemp();
+
+                                        Emit(TABLEGETELEM_t, temp, item, value);
+
+                                        $$ = new MappedTableItem(temp, item, value);
                                         DLOG("member -> call.id");
                                     }
             | call '[' expr ']'     {

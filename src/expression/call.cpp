@@ -15,13 +15,13 @@ Call:: IncludeParameter(Expression* param) {
     params.push_back(param);
 }
 
-Expression*
+Symbol*
 Call:: get_ret_val() const {
     return ret_val;
 }
 
 void
-Call:: set_ret_val(Expression* ret_val) {
+Call:: set_ret_val(Symbol* ret_val) {
     this->ret_val = ret_val; 
 }
 
@@ -32,5 +32,5 @@ Call::to_string() const {
 
 std::ostream&
 Call:: LogExpression(std::ostream& os) const {
-    return os << ret_val;
+    return os << ret_val->get_id();
 }
