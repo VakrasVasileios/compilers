@@ -694,6 +694,14 @@ member:     lvalue '.' ID           {
                                         DLOG("member -> call.id");
                                     }
             | call '[' expr ']'     {
+                                        auto item = ($1)->get_ret_val();
+                                        auto index = $3;
+                                        auto temp = NewTemp();
+
+                                        Emit(TABLEGETELEM_t, temp, item, index);
+
+                                        $$ = new IndexedTableItem(temp, item, index);
+
                                         DLOG("member -> call[expr]");
                                     }
             ;

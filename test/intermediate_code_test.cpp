@@ -1041,6 +1041,14 @@ TEST_F(InterCodeSuite, tableelem_it_call) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(InterCodeSuite, tebleelem_ind_call) {
+    expected =  "1:   CALL f [line 1]\n"
+                "2:   GETRETVAL ^0 [line 1]\n"
+                "3:   TABLEGETELEM ^1 ^0 2 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_ind_call.asc");
+    GTEST_ASSERT_EQ(expected, actual);              
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
