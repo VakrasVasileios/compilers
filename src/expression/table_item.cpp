@@ -1,11 +1,6 @@
 #include "table_item.h"
 
 Symbol* 
-TableItem:: get_item() const {
-    return item;
-}
-
-Symbol* 
 TableItem:: get_address() const {
     return address;
 }
@@ -25,12 +20,8 @@ TableItem::verify_item(Symbol* sym) {
 
 std::ostream&   
 TableItem:: LogExpression(std::ostream& os) const {
-    return os << address;
+    return os << address->get_id();
 }
 
-std::string
-TableItem:: to_string() const {
-    return address->get_id();
-}
 
 

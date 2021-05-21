@@ -23,13 +23,13 @@ enum ScopeSpace {
  * @brief An lvalue primary expression.
  * 
 **/ 
-class Symbol final : public Primary {
+class Symbol : public Primary {
 public:
     /**
      * @brief Constructs a new Symbol object.
      * 
      * @param type the expression type of this Symbol, must be of LIB_FUNC,
-     * USER_FUNC, or VAR type.
+     * USER_FUNC, VAR type, or TABLE_ITEM
      * @param id the unique identifier of this Symbol, not empty
      * @param line the line of this Symbol, greater or equal to zero.
      * @param scope the scope of this Symbol, greater or equal to zero.

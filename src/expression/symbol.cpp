@@ -69,7 +69,7 @@ Symbol:: to_string() const {
 
 ExprType
 Symbol:: verify_type(ExprType type) {
-    PRECONDITION(type == VAR || type == LIB_FUNC || type == USER_FUNC);
+    PRECONDITION(type == VAR || type == LIB_FUNC || type == USER_FUNC || type == TABLE_ITEM);
     return type;
 }
 

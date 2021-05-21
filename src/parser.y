@@ -658,8 +658,7 @@ lvalue:       ID                    {
                                         DLOG("lvalue -> ::id");
                                     }
             | member                {
-                                        auto address = ($1)->get_address();
-                                        $$ = address;
+                                        $$ = $1;
                                         DLOG("lvalue -> member");
                                     }
             ;

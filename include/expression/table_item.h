@@ -2,22 +2,15 @@
 #define TABLE_ITEM_H
 
 #include "symbol.h"
-#include "primary.h"
 
 #include "../../util/contract/contract.h"
 
 /**
- * @brief A table item primary expression.
+ * @brief A table item symbol primary expression.
  * 
  */
-class TableItem : public Primary {
+class TableItem : public Symbol {
 public:
-    /**
-     * @brief Returns a read access to this TableItem item symbol.
-     * 
-     * @return a read access to this TableItem item symbol, not null
-     */
-    Symbol* get_item() const; 
     /**
      * @brief Returns a read access to this TableItem returned address.
      * 
@@ -31,11 +24,12 @@ protected:
      * @param address the address to be set as the
      * return address of this TableItem, not null and hidden.
      * @param item the table element of type: 
-     * primary expression symbol, not null.
+     * primary expression symbol to be copy constructed, not null.
      * 
      */
     TableItem(Symbol* address, Symbol* item) 
-    : Primary(TABLE_ITEM), address(verify_address(address)), item(verify_item(item)) {};
+    : Symbol(TABLE_ITEM, item->get_id(), item->get_line(), item->get_scope(), item->get_space(), item->get_offset()),
+    address(address) {};
     /**
      * @brief Destroys this TableItem object.
      * 
@@ -43,13 +37,11 @@ protected:
     ~TableItem() = default;
 
     std::ostream&   LogExpression(std::ostream& os) const override;
-    std::string     to_string() const override;
 private:
     Symbol*         address;
-    Symbol*         item;
 
     Symbol*         verify_address(Symbol* address);
-    Symbol*         verify_item(Symbol* sym);  
+    Symbol*         verify_item(Symbol* sym);
 };
 
 
