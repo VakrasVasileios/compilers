@@ -675,6 +675,13 @@ member:     lvalue '.' ID           {
                                         DLOG("member -> lvalue.id");
                                     }
             | lvalue '[' expr ']'   {
+                                        auto item = $1;
+                                        auto index = $3;
+                                        auto temp = NewTemp();
+
+                                        Emit(TABLEGETELEM_t, temp, item, index);
+
+                                        $$ = new IndexedTableItem(temp, item, index);
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {

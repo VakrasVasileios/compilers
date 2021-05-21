@@ -1006,7 +1006,13 @@ TEST_F(InterCodeSuite, tableelem_item_seq) {
                 "2:   TABLEGETELEM ^1 ^0 \"o\" [line 1]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_item_seq.asc");
     GTEST_ASSERT_EQ(expected, actual); 
-}            
+}        
+
+TEST_F(InterCodeSuite, tableelem_ind_simp) {
+    expected = "1:   TABLEGETELEM ^0 a 1 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_ind_simp.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
 
 #ifdef TESTING
 int main(int argc, char* argv[])
