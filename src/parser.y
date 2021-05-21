@@ -504,9 +504,7 @@ term:         '(' expr ')'          {
                                     }
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
-                                        if (!symbol->is_active())
-                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
-                                        else if (!IsVariable(symbol))
+                                        if (!IsVariable(symbol))
                                             SignalError("Use of increment operator with non variable type");   
                                         else {
                                             auto temp = NewTemp(); 
@@ -521,9 +519,7 @@ term:         '(' expr ')'          {
                                     }
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
-                                        if (!symbol->is_active())
-                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
-                                        else if (!IsVariable(symbol))
+                                        if (!IsVariable(symbol))
                                             SignalError("Use of increment operator with non variable type");   
                                         else {
                                             auto temp = NewTemp(); 
@@ -536,9 +532,7 @@ term:         '(' expr ')'          {
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
-                                        if (!symbol->is_active())
-                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
-                                        else if (!IsVariable(symbol))
+                                        if (!IsVariable(symbol))
                                             SignalError("Use of decrement operator with non variable type");   
                                         else {
                                             auto temp = NewTemp(); 
@@ -552,9 +546,7 @@ term:         '(' expr ')'          {
                                     }
             | lvalue MINUSMINUS     { 
                                         auto symbol = $1;
-                                        if (!symbol->is_active())
-                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));    
-                                        else if (!IsVariable(symbol))
+                                        if (!IsVariable(symbol))
                                             SignalError("Use of decrement operator with non variable type");
                                         else {
                                             {
