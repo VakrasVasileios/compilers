@@ -1014,6 +1014,25 @@ TEST_F(InterCodeSuite, tableelem_ind_simp) {
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
+TEST_F(InterCodeSuite, tablelem_ind_manyexprs) {
+    expected =  "1:   TABLEGETELEM ^0 a 1 [line 1]\n"
+                "2:   TABLEGETELEM ^0 a s [line 2]\n"
+                "3:   ASSIGN a 0 [line 3]\n"
+                "4:   ASSIGN ^0 a [line 3]\n"
+                "5:   TABLEGETELEM ^1 a ^0 [line 3]\n"
+                "6:   PARAM c [line 4]\n"
+                "7:   CALL y [line 4]\n"
+                "8:   GETRETVAL ^0 [line 4]\n"
+                "9:   PARAM ^0 [line 4]\n"
+                "10:   CALL f [line 4]\n"
+                "11:   GETRETVAL ^1 [line 4]\n"
+                "12:   MUL ^2 9 ^1 [line 4]\n"
+                "13:   ADD ^3 s ^2 [line 4]\n"
+                "14:   TABLEGETELEM ^4 a ^3 [line 4]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_ind_manyexprs.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
