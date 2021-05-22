@@ -112,7 +112,7 @@
     bool                        InCall();
     bool                        InTableMakeElems();
 
-    bool                        IsValidArithmeticExpr(Expression* expr1, Expression* expr2);
+    bool                        IsValidArithmetic(Expression* expr);
     bool                        IsValidBoolExpr(Expression* expr1, Expression* expr2);
 %}
 
@@ -244,7 +244,7 @@ expr:         assignexpr            {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(ADD_t, temp, expr1, expr2);
 
@@ -256,7 +256,7 @@ expr:         assignexpr            {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(SUB_t, temp, expr1, expr2);
 
@@ -268,7 +268,7 @@ expr:         assignexpr            {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MUL_t, temp, expr1, expr2);
 
@@ -280,7 +280,7 @@ expr:         assignexpr            {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(DIV_t, temp, expr1, expr2);
 
@@ -292,7 +292,7 @@ expr:         assignexpr            {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidArithmeticExpr(expr1, expr2)) {
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MOD_t, temp, expr1, expr2);
 
@@ -530,27 +530,19 @@ term:         '(' expr ')'          {
                                     }
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
-                                        Symbol* result;
-                                        /* if (IsTableItem(symbol)) {
-                                            auto table_item = T_ITEM_CAST(symbol);
-                                            result = NewTemp(VAR, nullptr);
-                                            auto pre_res = table_item->get_address();
-                                            auto index = table_item->get_index();
-                                            auto ref_lval = table_item->get_item();
+                                        auto result = NewTemp(VAR, nullptr);
+                                        if (IsValidArithmetic(symbol)) {
+                                            if (IsTableItem(symbol)) {
+                                                auto val = EmitIfTableItem(symbol);
+                                                Emit(ASSIGN_t, result, val, nullptr);
+                                                Emit(ADD_t, val, val, new IntConstant(1));
+                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
 
-                                            Emit(ASSIGN_t, result, symbol, nullptr);
-                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
-                                            Emit(TABLESETELEM_t, ref_lval, index, pre_res);
-                                        }
-                                        else */ if (!IsVariable(symbol))
-                                            SignalError("Use of increment operator with non variable type");   
-                                        else {
-                                            result = NewTemp(VAR, nullptr); 
-
-                                            Emit(ASSIGN_t, result, symbol, nullptr);    
-                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
-                                        }  
-                                        $$ = result;   
+                                            } else {
+                                                Emit(ASSIGN_t, result, symbol, nullptr);    
+                                                Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                            }
+                                        } 
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
@@ -1521,43 +1513,26 @@ inline bool InTableMakeElems() {
     return tablemake_elems_exprs.size() != 0; 
 }
 
-bool IsValidArithmeticExpr(Expression* expr1, Expression* expr2) {
-    bool is_valid = true;
-
-    if (IsLibraryFunction(expr1)) {
-        SignalError("Invalid use of arithmetic operator on library function " + expr1->to_string());
-        is_valid = false;
+bool IsValidArithmetic(Expression* expr) {
+    assert (expr != nullptr);
+    if (IsLibraryFunction(expr)) {
+        SignalError("Invalid use of arithmetic operator on library function " + expr->to_string());
+        return false;
     }
-    if (IsLibraryFunction(expr2)) {
-        SignalError("Invalid use of arithmetic operator on library function " + expr2->to_string());
-        is_valid = false;
+    else if (IsUserFunction(expr)) {
+        SignalError("Invalid use of arithmetic operator on user function " + expr->to_string());
+        return false;
     }
-    if (IsUserFunction(expr1)) {
-        SignalError("Invalid use of arithmetic operator on user function " + expr1->to_string());
-        is_valid = false;
+    else if (IsConstString(expr)) {
+        SignalError("Invalid use of arithmetic operator on const string " + expr->to_string());
+        return false;
     }
-    if (IsUserFunction(expr2)) {
-        SignalError("Invalid use of arithmetic operator on user function " + expr2->to_string());
-        is_valid = false;
-    }
-    if (IsConstString(expr1)) {
-        SignalError("Invalid use of arithmetic operator on const string " + expr1->to_string());
-        is_valid = false;
-    }
-    if (IsConstString(expr2)) {
-        SignalError("Invalid use of arithmetic operator on const string " + expr2->to_string());
-        is_valid = false;
-    }
-    if (IsConstBool(expr1)) {
-        SignalError("Invalid use of arithmetic operator on const bool " + expr1->to_string());
-        is_valid = false;
-    }
-    if (IsConstBool(expr2)) {
-        SignalError("Invalid use of arithmetic operator on const bool " + expr2->to_string());
-        is_valid = false;
+    else if (IsConstBool(expr)) {
+        SignalError("Invalid use of arithmetic operator on const bool " + expr->to_string());
+        return false;
     }
 
-    return is_valid;                
+    return true;                
 }
 
 bool IsValidBoolExpr(Expression* expr1, Expression* expr2) {
