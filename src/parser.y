@@ -507,25 +507,19 @@ term:         '(' expr ')'          {
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
                                         Symbol* result;
-                                        /* if (IsTableItem(symbol)) {
-                                            auto table_item = T_ITEM_CAST(symbol);
-                                            result = table_item->get_address();
-                                            auto index = table_item->get_index();
-                                            auto ref_lval = table_item->get_item();
+                                        if (IsValidArithmetic(symbol)) {
+                                            if (IsTableItem(symbol)) {
+                                                result = EmitIfTableItem(symbol);
+                                                Emit(ADD_t, result, result, new IntConstant(1));
+                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
 
-                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
-                                            Emit(TABLESETELEM_t, ref_lval, index, result);
-                                        }
-                                        else  */if (!IsVariable(symbol))
-                                            SignalError("Use of increment operator with non variable type");   
-                                        else {
-                                            result = NewTemp(VAR, nullptr); 
-                                               
-                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
-                                            Emit(ASSIGN_t, result, symbol, nullptr);     
-                                        }
+                                            } else {
+                                                result = NewTemp(VAR, nullptr);
+                                                Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                                Emit(ASSIGN_t, result, symbol, nullptr);  
+                                            }
+                                        } 
                                         $$ = result;     
-
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
@@ -543,6 +537,7 @@ term:         '(' expr ')'          {
                                                 Emit(ADD_t, symbol, symbol, new IntConstant(1));
                                             }
                                         } 
+                                        $$ = result;
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
