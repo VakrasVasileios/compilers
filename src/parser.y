@@ -1289,6 +1289,9 @@ int yyerror(std::string yaccProvidedMessage) {
 }
  
 int main(int argc, char** argv) {
+    //Can't reach me for I am... above (LUL)
+    InitLibraryFunctions();
+    
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -1298,8 +1301,6 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-    
-    InitLibraryFunctions();
 
     yyparse();
 
