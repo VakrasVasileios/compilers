@@ -5,6 +5,11 @@ TableItem:: get_address() const {
     return address;
 }
 
+Expression*
+TableItem:: get_index() const {
+    return index;
+}
+
 Symbol*
 TableItem:: verify_address(Symbol* address) {
     PRECONDITION(address != nullptr);
@@ -12,16 +17,18 @@ TableItem:: verify_address(Symbol* address) {
     return address;
 }
 
-Symbol* 
-TableItem::verify_item(Symbol* sym) {
-    PRECONDITION(sym != nullptr);
-    return sym;
+Expression*
+TableItem:: verify_index(Expression* index) {
+    PRECONDITION(index != nullptr);
+    return index;
 }
+
 
 std::ostream&   
 TableItem:: LogExpression(std::ostream& os) const {
     return os << address->get_id();
 }
+
 
 
 

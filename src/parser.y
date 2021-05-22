@@ -22,8 +22,6 @@
     #include "../include/expression/tablemake_elems.h"
     #include "../include/expression/tablemake_pairs.h"
     #include "../include/expression/table_item.h"
-    #include "../include/expression/mapped_table_item.h"
-    #include "../include/expression/indexed_table_item.h"
     #include "../include/symbol_table.h"
     #include "../include/program_stack.h"
     #include "../include/instruction_opcodes.h"
@@ -657,12 +655,12 @@ lvalue:       ID                    {
 
 member:     lvalue '.' ID           {
                                         auto item = $1;
-                                        auto value = new StringConstant(std::string($3));
+                                        auto index = new StringConstant(std::string($3));
                                         auto temp = NewTemp();
 
-                                        Emit(TABLEGETELEM_t, temp, item, value);
+                                        Emit(TABLEGETELEM_t, temp, item, index);
 
-                                        $$ = new MappedTableItem(temp, item, value);
+                                        $$ = new TableItem(temp, item, index);
                                         DLOG("member -> lvalue.id");
                                     }
             | lvalue '[' expr ']'   {
@@ -672,17 +670,17 @@ member:     lvalue '.' ID           {
 
                                         Emit(TABLEGETELEM_t, temp, item, index);
 
-                                        $$ = new IndexedTableItem(temp, item, index);
+                                        $$ = new TableItem(temp, item, index);
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {
                                         auto item = ($1)->get_ret_val();
-                                        auto value = new StringConstant(std::string($3));
+                                        auto index = new StringConstant(std::string($3));
                                         auto temp = NewTemp();
 
-                                        Emit(TABLEGETELEM_t, temp, item, value);
+                                        Emit(TABLEGETELEM_t, temp, item, index);
 
-                                        $$ = new MappedTableItem(temp, item, value);
+                                        $$ = new TableItem(temp, item, index);
                                         DLOG("member -> call.id");
                                     }
             | call '[' expr ']'     {
@@ -692,7 +690,7 @@ member:     lvalue '.' ID           {
 
                                         Emit(TABLEGETELEM_t, temp, item, index);
 
-                                        $$ = new IndexedTableItem(temp, item, index);
+                                        $$ = new TableItem(temp, item, index);
 
                                         DLOG("member -> call[expr]");
                                     }
