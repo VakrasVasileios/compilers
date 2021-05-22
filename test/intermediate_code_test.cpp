@@ -12,16 +12,16 @@ protected:
     std::string actual;    
 };
 
-/*  ------------ Assign --------------   */
+/*  ------------ ASSIGN --------------   */
 
-TEST_F(InterCodeSuite, assign_simple) {
+TEST_F(InterCodeSuite, ASSIGN_simple) {
    expected =   "1:   ASSIGN x 2 [line 1]\n"
                 "2:   ASSIGN ^0 x [line 1]\n";
    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/assign/simple.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(InterCodeSuite, assign_calls_nested) {
+TEST_F(InterCodeSuite, ASSIGN_calls_nested) {
     expected =  "1:   JUMP 4 [line 1]\n"
                 "2:   FUNCSTART f [line 1]\n"
                 "3:   FUNCEND f [line 2]\n"
@@ -40,7 +40,7 @@ TEST_F(InterCodeSuite, assign_calls_nested) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(InterCodeSuite, assign_string) {
+TEST_F(InterCodeSuite, ASSIGN_string) {
     expected =  "1:   ASSIGN a \"2\" [line 1]\n"
                 "2:   ASSIGN ^0 a [line 1]\n"
                 "3:   ASSIGN a \"adsad\" [line 2]\n"
@@ -992,7 +992,23 @@ TEST_F(InterCodeSuite, table_tablemake_nested) {
                 "22:   TABLESETELEM ^7 2 ^5 [line 1]\n"
                 "23:   TABLESETELEM ^7 3 ^6 [line 1]\n";
                 actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemake_nested.asc");
-                GTEST_ASSERT_EQ(expected, actual);  
+                GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, short_circuit_simple_or) {
+    expected =  "1:   IF_EQ a 'true' 9 [line 1]\n"
+                "2:   JUMP 3 [line 1]\n"
+                "3:   IF_EQ b 'true' 9 [line 1]\n"
+                "4:   JUMP 5 [line 1]\n"
+                "5:   IF_EQ c 'true' 7 [line 1]\n"
+                "6:   JUMP 11 [line 1]\n"
+                "7:   IF_EQ f 'true' 11 [line 1]\n"
+                "8:   JUMP 9 [line 1]\n"
+                "9:   ASSIGN ^0 'true' [line 1]\n"
+                "10:   JUMP 12 [line 1]\n"
+                "11:   ASSIGN ^0 'false' [line 1]\n";
+                actual = exec("./d_intermediate_code ../../test/files/phase3_tests/short_circuit/simple_or.asc");
+                GTEST_ASSERT_EQ(expected, actual);
 }
 
 #ifdef TESTING
