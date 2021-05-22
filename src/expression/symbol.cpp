@@ -55,6 +55,12 @@ Symbol:: HasFormalArg(Symbol* formal_arg) {
     return false;  
 }
 
+Expression* 
+Symbol:: get_index() const {
+    PRECONDITION(get_type() == TABLE_ITEM);
+    return index;
+}
+
 void
 Symbol:: AddFormalArg(Symbol* formal_arg) {
     PRECONDITION(!HasFormalArg(formal_arg));
@@ -97,6 +103,12 @@ Symbol:: verify_offset(unsigned int offset) {
     return offset;
 }
 
+Expression*
+Symbol:: verify_index(ExprType type, Expression* index) {
+    PRECONDITION(index != nullptr? type == TABLE_ITEM : type != TABLE_ITEM);
+    return index;
+}
+
 bool
 Symbol:: is_state_valid() {
     bool is_type_valid = get_type() == VAR || get_type() == LIB_FUNC || get_type() == USER_FUNC;
@@ -104,9 +116,10 @@ Symbol:: is_state_valid() {
     bool is_line_valid = line >= 0;
     bool is_scope_valid = scope >= 0;
     bool is_offset_valid = offset >= 0;
+    bool is_index_valid = index != nullptr? get_type() == TABLE_ITEM : get_type() != TABLE_ITEM;
 
     return  is_type_valid && is_id_valid && is_line_valid &&
-            is_scope_valid && is_offset_valid;
+            is_scope_valid && is_offset_valid && is_index_valid;
 }
 
 std::string

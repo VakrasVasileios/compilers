@@ -23,7 +23,7 @@ enum ScopeSpace {
  * @brief An lvalue primary expression.
  * 
 **/ 
-class Symbol : public Primary {
+class Symbol final : public Primary {
 public:
     /**
      * @brief Constructs a new Symbol object.
@@ -38,10 +38,11 @@ public:
      * as a formal argument.
      * @param offset the offset of this Symbol at its scope space, greater
      * or equal to zero.
+     * @param index the mapped index to this Symbol, at a TABLE_ITEM context.
      */
-    Symbol(ExprType type, std::string id, unsigned int line, unsigned int scope , ScopeSpace space, unsigned int offset) :
+    Symbol(ExprType type, std::string id, unsigned int line, unsigned int scope , ScopeSpace space, unsigned int offset, Expression* index) :
         Primary(verify_type(type)), id(verify_id(id)), line(verify_line(line)), scope(verify_scope(scope)),
-        active(true), space(space), offset(verify_offset(offset)) {};
+        active(true), space(space), offset(verify_offset(offset)), index(verify_index(type, index)) {};
     /**
      * @brief Destroys this Symbol object.
      * 
@@ -98,6 +99,16 @@ public:
      */
     std::list<Symbol*>          get_formal_arguments() const;
     /**
+     * @brief Returns a read access to the mapped index of
+     * this TABLE_ITEM symbol. 
+     * It's a checked runtime error for this Symbol not tohave
+     * a TABLE_ITEM expression type.
+     * 
+     * @return a read access to the mapped index of
+     * this TABLE_ITEM symbol, can be null
+     */
+    Expression*                 get_index() const;
+    /**
      * @brief Sets this Symbol activity.
      * A symbol's activity determines wether the Symbol
      * is visible or not at this occurance. 
@@ -138,15 +149,19 @@ private:
     const ScopeSpace            space;
     const unsigned int          offset;
     std::list<Symbol*>          formal_arguments;
+    Expression*                 index;
 
     ExprType                    verify_type(ExprType type);
     std::string                 verify_id(std::string id);
     unsigned int                verify_line(unsigned int line);
     unsigned int                verify_scope(unsigned int scope);
     unsigned int                verify_offset(unsigned int offset);
+    Expression*                 verify_index(ExprType type, Expression* index);
     bool                        is_state_valid();
+
     std::string                 space_to_string() const;
     std::string                 sym_to_string() const;
+
     std::ostream&               LogExpression(std::ostream& os) const override;
 };
 

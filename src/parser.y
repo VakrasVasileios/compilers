@@ -21,7 +21,6 @@
     #include "../include/expression/tablemake.h"
     #include "../include/expression/tablemake_elems.h"
     #include "../include/expression/tablemake_pairs.h"
-    #include "../include/expression/table_item.h"
     #include "../include/symbol_table.h"
     #include "../include/program_stack.h"
     #include "../include/instruction_opcodes.h"
@@ -84,14 +83,18 @@
     void                        HideLowerScopes();
 
     void                        DefineSymbol(Symbol* symbol);
-    Symbol*                     DefineNewSymbol(ExprType type, const char* symbol);
+    Symbol*                     DefineNewSymbol(ExprType type, const char* symbol, Expression* index);
     Symbol*                     DefineNewAnonymousFunc();
     void                        StashFormalArgument(Symbol* symbol);
     void                        DefineStashedFormalArguments();
 
-    Symbol*                     NewTemp();
+    Symbol*                     NewTemp(ExprType type, Expression* index);
     void                        ResetTemp();
     Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2);
+
+    Symbol*                     EmitIfTableItem(Symbol* sym);
+    Symbol*                     MemberItem(Symbol* sym, const char* id);
+
     unsigned int                NextQuadLabel();
 
     bool                        IsLibraryFunction(Expression* expr);
@@ -99,8 +102,11 @@
     bool                        IsVariable(Expression* expr);
     bool                        IsConstString(Expression* expr);
     bool                        IsConstBool(Expression* expr);
+
     bool                        IsGlobalVar(Symbol* symbol);
     bool                        IsAtCurrentScope(Symbol* symbol);
+    bool                        IsTableItem(Symbol* symbol);
+
     bool                        InLoop();
     bool                        InFuncDef();
     bool                        InCall();
@@ -126,7 +132,6 @@
     class Call*                 call;
     class Symbol*               sym;
     class TableMake*            tablemake;
-    class TableItem*            tableitem;
 }
 
 %start program
@@ -146,10 +151,9 @@
 
 %type <prim>        primary
 %type <con>         const
-%type <sym>         lvalue 
+%type <sym>         lvalue member
 %type <call>        call
 %type <tablemake>   objectdef
-%type <tableitem>   member
 
 %right      '='
 %left       OR
@@ -241,7 +245,7 @@ expr:         assignexpr            {
                                         auto expr2 = $3;
 
                                         if (IsValidArithmeticExpr(expr1, expr2)) {
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
                                             Emit(ADD_t, temp, expr1, expr2);
 
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -253,7 +257,7 @@ expr:         assignexpr            {
                                         auto expr2 = $3;
 
                                         if (IsValidArithmeticExpr(expr1, expr2)) {
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
                                             Emit(SUB_t, temp, expr1, expr2);
 
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -265,7 +269,7 @@ expr:         assignexpr            {
                                         auto expr2 = $3;
 
                                         if (IsValidArithmeticExpr(expr1, expr2)) {
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
                                             Emit(MUL_t, temp, expr1, expr2);
 
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -277,7 +281,7 @@ expr:         assignexpr            {
                                         auto expr2 = $3;
 
                                         if (IsValidArithmeticExpr(expr1, expr2)) {
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
                                             Emit(DIV_t, temp, expr1, expr2);
 
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -289,7 +293,7 @@ expr:         assignexpr            {
                                         auto expr2 = $3;
 
                                         if (IsValidArithmeticExpr(expr1, expr2)) {
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
                                             Emit(MOD_t, temp, expr1, expr2);
 
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -307,7 +311,7 @@ expr:         assignexpr            {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -331,7 +335,7 @@ expr:         assignexpr            {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -355,7 +359,7 @@ expr:         assignexpr            {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -379,7 +383,7 @@ expr:         assignexpr            {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -403,7 +407,7 @@ expr:         assignexpr            {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -428,7 +432,7 @@ expr:         assignexpr            {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                             PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
 
                                             Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -474,7 +478,7 @@ term:         '(' expr ')'          {
                                             SignalError("Illegal use of unary minus on constant boolean");
                                         }
                                         else {
-                                            auto temp = NewTemp();
+                                            auto temp = NewTemp(VAR, nullptr);
                                             Emit(UMINUS_t, temp, symbol, nullptr);
                                             $$ = symbol;
                                         }
@@ -488,7 +492,7 @@ term:         '(' expr ')'          {
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                         PatchJumpQuad(jump_quad, jump_quad->label + 1);
 
-                                        auto temp = NewTemp();
+                                        auto temp = NewTemp(VAR, nullptr);
 
                                         Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
@@ -502,38 +506,58 @@ term:         '(' expr ')'          {
                                     }
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
-                                        if (!IsVariable(symbol))
+                                        Symbol* result;
+                                        /* if (IsTableItem(symbol)) {
+                                            auto table_item = T_ITEM_CAST(symbol);
+                                            result = table_item->get_address();
+                                            auto index = table_item->get_index();
+                                            auto ref_lval = table_item->get_item();
+
+                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                            Emit(TABLESETELEM_t, ref_lval, index, result);
+                                        }
+                                        else  */if (!IsVariable(symbol))
                                             SignalError("Use of increment operator with non variable type");   
                                         else {
-                                            auto temp = NewTemp(); 
+                                            result = NewTemp(VAR, nullptr); 
                                                
                                             Emit(ADD_t, symbol, symbol, new IntConstant(1));
-                                            Emit(ASSIGN_t, temp, symbol, nullptr);
-                                            
-                                            $$ = temp;
-                                        }     
+                                            Emit(ASSIGN_t, result, symbol, nullptr);     
+                                        }
+                                        $$ = result;     
 
                                         DLOG("term -> ++lvalue"); 
                                     }
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
-                                        if (!IsVariable(symbol))
+                                        Symbol* result;
+                                        /* if (IsTableItem(symbol)) {
+                                            auto table_item = T_ITEM_CAST(symbol);
+                                            result = NewTemp(VAR, nullptr);
+                                            auto pre_res = table_item->get_address();
+                                            auto index = table_item->get_index();
+                                            auto ref_lval = table_item->get_item();
+
+                                            Emit(ASSIGN_t, result, symbol, nullptr);
+                                            Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                            Emit(TABLESETELEM_t, ref_lval, index, pre_res);
+                                        }
+                                        else */ if (!IsVariable(symbol))
                                             SignalError("Use of increment operator with non variable type");   
                                         else {
-                                            auto temp = NewTemp(); 
+                                            result = NewTemp(VAR, nullptr); 
 
-                                            Emit(ASSIGN_t, temp, symbol, nullptr);    
+                                            Emit(ASSIGN_t, result, symbol, nullptr);    
                                             Emit(ADD_t, symbol, symbol, new IntConstant(1));
-
-                                            $$ = temp;
-                                        }     
+                                        }  
+                                        $$ = result;   
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
                                         if (!IsVariable(symbol))
                                             SignalError("Use of decrement operator with non variable type");   
                                         else {
-                                            auto temp = NewTemp(); 
+                                            auto temp = NewTemp(VAR, nullptr); 
                                                
                                             Emit(SUB_t, symbol, symbol, new IntConstant(1));
                                             Emit(ASSIGN_t, temp, symbol, nullptr); 
@@ -548,7 +572,7 @@ term:         '(' expr ')'          {
                                             SignalError("Use of decrement operator with non variable type");
                                         else {
                                             {
-                                            auto temp = NewTemp(); 
+                                            auto temp = NewTemp(VAR, nullptr); 
                                                
                                             Emit(ASSIGN_t, temp, symbol, nullptr);    
                                             Emit(SUB_t, symbol, symbol, new IntConstant(1));
@@ -571,7 +595,7 @@ assignexpr:   lvalue '=' expr       {
                                             }
                                             else {
                                                 Emit(ASSIGN_t, symbol, $3, nullptr);
-                                                auto temp = NewTemp();
+                                                auto temp = NewTemp(VAR, nullptr);
                                                 Emit(ASSIGN_t, temp, symbol, nullptr);
                                                 $$ = new AssignExpr(temp, symbol, $3);
                                             }
@@ -582,7 +606,8 @@ assignexpr:   lvalue '=' expr       {
             ;
 
 primary:      lvalue                {
-                                        $$ = $1;
+                                        $$ = EmitIfTableItem($1);
+
                                         DLOG("primary -> lvalue");
                                     }
             | call                  {
@@ -608,7 +633,7 @@ primary:      lvalue                {
 lvalue:       ID                    {
                                         auto symbol = program_stack.Lookup($1);
                                         if (symbol == nullptr) {
-                                            symbol = DefineNewSymbol(VAR, $1);
+                                            symbol = DefineNewSymbol(VAR, $1, nullptr);
                                         } else if (!symbol->is_active()) {
                                             SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                         }
@@ -619,19 +644,19 @@ lvalue:       ID                    {
             | LOCAL ID              {
                                         auto symbol = program_stack.Lookup($2);
                                         if (symbol == nullptr) { 
-                                            symbol = DefineNewSymbol(VAR, $2);
+                                            symbol = DefineNewSymbol(VAR, $2, nullptr);
                                         }
                                         else if (!symbol->is_active()) {
                                             SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                         }
                                         else if (IsGlobalVar(symbol)) {
-                                            symbol = DefineNewSymbol(VAR, $2);
+                                            symbol = DefineNewSymbol(VAR, $2, nullptr);
                                         }
                                         else if (IsUserFunction(symbol)){
                                             if(IsAtCurrentScope(symbol)) 
                                                 SignalError("Attempting to redefine a previously declared user function");
                                             else 
-                                                symbol = DefineNewSymbol(VAR, $2);
+                                                symbol = DefineNewSymbol(VAR, $2, nullptr);
                                         }
                                         else if (IsLibraryFunction(symbol)) {
                                             SignalError("Attempting to redefine a library function");
@@ -655,43 +680,32 @@ lvalue:       ID                    {
 
 member:     lvalue '.' ID           {
                                         auto item = $1;
-                                        auto index = new StringConstant(std::string($3));
-                                        auto temp = NewTemp();
-
-                                        Emit(TABLEGETELEM_t, temp, item, index);
-
-                                        $$ = new TableItem(temp, item, index);
+                                        auto index = $3;
+                                        $$ = MemberItem(item, index);
                                         DLOG("member -> lvalue.id");
                                     }
             | lvalue '[' expr ']'   {
                                         auto item = $1;
                                         auto index = $3;
-                                        auto temp = NewTemp();
 
-                                        Emit(TABLEGETELEM_t, temp, item, index);
+                                        auto sym = EmitIfTableItem(item);
 
-                                        $$ = new TableItem(temp, item, index);
+                                        $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {
                                         auto item = ($1)->get_ret_val();
-                                        auto index = new StringConstant(std::string($3));
-                                        auto temp = NewTemp();
-
-                                        Emit(TABLEGETELEM_t, temp, item, index);
-
-                                        $$ = new TableItem(temp, item, index);
+                                        auto index = $3;
+                                        $$ = MemberItem(item, index);
                                         DLOG("member -> call.id");
                                     }
             | call '[' expr ']'     {
                                         auto item = ($1)->get_ret_val();
                                         auto index = $3;
-                                        auto temp = NewTemp();
 
-                                        Emit(TABLEGETELEM_t, temp, item, index);
+                                        auto sym = EmitIfTableItem(item);
 
-                                        $$ = new TableItem(temp, item, index);
-
+                                        $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
                                         DLOG("member -> call[expr]");
                                     }
             ;
@@ -712,7 +726,7 @@ call:       call  '(' elist ')'             {
                                                 auto top_call = call_exprs.top();
                                                 auto called_symbol = top_call->get_called_symbol();
 
-                                                auto temp_value = NewTemp();
+                                                auto temp_value = NewTemp(VAR, nullptr);
                         
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);    
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
@@ -748,7 +762,7 @@ call:       call  '(' elist ')'             {
                                                 auto top_call = call_exprs.top();
                                                 auto called_symbol = top_call->get_called_symbol();
 
-                                                auto temp_value = NewTemp();
+                                                auto temp_value = NewTemp(VAR, nullptr);
 
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
@@ -832,7 +846,7 @@ objectdef:  '['                 {
                                     tablemake_elems_exprs.push(tablemake_elems_expr);
                                 }
              elist ']'          {
-                                    auto temp = NewTemp();
+                                    auto temp = NewTemp(VAR, nullptr);
                                     Emit(TABLECREATE_t, temp, nullptr, nullptr);
 
                                     auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
@@ -854,7 +868,7 @@ objectdef:  '['                 {
                                     tablemake_pairs_exprs.push(tablemake_pairs_expr);
                                 }
             indexed ']'         { 
-                                    auto temp = NewTemp();
+                                    auto temp = NewTemp(VAR, nullptr);
                                     Emit(TABLECREATE_t, temp, nullptr, nullptr);
 
                                     auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
@@ -937,7 +951,7 @@ funcdef:    FUNCTION        {
             | FUNCTION ID   {
                                 auto symbol = program_stack.Lookup($2);
                                 if (symbol == nullptr) {
-                                    symbol = DefineNewSymbol(USER_FUNC, $2);
+                                    symbol = DefineNewSymbol(USER_FUNC, $2, nullptr);
                                 }
                                 else if (!symbol->is_active()) {
                                     SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
@@ -953,7 +967,7 @@ funcdef:    FUNCTION        {
                                         SignalError("Name collision with function " + std::string($2) + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                     }
                                     else{
-                                        symbol = DefineNewSymbol(USER_FUNC, $2);  // shadow user function
+                                        symbol = DefineNewSymbol(USER_FUNC, $2, nullptr);  // shadow user function
                                     }
                                 }
                                 auto func_def_stmt = new FuncDefStmt(symbol); 
@@ -1019,7 +1033,7 @@ multid:     ',' ID  {
                         auto func = top_func_def_stmt->get_sym();
                         auto offset = func->get_formal_arguments().size();
 
-                        auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset);
+                        auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
 
                         if (func->HasFormalArg(new_formal_arg)) {
                             SignalError("formal argument " + std::string($2) + " already declared");
@@ -1042,7 +1056,7 @@ idlist:     ID      {
                         auto func = top_func_def_stmt->get_sym();
                         auto offset = func->get_formal_arguments().size();
 
-                        auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset);
+                        auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
 
                         if (func->HasFormalArg(new_formal_arg)) {
                             SignalError("formal argument " + std::string($1) + " already declared");
@@ -1332,35 +1346,36 @@ void DefineSymbol(Symbol* symbol) {
 void InitLibraryFunctions() {
     IncreaseScope(); 
 
-    DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, PROGRAM_VAR,program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
-    DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++));
+    DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, PROGRAM_VAR,program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
 }
 
-Symbol* NewSymbol(ExprType type, const char* id) {
+Symbol* NewSymbol(ExprType type, const char* id, Expression* index) {
     assert (id != nullptr);
     if (InFuncDef()) {
-        auto new_symbol = new Symbol(type, id, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset());
+        auto new_symbol = new Symbol(type, id, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), index);
         func_def_stmts.top()->IncreaseOffset();
         
         return new_symbol;
     }
     else {
-        return new Symbol(type, id, yylineno, current_scope, PROGRAM_VAR, program_var_offset++);
+        return new Symbol(type, id, yylineno, current_scope, PROGRAM_VAR, program_var_offset++, index);
     }
 }
 
-Symbol* DefineNewSymbol(ExprType type, const char* id) {
-    auto new_symbol = NewSymbol(type, id);
+Symbol* DefineNewSymbol(ExprType type, const char* id, Expression* index) {
+    assert(id != nullptr);
+    auto new_symbol = NewSymbol(type, id, index);
     DefineSymbol(new_symbol);
 
     return new_symbol;
@@ -1376,7 +1391,7 @@ std::string NewAnonymousFuncName() {
 }
 
 Symbol* NewAnonymousFunc() {
-    return NewSymbol(USER_FUNC, NewAnonymousFuncName().c_str());
+    return NewSymbol(USER_FUNC, NewAnonymousFuncName().c_str(), nullptr);
 }
 
 Symbol* DefineNewAnonymousFunc() {
@@ -1410,13 +1425,13 @@ inline void ResetTemp() {
     temp_counter = 0; 
 }
 
-Symbol* NewTemp() {
+Symbol* NewTemp(ExprType type, Expression* index) {
     std::string id = NewTempName();
 
     auto new_temp = program_stack.Top()->Lookup(id);
 
     if (new_temp == nullptr)  
-        new_temp = DefineNewSymbol(VAR, id.c_str());
+        new_temp = DefineNewSymbol(type, id.c_str(), index);
 
     return new_temp;
 }
@@ -1427,6 +1442,28 @@ Quad* Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2) {
     quads.push_back(q);
 
     return q;
+}
+
+Symbol* EmitIfTableItem(Symbol* sym) {
+    assert (sym != nullptr);
+    if (!IsTableItem(sym)) {
+        return sym;
+    }
+    else {
+        auto temp = NewTemp(TABLE_ITEM, sym->get_index());
+        Emit(TABLEGETELEM_t, temp, sym, sym->get_index());
+
+        return temp;
+    }    
+}
+
+Symbol* MemberItem(Symbol* sym, const char* id) {
+    assert(sym != nullptr);
+    assert(id != nullptr);
+    sym = EmitIfTableItem(sym);
+    auto index = new StringConstant(std::string(id));
+
+    return DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
 }
 
 unsigned int NextQuadLabel() {
@@ -1462,6 +1499,10 @@ inline bool IsGlobalVar(Symbol* symbol) {
 
 inline bool IsAtCurrentScope(Symbol* symbol) {
     return symbol->get_scope() == current_scope;
+}
+
+inline bool IsTableItem(Symbol* symbol) {
+    return symbol->get_type() == TABLE_ITEM;
 }
     
 inline bool InLoop() {

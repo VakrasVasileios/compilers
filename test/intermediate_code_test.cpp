@@ -1049,6 +1049,23 @@ TEST_F(InterCodeSuite, tebleelem_ind_call) {
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
+TEST_F(InterCodeSuite, emit_iftableitem_plusplusprefix) {
+    expected =  "1:   TABLEGETELEM ^0 a 2 [line 1]\n"
+                "2:   ADD ^0 ^0 1 [line 1]\n"
+                "3:   TABLESETELEM a 2 ^0 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplusprefix.asc");     
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(InterCodeSuite, emit_iftableitem_plusplussufix) {
+    expected =  "1:   TABLEGETELEM ^1 a 2 [line 1]\n"
+                "2:   ASSIGN ^0 ^1 [line 1]\n"
+                "3:   ADD ^1 ^1 1 [line 1]\n"
+                "4:   TABLESETELEM a 2 ^1 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplussufix.asc");     
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
