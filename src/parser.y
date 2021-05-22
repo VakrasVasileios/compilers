@@ -53,19 +53,15 @@
     
     SymbolTable                 symbol_table;
     ProgramStack                program_stack;  
+    std::vector<Quad*>          quads;
 
     unsigned int                program_var_offset = 0;
-
-    std::vector<Quad*>          quads;
     
     std::stack<LoopStmt*>       loop_stmts;
     std::stack<WhileStmt*>      while_stmts;
     std::stack<ForStmt*>        for_stmts;
-
     std::stack<FuncDefStmt*>    func_def_stmts;  
-
     std::stack<IfStmt*>         if_stmts;
-
     std::stack<Call*>           call_exprs;
     std::stack<TableMakeElems*> tablemake_elems_exprs;
     std::stack<TableMakePairs*> tablemake_pairs_exprs;
@@ -115,7 +111,6 @@
 
     bool                        IsValidArithmetic(Expression* expr);
     bool                        IsValidAssign(Symbol* left_operand);
-    bool                        IsValidBoolExpr(Expression* expr1, Expression* expr2);
 %}
 
 %union {                                                    
@@ -126,7 +121,6 @@
     class FuncDefStmt*          funcdef;
 
     class Expression*           expr;
-
     class AssignExpr*           assignexpr;
 
     class Primary*              prim;
@@ -145,17 +139,17 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <funcdef>     funcdef 
+%type <funcdef>         funcdef 
 
-%type <expr>        term expr
+%type <expr>            term expr
 
-%type <assignexpr>  assignexpr
+%type <assignexpr>      assignexpr
 
-%type <prim>        primary
-%type <con>         const
-%type <sym>         lvalue member
-%type <call>        call
-%type <tablemake>   objectdef
+%type <prim>            primary
+%type <con>             const
+%type <sym>             lvalue member
+%type <call>            call
+%type <tablemake>       objectdef
 
 %right      '='
 %left       OR
@@ -245,11 +239,9 @@ expr:         assignexpr            {
             | expr '+' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
                                         if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(ADD_t, temp, expr1, expr2);
-
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
                                         }
                                         DLOG("expr -> expr + expr");
@@ -257,11 +249,9 @@ expr:         assignexpr            {
             | expr '-' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
                                         if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(SUB_t, temp, expr1, expr2);
-
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
                                         } 
                                         DLOG("expr -> expr - expr");
@@ -269,11 +259,9 @@ expr:         assignexpr            {
             | expr '*' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
                                         if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MUL_t, temp, expr1, expr2);
-
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
                                         }
                                         DLOG("expr -> expr * expr");
@@ -281,11 +269,9 @@ expr:         assignexpr            {
             | expr '/' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
                                         if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(DIV_t, temp, expr1, expr2);
-
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
                                         }
                                         DLOG("expr -> expr / expr");
@@ -293,11 +279,9 @@ expr:         assignexpr            {
             | expr '%' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
                                         if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MOD_t, temp, expr1, expr2);
-
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
                                         } 
                                         DLOG("expr -> expr % expr");
@@ -305,163 +289,142 @@ expr:         assignexpr            {
             | expr '>' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
+                                        auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
+                                        PatchBranchQuad(greater_quad, greater_quad->label + 2);
 
-                                        if (IsValidBoolExpr(expr1, expr2)) {
-                                            auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
-                                            PatchBranchQuad(greater_quad, greater_quad->label + 2);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        auto temp = NewTemp(VAR, nullptr);
 
-                                            auto temp = NewTemp(VAR, nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                            $$ = new BoolExpr(temp, expr1, expr2);
-                                        }
+                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidBoolExpr(expr1, expr2)) {
-                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
-                                            PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
+                                        auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
+                                        PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp(VAR, nullptr);
+                                        auto temp = NewTemp(VAR, nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = new BoolExpr(temp, expr1, expr2);
-                                        }
+                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr >= expr");
                                     }
             | expr '<' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidBoolExpr(expr1, expr2)) {
-                                            auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
-                                            PatchBranchQuad(less_quad, less_quad->label + 2);
+                                        auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
+                                        PatchBranchQuad(less_quad, less_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp(VAR, nullptr);
+                                        auto temp = NewTemp(VAR, nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = new BoolExpr(temp, expr1, expr2);
-                                        }
+                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidBoolExpr(expr1, expr2)) {
-                                            auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
-                                            PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
+                                        auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
+                                        PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp(VAR, nullptr);
+                                        auto temp = NewTemp(VAR, nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = new BoolExpr(temp, expr1, expr2);
-                                        }
+                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidBoolExpr(expr1, expr2)) {
-                                            auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr);
-                                            PatchBranchQuad(equal_quad, equal_quad->label + 2);
+                                        auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr);
+                                        PatchBranchQuad(equal_quad, equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp(VAR, nullptr);
+                                        auto temp = NewTemp(VAR, nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = new BoolExpr(temp, expr1, expr2);
-                                        }
-
+                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr == expr");
                                     }
             | expr NOTEQUAL expr    {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        if (IsValidBoolExpr(expr1, expr2)) {
-                                            auto not_equal_quad = Emit(IF_NOTEQ_t,  expr1, expr2, nullptr);
-                                            PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
+                                        auto not_equal_quad = Emit(IF_NOTEQ_t,  expr1, expr2, nullptr);
+                                        PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                            auto temp = NewTemp(VAR, nullptr);
+                                        auto temp = NewTemp(VAR, nullptr);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
 
-                                            jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                            PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
 
-                                            Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
-                                            $$ = new BoolExpr(temp, expr1, expr2);
-                                        } 
+                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr != expr");
                                     }
             | expr AND expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidBoolExpr(expr1, expr2)) {  //TODO
-
-                                        }
                                         DLOG("expr -> expr and expr");
                                     }
             | expr OR expr          {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        
-                                        if (IsValidBoolExpr(expr1, expr2)) {  //TODO
-                                        }
                                         DLOG("expr -> assignexpr");
                                     }
             | term                  {
@@ -476,15 +439,11 @@ term:         '(' expr ')'          {
                                     }
             | '-' expr %prec UMINUS {
                                         auto symbol = $2;
-                                        if (symbol->get_type() == CONST_BOOL) {
-                                            SignalError("Illegal use of unary minus on constant boolean");
-                                        }
-                                        else {
+                                        if (IsValidArithmetic(symbol)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(UMINUS_t, temp, symbol, nullptr);
                                             $$ = symbol;
                                         }
-
                                         DLOG("term -> -expr");
                                     }
             | NOT expr              {
@@ -661,7 +620,6 @@ lvalue:       ID                    {
                                         auto symbol = program_stack.LookupGlobal($2);
                                         if (symbol == nullptr || !symbol->is_active()) 
                                             SignalError("No global variable with id: " + std::string($2));
-
                                         $$ = symbol;
                                         DLOG("lvalue -> ::id");
                                     }
@@ -680,9 +638,7 @@ member:     lvalue '.' ID           {
             | lvalue '[' expr ']'   {
                                         auto item = $1;
                                         auto index = $3;
-
                                         auto sym = EmitIfTableItem(item);
-
                                         $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
                                         DLOG("member -> lvalue[expr]");
                                     }
@@ -695,9 +651,7 @@ member:     lvalue '.' ID           {
             | call '[' expr ']'     {
                                         auto item = ($1)->get_ret_val();
                                         auto index = $3;
-
                                         auto sym = EmitIfTableItem(item);
-
                                         $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
                                         DLOG("member -> call[expr]");
                                     }
@@ -710,9 +664,7 @@ call:       call  '(' elist ')'             {
                                                 
                                                 auto called_symbol = $1;
                                                 auto call = new Call(called_symbol);
-                                                
                                                 call_exprs.push(call);
-
                                                 $<call>$ = call;
                                             }
             callsuffix                      {
@@ -720,7 +672,7 @@ call:       call  '(' elist ')'             {
                                                 auto called_symbol = top_call->get_called_symbol();
 
                                                 auto temp_value = NewTemp(VAR, nullptr);
-                        
+                                                
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);    
                                                 Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
 
@@ -729,32 +681,26 @@ call:       call  '(' elist ')'             {
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = called_symbol->get_formal_arguments().size();
                                                     auto call_args_num = top_call->get_params().size();
-
                                                     if (call_args_num < args_num)
                                                         SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                     else if (call_args_num > args_num)
                                                         LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                 }
-
                                                 call_exprs.pop();
 
                                                 $<call>$ = top_call;
-
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')'               {                       
                                                 auto func_def = $2;                         
                                                 auto called_symbol = func_def->get_sym();
                                                 auto call = new Call(called_symbol);
-
                                                 call_exprs.push(call);
-
                                                 $<call>$ = call;
                                             }
             '(' elist ')'                   {
                                                 auto top_call = call_exprs.top();
                                                 auto called_symbol = top_call->get_called_symbol();
-
                                                 auto temp_value = NewTemp(VAR, nullptr);
 
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);
@@ -765,7 +711,6 @@ call:       call  '(' elist ')'             {
                                                 if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
                                                     auto args_num = called_symbol->get_formal_arguments().size();
                                                     auto call_args_num = top_call->get_params().size();
-
                                                     if (call_args_num < args_num)
                                                         SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                     else if (call_args_num > args_num)
@@ -775,7 +720,6 @@ call:       call  '(' elist ')'             {
                                                 call_exprs.pop();
 
                                                 $<call>$ = top_call;
-
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
             ;
@@ -808,7 +752,6 @@ multelist:  ',' expr multelist  {
                                         auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
                                         top_tablemake_elems_expr->AddElement($2);
                                     }
-
                                     DLOG("multelist -> ,expr multelist");
                                 }
             |                   {
@@ -825,8 +768,7 @@ elist:      expr multelist  {
                                 if (InTableMakeElems()) {
                                     auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
                                     top_tablemake_elems_expr->AddElement($1);
-                                }
-                                             
+                                }        
                                 DLOG("elist -> expr multelist");
                             }
             |               {
@@ -840,20 +782,19 @@ objectdef:  '['                 {
                                 }
              elist ']'          {
                                     auto temp = NewTemp(VAR, nullptr);
+
                                     Emit(TABLECREATE_t, temp, nullptr, nullptr);
 
                                     auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
-
                                     top_tablemake_elems_expr->set_table(temp);
 
                                     unsigned int elem_cnt = 0;
                                     for (auto element : top_tablemake_elems_expr->get_elements())
                                         Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element);
 
-                                    tablemake_elems_exprs.pop();  
+                                    tablemake_elems_exprs.pop(); 
 
                                     $$ = top_tablemake_elems_expr; 
-
                                     DLOG("objectdef -> [elist]");
                                 }
             | '['               {
@@ -862,10 +803,10 @@ objectdef:  '['                 {
                                 }
             indexed ']'         { 
                                     auto temp = NewTemp(VAR, nullptr);
+
                                     Emit(TABLECREATE_t, temp, nullptr, nullptr);
 
                                     auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
-
                                     top_tablemake_pairs_expr->set_table(temp);
 
                                     for (auto pair : top_tablemake_pairs_expr->get_pairs())
@@ -874,7 +815,6 @@ objectdef:  '['                 {
                                     tablemake_pairs_exprs.pop();
 
                                     $$ = top_tablemake_pairs_expr;
-                                        
                                     DLOG("objectdef -> [indexed]");
                                 }
             ;
@@ -895,7 +835,6 @@ indexed:    indexedelem multindexed {
 indexedelem:'{' expr ':' expr '}'   {
                                         auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
                                         top_tablemake_pairs_expr->AddPair($2, $4);
-
                                         DLOG("indexedelem -> { expr : expr }"); 
                                     }
             ;
@@ -913,6 +852,7 @@ block:      '{'         {
 funcdef:    FUNCTION        {
                                 auto anonymous_function = DefineNewAnonymousFunc();
                                 auto func_def_stmt = new FuncDefStmt(anonymous_function);
+
                                 func_def_stmts.push(func_def_stmt);
 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -928,7 +868,7 @@ funcdef:    FUNCTION        {
             block           {
                                 auto top_func_def = func_def_stmts.top();
                                 auto anonymous_function = top_func_def->get_sym();
-                                
+
                                 auto func_end_quad = Emit(FUNCEND_t, anonymous_function, nullptr, nullptr);
 
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
@@ -979,18 +919,16 @@ funcdef:    FUNCTION        {
             block           { 
                                 auto top_func_def =  func_def_stmts.top();
                                 auto function = top_func_def->get_sym();
-                                
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr);
-                                
+
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
                                 top_func_def->PatchReturnJumpQuads(func_end_quad->label);
 
                                 func_def_stmts.pop();
-                                
+
                                 program_stack.ActivateLowerScopes();
 
                                 $<funcdef>$ = top_func_def;
-
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
             ;
@@ -1027,7 +965,6 @@ multid:     ',' ID  {
                         auto offset = func->get_formal_arguments().size();
 
                         auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
-
                         if (func->HasFormalArg(new_formal_arg)) {
                             SignalError("formal argument " + std::string($2) + " already declared");
                         }
@@ -1050,7 +987,6 @@ idlist:     ID      {
                         auto offset = func->get_formal_arguments().size();
 
                         auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
-
                         if (func->HasFormalArg(new_formal_arg)) {
                             SignalError("formal argument " + std::string($1) + " already declared");
                         }
@@ -1075,6 +1011,7 @@ ifstmt:     IF '(' expr ')'                 {
                                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr); 
 
                                                 PatchBranchQuad(branch_quad, branch_quad->label + 2);
+
                                                 if_stmt->set_if_jump_quad(jump_quad);
                                             }
             stmt                            {
@@ -1089,8 +1026,8 @@ elsestmt:   ELSE            {
                                 auto top_if_stmt = if_stmts.top();
 
                                 auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                top_if_stmt->PushElseJumpQuad(else_jump_quad);
 
+                                top_if_stmt->PushElseJumpQuad(else_jump_quad);
                                 top_if_stmt->PatchIfJumpQuad(NextQuadLabel());
                             }
             stmt            {
@@ -1102,7 +1039,6 @@ elsestmt:   ELSE            {
                                 if_stmts.pop();
 
                                 ResetTemp();
-
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
@@ -1117,6 +1053,7 @@ elsestmt:   ELSE            {
 
 whilestmt:  WHILE               { 
                                     auto first_quad_label = NextQuadLabel();
+
                                     auto while_stmt = new WhileStmt(first_quad_label);
 
                                     while_stmts.push(while_stmt);
@@ -1137,22 +1074,21 @@ whilestmt:  WHILE               {
                                     auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                     top_while_stmt->PushLoopQuad(loop_quad);
-                                    
                                     top_while_stmt->PatchLoopQuads();
                                     top_while_stmt->PatchBreakJumpQuads(NextQuadLabel());
                                     top_while_stmt->PatchContinueJumpQuads();
-                                       
+
                                     while_stmts.pop();
                                     loop_stmts.pop();
 
                                     ResetTemp();
-
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
             ;
 
 forstmt:    FOR                                     {
                                                         auto first_quad_label = NextQuadLabel();
+
                                                         auto for_stmt = new ForStmt(first_quad_label);
 
                                                         for_stmts.push(for_stmt);
@@ -1162,41 +1098,42 @@ forstmt:    FOR                                     {
                                                         auto top_for_stmt = for_stmts.top();
 
                                                         auto logical_expr_first_quad_label = NextQuadLabel();
+
                                                         top_for_stmt->set_logical_expr_first_quad_label(logical_expr_first_quad_label);
                                                     }
             expr ';'                                {
                                                         auto top_for_stmt = for_stmts.top();
 
                                                         auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr);
+
                                                         top_for_stmt->PushLoopQuad(branch_quad);
 
                                                         auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+
                                                         top_for_stmt->PushLoopQuad(exit_quad);
 
                                                         auto exprs_first_quad_label = NextQuadLabel();
+
                                                         top_for_stmt->set_exprs_first_quad_label(exprs_first_quad_label);
                                                     }
             elist ')'                               {
                                                         auto top_for_stmt = for_stmts.top();
-
                                                         auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                                         top_for_stmt->PushLoopQuad(loop_quad);
                                                     }
             stmt                                    {
                                                         auto top_for_stmt = for_stmts.top();
-
                                                         auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr); 
-                                                        top_for_stmt->PushLoopQuad(expr_jump_quad);
 
+                                                        top_for_stmt->PushLoopQuad(expr_jump_quad);
                                                         top_for_stmt->PatchLoopQuads();
                                                         top_for_stmt->PatchBreakJumpQuads(NextQuadLabel());
                                                         top_for_stmt->PatchContinueJumpQuads();
- 
+
                                                         for_stmts.pop();
-                                                        loop_stmts.pop();    
+                                                        loop_stmts.pop(); 
 
                                                         ResetTemp();
-
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }
             ;
@@ -1206,7 +1143,6 @@ returnstmt: RETURN      {
                                 SignalError("Invalid return, used outside a function block");
                             } else {
                                 auto top_func_def = func_def_stmts.top();
-
                                 Emit(RET_t, nullptr, nullptr, nullptr);
                                 auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
@@ -1222,12 +1158,10 @@ returnstmt: RETURN      {
                                 SignalError("Invalid return, used outside a function block");
                             else {
                                 auto top_func_def = func_def_stmts.top();
-
                                 Emit(RET_t, $2, nullptr, nullptr);
                                 auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                 top_func_def->PushReturnJumpQuad(return_jump_quad);
-
                                 DLOG("returnstmt -> RETURN expr;");
                             }    
                         }
@@ -1250,22 +1184,17 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-    
     InitLibraryFunctions();
-
     yyparse();
-
     #if defined LOGQUADS
         if (NoErrorSignaled()) {
             LogQuads(std::cout);
         }
     #endif 
-            
     #if defined LOGSYMTABLE
         if (NoErrorSignaled()) 
             LogSymTable(std::cout);
     #endif
-    
     #if defined LOGQUADSTXT
         if (NoErrorSignaled()) {
             const char *path="../quads.txt";
@@ -1290,7 +1219,6 @@ void SignalError(std::string msg) {
     #else
         std::cout << "Error, in line: " << yylineno << ": " << msg << std::endl; 
     #endif    
-
     error_flag = 1;
 }
 
@@ -1338,7 +1266,6 @@ void DefineSymbol(Symbol* symbol) {
 
 void InitLibraryFunctions() {
     IncreaseScope(); 
-
     DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
     DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
     DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
@@ -1422,7 +1349,7 @@ Symbol* NewTemp(ExprType type, Expression* index) {
     std::string id = NewTempName();
 
     auto new_temp = program_stack.Top()->Lookup(id);
-
+    
     if (new_temp == nullptr)  
         new_temp = DefineNewSymbol(type, id.c_str(), index);
 
@@ -1553,43 +1480,4 @@ bool IsValidAssign(Symbol* left_operand) {
     }
 
     return true;
-}
-
-bool IsValidBoolExpr(Expression* expr1, Expression* expr2) {
-    bool is_valid = true;
-
-    if (IsLibraryFunction(expr1)) {
-        SignalError("Invalid use of comparison operator on library function " + expr1->to_string());
-        is_valid = false;
-    }
-    if (IsLibraryFunction(expr2)) {
-        SignalError("Invalid use of comparison operator on library function " + expr2->to_string());
-        is_valid = false;
-    }
-    if (IsUserFunction(expr1)) {
-        SignalError("Invalid use of comparison operator on user function " + expr1->to_string());
-        is_valid = false;
-    }
-    if (IsUserFunction(expr2)) {
-        SignalError("Invalid use of comparison operator on user function " + expr2->to_string());
-        is_valid = false;
-    }
-    if (IsConstString(expr1)) {
-        SignalError("Invalid use of comparison operator on const string " + expr1->to_string());
-        is_valid = false;
-    }
-    if (IsConstString(expr2)) {
-        SignalError("Invalid use of comparison operator on const string " + expr2->to_string());
-        is_valid = false;
-    }
-    if (IsConstBool(expr1)) {
-        SignalError("Invalid use of comparison operator on const bool " + expr1->to_string());
-        is_valid = false;
-    }
-    if (IsConstBool(expr2)) {
-        SignalError("Invalid use of comparison operator on const bool " + expr2->to_string());
-        is_valid = false;
-    }
-
-    return is_valid;                
 }

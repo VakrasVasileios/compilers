@@ -887,7 +887,7 @@ TEST_F(InterCodeSuite, arithmetic_uminus) {
 }
 
 TEST_F(InterCodeSuite, arithmetic_uminus_bool) {
-    expected = "Error, in line: 1: Illegal use of unary minus on constant boolean\n";
+    expected = "Error, in line: 1: Invalid use of arithmetic operator on const bool 'true'\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
