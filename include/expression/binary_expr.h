@@ -45,13 +45,13 @@ protected:
      * @param right_hand_operand    the right hand operand of the BinaryExpr object, not null
      */
     BinaryExpr(ExprType type, Expression* result, Expression* left_hand_operand, Expression* right_hand_operand)
-        : Expression(type), result(verify_result(result)), left_hand_operand(verify_operand(left_hand_operand)),
-        right_hand_operand(verify_operand(right_hand_operand)) {};
+        : Expression(type), result(verify_result(result)), left_hand_operand(left_hand_operand),
+        right_hand_operand(right_hand_operand) {};
     /**
      * @brief Destroys this BinaryExpr object.
      * 
      */
-    ~BinaryExpr() = default;    
+    ~BinaryExpr() = default;
 private:
     Expression*     result;
     Expression*     left_hand_operand;
