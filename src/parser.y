@@ -102,6 +102,7 @@
     bool                        IsVariable(Expression* expr);
     bool                        IsConstString(Expression* expr);
     bool                        IsConstBool(Expression* expr);
+    bool                        IsTableMake(Expression* expr);
 
     bool                        IsGlobalVar(Symbol* symbol);
     bool                        IsAtCurrentScope(Symbol* symbol);
@@ -579,18 +580,15 @@ term:         '(' expr ')'          {
 
 assignexpr:   lvalue '=' expr       {
                                         auto symbol = $1;
-                                        if (symbol != nullptr) {
-                                            if (IsLibraryFunction(symbol) || IsUserFunction(symbol)) {
-                                                SignalError("Functions are constant their value cannot be changed");
-                                            }
-                                            else {
-                                                Emit(ASSIGN_t, symbol, $3, nullptr);
-                                                auto temp = NewTemp(VAR, nullptr);
-                                                Emit(ASSIGN_t, temp, symbol, nullptr);
-                                                $$ = new AssignExpr(temp, symbol, $3);
-                                            }
+                                        if (IsLibraryFunction(symbol) || IsUserFunction(symbol)) {
+                                            SignalError("Functions are constant their value cannot be changed");
                                         }
-                                            
+                                        else {
+                                            Emit(ASSIGN_t, symbol, $3, nullptr);
+                                            auto temp = NewTemp(VAR, nullptr);
+                                            Emit(ASSIGN_t, temp, symbol, nullptr);
+                                            $$ = new AssignExpr(temp, symbol, $3);
+                                        }
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
             ;
@@ -1483,6 +1481,10 @@ inline bool IsConstBool(Expression* expr) {
     return expr->get_type() == CONST_BOOL;
 }
 
+inline bool IsTableMake(Expression* expr) {
+    return expr->get_type() == TABLE_MAKE;
+}
+
 inline bool IsGlobalVar(Symbol* symbol) { 
     return IsVariable(symbol) && symbol->get_scope() == global_scope; 
 }
@@ -1527,6 +1529,10 @@ bool IsValidArithmetic(Expression* expr) {
     }
     else if (IsConstBool(expr)) {
         SignalError("Invalid use of arithmetic operator on const bool " + expr->to_string());
+        return false;
+    }
+    else if (IsTableMake(expr)) {
+        SignalError("Invalid use of arithmetic operator on table " + expr->to_string());
         return false;
     }
 

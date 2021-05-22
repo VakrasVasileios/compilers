@@ -1083,6 +1083,13 @@ TEST_F(InterCodeSuite, emit_iftableitem_minusminus_suffix) {
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
+TEST_F(InterCodeSuite, emit_iftableitem_assignexpr) {
+    expected =  "1:   TABLESETELEM a 2 9 [line 1]\n"
+                "2:   TABLEGETELEM ^0 a 2 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_assignexpr.asc");     
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 #ifdef TESTING
 int main(int argc, char* argv[])
 {
