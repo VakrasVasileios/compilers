@@ -531,7 +531,6 @@ term:         '(' expr ')'          {
                                                 Emit(ASSIGN_t, result, val, nullptr);
                                                 Emit(ADD_t, val, val, new IntConstant(1));
                                                 Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
-
                                             } else {
                                                 Emit(ASSIGN_t, result, symbol, nullptr);    
                                                 Emit(ADD_t, symbol, symbol, new IntConstant(1));
@@ -541,32 +540,37 @@ term:         '(' expr ')'          {
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
-                                        if (!IsVariable(symbol))
-                                            SignalError("Use of decrement operator with non variable type");   
-                                        else {
-                                            auto temp = NewTemp(VAR, nullptr); 
-                                               
-                                            Emit(SUB_t, symbol, symbol, new IntConstant(1));
-                                            Emit(ASSIGN_t, temp, symbol, nullptr); 
+                                        Symbol* result;
+                                        if (IsValidArithmetic(symbol)) {
+                                            if (IsTableItem(symbol)) {
+                                                result = EmitIfTableItem(symbol);
+                                                Emit(SUB_t, result, result, new IntConstant(1));
+                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
 
-                                            $$ = temp;
-                                        }     
+                                            } else {
+                                                result = NewTemp(VAR, nullptr);
+                                                Emit(SUB_t, symbol, symbol, new IntConstant(1));
+                                                Emit(ASSIGN_t, result, symbol, nullptr);  
+                                            }
+                                        } 
+                                        $$ = result;      
                                         DLOG("term -> --lvaule");
                                     }
             | lvalue MINUSMINUS     { 
                                         auto symbol = $1;
-                                        if (!IsVariable(symbol))
-                                            SignalError("Use of decrement operator with non variable type");
-                                        else {
-                                            {
-                                            auto temp = NewTemp(VAR, nullptr); 
-                                               
-                                            Emit(ASSIGN_t, temp, symbol, nullptr);    
-                                            Emit(SUB_t, symbol, symbol, new IntConstant(1));
-
-                                            $$ = temp;
+                                        auto result = NewTemp(VAR, nullptr);
+                                        if (IsValidArithmetic(symbol)) {
+                                            if (IsTableItem(symbol)) {
+                                                auto val = EmitIfTableItem(symbol);
+                                                Emit(ASSIGN_t, result, val, nullptr);
+                                                Emit(SUB_t, val, val, new IntConstant(1));
+                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
+                                            } else {
+                                                Emit(ASSIGN_t, result, symbol, nullptr);    
+                                                Emit(SUB_t, symbol, symbol, new IntConstant(1));
+                                            }
                                         } 
-                                        }    
+                                        $$ = result;  
                                         DLOG("term -> lvalue--");
                                     }
             | primary               {   
