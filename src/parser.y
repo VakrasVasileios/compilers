@@ -114,6 +114,7 @@
     bool                        InTableMakeElems();
 
     bool                        IsValidArithmetic(Expression* expr);
+    bool                        IsValidAssign(Symbol* left_operand);
     bool                        IsValidBoolExpr(Expression* expr1, Expression* expr2);
 %}
 
@@ -580,14 +581,18 @@ term:         '(' expr ')'          {
 
 assignexpr:   lvalue '=' expr       {
                                         auto symbol = $1;
-                                        if (IsLibraryFunction(symbol) || IsUserFunction(symbol)) {
-                                            SignalError("Functions are constant their value cannot be changed");
-                                        }
-                                        else {
-                                            Emit(ASSIGN_t, symbol, $3, nullptr);
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(ASSIGN_t, temp, symbol, nullptr);
-                                            $$ = new AssignExpr(temp, symbol, $3);
+                                        auto expr = $3;
+                                        if (IsValidAssign(symbol)) {
+                                            if (IsTableItem(symbol)) {
+                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), expr);
+                                                auto result = EmitIfTableItem(symbol);
+                                                $$ = new AssignExpr(result, symbol, expr);
+                                            } else {
+                                                auto result = NewTemp(VAR, nullptr);
+                                                Emit(ASSIGN_t, symbol, expr, nullptr);
+                                                Emit(ASSIGN_t, result, symbol, nullptr);
+                                                $$ = new AssignExpr(result, symbol, expr);
+                                            }
                                         }
                                         DLOG("assignexpr -> lvalue = expr");
                                     }
@@ -1537,6 +1542,17 @@ bool IsValidArithmetic(Expression* expr) {
     }
 
     return true;                
+}
+
+bool IsValidAssign(Symbol* left_operand) {
+    assert(left_operand != nullptr);
+    if (IsUserFunction(left_operand) || IsLibraryFunction(left_operand)) {
+        SignalError("Functions are constant their value cannot be changed");
+
+        return false;
+    }
+
+    return true;
 }
 
 bool IsValidBoolExpr(Expression* expr1, Expression* expr2) {
