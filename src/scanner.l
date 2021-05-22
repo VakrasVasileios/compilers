@@ -141,8 +141,10 @@ ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
 {SINGLELCOMMENT}    {
                         int c = 1;
 
-                        while(c != '\n' && c != EOF) {
+                        while(c != '\n') {
                             c = yyinput();
+                            if (c == EOF || c == NULL)
+                               break;
                         }
                     }
 

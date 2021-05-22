@@ -512,7 +512,6 @@ term:         '(' expr ')'          {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(ADD_t, result, result, new IntConstant(1));
                                                 Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
-
                                             } else {
                                                 result = NewTemp(VAR, nullptr);
                                                 Emit(ADD_t, symbol, symbol, new IntConstant(1));
@@ -546,7 +545,6 @@ term:         '(' expr ')'          {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(SUB_t, result, result, new IntConstant(1));
                                                 Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
-
                                             } else {
                                                 result = NewTemp(VAR, nullptr);
                                                 Emit(SUB_t, symbol, symbol, new IntConstant(1));
@@ -574,6 +572,7 @@ term:         '(' expr ')'          {
                                         DLOG("term -> lvalue--");
                                     }
             | primary               {   
+                                        $$ = $1;
                                         DLOG("term -> primary"); 
                                     }
             ;
