@@ -143,7 +143,7 @@ ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
 
                         while(c != '\n') {
                             c = yyinput();
-                            if (c == EOF)   break;
+                            if (c == EOF || c == NULL)   break;
                         }
                     }
 
