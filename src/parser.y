@@ -813,49 +813,19 @@ elist:      expr multelist  {
                             }
             ;
 
-objectdef:  '['                 {
-                                    // auto tablemake_elems_expr = new TableMakeElems();
-                                    // tablemake_elems_exprs.push(tablemake_elems_expr);
-                                    // elist_flags.push(0);
+objectdef:  '[' elist ']'       {
+                                    auto result = NewTemp(VAR, nullptr);
+                                    Emit(TABLECREATE_t, result, nullptr, nullptr);
+
+                                    auto elements = $2->exprs;
+                                    unsigned int elem_cnt = 0;
+                                    for (auto element : elements)
+                                        Emit(TABLESETELEM_t, result, new IntConstant(elem_cnt++), element);
+                                    $$ = new TableMakeElems(result, $2);    
+                                    DLOG("objectdef -> [elist]");
                                 }
-             elist ']'          {
-                                    // auto temp = NewTemp(VAR, nullptr);
+            | '[' indexed ']'   { 
 
-                                    // Emit(TABLECREATE_t, temp, nullptr, nullptr);
-
-                                    // auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
-                                    // top_tablemake_elems_expr->set_table(temp);
-
-                                    // unsigned int elem_cnt = 0;
-                                    // for (auto element : top_tablemake_elems_expr->get_elements())
-                                    //     Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element);
-
-                                    // tablemake_elems_exprs.pop(); 
-                                    // elist_flags.pop();
-
-                                    // $$ = top_tablemake_elems_expr; 
-                                    // DLOG("objectdef -> [elist]");
-                                }
-            | '['               {
-                                    // auto tablemake_pairs_expr = new TableMakePairs();
-                                    // tablemake_pairs_exprs.push(tablemake_pairs_expr);
-                                    // elist_flags.push(0);
-                                }
-            indexed ']'         { 
-                                    // auto temp = NewTemp(VAR, nullptr);
-
-                                    // Emit(TABLECREATE_t, temp, nullptr, nullptr);
-
-                                    // auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
-                                    // top_tablemake_pairs_expr->set_table(temp);
-
-                                    // for (auto pair : top_tablemake_pairs_expr->get_pairs())
-                                    //     Emit(TABLESETELEM_t, temp, pair.first, pair.second);
-
-                                    // tablemake_pairs_exprs.pop();
-                                    // elist_flags.pop();
-
-                                    // $$ = top_tablemake_pairs_expr;
                                     DLOG("objectdef -> [indexed]");
                                 }
             ;

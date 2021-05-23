@@ -1,13 +1,13 @@
 #include "../../include/expression/tablemake_elems.h"
 
-void    
-TableMakeElems:: AddElement(Expression* elem) {
-    PRECONDITION(elem != nullptr);
-    elements.push_front(elem);
+Elist*
+TableMakeElems::get_elements() const {
+    return elements;
 }
 
-std::list<Expression*>
-TableMakeElems::get_elements() const {
+Elist*
+TableMakeElems::verify_elements(Elist* elements) {
+    PRECONDITION(elements != nullptr);
     return elements;
 }
 
