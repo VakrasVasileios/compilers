@@ -109,6 +109,10 @@
     bool                        InLoop();
     bool                        InFuncDef();
 
+    void                        BackPatch(std::list<unsigned int> l_list, unsigned int q_label);
+    Symbol*                     ConcludeShortCircuit(BoolExpr* expr);
+
+    #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
     bool                        IsValidArithmetic(Expression* expr);
     bool                        IsValidAssign(Symbol* left_operand);
 %}
@@ -117,6 +121,8 @@
     char*                       stringValue;
     int                         intValue;
     double                      doubleValue;
+
+    unsigned int                quad_label;
 
     class FuncDefStmt*          funcdef;
 
@@ -142,6 +148,8 @@
 %token <stringValue>    STRING ID 
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
+
+%type <quad_label>    M
 
 %type <funcdef>         funcdef 
 
@@ -180,7 +188,7 @@ program:      stmts                 {
             ;
 
 stmts:      stmt                    {
-                                        ResetTemp();
+                                        //ResetTemp();
                                     }
             stmts                   {
                                         DLOG("stmts -> stmt stmts");
@@ -191,6 +199,10 @@ stmts:      stmt                    {
             ;
 
 stmt:         expr ';'              {
+                                        if ($1->get_type() == BOOL) {
+                                            ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                        }
+                                        ResetTemp();
                                         DLOG("stmt -> expr;");
                                     }
             | ifstmt                {
@@ -297,147 +309,202 @@ expr:         assignexpr            {
             | expr '>' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
-                                        PatchBranchQuad(greater_quad, greater_quad->label + 2);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
 
-                                        auto temp = NewTemp(VAR, nullptr);
+                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                            auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+                                            n_expr->true_list.push_back(greater_quad->label);
+                                            n_expr->false_list.push_back(jump_quad->label);
 
-                                        $$ = new BoolExpr(temp, expr1, expr2);
+                                            $$ = n_expr;
+                                        }
+
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
-                                        PatchBranchQuad(greater_equal_quad, greater_equal_quad->label + 2);
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
 
-                                        auto temp = NewTemp(VAR, nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                            n_expr->true_list.push_back(greater_equal_quad->label);
+                                            n_expr->false_list.push_back(jump_quad->label);
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            $$ = n_expr;
+                                        }
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr >= expr");
                                     }
             | expr '<' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
-                                        PatchBranchQuad(less_quad, less_quad->label + 2);
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
 
-                                        auto temp = NewTemp(VAR, nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                            n_expr->true_list.push_back(less_quad->label);
+                                            n_expr->false_list.push_back(jump_quad->label);
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            $$ = n_expr;
+                                        }
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
-                                        auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
-                                        PatchBranchQuad(less_equal_quad, less_equal_quad->label + 2);
+                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
+                                            auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
 
-                                        auto temp = NewTemp(VAR, nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                            n_expr->true_list.push_back(less_equal_quad->label);
+                                            n_expr->false_list.push_back(jump_quad->label);
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                            $$ = n_expr;
+                                        }
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
+                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+
                                         auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr);
-                                        PatchBranchQuad(equal_quad, equal_quad->label + 2);
 
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        auto temp = NewTemp(VAR, nullptr);
+                                        n_expr->true_list.push_back(equal_quad->label);
+                                        n_expr->false_list.push_back(jump_quad->label);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        $$ = n_expr;
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
-
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr == expr");
                                     }
             | expr NOTEQUAL expr    {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
 
+                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+
                                         auto not_equal_quad = Emit(IF_NOTEQ_t,  expr1, expr2, nullptr);
-                                        PatchBranchQuad(not_equal_quad, not_equal_quad->label + 2);
 
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 3);
 
-                                        auto temp = NewTemp(VAR, nullptr);
+                                        n_expr->true_list.push_back(not_equal_quad->label);
+                                        n_expr->false_list.push_back(jump_quad->label);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        $$ = n_expr;
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
-
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                        $$ = new BoolExpr(temp, expr1, expr2);
                                         DLOG("expr -> expr != expr");
                                     }
-            | expr AND expr         {
+            | expr AND              {
+                                        auto tmp_expr1 = $1;
+                                        if (tmp_expr1->get_type() != BOOL) {
+                                            BoolExpr* expr1 = new BoolExpr(tmp_expr1, nullptr, nullptr);
+
+                                            auto equal_quad = Emit(IF_EQ_t, tmp_expr1, new BoolConstant(true), nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+
+                                            expr1->true_list.push_back(equal_quad->label);
+                                            expr1->false_list.push_back(jump_quad->label);
+
+                                            $1 = expr1;
+                                        }
+                                    }
+            M expr                  {
                                         auto expr1 = $1;
-                                        auto expr2 = $3;
+                                        auto expr2 = $5;
+                                        auto q_label = $4;
+
+                                        if (expr2->get_type() != BOOL) {
+                                            expr2 = new BoolExpr($5, nullptr, nullptr);
+
+                                            auto equal_quad = Emit(IF_EQ_t, $5, new BoolConstant(true), nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+
+                                            BOOL_EXPR_CAST(expr2)->true_list.push_back(equal_quad->label);
+                                            BOOL_EXPR_CAST(expr2)->false_list.push_back(jump_quad->label);
+                                        }
+
+                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+
+                                        BackPatch(BOOL_EXPR_CAST(expr1)->true_list, q_label);
+                                        n_expr->true_list = BOOL_EXPR_CAST(expr2)->true_list;
+                                        n_expr->false_list = BOOL_EXPR_CAST(expr1)->false_list;
+                                        n_expr->false_list.merge(BOOL_EXPR_CAST(expr2)->false_list);
+
+                                        $$ = n_expr;
+
                                         DLOG("expr -> expr and expr");
                                     }
-            | expr OR expr          {
+            | expr OR               {
+                                        auto tmp_expr1 = $1;
+                                        if (tmp_expr1->get_type() != BOOL) {
+                                            BoolExpr* expr1 = new BoolExpr(tmp_expr1, nullptr, nullptr);
+
+                                            auto equal_quad = Emit(IF_EQ_t, tmp_expr1, new BoolConstant(true), nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+
+                                            expr1->true_list.push_back(equal_quad->label);
+                                            expr1->false_list.push_back(jump_quad->label);
+
+                                            $1 = expr1;
+                                        }
+                                    }
+            M expr                  {
                                         auto expr1 = $1;
-                                        auto expr2 = $3;
+                                        auto expr2 = $5;
+                                        auto q_label = $4;
+
+                                        if (expr2->get_type() != BOOL) {
+                                            expr2 = new BoolExpr($5, nullptr, nullptr);
+
+                                            auto equal_quad = Emit(IF_EQ_t, $5, new BoolConstant(true), nullptr);
+                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+
+                                            BOOL_EXPR_CAST(expr2)->true_list.push_back(equal_quad->label);
+                                            BOOL_EXPR_CAST(expr2)->false_list.push_back(jump_quad->label);
+                                        }
+
+                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+
+                                        BackPatch(BOOL_EXPR_CAST(expr1)->false_list, q_label);
+                                        n_expr->true_list = BOOL_EXPR_CAST(expr1)->true_list;
+                                        n_expr->true_list.merge(BOOL_EXPR_CAST(expr2)->true_list);
+                                        n_expr->false_list = BOOL_EXPR_CAST(expr2)->false_list;
+
+                                        $$ = n_expr;
+
                                         DLOG("expr -> assignexpr");
                                     }
             | term                  {
                                         $$ = $1;
                                         DLOG("expr -> term");
+                                    }
+            ;
+
+M:                                  {
+                                        $<quad_label>$ = NextQuadLabel();
                                     }
             ;
 
@@ -455,22 +522,27 @@ term:         '(' expr ')'          {
                                         DLOG("term -> -expr");
                                     }
             | NOT expr              {
-                                        auto equal_quad = Emit(IF_EQ_t, $2, new BoolConstant(true),  nullptr);
-                                        PatchBranchQuad(equal_quad, equal_quad->label + 4);
+                                        auto expr1 = $2;
+
+                                        if (expr1->get_type() != BOOL) {
+                                            expr1 = new BoolExpr($2, nullptr, nullptr);
+                                        }
+
+                                        BoolExpr* n_expr = new BoolExpr(expr1, nullptr, nullptr);
+
+                                        auto equal_quad = Emit(IF_EQ_t, expr1, new BoolConstant(true),  nullptr);
 
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 1);
+                                        
+                                        BOOL_EXPR_CAST(expr1)->true_list.push_back(equal_quad->label);
+                                        BOOL_EXPR_CAST(expr1)->false_list.push_back(jump_quad->label);
 
-                                        auto temp = NewTemp(VAR, nullptr);
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+                                        n_expr->true_list = BOOL_EXPR_CAST(expr1)->false_list;
+                                        n_expr->false_list = BOOL_EXPR_CAST(expr1)->true_list;
 
-                                        jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                        PatchJumpQuad(jump_quad, jump_quad->label + 2);
+                                        $$ = n_expr;
 
-                                        Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-                                        $$ = temp;
                                         DLOG("term -> not expr");
                                     }
             | PLUSPLUS lvalue       {
@@ -549,6 +621,9 @@ term:         '(' expr ')'          {
 assignexpr:   lvalue '=' expr       {
                                         auto symbol = $1;
                                         auto expr = $3;
+                                        if ($3->get_type() == BOOL) {
+                                            expr = ConcludeShortCircuit(BOOL_EXPR_CAST($3));
+                                        }
                                         if (IsValidAssign(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 Emit(TABLESETELEM_t, symbol, symbol->get_index(), expr);
@@ -707,6 +782,9 @@ methodcall: DOTDOT ID '(' elist ')' {
             ;
 
 multelist:  ',' expr multelist  {
+                                    if ($2->get_type() == BOOL) {
+                                        $2 = ConcludeShortCircuit(BOOL_EXPR_CAST($2));
+                                    }
                                     Elist* elist = new Elist();
                                     elist->exprs.merge($3->exprs);
                                     elist->exprs.push_back($2);
@@ -720,6 +798,9 @@ multelist:  ',' expr multelist  {
             ;
 
 elist:      expr multelist  {
+                                if ($1->get_type() == BOOL) {
+                                    $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                }
                                 Elist* elist = new Elist();
                                 elist->exprs.merge($2->exprs);
                                 elist->exprs.push_back($1);
@@ -793,6 +874,9 @@ indexed:    indexedelem multindexed {
             ;
 
 indexedelem:'{' expr ':' expr '}'   {
+                                        if ($4->get_type() == BOOL) {
+                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                        }
                                         // auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
                                         // top_tablemake_pairs_expr->AddPair($2, $4);
                                         // DLOG("indexedelem -> { expr : expr }"); 
@@ -964,6 +1048,10 @@ idlist:     ID      {
             ;
 
 ifstmt:     IF '(' expr ')'                 {
+                                                if ($3->get_type() == BOOL) {
+                                                    $3 = ConcludeShortCircuit(BOOL_EXPR_CAST($3));
+                                                }
+
                                                 auto if_stmt = new IfStmt();
                                                 if_stmts.push(if_stmt);
 
@@ -975,7 +1063,7 @@ ifstmt:     IF '(' expr ')'                 {
                                                 if_stmt->set_if_jump_quad(jump_quad);
                                             }
             stmt                            {
-                                                ResetTemp();
+                                                //ResetTemp();
                                             }
             elsestmt                        {
                                                 DLOG("ifstmt -> if (expr) stmt elsestmt"); 
@@ -998,7 +1086,7 @@ elsestmt:   ELSE            {
 
                                 if_stmts.pop();
 
-                                ResetTemp();
+                                //ResetTemp();
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
@@ -1020,6 +1108,10 @@ whilestmt:  WHILE               {
                                     loop_stmts.push(while_stmt);
                                 }
             '(' expr ')'        {
+                                    if ($4->get_type() == BOOL) {
+                                        $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                    }
+
                                     auto top_while_stmt = while_stmts.top();
 
                                     auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr);
@@ -1041,7 +1133,7 @@ whilestmt:  WHILE               {
                                     while_stmts.pop();
                                     loop_stmts.pop();
 
-                                    ResetTemp();
+                                    //ResetTemp();
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
             ;
@@ -1062,6 +1154,10 @@ forstmt:    FOR                                     {
                                                         top_for_stmt->set_logical_expr_first_quad_label(logical_expr_first_quad_label);
                                                     }
             expr ';'                                {
+                                                        if ($7->get_type() == BOOL) {
+                                                            $7 = ConcludeShortCircuit(BOOL_EXPR_CAST($7));
+                                                        }
+
                                                         auto top_for_stmt = for_stmts.top();
 
                                                         auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr);
@@ -1093,7 +1189,7 @@ forstmt:    FOR                                     {
                                                         for_stmts.pop();
                                                         loop_stmts.pop(); 
 
-                                                        ResetTemp();
+                                                        //ResetTemp();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }
             ;
@@ -1114,6 +1210,10 @@ returnstmt: RETURN      {
                         }
             | RETURN    
             expr ';'    {
+                            if ($2->get_type() == BOOL) {
+                                $2 = ConcludeShortCircuit(BOOL_EXPR_CAST($2));
+                            }
+
                             if (!InFuncDef()) 
                                 SignalError("Invalid return, used outside a function block");
                             else {
@@ -1135,6 +1235,9 @@ int yyerror(std::string yaccProvidedMessage) {
 }
  
 int main(int argc, char** argv) {
+    //Can't reach me for I am... above (LUL)
+    InitLibraryFunctions();
+
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -1144,7 +1247,6 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
-    InitLibraryFunctions();
     yyparse();
     #if defined LOGQUADS
         if (NoErrorSignaled()) {
@@ -1265,7 +1367,7 @@ unsigned int anonymus_funcs_counter = 0;
 
 std::string NewAnonymousFuncName() {
     std::string an = "$";
-    an += std::to_string(++anonymus_funcs_counter);
+    an += std::to_string(anonymus_funcs_counter++);
 
     return an;
 }
@@ -1461,5 +1563,33 @@ bool IsValidAssign(Symbol* left_operand) {
         return false;
     }
 
-    return true;
+    return true;                
+}
+
+void
+BackPatch(std::list<unsigned int> l_list, unsigned int q_label) {
+    for (unsigned int i : l_list) {
+        if (quads[i-1]->op == JUMP_t) {
+            PatchJumpQuad(quads[i-1], q_label);
+        }
+        else{
+            PatchBranchQuad(quads[i-1], q_label);
+        }
+    }
+}
+
+Symbol*
+ConcludeShortCircuit(BoolExpr* expr) {
+    auto temp = NewTemp(VAR, nullptr);
+
+    BackPatch(expr->true_list, NextQuadLabel());
+    Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
+
+    Quad* jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+    PatchJumpQuad(jump_quad, jump_quad->label + 2);
+
+    BackPatch(expr->false_list, NextQuadLabel());
+    Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
+
+    return temp;
 }

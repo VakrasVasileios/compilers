@@ -5,57 +5,57 @@
 std::string IopcodeToString(Iopcode _op) {
     switch(_op) {
         case ASSIGN_t:
-            return "ASSIGN";
+            return "assign";
         case ADD_t:
-            return "ADD";
+            return "add";
         case SUB_t:
-            return "SUB";
+            return "sub";
         case MUL_t:
-            return "MUL";
+            return "mul";
         case DIV_t:
-            return "DIV";
+            return "div";
         case MOD_t:
-            return "MOD";
+            return "mod";
         case UMINUS_t:
-            return "UMINUS";
+            return "uminus";
         case AND_t:
-            return "AND";
+            return "and";
         case OR_t:
-            return "OR";
+            return "or";
         case NOT_t:
-            return "NOT";
+            return "not";
         case JUMP_t:
-            return "JUMP";    
+            return "jump";    
         case IF_EQ_t:
-            return "IF_EQ";
+            return "if_eq";
         case IF_NOTEQ_t:
-            return "IF_NOTEQ";
+            return "if_noteq";
         case IF_LESSEQ_t:
-            return "IF_LESSEQ";
+            return "if_lesseq";
         case IF_GREATEREQ_t:
-            return "IF_GREATEREQ";
+            return "if_greatereq";
         case IF_LESS_t:
-            return "IF_LESS";
+            return "if_less";
         case IF_GREATER_t:
-            return "IF_GREATER";
+            return "if_greater";
         case CALL_t:
-            return "CALL";           
+            return "call";           
         case PARAM_t:
-            return "PARAM";          
+            return "param";          
         case RET_t:
-            return "RETURN";  
+            return "return";  
         case GETRETVAL_t:
-            return "GETRETVAL";
+            return "getretval";
         case FUNCSTART_t:
-            return "FUNCSTART";     
+            return "funcstart";     
         case FUNCEND_t:
-            return "FUNCEND";
+            return "funcend";
         case TABLECREATE_t:
-            return "TABLECREATE";    
+            return "tablecreate";    
         case TABLEGETELEM_t:
-            return "TABLEGETELEM";
+            return "tablegetelem";
         case TABLESETELEM_t:
-            return "TABLESETELEM";
+            return "tablesetelem";
         default:
             assert(false);
     }

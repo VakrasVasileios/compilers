@@ -3,6 +3,7 @@
 
 #include "binary_expr.h"
 #include "../../util/contract/contract.h"
+#include <list>
 
 /**
  * @brief A boolean logical binary expression.
@@ -23,7 +24,11 @@ public:
      * @brief Destroys this Bool Expr object.
      * 
      */
-    ~BoolExpr() = default; 
+    ~BoolExpr() = default;
+
+    std::list<unsigned int> true_list;
+    std::list<unsigned int> false_list;
+    
 };
 
 #endif 

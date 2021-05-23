@@ -113,18 +113,18 @@ TEST_F(SyntaxAnalysisSuite, Error11) {
 
  TEST_F(SyntaxAnalysisSuite, Anonymous) {
    expected = libfunc_out;
-   expected += "[user function] \"$1\" (line 5) (scope 0)\n"
-            "[user function] \"$5\" (line 28) (scope 0)\n"
+   expected += "[user function] \"$0\" (line 5) (scope 0)\n"
+            "[user function] \"$4\" (line 28) (scope 0)\n"
             "-----------     Scope #1     -----------\n"
             "[formal variable] \"x\" (line 5) (scope 1)\n"
             "[formal variable] \"AnonymousOne\" (line 5) (scope 1)\n"
-            "[user function] \"$2\" (line 10) (scope 1)\n"
+            "[user function] \"$1\" (line 10) (scope 1)\n"
             "[formal variable] \"x\" (line 28) (scope 1)\n"
             "[formal variable] \"AnonymousFive\" (line 28) (scope 1)\n"
             "-----------     Scope #2     -----------\n"
             "[formal variable] \"AnonymousTwo\" (line 10) (scope 2)\n"
-            "[user function] \"$3\" (line 15) (scope 2)\n"
-            "[user function] \"$4\" (line 20) (scope 2)\n"
+            "[user function] \"$2\" (line 15) (scope 2)\n"
+            "[user function] \"$3\" (line 20) (scope 2)\n"
             "-----------     Scope #3     -----------\n"
             "[formal variable] \"AnonymousThree\" (line 15) (scope 3)\n"
             "[formal variable] \"AnonymousFour\" (line 20) (scope 3)\n";
