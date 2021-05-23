@@ -25,6 +25,7 @@
     #include "../include/program_stack.h"
     #include "../include/instruction_opcodes.h"
     #include "../include/quad.h"
+    #include "../include/stmt.h"
     #include "../include/for_stmt.h"
     #include "../include/while_stmt.h"
     #include "../include/loop_stmt.h"
@@ -66,6 +67,7 @@
     std::stack<TableMakeElems*> tablemake_elems_exprs;
     std::stack<TableMakePairs*> tablemake_pairs_exprs;
     std::stack<unsigned int>    elist_flags;
+    std::list<StmtType>         stmt_stack;
 
     bool                        NoErrorSignaled();
     void                        SignalError(std::string msg);
@@ -116,6 +118,7 @@
     #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
     bool                        IsValidArithmetic(Expression* expr);
     bool                        IsValidAssign(Symbol* left_operand);
+    bool                        IsValidBreakContinue();
 %}
 
 %union {                                                    
@@ -211,7 +214,7 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> returnstmt");
                                     }
             | BREAK ';'             { 
-                                        if(!InLoop()) {
+                                        if (!IsValidBreakContinue()) {
                                             SignalError("invalid keyword BREAK outside of loop");
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -223,7 +226,7 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
-                                        if(!InLoop()) {
+                                        if (!IsValidBreakContinue()) {
                                             SignalError("invalid keyword CONTINUE outside of loop");
                                         } else {
                                             auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
@@ -530,11 +533,10 @@ term:         '(' expr ')'          {
                                         BOOL_EXPR_CAST(expr1)->true_list.push_back(equal_quad->label);
                                         BOOL_EXPR_CAST(expr1)->false_list.push_back(jump_quad->label);
 
-
                                         n_expr->true_list = BOOL_EXPR_CAST(expr1)->false_list;
                                         n_expr->false_list = BOOL_EXPR_CAST(expr1)->true_list;
 
-                                        $$ = n_expr;
+                                        $$ = ConcludeShortCircuit(n_expr);
 
                                         DLOG("term -> not expr");
                                     }
@@ -957,6 +959,7 @@ funcdef:    FUNCTION        {
                             }
             '(' idlist ')'  {
                                 HideLowerScopes();
+                                stmt_stack.push_back(FUNC_t);
                             }
             block           {
                                 auto top_func_def = func_def_stmts.top();
@@ -970,6 +973,8 @@ funcdef:    FUNCTION        {
                                 program_stack.ActivateLowerScopes();
 
                                 func_def_stmts.pop();
+
+                                stmt_stack.pop_back();
 
                                 $<funcdef>$ = top_func_def;
                                 DLOG("funcdef -> function (idlist) block "); 
@@ -1008,6 +1013,7 @@ funcdef:    FUNCTION        {
                             }
             '(' idlist ')'  {
                                 HideLowerScopes();
+                                stmt_stack.push_back(FUNC_t);
                             }
             block           { 
                                 auto top_func_def =  func_def_stmts.top();
@@ -1020,6 +1026,8 @@ funcdef:    FUNCTION        {
                                 func_def_stmts.pop();
 
                                 program_stack.ActivateLowerScopes();
+
+                                stmt_stack.pop_back();
 
                                 $<funcdef>$ = top_func_def;
                                 DLOG("funcdef -> function id (idlist) block"); 
@@ -1168,6 +1176,8 @@ whilestmt:  WHILE               {
 
                                     top_while_stmt->PushLoopQuad(branch_quad);
                                     top_while_stmt->PushLoopQuad(exit_quad);
+
+                                    stmt_stack.push_back(LOOP_t);
                                 }
             stmt                { 
                                     auto top_while_stmt = while_stmts.top();
@@ -1181,6 +1191,8 @@ whilestmt:  WHILE               {
 
                                     while_stmts.pop();
                                     loop_stmts.pop();
+
+                                    stmt_stack.pop_back();
 
                                     //ResetTemp();
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
@@ -1225,6 +1237,7 @@ forstmt:    FOR                                     {
                                                         auto top_for_stmt = for_stmts.top();
                                                         auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                                         top_for_stmt->PushLoopQuad(loop_quad);
+                                                        stmt_stack.push_back(LOOP_t);
                                                     }
             stmt                                    {
                                                         auto top_for_stmt = for_stmts.top();
@@ -1237,6 +1250,8 @@ forstmt:    FOR                                     {
 
                                                         for_stmts.pop();
                                                         loop_stmts.pop(); 
+
+                                                        stmt_stack.pop_back();
 
                                                         //ResetTemp();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
@@ -1623,4 +1638,9 @@ ConcludeShortCircuit(BoolExpr* expr) {
     Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
 
     return temp;
+}
+
+bool
+IsValidBreakContinue() {
+    return (stmt_stack.empty() || stmt_stack.back() != LOOP_t) ? false : true;
 }
