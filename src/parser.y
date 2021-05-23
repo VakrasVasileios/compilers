@@ -65,6 +65,7 @@
     std::stack<Call*>           call_exprs;
     std::stack<TableMakeElems*> tablemake_elems_exprs;
     std::stack<TableMakePairs*> tablemake_pairs_exprs;
+    std::stack<unsigned int>    elist_flags;
 
     bool                        NoErrorSignaled();
     void                        SignalError(std::string msg);
@@ -662,10 +663,11 @@ call:       call  '(' elist ')'             {
                                             }
             | lvalue                        {
                                                 
-                                                auto called_symbol = $1;
+                                                auto called_symbol = EmitIfTableItem($1);
                                                 auto call = new Call(called_symbol);
                                                 call_exprs.push(call);
                                                 $<call>$ = call;
+                                                elist_flags.push(1);
                                             }
             callsuffix                      {
                                                 auto top_call = call_exprs.top();
@@ -687,20 +689,22 @@ call:       call  '(' elist ')'             {
                                                         LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
                                                 }
                                                 call_exprs.pop();
+                                                elist_flags.pop();
 
                                                 $<call>$ = top_call;
                                                 DLOG("call -> lvalue callsuffix");
                                             }
             | '(' funcdef ')'               {                       
                                                 auto func_def = $2;                         
-                                                auto called_symbol = func_def->get_sym();
+                                                auto called_symbol = EmitIfTableItem(func_def->get_sym());
                                                 auto call = new Call(called_symbol);
                                                 call_exprs.push(call);
+                                                elist_flags.push(1);
                                                 $<call>$ = call;
                                             }
             '(' elist ')'                   {
                                                 auto top_call = call_exprs.top();
-                                                auto called_symbol = top_call->get_called_symbol();
+                                                auto called_symbol = EmitIfTableItem(top_call->get_called_symbol());
                                                 auto temp_value = NewTemp(VAR, nullptr);
 
                                                 Emit(CALL_t, called_symbol, nullptr, nullptr);
@@ -718,6 +722,7 @@ call:       call  '(' elist ')'             {
                                                 }
 
                                                 call_exprs.pop();
+                                                elist_flags.pop();
 
                                                 $<call>$ = top_call;
                                                 DLOG("call -> (funcdef)(elist)");
@@ -779,6 +784,7 @@ elist:      expr multelist  {
 objectdef:  '['                 {
                                     auto tablemake_elems_expr = new TableMakeElems();
                                     tablemake_elems_exprs.push(tablemake_elems_expr);
+                                    elist_flags.push(0);
                                 }
              elist ']'          {
                                     auto temp = NewTemp(VAR, nullptr);
@@ -793,6 +799,7 @@ objectdef:  '['                 {
                                         Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element);
 
                                     tablemake_elems_exprs.pop(); 
+                                    elist_flags.pop();
 
                                     $$ = top_tablemake_elems_expr; 
                                     DLOG("objectdef -> [elist]");
@@ -800,6 +807,7 @@ objectdef:  '['                 {
             | '['               {
                                     auto tablemake_pairs_expr = new TableMakePairs();
                                     tablemake_pairs_exprs.push(tablemake_pairs_expr);
+                                    elist_flags.push(0);
                                 }
             indexed ']'         { 
                                     auto temp = NewTemp(VAR, nullptr);
@@ -813,6 +821,7 @@ objectdef:  '['                 {
                                         Emit(TABLESETELEM_t, temp, pair.first, pair.second);
 
                                     tablemake_pairs_exprs.pop();
+                                    elist_flags.pop();
 
                                     $$ = top_tablemake_pairs_expr;
                                     DLOG("objectdef -> [indexed]");
@@ -1438,11 +1447,15 @@ inline bool InFuncDef() {
 } 
 
 inline bool InCall() {
-    return call_exprs.size() != 0;
+    if (elist_flags.empty()) 
+        return false;
+    return elist_flags.top() == 1;
 }
 
 inline bool InTableMakeElems() { 
-    return tablemake_elems_exprs.size() != 0; 
+    if (elist_flags.empty()) 
+        return false;
+    return elist_flags.top() == 0;
 }
 
 bool IsValidArithmetic(Expression* expr) {
