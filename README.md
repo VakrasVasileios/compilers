@@ -12,21 +12,42 @@ Soultatos Stefanos
 
 ## Usage
 
-* <b>build</b>
-    * <b>mkdir&nbsp;&nbsp;&nbsp;&nbsp;build&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-    * <b>cd&nbsp;&nbsp;&nbsp;&nbsp;build&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-    * <b>cmake&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
-    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;dlog&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a debug version of the parser tree traversal
-    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;phase3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table
-    output and the quad.txt file, at the /build directory, for the phase 3
-    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;r_syntax_analysis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table
-    output (includes colored error/warning messages and temp values)
-    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;r_intermediate_code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the intermediate code (includes colored error/warning messages)
-    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;d_syntax_analysis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a debug version for generating the symbol table
+* To build the project use:
+    ```bash
+    mkdir build
+    cd build
+    cmake ..
+    ```
+    * To build a debug version of the parser tree traversal 
+        ```bash
+        make dlog
+        ```
+    * To build a release version for generating the symbol table output and the quad.txt file, at the /build directory, for the phase 3
+        ```bash
+        make phase3
+        ```
+    * To build a release version for generating the symbol table output (includes colored error/warning messages and temp values)
+        ```bash
+        make r_syntax_analysis
+        ```
+    * To build a release version for generating the intermediate code (includes colored error/warning messages)
+        ```bash
+        make r_intermediate_code
+        ```
+    * To build a debug version for generating the symbol table
     output
-    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;d_intermediate_code&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a debug version for generating the intermediate code
+        ```bash
+        make d_syntax_analysis
+        ```
+    * To build a debug version for generating the intermediate code 
+        ```bash
+        make d_intermediate_code
+        ```
 
 * <b>run</b>   
-    * <b>./[exec]&nbsp;&nbsp;&nbsp;&nbsp;[src_file]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to compile a src file written in alpha language
+    * To compile a src file written in alpha language 
+        ```bash
+        ./[exec] [src_file]
+        ```
      
 
