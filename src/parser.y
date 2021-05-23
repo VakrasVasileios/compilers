@@ -387,13 +387,22 @@ expr:         assignexpr            {
                                         }
                                         DLOG("expr -> expr <= expr");
                                     }
-            | expr EQUAL expr       {
+            | expr EQUAL            {
+                                        if ($1->get_type() == BOOL) {
+                                            $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                        }
+                                    }
+            expr                    {
+                                        if ($4->get_type() == BOOL) {
+                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                        }
+
                                         auto expr1 = $1;
-                                        auto expr2 = $3;
+                                        auto expr2 = $4;
 
                                         BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
-                                        auto equal_quad = Emit(IF_EQ_t, $1, $3, nullptr);
+                                        auto equal_quad = Emit(IF_EQ_t, expr1, expr2, nullptr);
 
                                         auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
 
@@ -404,9 +413,18 @@ expr:         assignexpr            {
 
                                         DLOG("expr -> expr == expr");
                                     }
-            | expr NOTEQUAL expr    {
+            | expr NOTEQUAL         {
+                                        if ($1->get_type() == BOOL) {
+                                            $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                        }
+                                    }
+            expr                    {
+                                        if ($4->get_type() == BOOL) {
+                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                        }
+
                                         auto expr1 = $1;
-                                        auto expr2 = $3;
+                                        auto expr2 = $4;
 
                                         BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
@@ -544,7 +562,7 @@ term:         '(' expr ')'          {
                                         n_expr->true_list = BOOL_EXPR_CAST(expr1)->false_list;
                                         n_expr->false_list = BOOL_EXPR_CAST(expr1)->true_list;
 
-                                        $$ = ConcludeShortCircuit(n_expr);
+                                        $$ = n_expr;
 
                                         DLOG("term -> not expr");
                                     }
