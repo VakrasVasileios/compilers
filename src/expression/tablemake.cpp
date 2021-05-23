@@ -5,12 +5,6 @@ TableMake:: get_table() const {
     return table;
 }
 
-void
-TableMake:: set_table(Symbol* table_) {
-    PRECONDITION(table_ != nullptr);
-    table = table_;
-}
-
 std::string
 TableMake::to_string() const {
     return table->to_string();
@@ -19,5 +13,11 @@ TableMake::to_string() const {
 std::ostream&
 TableMake::LogExpression(std::ostream& os) const {
     return os << table->get_id();
+}
+
+Symbol*
+TableMake:: verify_table(Symbol* table) {
+    PRECONDITION(table != nullptr);
+    return table;
 }
 

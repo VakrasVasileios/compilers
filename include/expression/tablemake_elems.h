@@ -2,7 +2,7 @@
 #define TABLEMAKEELEMS_H
 
 #include "tablemake.h"
-#include <list>
+#include "elist.h"
 #include "../../util/contract/contract.h"
 
 /**
@@ -15,7 +15,7 @@ public:
      * @brief Constructs a new TableMakeElems object.
      * 
      */
-    TableMakeElems() = default;
+    TableMakeElems(Symbol* table, Elist* elist) : TableMake(table), elements(verify_elements(elist)) {};
     /**
      * @brief Destroys this TableMakeElems object.
      * 
@@ -28,17 +28,10 @@ public:
      * @return a read access to this TableMakeElems list
      * of inserted elements
      */
-    std::list<Expression*>    get_elements() const;
-    /**
-     * @brief Adds an element to this TableMakeElems list
-     * of inserted elements.
-     * 
-     * @param elem the element to add to this TableMakeElems list
-     * of inserted elements, not null
-     */
-    void                      AddElement(Expression* elem);
+    Elist*  get_elements() const;
 private:
-    std::list<Expression*> elements;
+    Elist*  elements;
+    Elist*  verify_elements(Elist* elements);
 };
 
 

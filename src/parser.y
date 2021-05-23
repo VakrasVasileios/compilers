@@ -17,9 +17,15 @@
     #include "../include/expression/double_constant.h"
     #include "../include/expression/int_constant.h"
     #include "../include/expression/numeric_constant.h"
+    #include "../include/expression/elist.h"
     #include "../include/expression/call.h"
+    #include "../include/expression/call_suffix.h"
+    #include "../include/expression/norm_call.h"
+    #include "../include/expression/method_call.h"
     #include "../include/expression/tablemake.h"
     #include "../include/expression/tablemake_elems.h"
+    #include "../include/expression/indexed_elem.h"
+    #include "../include/expression/indexed.h"
     #include "../include/expression/tablemake_pairs.h"
     #include "../include/symbol_table.h"
     #include "../include/program_stack.h"
@@ -45,9 +51,10 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define OUT_OF_SCOPE   -1
-    #define LIB_FUNC_LINE   0
-    #define TEMP_LINE       0
+    #define OUT_OF_SCOPE        -1
+    #define LIB_FUNC_LINE       0
+    #define TEMP_LINE           0
+    #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
 
     const unsigned int          global_scope = 0;
     unsigned int                current_scope = OUT_OF_SCOPE;
@@ -63,10 +70,7 @@
     std::stack<ForStmt*>        for_stmts;
     std::stack<FuncDefStmt*>    func_def_stmts;  
     std::stack<IfStmt*>         if_stmts;
-    std::stack<Call*>           call_exprs;
-    std::stack<TableMakeElems*> tablemake_elems_exprs;
-    std::stack<TableMakePairs*> tablemake_pairs_exprs;
-    std::stack<unsigned int>    elist_flags;
+
     std::list<StmtType>         stmt_stack;
 
     bool                        NoErrorSignaled();
@@ -93,6 +97,7 @@
 
     Symbol*                     EmitIfTableItem(Symbol* sym);
     Symbol*                     MemberItem(Symbol* sym, const char* id);
+    Call*                       MakeCall(Symbol* called_symbol, CallSuffix* call_suffix);
 
     unsigned int                NextQuadLabel();
 
@@ -106,17 +111,16 @@
     bool                        IsGlobalVar(Symbol* symbol);
     bool                        IsAtCurrentScope(Symbol* symbol);
     bool                        IsTableItem(Symbol* symbol);
+    bool                        IsMethodCall(CallSuffix* call_suffix);
 
     bool                        InLoop();
     bool                        InFuncDef();
-    bool                        InCall();
-    bool                        InTableMakeElems();
 
     void                        BackPatch(std::list<unsigned int> l_list, unsigned int q_label);
     Symbol*                     ConcludeShortCircuit(BoolExpr* expr);
 
-    #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
-    bool                        IsValidArithmetic(Expression* expr);
+    bool                        IsValidArithmeticOp(Expression* expr);
+    bool                        IsValidArithmeticComp(Expression* expr);
     bool                        IsValidAssign(Symbol* left_operand);
     bool                        IsValidBreakContinue();
 %}
@@ -136,8 +140,14 @@
     class Primary*              prim;
     class Constant*             con;
     class Call*                 call;
+    class CallSuffix*           call_suffix;
+    class NormCall*             norm_call;
+    class MethodCall*           method_call;
+    class Elist*                elist;
     class Symbol*               sym;
     class TableMake*            tablemake;
+    class Indexed*              indexed;
+    class IndexedElem*          indexed_elem; 
 }
 
 %start program
@@ -161,7 +171,13 @@
 %type <con>             const
 %type <sym>             lvalue member
 %type <call>            call
+%type <call_suffix>     callsuffix
+%type <norm_call>       normcall
+%type <method_call>     methodcall
+%type <elist>           elist multelist
 %type <tablemake>       objectdef
+%type <indexed>         indexed multindexed
+%type <indexed_elem>    indexedelem
 
 %right      '='
 %left       OR
@@ -255,7 +271,7 @@ expr:         assignexpr            {
             | expr '+' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(ADD_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -265,7 +281,7 @@ expr:         assignexpr            {
             | expr '-' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(SUB_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -275,7 +291,7 @@ expr:         assignexpr            {
             | expr '*' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MUL_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -285,7 +301,7 @@ expr:         assignexpr            {
             | expr '/' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(DIV_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -295,7 +311,7 @@ expr:         assignexpr            {
             | expr '%' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MOD_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -305,9 +321,7 @@ expr:         assignexpr            {
             | expr '>' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
-
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
@@ -319,14 +333,12 @@ expr:         assignexpr            {
 
                                             $$ = n_expr;
                                         }
-
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
@@ -344,8 +356,7 @@ expr:         assignexpr            {
             | expr '<' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
@@ -357,14 +368,12 @@ expr:         assignexpr            {
 
                                             $$ = n_expr;
                                         }
-
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
@@ -376,7 +385,6 @@ expr:         assignexpr            {
 
                                             $$ = n_expr;
                                         }
-
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
@@ -510,7 +518,7 @@ term:         '(' expr ')'          {
                                     }
             | '-' expr %prec UMINUS {
                                         auto symbol = $2;
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(UMINUS_t, temp, symbol, nullptr);
                                             $$ = symbol;
@@ -543,7 +551,7 @@ term:         '(' expr ')'          {
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
                                         Symbol* result;
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(ADD_t, result, result, new IntConstant(1));
@@ -560,7 +568,7 @@ term:         '(' expr ')'          {
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
                                         auto result = NewTemp(VAR, nullptr);
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 auto val = EmitIfTableItem(symbol);
                                                 Emit(ASSIGN_t, result, val, nullptr);
@@ -576,7 +584,7 @@ term:         '(' expr ')'          {
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
                                         Symbol* result;
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(SUB_t, result, result, new IntConstant(1));
@@ -593,7 +601,7 @@ term:         '(' expr ')'          {
             | lvalue MINUSMINUS     { 
                                         auto symbol = $1;
                                         auto result = NewTemp(VAR, nullptr);
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 auto val = EmitIfTableItem(symbol);
                                                 Emit(ASSIGN_t, result, val, nullptr);
@@ -736,90 +744,47 @@ member:     lvalue '.' ID           {
             ;
 
 call:       call  '(' elist ')'             {
+                                                auto called_symbol = $1->get_called_symbol();
+                                                $$ = MakeCall(called_symbol, new NormCall($3));
                                                 DLOG("call -> call(elist)");
                                             }
-            | lvalue                        {
-                                                
-                                                auto called_symbol = EmitIfTableItem($1);
-                                                auto call = new Call(called_symbol);
-                                                call_exprs.push(call);
-                                                $<call>$ = call;
-                                                elist_flags.push(1);
-                                            }
-            callsuffix                      {
-                                                auto top_call = call_exprs.top();
-                                                auto called_symbol = top_call->get_called_symbol();
-
-                                                auto temp_value = NewTemp(VAR, nullptr);
-                                                
-                                                Emit(CALL_t, called_symbol, nullptr, nullptr);    
-                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
-
-                                                top_call->set_ret_val(temp_value);
-
-                                                if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
-                                                    auto args_num = called_symbol->get_formal_arguments().size();
-                                                    auto call_args_num = top_call->get_params().size();
-                                                    if (call_args_num < args_num)
-                                                        SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
-                                                    else if (call_args_num > args_num)
-                                                        LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
+            | lvalue  callsuffix            {
+                                                auto called_symbol = $1;
+                                                auto call_suffix = $2;
+                                                called_symbol = EmitIfTableItem(called_symbol);
+                                                if (IsMethodCall(call_suffix)) {
+                                                    auto t = called_symbol;
+                                                    called_symbol = EmitIfTableItem(MemberItem(t, call_suffix->get_name().c_str()));
+                                                    call_suffix->InsertArg(t);
                                                 }
-                                                call_exprs.pop();
-                                                elist_flags.pop();
-
-                                                $<call>$ = top_call;
-                                                DLOG("call -> lvalue callsuffix");
+                                                $$ = MakeCall(called_symbol, call_suffix);
                                             }
-            | '(' funcdef ')'               {                       
-                                                auto func_def = $2;                         
-                                                auto called_symbol = EmitIfTableItem(func_def->get_sym());
-                                                auto call = new Call(called_symbol);
-                                                call_exprs.push(call);
-                                                elist_flags.push(1);
-                                                $<call>$ = call;
-                                            }
-            '(' elist ')'                   {
-                                                auto top_call = call_exprs.top();
-                                                auto called_symbol = EmitIfTableItem(top_call->get_called_symbol());
-                                                auto temp_value = NewTemp(VAR, nullptr);
-
-                                                Emit(CALL_t, called_symbol, nullptr, nullptr);
-                                                Emit(GETRETVAL_t, temp_value, nullptr, nullptr);
-
-                                                top_call->set_ret_val(temp_value);
-
-                                                if (IsLibraryFunction(called_symbol) || IsUserFunction(called_symbol)) {
-                                                    auto args_num = called_symbol->get_formal_arguments().size();
-                                                    auto call_args_num = top_call->get_params().size();
-                                                    if (call_args_num < args_num)
-                                                        SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
-                                                    else if (call_args_num > args_num)
-                                                        LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
-                                                }
-
-                                                call_exprs.pop();
-                                                elist_flags.pop();
-
-                                                $<call>$ = top_call;
+            | '(' funcdef ')'  
+                '(' elist ')'               {
+                                                auto called_symbol = $2->get_sym();
+                                                $$ = MakeCall(called_symbol, new NormCall($5)); 
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
             ;
 
 callsuffix: normcall        {
+                                $$ = $1;
                                 DLOG("callsuffix -> normcall");
                             }
             | methodcall    {
+                                $$ = $1;
                                 DLOG("callsuffix -> methodcall");
                             }
             ;
 
 normcall:   '(' elist ')'   {
+                                $$ = new NormCall($2);
                                 DLOG("normcall -> (elist)"); 
                             }
             ;
 
 methodcall: DOTDOT ID '(' elist ')' {
+                                        $$ = new MethodCall(std::string($2), $4);
                                         DLOG("methodcall -> ..id(elist)");
                                     }
             ;
@@ -828,18 +793,14 @@ multelist:  ',' expr multelist  {
                                     if ($2->get_type() == BOOL) {
                                         $2 = ConcludeShortCircuit(BOOL_EXPR_CAST($2));
                                     }
-                                    if (InCall()) {
-                                        auto top_call = call_exprs.top();
-                                        top_call->IncludeParameter($2);
-                                        Emit(PARAM_t, $2, nullptr, nullptr);
-                                    } 
-                                    if (InTableMakeElems()) {
-                                        auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
-                                        top_tablemake_elems_expr->AddElement($2);
-                                    }
+                                    Elist* elist = new Elist();
+                                    elist->exprs.merge($3->exprs);
+                                    elist->exprs.push_back($2);
+                                    $$ = elist;
                                     DLOG("multelist -> ,expr multelist");
                                 }
             |                   {
+                                    $$ = new Elist();
                                     DLOG("multelist -> EMPTY");
                                 }
             ;
@@ -848,78 +809,60 @@ elist:      expr multelist  {
                                 if ($1->get_type() == BOOL) {
                                     $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                 }
-                                if (InCall()) {
-                                    auto top_call = call_exprs.top();
-                                    top_call->IncludeParameter($1);
-                                    Emit(PARAM_t, $1, nullptr, nullptr);
-                                }
-                                if (InTableMakeElems()) {
-                                    auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
-                                    top_tablemake_elems_expr->AddElement($1);
-                                }        
+                                Elist* elist = new Elist();
+                                elist->exprs.merge($2->exprs);
+                                elist->exprs.push_back($1);
+                                $$ = elist; 
                                 DLOG("elist -> expr multelist");
                             }
             |               {
+                                $$ = new Elist();
                                 DLOG("elist -> EMPTY");
                             }
             ;
 
-objectdef:  '['                 {
-                                    auto tablemake_elems_expr = new TableMakeElems();
-                                    tablemake_elems_exprs.push(tablemake_elems_expr);
-                                    elist_flags.push(0);
-                                }
-             elist ']'          {
-                                    auto temp = NewTemp(VAR, nullptr);
+objectdef:  '[' elist ']'       {
+                                    auto result = NewTemp(VAR, nullptr);
+                                    Emit(TABLECREATE_t, result, nullptr, nullptr);
 
-                                    Emit(TABLECREATE_t, temp, nullptr, nullptr);
-
-                                    auto top_tablemake_elems_expr = tablemake_elems_exprs.top();
-                                    top_tablemake_elems_expr->set_table(temp);
-
+                                    auto elements = $2->exprs;
                                     unsigned int elem_cnt = 0;
-                                    for (auto element : top_tablemake_elems_expr->get_elements())
-                                        Emit(TABLESETELEM_t, temp, new IntConstant(elem_cnt++), element);
-
-                                    tablemake_elems_exprs.pop(); 
-                                    elist_flags.pop();
-
-                                    $$ = top_tablemake_elems_expr; 
+                                    elements.reverse();
+                                    for (auto element : elements)
+                                        Emit(TABLESETELEM_t, result, new IntConstant(elem_cnt++), element);
+                                    $$ = new TableMakeElems(result, $2);    
                                     DLOG("objectdef -> [elist]");
                                 }
-            | '['               {
-                                    auto tablemake_pairs_expr = new TableMakePairs();
-                                    tablemake_pairs_exprs.push(tablemake_pairs_expr);
-                                    elist_flags.push(0);
-                                }
-            indexed ']'         { 
-                                    auto temp = NewTemp(VAR, nullptr);
-
-                                    Emit(TABLECREATE_t, temp, nullptr, nullptr);
-
-                                    auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
-                                    top_tablemake_pairs_expr->set_table(temp);
-
-                                    for (auto pair : top_tablemake_pairs_expr->get_pairs())
-                                        Emit(TABLESETELEM_t, temp, pair.first, pair.second);
-
-                                    tablemake_pairs_exprs.pop();
-                                    elist_flags.pop();
-
-                                    $$ = top_tablemake_pairs_expr;
+            | '[' indexed ']'   {
+                                    auto result = NewTemp(VAR, nullptr);
+                                    Emit(TABLECREATE_t, result, nullptr, nullptr);
+                                    auto indexedelems = $2->pairs;
+                                    indexedelems.reverse();
+                                    for (auto indexedelem : indexedelems) 
+                                        Emit(TABLESETELEM_t, result, indexedelem->pair.first, indexedelem->pair.second);
+                                    $$ = new TableMakePairs(result, $2);    
                                     DLOG("objectdef -> [indexed]");
                                 }
             ;
 
 multindexed:',' indexedelem multindexed {
+                                            Indexed* indexed = new Indexed();
+                                            indexed->pairs.merge($3->pairs);
+                                            indexed->pairs.push_back($2);
+                                            $$ = indexed;
                                             DLOG("multindexed -> , indexedelem multidexed"); 
                                         }
             |                           {
+                                            $$ = new Indexed();
                                             DLOG("elsestmt -> EMPTY");
                                         }
             ;
 
 indexed:    indexedelem multindexed {
+                                        Indexed* indexed = new Indexed();
+                                        indexed->pairs.merge($2->pairs);
+                                        indexed->pairs.push_back($1);
+                                        $$ = indexed; 
                                         DLOG("indexed -> indexedelem multidexed"); 
                                     }
             ;
@@ -928,9 +871,7 @@ indexedelem:'{' expr ':' expr '}'   {
                                         if ($4->get_type() == BOOL) {
                                             $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
                                         }
-                                        auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
-                                        top_tablemake_pairs_expr->AddPair($2, $4);
-                                        DLOG("indexedelem -> { expr : expr }"); 
+                                        $$ = new IndexedElem(std::pair<Expression*, Expression*>($2, $4));
                                     }
             ;
 
@@ -1512,6 +1453,36 @@ Symbol* MemberItem(Symbol* sym, const char* id) {
     return DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
 }
 
+void checkValidCall(Symbol* called_symbol, std::list<Expression*> params) {
+    assert (called_symbol != nullptr);
+    if (IsUserFunction(called_symbol)) {
+        auto call_args_num = params.size();
+        auto func_def_args_num = called_symbol->get_formal_arguments().size();
+        if (call_args_num < func_def_args_num) 
+            SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
+        else if (call_args_num > func_def_args_num) 
+            LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
+    }
+}
+
+Call* MakeCall(Symbol* called_symbol, CallSuffix* call_suffix) {
+    assert (called_symbol != nullptr);
+    assert (call_suffix != nullptr);
+    auto params = call_suffix->get_elist()->exprs;
+
+    checkValidCall(called_symbol, params);
+
+    called_symbol = EmitIfTableItem(called_symbol);
+    for (auto param : params)
+        Emit(PARAM_t, param, nullptr, nullptr);
+
+    auto return_value = NewTemp(VAR, nullptr);
+    Emit(CALL_t, called_symbol, nullptr, nullptr);
+    Emit(GETRETVAL_t, return_value, nullptr, nullptr);
+
+    return new Call(called_symbol, call_suffix, return_value); 
+}
+
 unsigned int NextQuadLabel() {
     if (quads.size() == 0)
         return 1;
@@ -1554,6 +1525,10 @@ inline bool IsAtCurrentScope(Symbol* symbol) {
 inline bool IsTableItem(Symbol* symbol) {
     return symbol->get_type() == TABLE_ITEM;
 }
+
+inline bool IsMethodCall(CallSuffix* call_suffix) {
+    return call_suffix->get_type() == METHOD_CALL;
+}
     
 inline bool InLoop() {
     return loop_stmts.size() != 0; 
@@ -1563,42 +1538,40 @@ inline bool InFuncDef() {
     return func_def_stmts.size() != 0; 
 } 
 
-inline bool InCall() {
-    if (elist_flags.empty()) 
-        return false;
-    return elist_flags.top() == 1;
-}
-
-inline bool InTableMakeElems() { 
-    if (elist_flags.empty()) 
-        return false;
-    return elist_flags.top() == 0;
-}
-
-bool IsValidArithmetic(Expression* expr) {
+bool IsValidArithmetic(Expression* expr, std::string context) {
     assert (expr != nullptr);
     if (IsLibraryFunction(expr)) {
-        SignalError("Invalid use of arithmetic operator on library function " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on library function " + expr->to_string());
         return false;
     }
     else if (IsUserFunction(expr)) {
-        SignalError("Invalid use of arithmetic operator on user function " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on user function " + expr->to_string());
         return false;
     }
     else if (IsConstString(expr)) {
-        SignalError("Invalid use of arithmetic operator on const string " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on const string " + expr->to_string());
         return false;
     }
     else if (IsConstBool(expr)) {
-        SignalError("Invalid use of arithmetic operator on const bool " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on const bool " + expr->to_string());
         return false;
     }
     else if (IsTableMake(expr)) {
-        SignalError("Invalid use of arithmetic operator on table " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on table " + expr->to_string());
         return false;
     }
 
     return true;                
+}
+
+inline bool IsValidArithmeticOp(Expression* expr) {
+    assert(expr != nullptr);
+    return IsValidArithmetic(expr, std::string("arithmetic"));
+}
+
+inline bool IsValidArithmeticComp(Expression* expr) {
+    assert(expr != nullptr);
+    return IsValidArithmetic(expr, std::string("comparison"));
 }
 
 bool IsValidAssign(Symbol* left_operand) {

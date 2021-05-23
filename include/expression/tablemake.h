@@ -17,19 +17,13 @@ public:
      * @return a read access to this TableMake created table, not null
      */
     Symbol*         get_table() const;
-    /**
-     * @brief Set this TableMake created table.
-     * 
-     * @param table_ the table to set this created table, not null 
-     */
-    void            set_table(Symbol* table_);
     std::string     to_string() const override;
 protected:
     /**
      * @brief Constructs a new TableMake object.
      * 
      */
-    TableMake() : Primary(TABLE_MAKE) {};
+    TableMake(Symbol* table) : Primary(TABLE_MAKE), table(verify_table(table)) {};
     /**
      * @brief Destroys this TableMakeobject.
      * 
@@ -38,6 +32,7 @@ protected:
     std::ostream&   LogExpression(std::ostream& os) const override; 
 private:
     Symbol*         table;
+    Symbol*         verify_table(Symbol* table);
 };
 
 #endif

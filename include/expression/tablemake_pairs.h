@@ -2,7 +2,7 @@
 #define TABLEMAKEPAIRS_H
 
 #include "tablemake.h"
-#include <list>
+#include "indexed.h"
 #include "../../util/contract/contract.h"
 
 /**
@@ -14,32 +14,27 @@ public:
     /**
      * @brief Constructs a new TableMakePairs object.
      * 
+     * @param table the table of this TableMakePairs, not null 
+     * @param indexed the indexed list of indexed elements of this
+     * TableMakePairs, not null 
      */
-    TableMakePairs() = default;
+    TableMakePairs(Symbol* table, Indexed* indexed): TableMake(table), indexed(verify_indexed(indexed)) {};
     /**
      * @brief Destroys this TableMakePairs object.
      * 
      */
     ~TableMakePairs() = default;
     /**
-     * @brief Returns a read access to this TableMakePairs list of 
-     * pairs of expressions.
+     * @brief Returns a read access to this TableMakePairs
+     * indexed list of indexed elements.
      * 
-     * @return a read access to this TableMakePairs list of 
-     * pairs of expressions
+     * @return  a read access to this TableMakePairs
+     * indexed list of indexed elements, not null
      */
-    std::list<std::pair<Expression*, Expression*>> get_pairs() const;
-    /**
-     * @brief Adds a pair of expressions to this TableMakePairs list of 
-     * pairs of expressions, consisting of an expression index and an expression
-     * value.
-     * 
-     * @param index the index expression to be paired, not null
-     * @param value the value expression to be paired, not null
-     */
-    void                                            AddPair(Expression* index, Expression* value);   
+    Indexed*    get_indexed() const;
 private:
-    std::list<std::pair<Expression*, Expression*>>  pairs;
+    Indexed*    indexed;
+    Indexed*    verify_indexed(Indexed* indexed);
 };
 
 #endif

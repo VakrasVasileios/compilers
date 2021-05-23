@@ -25,8 +25,17 @@ public:
      * 
      */
     ~BoolExpr() = default;
-
+    /**
+     * @brief Holds the labels of the jump/branch quads that will
+     * be concluded to 'true' during the short circuit conclusion.
+     * 
+     */
     std::list<unsigned int> true_list;
+    /**
+     * @brief Holds the labels of the jump/branch quads that will
+     * be concluded to 'false' during the short circuit conclusion.
+     * 
+     */
     std::list<unsigned int> false_list;
     
 };
