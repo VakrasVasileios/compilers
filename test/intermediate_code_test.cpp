@@ -1131,9 +1131,9 @@ TEST_F(InterCodeSuite, table_tebleelem_ind_call) {
 }
 
 TEST_F(InterCodeSuite, table_emit_iftableitem_plusplusprefix) {
-    expected =  "1: tablegetelem ^0 a 2 [line 1]\n"
-                "2: add ^0 ^0 1 [line 1]\n"
-                "3: tablesetelem a 2 ^0 [line 1]\n";
+    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
+                "2: add ^1 ^1 1 [line 1]\n"
+                "3: tablesetelem a 2 ^1 [line 1]\n";
     actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplusprefix.asc");     
     GTEST_ASSERT_EQ(expected, actual);     
 }
@@ -1148,9 +1148,9 @@ TEST_F(InterCodeSuite, table_emit_iftableitem_plusplussufix) {
 }
 
 TEST_F(InterCodeSuite, table_emit_iftableitem_minusminus_prefix) {
-    expected =  "1: tablegetelem ^0 a 2 [line 1]\n"
-                "2: sub ^0 ^0 1 [line 1]\n"
-                "3: tablesetelem a 2 ^0 [line 1]\n";
+    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
+                "2: sub ^1 ^1 1 [line 1]\n"
+                "3: tablesetelem a 2 ^1 [line 1]\n";
     actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_prefix.asc");     
     GTEST_ASSERT_EQ(expected, actual);            
 }

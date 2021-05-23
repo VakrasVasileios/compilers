@@ -568,14 +568,13 @@ term:         '(' expr ')'          {
                                     }
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
-                                        Symbol* result;
+                                        Symbol* result = NewTemp(VAR, nullptr);
                                         if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(ADD_t, result, result, new IntConstant(1));
                                                 Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
                                             } else {
-                                                result = NewTemp(VAR, nullptr);
                                                 Emit(ADD_t, symbol, symbol, new IntConstant(1));
                                                 Emit(ASSIGN_t, result, symbol, nullptr);  
                                             }
@@ -601,14 +600,13 @@ term:         '(' expr ')'          {
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
-                                        Symbol* result;
+                                        Symbol* result = NewTemp(VAR, nullptr);
                                         if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(SUB_t, result, result, new IntConstant(1));
                                                 Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
                                             } else {
-                                                result = NewTemp(VAR, nullptr);
                                                 Emit(SUB_t, symbol, symbol, new IntConstant(1));
                                                 Emit(ASSIGN_t, result, symbol, nullptr);  
                                             }
