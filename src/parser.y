@@ -762,7 +762,7 @@ member:     lvalue '.' ID           {
             ;
 
 call:       call  '(' elist ')'             {
-                                                auto called_symbol = $1->get_called_symbol();
+                                                auto called_symbol = $1->get_ret_val();
                                                 $$ = MakeCall(called_symbol, new NormCall($3));
                                                 DLOG("call -> call(elist)");
                                             }
