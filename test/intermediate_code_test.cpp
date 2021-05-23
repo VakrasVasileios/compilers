@@ -15,7 +15,7 @@ protected:
 
 /* ------------ assign -------------- */
 
-TEST_F(InterCodeSuite, ASSIGN_simple)
+TEST_F(InterCodeSuite, assign_simple)
 {
     expected = "1: assign x 2 [line 1]\n"
                "2: assign ^0 x [line 1]\n";
@@ -23,7 +23,7 @@ TEST_F(InterCodeSuite, ASSIGN_simple)
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(InterCodeSuite, ASSIGN_calls_nested)
+TEST_F(InterCodeSuite, assign_calls_nested)
 {
     expected = "1: jump 4 [line 1]\n"
                "2: funcstart f [line 1]\n"
@@ -43,7 +43,7 @@ TEST_F(InterCodeSuite, ASSIGN_calls_nested)
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(InterCodeSuite, ASSIGN_string)
+TEST_F(InterCodeSuite, assign_string)
 {
     expected = "1: assign a \"2\" [line 1]\n"
                "2: assign ^0 a [line 1]\n"
@@ -940,9 +940,8 @@ TEST_F(InterCodeSuite, arithmetic_uminus)
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(InterCodeSuite, arithmetic_uminus_bool)
-{
-    expected = "Error, in line: 1: Illegal use of unary minus on constant boolean\n";
+TEST_F(InterCodeSuite, arithmetic_uminus_bool) {
+    expected = "Error, in line: 1: Invalid use of arithmetic operator on const bool 'true'\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -1327,6 +1326,102 @@ TEST_F(InterCodeSuite, backpatch_p3t_assignments_objects)
                "37: tablegetelem ^2 a \"x\" [line 8]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_assignments_objects.asc");
     GTEST_ASSERT_EQ(expected, actual);
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, tablemember_item_simple) {
+    expected = "1: tablegetelem ^0 a \"o\" [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tablemember_item_simple.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
+TEST_F(InterCodeSuite, tableelem_item_seq) {
+    expected =  "1: tablegetelem ^0 a \"b\" [line 1]\n"
+                "2: tablegetelem ^1 ^0 \"o\" [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_item_seq.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}        
+
+TEST_F(InterCodeSuite, tableelem_ind_simp) {
+    expected = "1: tablegetelem ^0 a 1 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_ind_simp.asc");
+    GTEST_ASSERT_EQ(expected, actual); 
+}
+
+TEST_F(InterCodeSuite, tablelem_ind_manyexprs) {
+    expected =  "1: tablegetelem ^0 a 1 [line 1]\n"
+                "2: tablegetelem ^0 a s [line 2]\n"
+                "3: assign a 0 [line 3]\n"
+                "4: assign ^0 a [line 3]\n"
+                "5: tablegetelem ^1 a ^0 [line 3]\n"
+                "6: param c [line 4]\n"
+                "7: call y [line 4]\n"
+                "8: getretval ^0 [line 4]\n"
+                "9: param ^0 [line 4]\n"
+                "10: call f [line 4]\n"
+                "11: getretval ^1 [line 4]\n"
+                "12: mul ^2 9 ^1 [line 4]\n"
+                "13: add ^3 s ^2 [line 4]\n"
+                "14: tablegetelem ^4 a ^3 [line 4]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_ind_manyexprs.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, tableelem_it_call) {
+    expected =  "1: call f [line 1]\n"
+                "2: getretval ^0 [line 1]\n"
+                "3: tablegetelem ^1 ^0 \"a\" [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_it_call.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, tebleelem_ind_call) {
+    expected =  "1: call f [line 1]\n"
+                "2: getretval ^0 [line 1]\n"
+                "3: tablegetelem ^1 ^0 2 [line 1]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/table/tableelem_ind_call.asc");
+    GTEST_ASSERT_EQ(expected, actual);              
+}
+
+TEST_F(InterCodeSuite, emit_iftableitem_plusplusprefix) {
+    expected =  "1: tablegetelem ^0 a 2 [line 1]\n"
+                "2: add ^0 ^0 1 [line 1]\n"
+                "3: tablesetelem a 2 ^0 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplusprefix.asc");     
+    GTEST_ASSERT_EQ(expected, actual);     
+}
+
+TEST_F(InterCodeSuite, emit_iftableitem_plusplussufix) {
+    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
+                "2: assign ^0 ^1 [line 1]\n"
+                "3: add ^1 ^1 1 [line 1]\n"
+                "4: tablesetelem a 2 ^1 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplussufix.asc");     
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, emit_iftableitem_minusminus_prefix) {
+    expected =  "1: tablegetelem ^0 a 2 [line 1]\n"
+                "2: sub ^0 ^0 1 [line 1]\n"
+                "3: tablesetelem a 2 ^0 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_prefix.asc");     
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, emit_iftableitem_minusminus_suffix) {
+    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
+                "2: assign ^0 ^1 [line 1]\n"
+                "3: sub ^1 ^1 1 [line 1]\n"
+                "4: tablesetelem a 2 ^1 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_suffix.asc");     
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
+TEST_F(InterCodeSuite, emit_iftableitem_assignexpr) {
+    expected =  "1: tablesetelem a 2 9 [line 1]\n"
+                "2: tablegetelem ^0 a 2 [line 1]\n";
+    actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_assignexpr.asc");     
+    GTEST_ASSERT_EQ(expected, actual);            
 }
 
 #ifdef TESTING

@@ -13,6 +13,7 @@ Soultatos Stefanos
 ## Usage
 
 * <b>build</b>
+    * <b>make&nbsp;&nbsp;&nbsp;&nbsp;dlog&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a debug version of the parser tree traversal
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;phase3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table
     output and the quad.txt file, at the /build directory, for the phase 3
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;r_syntax_analysis&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table

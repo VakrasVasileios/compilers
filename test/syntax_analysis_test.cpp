@@ -80,8 +80,8 @@ TEST_F(SyntaxAnalysisSuite, Error6) {
 TEST_F(SyntaxAnalysisSuite, Error7) {
   expected = "Error, in line: 4: Functions are constant their value cannot be changed\n"
           "Error, in line: 5: Functions are constant their value cannot be changed\n"
-          "Error, in line: 6: Use of increment operator with non variable type\n"
-          "Error, in line: 7: Use of decrement operator with non variable type\n";
+          "Error, in line: 6: Invalid use of arithmetic operator on library function print\n"
+          "Error, in line: 7: Invalid use of arithmetic operator on user function foo\n";
   actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error7.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }

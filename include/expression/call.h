@@ -38,13 +38,13 @@ public:
      * 
      * @return a read access to this Call return value, can be null
     **/ 
-    Expression*             get_ret_val() const;
+    Symbol*                 get_ret_val() const;
     /**
      * @brief Sets this Call return value.
      * 
      * @param ret_val the return value to set his Call return value, can be null
     **/ 
-    void                    set_ret_val(Expression* ret_val);
+    void                    set_ret_val(Symbol* ret_val);
     
     std::string             to_string() const override;
 protected:
@@ -52,7 +52,7 @@ protected:
 private:
     Symbol*                 called_symbol; 
     std::list<Expression*>  params;  
-    Expression*             ret_val;
+    Symbol*                 ret_val;
 };
 
 #endif

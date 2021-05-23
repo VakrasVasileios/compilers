@@ -15,8 +15,8 @@ protected:
      * 
      * @param type the expression type of this
      * Primary object, must be LIB_FUNC, USER_FUNC,
-     * VAR, TABLE_MAKE, CALL, CONST_NUM, CONST_BOOL
-     * or CONST_NIL.
+     * VAR, TABLE_MAKE, TABLE_ITEM, CALL, CONST_NUM,
+     *  CONST_BOOL, or CONST_NIL.
      */
     Primary(ExprType type) : Expression(verify_type(type)) {};
     /**
