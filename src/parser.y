@@ -819,6 +819,7 @@ objectdef:  '[' elist ']'       {
 
                                     auto elements = $2->exprs;
                                     unsigned int elem_cnt = 0;
+                                    elements.reverse();
                                     for (auto element : elements)
                                         Emit(TABLESETELEM_t, result, new IntConstant(elem_cnt++), element);
                                     $$ = new TableMakeElems(result, $2);    
