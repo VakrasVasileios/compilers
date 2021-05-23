@@ -294,6 +294,24 @@ TEST_F(InterCodeSuite, functions_call_anonymous_func_def)
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
+
+TEST_F(InterCodeSuite, functions_call_method_call) {
+    expected =  "1: tablegetelem ^0 a \"f\" [line 1]\n"
+                "2: tablegetelem ^1 ^0 \"f\" [line 1]\n"
+                "3: param a [line 1]\n"
+                "4: call ^1 [line 1]\n"
+                "5: getretval ^2 [line 1]\n"
+                "6: tablegetelem ^0 a \"f\" [line 3]\n"
+                "7: tablegetelem ^1 ^0 \"f\" [line 3]\n"
+                "8: param s [line 3]\n"
+                "9: param 9 [line 3]\n"
+                "10: param a [line 3]\n"
+                "11: call ^1 [line 3]\n"
+                "12: getretval ^2 [line 3]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_method_call.asc");
+    GTEST_ASSERT_EQ(expected, actual);            
+}
+
 /* ------------ return -------------- */
 
 TEST_F(InterCodeSuite, return_void)

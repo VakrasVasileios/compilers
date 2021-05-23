@@ -50,9 +50,10 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define OUT_OF_SCOPE   -1
-    #define LIB_FUNC_LINE   0
-    #define TEMP_LINE       0
+    #define OUT_OF_SCOPE        -1
+    #define LIB_FUNC_LINE       0
+    #define TEMP_LINE           0
+    #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
 
     const unsigned int          global_scope = 0;
     unsigned int                current_scope = OUT_OF_SCOPE;
@@ -107,6 +108,7 @@
     bool                        IsGlobalVar(Symbol* symbol);
     bool                        IsAtCurrentScope(Symbol* symbol);
     bool                        IsTableItem(Symbol* symbol);
+    bool                        IsMethodCall(CallSuffix* call_suffix);
 
     bool                        InLoop();
     bool                        InFuncDef();
@@ -114,7 +116,6 @@
     void                        BackPatch(std::list<unsigned int> l_list, unsigned int q_label);
     Symbol*                     ConcludeShortCircuit(BoolExpr* expr);
 
-    #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
     bool                        IsValidArithmeticOp(Expression* expr);
     bool                        IsValidArithmeticComp(Expression* expr);
     bool                        IsValidAssign(Symbol* left_operand);
@@ -746,9 +747,14 @@ call:       call  '(' elist ')'             {
                                             }
             | lvalue  callsuffix            {
                                                 auto called_symbol = $1;
+                                                auto call_suffix = $2;
                                                 called_symbol = EmitIfTableItem(called_symbol);
-                                                // add if for method call
-                                                $$ = MakeCall(called_symbol, $2);
+                                                if (IsMethodCall(call_suffix)) {
+                                                    auto t = called_symbol;
+                                                    called_symbol = EmitIfTableItem(MemberItem(t, call_suffix->get_name().c_str()));
+                                                    call_suffix->InsertArg(t);
+                                                }
+                                                $$ = MakeCall(called_symbol, call_suffix);
                                             }
             | '(' funcdef ')'  
                 '(' elist ')'               {
@@ -1502,6 +1508,10 @@ inline bool IsAtCurrentScope(Symbol* symbol) {
 
 inline bool IsTableItem(Symbol* symbol) {
     return symbol->get_type() == TABLE_ITEM;
+}
+
+inline bool IsMethodCall(CallSuffix* call_suffix) {
+    return call_suffix->get_type() == METHOD_CALL;
 }
     
 inline bool InLoop() {

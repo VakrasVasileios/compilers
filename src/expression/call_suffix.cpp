@@ -14,3 +14,9 @@ Elist*
 CallSuffix:: get_elist() const {
     return elist;
 }
+
+void 
+CallSuffix::InsertArg(Expression* arg) {
+    PRECONDITION(arg != nullptr);
+    elist->exprs.push_back(arg);
+}

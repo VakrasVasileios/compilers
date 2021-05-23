@@ -5,6 +5,7 @@
 #include "elist.h"
 #include <list>
 #include <string>
+#include "../../util/contract/contract.h"
 
 /**
  * @brief The call suffix type.
@@ -44,7 +45,15 @@ public:
      * @return a read access to this CallSuffix
      * elist 
      */
-    Elist*      get_elist() const;    
+    Elist*      get_elist() const; 
+    /**
+     * @brief Inserts an argument to this CallSuffix
+     * elist.
+     * 
+     * @param arg the argument to be inserted to this 
+     * CallSuffix elist, not null
+     */
+    void        InsertArg(Expression* arg);  
 protected:
     /**
      * @brief Constructs a new CallSuffix object.
