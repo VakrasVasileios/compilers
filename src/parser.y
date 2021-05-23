@@ -826,7 +826,7 @@ methodcall: DOTDOT ID '(' elist ')' {
 
 multelist:  ',' expr multelist  {
                                     if ($2->get_type() == BOOL) {
-                                        ConcludeShortCircuit(BOOL_EXPR_CAST($2));
+                                        $2 = ConcludeShortCircuit(BOOL_EXPR_CAST($2));
                                     }
                                     if (InCall()) {
                                         auto top_call = call_exprs.top();
@@ -847,7 +847,7 @@ multelist:  ',' expr multelist  {
 
 elist:      expr multelist  {
                                 if ($1->get_type() == BOOL) {
-                                    ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                    $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                 }
                                 if (InCall()) {
                                     auto top_call = call_exprs.top();
@@ -925,6 +925,9 @@ indexed:    indexedelem multindexed {
             ;
 
 indexedelem:'{' expr ':' expr '}'   {
+                                        if ($4->get_type() == BOOL) {
+                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                        }
                                         auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
                                         top_tablemake_pairs_expr->AddPair($2, $4);
 
@@ -1291,7 +1294,7 @@ int yyerror(std::string yaccProvidedMessage) {
 int main(int argc, char** argv) {
     //Can't reach me for I am... above (LUL)
     InitLibraryFunctions();
-    
+
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -1426,7 +1429,7 @@ unsigned int anonymus_funcs_counter = 0;
 
 std::string NewAnonymousFuncName() {
     std::string an = "$";
-    an += std::to_string(++anonymus_funcs_counter);
+    an += std::to_string(anonymus_funcs_counter++);
 
     return an;
 }
