@@ -1634,9 +1634,9 @@ TEST_F(InterCodeSuite, backpatch_p3t_flow_control)
 
 TEST_F(InterCodeSuite, backpatch_p3t_flow_control_error)
 {
-    expected =  "Error, in line: 3:invalid keyword CONTINUE outside of loop\n"
-                "Error, in line: 4:invalid keyword BREAK outside of loop\n";
-                "Error, in line: 6:invalid keyword CONTINUE outside of loop\n";;
+    expected =  "Error, in line: 3: invalid keyword CONTINUE outside of loop\n"
+                "Error, in line: 4: invalid keyword BREAK outside of loop\n"
+                "Error, in line: 6: Invalid return, used outside a function block\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_flow_control_error.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
