@@ -13,6 +13,9 @@ Soultatos Stefanos
 ## Usage
 
 * <b>build</b>
+    * <b>mkdir&nbsp;&nbsp;&nbsp;&nbsp;build&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    * <b>cd&nbsp;&nbsp;&nbsp;&nbsp;build&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    * <b>cmake&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;dlog&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a debug version of the parser tree traversal
     * <b>make&nbsp;&nbsp;&nbsp;&nbsp;phase3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>  to build a release version for generating the symbol table
     output and the quad.txt file, at the /build directory, for the phase 3
