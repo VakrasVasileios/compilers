@@ -111,53 +111,36 @@ TEST_F(SyntaxAnalysisSuite, Error11) {
   GTEST_ASSERT_EQ(expected, actual);
 }
 
- TEST_F(SyntaxAnalysisSuite, Anonymous) {
-   expected = libfunc_out;
-   expected += "[user function] \"$0\" (line 5) (scope 0)\n"
-            "[user function] \"$4\" (line 28) (scope 0)\n"
-            "-----------     Scope #1     -----------\n"
-            "[formal variable] \"x\" (line 5) (scope 1)\n"
-            "[formal variable] \"AnonymousOne\" (line 5) (scope 1)\n"
-            "[user function] \"$1\" (line 10) (scope 1)\n"
-            "[formal variable] \"x\" (line 28) (scope 1)\n"
-            "[formal variable] \"AnonymousFive\" (line 28) (scope 1)\n"
-            "-----------     Scope #2     -----------\n"
-            "[formal variable] \"AnonymousTwo\" (line 10) (scope 2)\n"
-            "[user function] \"$2\" (line 15) (scope 2)\n"
-            "[user function] \"$3\" (line 20) (scope 2)\n"
-            "-----------     Scope #3     -----------\n"
-            "[formal variable] \"AnonymousThree\" (line 15) (scope 3)\n"
-            "[formal variable] \"AnonymousFour\" (line 20) (scope 3)\n";
-   actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Anonymous.asc");
-   GTEST_ASSERT_EQ(expected, actual);
- }
+TEST_F(SyntaxAnalysisSuite, Anonymous) {
+  expected = libfunc_out;
+  expected += "[user function] \"$0\" (line 5) (scope 0)\n"
+          "[user function] \"$4\" (line 28) (scope 0)\n"
+          "-----------     Scope #1     -----------\n"
+          "[formal variable] \"x\" (line 5) (scope 1)\n"
+          "[formal variable] \"AnonymousOne\" (line 5) (scope 1)\n"
+          "[user function] \"$1\" (line 10) (scope 1)\n"
+          "[formal variable] \"x\" (line 28) (scope 1)\n"
+          "[formal variable] \"AnonymousFive\" (line 28) (scope 1)\n"
+          "-----------     Scope #2     -----------\n"
+          "[formal variable] \"AnonymousTwo\" (line 10) (scope 2)\n"
+          "[user function] \"$2\" (line 15) (scope 2)\n"
+          "[user function] \"$3\" (line 20) (scope 2)\n"
+          "-----------     Scope #3     -----------\n"
+          "[formal variable] \"AnonymousThree\" (line 15) (scope 3)\n"
+          "[formal variable] \"AnonymousFour\" (line 20) (scope 3)\n";
+  actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Anonymous.asc");
+  GTEST_ASSERT_EQ(expected, actual);
+}
 
- TEST_F(SyntaxAnalysisSuite, Block) {
+TEST_F(SyntaxAnalysisSuite, Block) {
    expected = libfunc_out;
    expected +="-----------     Scope #1     -----------\n"
             "[local variable] \"x\" (line 2) (scope 1)\n";
    actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Block.asc");
    GTEST_ASSERT_EQ(expected, actual);
- }
-
-//  TEST_F(ParserTest, Circle) {
-//     expected = libfunc_out;
-//     expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
-//             "[local variable] \"$0\" (line 0) (scope 0)\n"
-//             "[global variable] \"circle\" (line 6) (scope 0)\n"
-//             "[global variable] \"pi\" (line 6) (scope 0)\n"
-//             "[local variable] \"$1\" (line 0) (scope 0)\n"
-//             "[local variable] \"$2\" (line 0) (scope 0)\n"
-//             "[user function] \"Area\" (line 11) (scope 0)\n"
-//             "[user function] \"Perimeter\" (line 18) (scope 0)\n"
-//             "[user function] \"InitCircle\" (line 25) (scope 0)\n";
-//     actual = exec("./d_syntax_analysis ../test/files/phase2_tests/Working/Circle.asc");
-//     GTEST_ASSERT_EQ(expected, actual);
-//  }
+}
 
 TEST_F(SyntaxAnalysisSuite, GlobalAndLocal) {
-  expected =  "Warning, in line: 13: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 14: Too many arguments passed to function: print, defined in line: 0\n";
   expected += libfunc_out;
   expected += "[global variable] \"global\" (line 2) (scope 0)\n"
           "[user function] \"f\" (line 6) (scope 0)\n"
@@ -167,137 +150,43 @@ TEST_F(SyntaxAnalysisSuite, GlobalAndLocal) {
   GTEST_ASSERT_EQ(expected, actual); 
 }
 
-//  TEST_F(ParserTest, Grammar) { //??????????
-//    expected = libfunc_out;
-//    expected +="[global variable] \"a1\" (line 2) (scope 0)\n"
-//          "[global variable] \"a2\" (line 2) (scope 0)\n"
-//          "[global variable] \"a3\" (line 2) (scope 0)\n"
-//          "[global variable] \"a4\" (line 2) (scope 0)\n"
-//          "[local variable] \"$0\" (line 0) (scope 0)\n"
-//          "[local variable] \"$1\" (line 0) (scope 0)\n"
-//          "[local variable] \"$2\" (line 0) (scope 0)\n"
-//          "[local variable] \"$3\" (line 0) (scope 0)\n"
-//          "[global variable] \"global_var\" (line 4) (scope 0)\n"
-//          "[user function] \"foo\" (line 10) (scope 0)\n"
-//          "[user function] \"foo1\" (line 17) (scope 0)\n"
-//          "[global variable] \"i\" (line 41) (scope 0)\n"
-//          "[global variable] \"object\" (line 71) (scope 0)\n"
-//          "[user function] \"$0\" (line 83) (scope 0)\n"
-//          "[user function] \"test\" (line 85) (scope 0)\n"
-//          "[user function] \"test1\" (line 98) (scope 0)\n"
-//          "\n"
-//          "-----------     Scope #1     -----------\n"
-//          "[local variable] \"a1\" (line 7) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "[local variable] \"global_var\" (line 18) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "[local variable] \"$3\" (line 0) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "[local variable] \"$1\" (line 0) (scope 1)\n"
-//          "[local variable] \"j\" (line 65) (scope 1)\n"
-//          "[local variable] \"$1\" (line 0) (scope 1)\n"
-//          "[local variable] \"$2\" (line 0) (scope 1)\n"
-//          "[user function] \"test1\" (line 86) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "[local variable] \"$1\" (line 0) (scope 1)\n"
-//          "[local variable] \"$2\" (line 0) (scope 1)\n"
-//          "\n"
-//          "-----------     Scope #2     -----------\n"
-//          "[local variable] \"$1\" (line 0) (scope 2)\n"
-//          "[local variable] \"$0\" (line 0) (scope 2)\n";
-//    actual = exec("./d_syntax_analysis ../test/files/phase2_tests/Working/Grammar.asc");
-//    GTEST_ASSERT_EQ(expected, actual); 
-// }
-
- TEST_F(SyntaxAnalysisSuite, Random) { 
-   expected = "Warning, in line: 9: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 41: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 43: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 69: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 70: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 71: Too many arguments passed to function: print, defined in line: 0\n";
-   expected += libfunc_out;
-   expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
-            "[user function] \"Assert\" (line 7) (scope 0)\n"
-            "[user function] \"IsEven\" (line 15) (scope 0)\n"
-            "[user function] \"IsOdd\" (line 22) (scope 0)\n"
-            "[user function] \"CanDivideByTen\" (line 29) (scope 0)\n"
-            "[user function] \"PrintParityOfNumbers\" (line 36) (scope 0)\n"
-            "[global variable] \"even\" (line 56) (scope 0)\n"
-            "[global variable] \"odd\" (line 56) (scope 0)\n"
-            "[global variable] \"cnt\" (line 56) (scope 0)\n"
-            "[user function] \"Print\" (line 68) (scope 0)\n"
-            "-----------     Scope #1     -----------\n"
-            "[formal variable] \"con\" (line 7) (scope 1)\n"
-            "[formal variable] \"num\" (line 15) (scope 1)\n"
-            "[formal variable] \"num\" (line 22) (scope 1)\n"
-            "[formal variable] \"num\" (line 29) (scope 1)\n"
-            "[formal variable] \"MAX\" (line 36) (scope 1)\n"
-            "[local variable] \"exit\" (line 37) (scope 1)\n"
-            "[local variable] \"i\" (line 39) (scope 1)\n";
-   actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Random.asc");
+TEST_F(SyntaxAnalysisSuite, Random) { 
+  expected += libfunc_out;
+  expected += "[global variable] \"nl\" (line 2) (scope 0)\n"
+          "[user function] \"Assert\" (line 7) (scope 0)\n"
+          "[user function] \"IsEven\" (line 15) (scope 0)\n"
+          "[user function] \"IsOdd\" (line 22) (scope 0)\n"
+          "[user function] \"CanDivideByTen\" (line 29) (scope 0)\n"
+          "[user function] \"PrintParityOfNumbers\" (line 36) (scope 0)\n"
+          "[global variable] \"even\" (line 56) (scope 0)\n"
+          "[global variable] \"odd\" (line 56) (scope 0)\n"
+          "[global variable] \"cnt\" (line 56) (scope 0)\n"
+          "[user function] \"Print\" (line 68) (scope 0)\n"
+          "-----------     Scope #1     -----------\n"
+          "[formal variable] \"con\" (line 7) (scope 1)\n"
+          "[formal variable] \"num\" (line 15) (scope 1)\n"
+          "[formal variable] \"num\" (line 22) (scope 1)\n"
+          "[formal variable] \"num\" (line 29) (scope 1)\n"
+          "[formal variable] \"MAX\" (line 36) (scope 1)\n"
+          "[local variable] \"exit\" (line 37) (scope 1)\n"
+          "[local variable] \"i\" (line 39) (scope 1)\n";
+  actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Random.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
- TEST_F(SyntaxAnalysisSuite, ShadowedNameOffFunctions) {
-   expected = "Warning, in line: 7: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 12: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 17: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 22: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 33: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 35: Too many arguments passed to function: print, defined in line: 0\n"
-              "Warning, in line: 37: Too many arguments passed to function: print, defined in line: 0\n";
-   expected += libfunc_out;
-   expected +="[global variable] \"nl\" (line 2) (scope 0)\n"
-            "[user function] \"F\" (line 6) (scope 0)\n"
-            "-----------     Scope #1     -----------\n"
-            "[user function] \"F\" (line 11) (scope 1)\n"
-            "-----------     Scope #2     -----------\n"
-            "[user function] \"F\" (line 16) (scope 2)\n"
-            "-----------     Scope #3     -----------\n"
-            "[user function] \"F\" (line 21) (scope 3)\n";
-   actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
-   GTEST_ASSERT_EQ(expected, actual);
- }
-
-//  TEST_F(ParserTest, Simple) {
-//    expected = libfunc_out;
-//    expected +="[global variable] \"globalVarFirst\" (line 2) (scope 0)\n"
-//          "[local variable] \"$0\" (line 0) (scope 0)\n"
-//          "[user function] \"GlobalFunction\" (line 6) (scope 0)\n"
-//          "[global variable] \"globalVarSecond\" (line 22) (scope 0)\n"
-//          "[local variable] \"$1\" (line 0) (scope 0)\n"
-//          "[user function] \"F\" (line 34) (scope 0)\n"
-//          "[global variable] \"a\" (line 40) (scope 0)\n"
-//          "[global variable] \"b\" (line 40) (scope 0)\n"
-//          "[global variable] \"x\" (line 40) (scope 0)\n"
-//          "[global variable] \"y\" (line 40) (scope 0)\n"
-//          "[local variable] \"$2\" (line 0) (scope 0)\n"
-//          "[local variable] \"$3\" (line 0) (scope 0)\n"
-//          "[local variable] \"$4\" (line 0) (scope 0)\n"
-//          "[local variable] \"$5\" (line 0) (scope 0)\n"
-//          "[global variable] \"G\" (line 44) (scope 0)\n"
-//          "[global variable] \"lol\" (line 48) (scope 0)\n"
-//          "[global variable] \"print_\" (line 53) (scope 0)\n"
-//          "\n"
-//          "-----------     Scope #1     -----------\n"
-//          "[local variable] \"localVar\" (line 8) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "[user function] \"LocalFunction\" (line 14) (scope 1)\n"
-//          "[local variable] \"$1\" (line 0) (scope 1)\n"
-//          "[local variable] \"localVar\" (line 27) (scope 1)\n"
-//          "[local variable] \"$0\" (line 0) (scope 1)\n"
-//          "\n"
-//          "-----------     Scope #2     -----------\n"
-//          "[formal argument] \"x\" (line 14) (scope 2)\n"
-//          "[formal argument] \"y\" (line 14) (scope 2)\n"
-//          "[local variable] \"globalVarFirst\" (line 16) (scope 2)\n"
-//          "[local variable] \"$0\" (line 0) (scope 2)\n";
-//    actual = exec("./d_syntax_analysis ../test/files/phase2_tests/Working/Simple.asc");
-//     GTEST_ASSERT_EQ(expected, actual);
-//  }
-
+TEST_F(SyntaxAnalysisSuite, ShadowedNameOffFunctions) {
+  expected += libfunc_out;
+  expected +="[global variable] \"nl\" (line 2) (scope 0)\n"
+          "[user function] \"F\" (line 6) (scope 0)\n"
+          "-----------     Scope #1     -----------\n"
+          "[user function] \"F\" (line 11) (scope 1)\n"
+          "-----------     Scope #2     -----------\n"
+          "[user function] \"F\" (line 16) (scope 2)\n"
+          "-----------     Scope #3     -----------\n"
+          "[user function] \"F\" (line 21) (scope 3)\n";
+  actual = exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
+  GTEST_ASSERT_EQ(expected, actual);
+}
 
 #ifdef TESTING
 int main(int argc, char* argv[])
