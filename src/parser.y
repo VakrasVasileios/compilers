@@ -181,7 +181,7 @@ program:      stmts                 {
             ;
 
 stmts:      stmt                    {
-                                        ResetTemp();
+                                        //ResetTemp();
                                     }
             stmts                   {
                                         DLOG("stmts -> stmt stmts");
@@ -195,6 +195,7 @@ stmt:         expr ';'              {
                                         if ($1->get_type() == BOOL) {
                                             ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                         }
+                                        ResetTemp();
                                         DLOG("stmt -> expr;");
                                     }
             | ifstmt                {
@@ -1111,7 +1112,7 @@ ifstmt:     IF '(' expr ')'                 {
                                                 if_stmt->set_if_jump_quad(jump_quad);
                                             }
             stmt                            {
-                                                ResetTemp();
+                                                //ResetTemp();
                                             }
             elsestmt                        {
                                                 DLOG("ifstmt -> if (expr) stmt elsestmt"); 
@@ -1134,7 +1135,7 @@ elsestmt:   ELSE            {
 
                                 if_stmts.pop();
 
-                                ResetTemp();
+                                //ResetTemp();
                                 DLOG("elsestmt -> else stmt"); 
                             }
             |               {
@@ -1181,7 +1182,7 @@ whilestmt:  WHILE               {
                                     while_stmts.pop();
                                     loop_stmts.pop();
 
-                                    ResetTemp();
+                                    //ResetTemp();
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
                                 }
             ;
@@ -1237,7 +1238,7 @@ forstmt:    FOR                                     {
                                                         for_stmts.pop();
                                                         loop_stmts.pop(); 
 
-                                                        ResetTemp();
+                                                        //ResetTemp();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
                                                     }
             ;
