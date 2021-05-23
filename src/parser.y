@@ -115,7 +115,8 @@
     Symbol*                     ConcludeShortCircuit(BoolExpr* expr);
 
     #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
-    bool                        IsValidArithmetic(Expression* expr);
+    bool                        IsValidArithmeticOp(Expression* expr);
+    bool                        IsValidArithmeticComp(Expression* expr);
     bool                        IsValidAssign(Symbol* left_operand);
 %}
 
@@ -265,7 +266,7 @@ expr:         assignexpr            {
             | expr '+' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(ADD_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -275,7 +276,7 @@ expr:         assignexpr            {
             | expr '-' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(SUB_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -285,7 +286,7 @@ expr:         assignexpr            {
             | expr '*' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MUL_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -295,7 +296,7 @@ expr:         assignexpr            {
             | expr '/' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(DIV_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -305,7 +306,7 @@ expr:         assignexpr            {
             | expr '%' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(MOD_t, temp, expr1, expr2);
                                             $$ = new ArithmeticExpr(temp, expr1, expr2);
@@ -315,9 +316,7 @@ expr:         assignexpr            {
             | expr '>' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
-
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
@@ -329,14 +328,12 @@ expr:         assignexpr            {
 
                                             $$ = n_expr;
                                         }
-
                                         DLOG("expr -> expr > expr");
                                     }
             | expr GEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
@@ -354,8 +351,7 @@ expr:         assignexpr            {
             | expr '<' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
@@ -367,14 +363,12 @@ expr:         assignexpr            {
 
                                             $$ = n_expr;
                                         }
-
                                         DLOG("expr -> expr + expr");
                                     }
             | expr LEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-
-                                        if (IsValidArithmetic(expr1) & IsValidArithmetic(expr2)) {
+                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
                                             BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
 
                                             auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
@@ -386,7 +380,6 @@ expr:         assignexpr            {
 
                                             $$ = n_expr;
                                         }
-
                                         DLOG("expr -> expr <= expr");
                                     }
             | expr EQUAL expr       {
@@ -520,7 +513,7 @@ term:         '(' expr ')'          {
                                     }
             | '-' expr %prec UMINUS {
                                         auto symbol = $2;
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             auto temp = NewTemp(VAR, nullptr);
                                             Emit(UMINUS_t, temp, symbol, nullptr);
                                             $$ = symbol;
@@ -554,7 +547,7 @@ term:         '(' expr ')'          {
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
                                         Symbol* result;
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(ADD_t, result, result, new IntConstant(1));
@@ -571,7 +564,7 @@ term:         '(' expr ')'          {
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
                                         auto result = NewTemp(VAR, nullptr);
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 auto val = EmitIfTableItem(symbol);
                                                 Emit(ASSIGN_t, result, val, nullptr);
@@ -587,7 +580,7 @@ term:         '(' expr ')'          {
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
                                         Symbol* result;
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 result = EmitIfTableItem(symbol);
                                                 Emit(SUB_t, result, result, new IntConstant(1));
@@ -604,7 +597,7 @@ term:         '(' expr ')'          {
             | lvalue MINUSMINUS     { 
                                         auto symbol = $1;
                                         auto result = NewTemp(VAR, nullptr);
-                                        if (IsValidArithmetic(symbol)) {
+                                        if (IsValidArithmeticOp(symbol)) {
                                             if (IsTableItem(symbol)) {
                                                 auto val = EmitIfTableItem(symbol);
                                                 Emit(ASSIGN_t, result, val, nullptr);
@@ -1519,30 +1512,40 @@ inline bool InFuncDef() {
     return func_def_stmts.size() != 0; 
 } 
 
-bool IsValidArithmetic(Expression* expr) {
+bool IsValidArithmetic(Expression* expr, std::string context) {
     assert (expr != nullptr);
     if (IsLibraryFunction(expr)) {
-        SignalError("Invalid use of arithmetic operator on library function " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on library function " + expr->to_string());
         return false;
     }
     else if (IsUserFunction(expr)) {
-        SignalError("Invalid use of arithmetic operator on user function " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on user function " + expr->to_string());
         return false;
     }
     else if (IsConstString(expr)) {
-        SignalError("Invalid use of arithmetic operator on const string " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on const string " + expr->to_string());
         return false;
     }
     else if (IsConstBool(expr)) {
-        SignalError("Invalid use of arithmetic operator on const bool " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on const bool " + expr->to_string());
         return false;
     }
     else if (IsTableMake(expr)) {
-        SignalError("Invalid use of arithmetic operator on table " + expr->to_string());
+        SignalError("Invalid use of " + context + " operator on table " + expr->to_string());
         return false;
     }
 
     return true;                
+}
+
+inline bool IsValidArithmeticOp(Expression* expr) {
+    assert(expr != nullptr);
+    return IsValidArithmetic(expr, std::string("arithmetic"));
+}
+
+inline bool IsValidArithmeticComp(Expression* expr) {
+    assert(expr != nullptr);
+    return IsValidArithmetic(expr, std::string("comparison"));
 }
 
 bool IsValidAssign(Symbol* left_operand) {
