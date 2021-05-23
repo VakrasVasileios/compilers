@@ -18,9 +18,8 @@ add_executable(dlog
   ${FLEX_scanner_trgt_OUTPUTS}
 )
 target_compile_definitions(dlog PRIVATE DELOG=1)
+target_compile_definitions(dlog PRIVATE NDEBUG=1)
 target_link_libraries(dlog expression)
-
-
 
 add_executable(phase3
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
@@ -31,6 +30,7 @@ add_executable(phase3
 )
 target_compile_definitions(phase3 PRIVATE LOGSYMTABLE=1)
 target_compile_definitions(phase3 PRIVATE LOGQUADSTXT=1)
+target_compile_definitions(phase3 PRIVATE NDEBUG=1)
 target_link_libraries(phase3 expression)
 
 add_executable(r_intermediate_code
@@ -41,6 +41,7 @@ add_executable(r_intermediate_code
   ${FLEX_scanner_trgt_OUTPUTS}
 )
 target_compile_definitions(r_intermediate_code PRIVATE LOGQUADS=1)
+target_compile_definitions(r_intermediate_code PRIVATE NDEBUG=1)
 target_link_libraries(r_intermediate_code expression)
 
 add_executable(r_syntax_analysis
@@ -51,6 +52,7 @@ add_executable(r_syntax_analysis
   ${FLEX_scanner_trgt_OUTPUTS}
 )
 target_compile_definitions(r_syntax_analysis PRIVATE LOGSYMTABLE=1)
+target_compile_definitions(r_syntax_analysis PRIVATE NDEBUG=1)
 target_link_libraries(r_syntax_analysis expression)
 
 # Debug mode executables

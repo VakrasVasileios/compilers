@@ -773,6 +773,7 @@ call:       call  '(' elist ')'             {
                                                 if (IsMethodCall(call_suffix)) {
                                                     auto t = called_symbol;
                                                     called_symbol = EmitIfTableItem(MemberItem(t, call_suffix->get_name().c_str()));
+                                                    // called_symbol = MemberItem(t, call_suffix->get_name().c_str()); //??
                                                     call_suffix->InsertArg(t);
                                                 }
                                                 $$ = MakeCall(called_symbol, call_suffix);
