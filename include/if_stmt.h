@@ -3,13 +3,14 @@
 
 #include <list>
 #include "quad.h"
+#include "stmt.h"
 
 /**
  * @brief An if statement.
 **/ 
-class IfStmt final {
+class IfStmt final : public Stmt {
 public:
-    IfStmt() = default;
+    IfStmt() : Stmt(IF_t) {}
     ~IfStmt() = default;
     /**
      * @brief Returns this IfStmt jump quad, which jumps out of
