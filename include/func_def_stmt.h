@@ -4,15 +4,16 @@
 #include "expression/symbol.h"
 #include <list>
 #include "quad.h"
+#include "stmt.h"
 
 
 /**
  * @brief A function definition statement.
  * 
 **/ 
-class FuncDefStmt final {
+class FuncDefStmt final : public Stmt {
 public:
-    FuncDefStmt(Symbol* sym) : sym(sym)  {};
+    FuncDefStmt(Symbol* sym) : Stmt(FUNC_t), sym(sym)  {};
     ~FuncDefStmt() = default;
     /**
      * @brief Returns a read access to this FuncDefStmt symbol that is defined.
