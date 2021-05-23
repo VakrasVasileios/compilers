@@ -24,6 +24,8 @@
     #include "../include/expression/method_call.h"
     #include "../include/expression/tablemake.h"
     #include "../include/expression/tablemake_elems.h"
+    #include "../include/expression/indexed_elem.h"
+    #include "../include/expression/indexed.h"
     #include "../include/expression/tablemake_pairs.h"
     #include "../include/symbol_table.h"
     #include "../include/program_stack.h"
@@ -138,6 +140,8 @@
     class Elist*                elist;
     class Symbol*               sym;
     class TableMake*            tablemake;
+    class Indexed*              indexed;
+    class IndexedElem*          indexed_elem; 
 }
 
 %start program
@@ -166,6 +170,8 @@
 %type <method_call>     methodcall
 %type <elist>           elist multelist
 %type <tablemake>       objectdef
+%type <indexed>         indexed multindexed
+%type <indexed_elem>    indexedelem
 
 %right      '='
 %left       OR
@@ -825,21 +831,36 @@ objectdef:  '[' elist ']'       {
                                     $$ = new TableMakeElems(result, $2);    
                                     DLOG("objectdef -> [elist]");
                                 }
-            | '[' indexed ']'   { 
-
+            | '[' indexed ']'   {
+                                    auto result = NewTemp(VAR, nullptr);
+                                    Emit(TABLECREATE_t, result, nullptr, nullptr);
+                                    auto indexedelems = $2->pairs;
+                                    indexedelems.reverse();
+                                    for (auto indexedelem : indexedelems) 
+                                        Emit(TABLESETELEM_t, result, indexedelem->pair.first, indexedelem->pair.second);
+                                    $$ = new TableMakePairs(result, $2);    
                                     DLOG("objectdef -> [indexed]");
                                 }
             ;
 
 multindexed:',' indexedelem multindexed {
+                                            Indexed* indexed = new Indexed();
+                                            indexed->pairs.merge($3->pairs);
+                                            indexed->pairs.push_back($2);
+                                            $$ = indexed;
                                             DLOG("multindexed -> , indexedelem multidexed"); 
                                         }
             |                           {
+                                            $$ = new Indexed();
                                             DLOG("elsestmt -> EMPTY");
                                         }
             ;
 
 indexed:    indexedelem multindexed {
+                                        Indexed* indexed = new Indexed();
+                                        indexed->pairs.merge($2->pairs);
+                                        indexed->pairs.push_back($1);
+                                        $$ = indexed; 
                                         DLOG("indexed -> indexedelem multidexed"); 
                                     }
             ;
@@ -848,9 +869,7 @@ indexedelem:'{' expr ':' expr '}'   {
                                         if ($4->get_type() == BOOL) {
                                             $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
                                         }
-                                        // auto top_tablemake_pairs_expr = tablemake_pairs_exprs.top();
-                                        // top_tablemake_pairs_expr->AddPair($2, $4);
-                                        // DLOG("indexedelem -> { expr : expr }"); 
+                                        $$ = new IndexedElem(std::pair<Expression*, Expression*>($2, $4));
                                     }
             ;
 

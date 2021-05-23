@@ -1,13 +1,12 @@
-// #include "../../include/expression/tablemake_pairs.h"
+#include "../../include/expression/tablemake_pairs.h"
 
-// std::list<std::pair<Expression*, Expression*>>
-// TableMakePairs:: get_pairs() const {
-//     return pairs;
-// }
+Indexed* 
+TableMakePairs::get_indexed() const {
+    return indexed;
+}
 
-// void
-// TableMakePairs:: AddPair(Expression* index, Expression* value) {
-//     PRECONDITION(index != nullptr);
-//     PRECONDITION(value != nullptr);
-//     pairs.push_back(std::pair<Expression*, Expression*>(index, value));
-// }
+Indexed*    
+TableMakePairs::verify_indexed(Indexed* indexed) {
+    PRECONDITION(indexed != nullptr);
+    return indexed;
+}
