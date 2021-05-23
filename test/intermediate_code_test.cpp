@@ -1075,6 +1075,8 @@ TEST_F(InterCodeSuite, short_circuit_simple_or)
     GTEST_ASSERT_EQ(expected, actual);
 }
 
+//-----------------------assistant tests---------------------------------------------------------------------------------
+
 TEST_F(InterCodeSuite, backpatch_backpatch0)
 {
     expected = "1: if_eq a 'true' 3 [line 1]\n"
@@ -1325,9 +1327,462 @@ TEST_F(InterCodeSuite, backpatch_p3t_assignments_objects)
                "36: tablesetelem a \"x\" ^1 [line 8]\n"
                "37: tablegetelem ^2 a \"x\" [line 8]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_assignments_objects.asc");
-    GTEST_ASSERT_EQ(expected, actual);
-    GTEST_ASSERT_EQ(expected, actual);            
+    GTEST_ASSERT_EQ(expected, actual);   
 }
+
+TEST_F(InterCodeSuite, backpatch_p3t_assignments_simple)
+{
+    expected =  "1: assign a 4 [line 2]\n"
+                "2: assign ^0 a [line 2]\n"
+                "3: add ^0 a 5 [line 3]\n"
+                "4: assign a ^0 [line 3]\n"
+                "5: assign ^1 a [line 3]\n"
+                "6: assign b a [line 4]\n"
+                "7: assign ^0 b [line 4]\n"
+                "8: add ^0 a b [line 5]\n"
+                "9: assign a ^0 [line 5]\n"
+                "10: assign ^1 a [line 5]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_assignments_simple.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_var_maths)
+{
+    expected =  "1: add ^0 x y [line 1]\n"
+                "2: mul ^0 z w [line 2]\n"
+                "3: sub ^0 t s [line 3]\n"
+                "4: div ^0 u v [line 4]\n"
+                "5: mod ^0 r l [line 5]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_var_maths.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_relational)
+{
+    expected =  "1: assign l 0 [line 1]\n"
+                "2: assign ^0 l [line 1]\n"
+                "3: assign k ^0 [line 1]\n"
+                "4: assign ^1 k [line 1]\n"
+                "5: assign j ^1 [line 1]\n"
+                "6: assign ^2 j [line 1]\n"
+                "7: assign i ^2 [line 1]\n"
+                "8: assign ^3 i [line 1]\n"
+                "9: assign h ^3 [line 1]\n"
+                "10: assign ^4 h [line 1]\n"
+                "11: assign g ^4 [line 1]\n"
+                "12: assign ^5 g [line 1]\n"
+                "13: assign f ^5 [line 1]\n"
+                "14: assign ^6 f [line 1]\n"
+                "15: assign e ^6 [line 1]\n"
+                "16: assign ^7 e [line 1]\n"
+                "17: assign d ^7 [line 1]\n"
+                "18: assign ^8 d [line 1]\n"
+                "19: assign c ^8 [line 1]\n"
+                "20: assign ^9 c [line 1]\n"
+                "21: assign b ^9 [line 1]\n"
+                "22: assign ^10 b [line 1]\n"
+                "23: assign a ^10 [line 1]\n"
+                "24: assign ^11 a [line 1]\n"
+                "25: if_greater a b 47 [line 3]\n"
+                "26: jump 27 [line 3]\n"
+                "27: if_less c d 29 [line 3]\n"
+                "28: jump 31 [line 3]\n"
+                "29: if_greatereq e f 47 [line 3]\n"
+                "30: jump 31 [line 3]\n"
+                "31: if_lesseq g h 33 [line 3]\n"
+                "32: jump 40 [line 3]\n"
+                "33: if_eq i 'true' 37 [line 3]\n"
+                "34: jump 35 [line 3]\n"
+                "35: assign ^0 'true' [line 3]\n"
+                "36: jump 38 [line 3]\n"
+                "37: assign ^0 'false' [line 3]\n"
+                "38: if_eq ^0 j 47 [line 3]\n"
+                "39: jump 40 [line 3]\n"
+                "40: if_eq k 'true' 44 [line 3]\n"
+                "41: jump 42 [line 3]\n"
+                "42: assign ^1 'true' [line 3]\n"
+                "43: jump 45 [line 3]\n"
+                "44: assign ^1 'false' [line 3]\n"
+                "45: if_noteq ^1 l 47 [line 3]\n"
+                "46: jump 49 [line 3]\n"
+                "47: assign ^2 'true' [line 3]\n"
+                "48: jump 50 [line 3]\n"
+                "49: assign ^2 'false' [line 3]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_relational.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_object_creation_expr)
+{
+    expected =  "1: tablecreate ^0 [line 1]\n"
+                "2: tablecreate ^0 [line 3]\n"
+                "3: tablesetelem ^0 0 1 [line 3]\n"
+                "4: tablesetelem ^0 1 2 [line 3]\n"
+                "5: tablesetelem ^0 2 3 [line 3]\n"
+                "6: tablecreate ^0 [line 5]\n"
+                "7: tablecreate ^1 [line 5]\n"
+                "8: tablesetelem ^1 0 \"hello\" [line 5]\n"
+                "9: tablesetelem ^1 1 \"lol\" [line 5]\n"
+                "10: tablecreate ^2 [line 5]\n"
+                "11: tablecreate ^3 [line 5]\n"
+                "12: tablesetelem ^3 0 'false' [line 5]\n"
+                "13: tablesetelem ^3 1 'true' [line 5]\n"
+                "14: tablesetelem ^3 2 ^0 [line 5]\n"
+                "15: tablesetelem ^3 3 5 [line 5]\n"
+                "16: tablesetelem ^3 4 ^1 [line 5]\n"
+                "17: tablesetelem ^3 5 ^2 [line 5]\n"
+                "18: jump 22 [line 7]\n"
+                "19: funcstart $0 [line 7]\n"
+                "20: tablecreate ^0 [line 7]\n"
+                "21: funcend $0 [line 7]\n"
+                "22: tablecreate ^0 [line 8]\n"
+                "23: tablesetelem ^0 0 1 [line 8]\n"
+                "24: tablesetelem ^0 1 2 [line 8]\n"
+                "25: tablesetelem ^0 2 3 [line 8]\n"
+                "26: tablecreate ^1 [line 8]\n"
+                "27: tablesetelem ^1 1 2 [line 8]\n"
+                "28: tablesetelem ^1 \"bool\" 'false' [line 8]\n"
+                "29: tablesetelem ^1 5 print [line 8]\n"
+                "30: tablecreate ^2 [line 9]\n"
+                "31: tablesetelem ^2 4 5 [line 9]\n"
+                "32: tablesetelem ^2 2 18 [line 9]\n"
+                "33: tablesetelem ^2 \"lulz\" $0 [line 9]\n"
+                "34: tablesetelem ^2 \"wot\" ^0 [line 9]\n"
+                "35: tablesetelem ^2 \"wut\" ^1 [line 9]\n"
+                "36: jump 41 [line 11]\n"
+                "37: funcstart four [line 11]\n"
+                "38: assign four 4 [line 11]\n"
+                "39: assign ^0 four [line 11]\n"
+                "40: funcend four [line 11]\n"
+                "41: tablecreate ^0 [line 11]\n"
+                "42: tablesetelem ^0 4 four [line 11]\n"
+                "43: tablecreate ^1 [line 11]\n"
+                "44: tablesetelem ^1 4 ^0 [line 11]\n"
+                "45: tablecreate ^2 [line 11]\n"
+                "46: tablesetelem ^2 4 ^1 [line 11]\n"
+                "47: tablecreate ^3 [line 11]\n"
+                "48: tablesetelem ^3 4 ^2 [line 11]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_object_creation_expr.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_if_else)
+{
+    expected =  "1: if_eq 'true' 'true' 3 [line 1]\n"
+                "2: jump 5 [line 1]\n"
+                "3: assign a 4 [line 2]\n"
+                "4: assign ^0 a [line 2]\n"
+                "5: if_eq 'false' 'true' 7 [line 4]\n"
+                "6: jump 9 [line 4]\n"
+                "7: assign b 5 [line 5]\n"
+                "8: assign ^0 b [line 5]\n"
+                "9: if_eq a 'true' 11 [line 7]\n"
+                "10: jump 15 [line 7]\n"
+                "11: if_eq b 'true' 13 [line 8]\n"
+                "12: jump 15 [line 8]\n"
+                "13: assign c 6 [line 9]\n"
+                "14: assign ^0 c [line 9]\n"
+                "15: if_eq a 'true' 17 [line 11]\n"
+                "16: jump 20 [line 11]\n"
+                "17: assign d 4 [line 12]\n"
+                "18: assign ^0 d [line 12]\n"
+                "19: jump 22 [line 13]\n"
+                "20: assign c a [line 14]\n"
+                "21: assign ^0 c [line 14]\n"
+                "22: if_eq a 'true' 24 [line 16]\n"
+                "23: jump 30 [line 16]\n"
+                "24: if_eq b 'true' 26 [line 17]\n"
+                "25: jump 29 [line 17]\n"
+                "26: assign c 5 [line 18]\n"
+                "27: assign ^0 c [line 18]\n"
+                "28: jump 30 [line 19]\n"
+                "29: sub ^0 d 5 [line 20]\n"
+                "30: if_eq a 'true' 32 [line 22]\n"
+                "31: jump 38 [line 22]\n"
+                "32: if_eq b 'true' 34 [line 23]\n"
+                "33: jump 36 [line 23]\n"
+                "34: sub ^0 d 0 [line 24]\n"
+                "35: jump 37 [line 25]\n"
+                "36: sub ^0 d 4 [line 26]\n"
+                "37: jump 39 [line 27]\n"
+                "38: sub ^0 0 d [line 28]\n"
+                "39: if_eq a 'true' 41 [line 30]\n"
+                "40: jump 45 [line 30]\n"
+                "41: if_eq b 'true' 43 [line 31]\n"
+                "42: jump 44 [line 31]\n"
+                "43: add ^0 0 d [line 32]\n"
+                "44: jump 46 [line 34]\n"
+                "45: sub ^0 0 0 [line 35]\n"
+                "46: if_eq a 'true' 48 [line 38]\n"
+                "47: jump 50 [line 38]\n"
+                "48: add ^0 8 0 [line 39]\n"
+                "49: jump 59 [line 40]\n"
+                "50: if_eq b 'true' 52 [line 40]\n"
+                "51: jump 54 [line 40]\n"
+                "52: add ^0 9 0 [line 41]\n"
+                "53: jump 59 [line 42]\n"
+                "54: if_eq c 'true' 56 [line 42]\n"
+                "55: jump 58 [line 42]\n"
+                "56: add ^0 8 0 [line 43]\n"
+                "57: jump 59 [line 44]\n"
+                "58: sub ^0 10 0 [line 45]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_if_else.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_funcdecl)
+{
+    expected =  "1: jump 18 [line 2]\n"
+                "2: funcstart iamafunction [line 2]\n"
+                "3: add ^0 a b [line 3]\n"
+                "4: return 8 [line 4]\n"
+                "5: jump 7 [line 4]\n"
+                "6: sub ^0 9 0 [line 5]\n"
+                "7: funcend iamafunction [line 6]\n"
+                "8: jump 18 [line 8]\n"
+                "9: funcstart iamnothing [line 8]\n"
+                "10: funcend iamnothing [line 8]\n"
+                "11: jump 18 [line 10]\n"
+                "12: funcstart $0 [line 10]\n"
+                "13: sub ^0 10 0 [line 10]\n"
+                "14: return 12 [line 10]\n"
+                "15: jump 17 [line 10]\n"
+                "16: sub ^0 11 0 [line 10]\n"
+                "17: funcend $0 [line 10]\n"
+                "18: assign ihavenoname $0 [line 10]\n"
+                "19: assign ^0 ihavenoname [line 10]\n"
+                "20: jump 33 [line 12]\n"
+                "21: funcstart $1 [line 12]\n"
+                "22: funcend $1 [line 12]\n"
+                "23: jump 33 [line 14]\n"
+                "24: funcstart $2 [line 14]\n"
+                "25: jump 32 [line 14]\n"
+                "26: funcstart $3 [line 14]\n"
+                "27: param 4 [line 14]\n"
+                "28: param 3 [line 14]\n"
+                "29: call iamafunction [line 14]\n"
+                "30: getretval ^0 [line 14]\n"
+                "31: funcend $3 [line 14]\n"
+                "32: funcend $2 [line 14]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_funcdecl.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+
+TEST_F(InterCodeSuite, backpatch_p3t_flow_control)
+{
+    expected =  "1: assign a 1 [line 1]\n"
+                "2: assign ^0 a [line 1]\n"
+                "3: if_eq ^0 'true' 5 [line 1]\n"
+                "4: jump 10 [line 1]\n"
+                "5: sub ^1 2 0 [line 2]\n"
+                "6: jump 10 [line 3]\n"
+                "7: sub ^0 3 0 [line 4]\n"
+                "8: jump 1 [line 5]\n"
+                "9: jump 1 [line 6]\n"
+                "10: if_eq 4 'true' 12 [line 8]\n"
+                "11: jump 19 [line 8]\n"
+                "12: if_eq 5 'true' 14 [line 8]\n"
+                "13: jump 18 [line 8]\n"
+                "14: if_eq 6 'true' 16 [line 8]\n"
+                "15: jump 17 [line 8]\n"
+                "16: jump 14 [line 8]\n"
+                "17: jump 12 [line 8]\n"
+                "18: jump 10 [line 8]\n"
+                "19: if_eq 7 'true' 21 [line 10]\n"
+                "20: jump 27 [line 10]\n"
+                "21: if_eq 8 'true' 23 [line 10]\n"
+                "22: jump 25 [line 10]\n"
+                "23: sub ^0 9 0 [line 10]\n"
+                "24: jump 26 [line 10]\n"
+                "25: sub ^0 10 0 [line 10]\n"
+                "26: jump 19 [line 10]\n"
+                "27: if_eq 11 'true' 29 [line 12]\n"
+                "28: jump 47 [line 12]\n"
+                "29: sub ^0 12 0 [line 13]\n"
+                "30: if_eq 13 'true' 34 [line 13]\n"
+                "31: jump 46 [line 13]\n"
+                "32: sub ^1 14 0 [line 13]\n"
+                "33: jump 30 [line 13]\n"
+                "34: if_eq 15 'true' 36 [line 14]\n"
+                "35: jump 38 [line 14]\n"
+                "36: sub ^2 16 0 [line 15]\n"
+                "37: jump 43 [line 16]\n"
+                "38: if_eq 17 'true' 40 [line 16]\n"
+                "39: jump 42 [line 16]\n"
+                "40: sub ^0 18 0 [line 17]\n"
+                "41: jump 43 [line 18]\n"
+                "42: sub ^0 19 0 [line 19]\n"
+                "43: jump 46 [line 20]\n"
+                "44: jump 32 [line 21]\n"
+                "45: jump 32 [line 22]\n"
+                "46: jump 27 [line 22]\n"
+                "47: sub ^0 20 0 [line 24]\n"
+                "48: if_eq 21 'true' 52 [line 24]\n"
+                "49: jump 58 [line 24]\n"
+                "50: sub ^1 22 0 [line 24]\n"
+                "51: jump 48 [line 24]\n"
+                "52: if_eq 23 'true' 54 [line 25]\n"
+                "53: jump 56 [line 25]\n"
+                "54: jump 56 [line 26]\n"
+                "55: jump 52 [line 26]\n"
+                "56: jump 50 [line 27]\n"
+                "57: jump 50 [line 28]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_flow_control.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_flow_control_error)
+{
+    expected =  "Error, in line: 3:invalid keyword CONTINUE outside of loop\n"
+                "Error, in line: 4:invalid keyword BREAK outside of loop\n";
+                "Error, in line: 6:invalid keyword CONTINUE outside of loop\n";;
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_flow_control_error.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_const_maths)
+{
+    expected =  "1: add ^0 4 5 [line 1]\n"
+                "2: mul ^0 6 8 [line 2]\n"
+                "3: sub ^0 4 9 [line 3]\n"
+                "4: div ^0 3 1 [line 4]\n"
+                "5: mod ^0 0 3 [line 5]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_const_maths.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_basic_expr)
+{
+    expected =  "1: assign a 4 [line 2]\n"
+                "2: assign ^0 a [line 2]\n"
+                "3: assign b 5 [line 3]\n"
+                "4: assign ^0 b [line 3]\n"
+                "5: assign c 7 [line 4]\n"
+                "6: assign ^0 c [line 4]\n"
+                "7: assign d 8 [line 5]\n"
+                "8: assign ^0 d [line 5]\n"
+                "9: add ^0 a b [line 7]\n"
+                "10: add ^0 ^0 c [line 7]\n"
+                "11: add ^0 ^0 d [line 7]\n"
+                "12: assign e ^0 [line 7]\n"
+                "13: assign ^1 e [line 7]\n"
+                "14: add ^0 c d [line 8]\n"
+                "15: add ^0 b ^0 [line 8]\n"
+                "16: add ^0 a ^0 [line 8]\n"
+                "17: assign e ^0 [line 8]\n"
+                "18: assign ^1 e [line 8]\n"
+                "19: uminus ^0 a [line 9]\n"
+                "20: add ^0 ^0 b [line 9]\n"
+                "21: assign e ^0 [line 9]\n"
+                "22: assign ^1 e [line 9]\n"
+                "23: add ^0 a b [line 10]\n"
+                "24: uminus ^0 ^0 [line 10]\n"
+                "25: assign e ^0 [line 10]\n"
+                "26: assign ^1 e [line 10]\n"
+                "27: mul ^0 a b [line 12]\n"
+                "28: div ^1 c d [line 12]\n"
+                "29: mod ^1 ^1 e [line 12]\n"
+                "30: sub ^0 ^0 ^1 [line 12]\n"
+                "31: assign e ^0 [line 12]\n"
+                "32: assign ^2 e [line 12]\n"
+                "33: mod ^0 d e [line 13]\n"
+                "34: div ^0 c ^0 [line 13]\n"
+                "35: sub ^0 b ^0 [line 13]\n"
+                "36: mul ^0 a ^0 [line 13]\n"
+                "37: assign e ^0 [line 13]\n"
+                "38: assign ^1 e [line 13]\n"
+                "39: add ^0 a b [line 15]\n"
+                "40: uminus ^0 ^0 [line 15]\n"
+                "41: add ^1 c d [line 15]\n"
+                "42: uminus ^1 ^1 [line 15]\n"
+                "43: div ^0 ^0 ^1 [line 15]\n"
+                "44: uminus ^0 ^0 [line 15]\n"
+                "45: mod ^0 ^0 e [line 15]\n"
+                "46: assign e ^0 [line 15]\n"
+                "47: assign ^2 e [line 15]\n"
+                "48: assign ^0 a [line 17]\n"
+                "49: sub a a 1 [line 17]\n"
+                "50: add b b 1 [line 17]\n"
+                "51: assign ^1 b [line 17]\n"
+                "52: sub ^0 ^0 ^1 [line 17]\n"
+                "53: sub c c 1 [line 17]\n"
+                "54: assign ^2 c [line 17]\n"
+                "55: add ^0 ^0 ^2 [line 17]\n"
+                "56: assign ^3 d [line 17]\n"
+                "57: add d d 1 [line 17]\n"
+                "58: sub ^0 ^0 ^3 [line 17]\n"
+                "59: tablegetelem ^1 t \"x\" [line 19]\n"
+                "60: assign ^0 ^1 [line 19]\n"
+                "61: sub ^1 ^1 1 [line 19]\n"
+                "62: tablesetelem t \"x\" ^1 [line 19]\n"
+                "63: tablegetelem ^2 t 3 [line 19]\n"
+                "64: add ^2 ^2 1 [line 19]\n"
+                "65: tablesetelem t 3 ^2 [line 19]\n"
+                "66: sub ^0 ^0 ^2 [line 19]\n"
+                "67: tablegetelem ^3 t \"a\" [line 19]\n"
+                "68: sub ^3 ^3 1 [line 19]\n"
+                "69: tablesetelem t \"a\" ^3 [line 19]\n"
+                "70: add ^0 ^0 ^3 [line 19]\n"
+                "71: tablegetelem ^5 t \"z\" [line 19]\n"
+                "72: assign ^4 ^5 [line 19]\n"
+                "73: add ^5 ^5 1 [line 19]\n"
+                "74: tablesetelem t \"z\" ^5 [line 19]\n"
+                "75: sub ^0 ^0 ^4 [line 19]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_basic_expr.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+TEST_F(InterCodeSuite, backpatch_p3t_calls)
+{
+    expected =  "1: assign e 'false' [line 2]\n"
+                "2: assign ^0 e [line 2]\n"
+                "3: assign d ^0 [line 2]\n"
+                "4: assign ^1 d [line 2]\n"
+                "5: assign c ^1 [line 2]\n"
+                "6: assign ^2 c [line 2]\n"
+                "7: assign b ^2 [line 2]\n"
+                "8: assign ^3 b [line 2]\n"
+                "9: assign a ^3 [line 2]\n"
+                "10: assign ^4 a [line 2]\n"
+                "11: tablegetelem ^0 a \"f\" [line 4]\n"
+                "12: param a [line 4]\n"
+                "13: param a [line 4]\n"
+                "14: call ^0 [line 4]\n"
+                "15: getretval ^1 [line 4]\n"
+                "16: call e [line 6]\n"
+                "17: getretval ^0 [line 6]\n"
+                "18: call e [line 6]\n"
+                "19: getretval ^1 [line 6]\n"
+                "20: call ^1 [line 6]\n"
+                "21: getretval ^2 [line 6]\n"
+                "22: param ^2 [line 6]\n"
+                "23: param d [line 6]\n"
+                "24: param c [line 6]\n"
+                "25: param b [line 6]\n"
+                "26: param a [line 6]\n"
+                "27: call ^0 [line 6]\n"
+                "28: getretval ^3 [line 6]\n"
+                "29: jump 34 [line 9]\n"
+                "30: funcstart $0 [line 9]\n"
+                "31: call b [line 9]\n"
+                "32: getretval ^0 [line 9]\n"
+                "33: funcend $0 [line 9]\n"
+                "34: call a [line 9]\n"
+                "35: getretval ^0 [line 9]\n"
+                "36: call b [line 9]\n"
+                "37: getretval ^1 [line 9]\n"
+                "38: call ^1 [line 9]\n"
+                "39: getretval ^2 [line 9]\n"
+                "40: param ^2 [line 9]\n"
+                "41: param ^0 [line 9]\n"
+                "42: call $0 [line 9]\n"
+                "43: getretval ^3 [line 9]\n";
+    actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_calls.asc");
+    GTEST_ASSERT_EQ(expected, actual);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 TEST_F(InterCodeSuite, tablemember_item_simple) {
     expected = "1: tablegetelem ^0 a \"o\" [line 1]\n";
