@@ -8,7 +8,7 @@
 **/ 
 class NumericConstant: public Constant {
 protected:
-    NumericConstant() : Constant(CONST_NUM) {};
+    NumericConstant(ExprType _type) : Constant(_type) {};
     ~NumericConstant() = default;
 };
 
