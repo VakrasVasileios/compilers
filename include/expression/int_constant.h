@@ -9,7 +9,7 @@
 **/ 
 class IntConstant final : public NumericConstant {
 public:
-    IntConstant(int value) : NumericConstant(), value(value) {};
+    IntConstant(int value) : NumericConstant(CONST_INT), value(value) {};
     ~IntConstant() = default;
     /**
      * @brief Returns a read access to this IntConstant value.

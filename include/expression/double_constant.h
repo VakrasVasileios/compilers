@@ -8,7 +8,7 @@
 **/ 
 class DoubleConstant final : public NumericConstant {
 public:
-    DoubleConstant(double value) : NumericConstant(), value(value) {};
+    DoubleConstant(double value) : NumericConstant(CONST_DOUBLE), value(value) {};
     ~DoubleConstant() = default;
     /**
      * @brief Returns a read access to this DoubleConstant value.
