@@ -14,6 +14,7 @@ add_executable(dlog
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -25,6 +26,7 @@ add_executable(phase3
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -37,6 +39,7 @@ add_executable(r_intermediate_code
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -48,6 +51,7 @@ add_executable(r_syntax_analysis
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -60,6 +64,7 @@ add_executable(d_intermediate_code
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -71,6 +76,7 @@ add_executable(d_syntax_analysis
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
+  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
