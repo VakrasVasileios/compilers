@@ -6,6 +6,15 @@
  * 
  */
 enum Vmarg_t {
+    GLOBAL_a,
+    LOCAL_a,
+    FORMAL_a,
+    BOOL_a,
+    STRING_a,
+    NUMBER_a,
+    NIL_a,
+    LIBFUNC_a,
+    USERFUNC_a
 };
 
 /**
@@ -24,5 +33,8 @@ typedef struct vmarg {
      */
     unsigned int    value;
 } Vmarg;
+
+
+void make_operand (Expression* expr, Vmarg* arg);
 
 #endif 
