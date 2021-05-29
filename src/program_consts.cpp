@@ -3,11 +3,13 @@
 
 ProgramConsts& 
 ProgramConsts:: GetInstance(void) {
+    static ProgramConsts singleton;
     return singleton;
 }
 
 const ProgramConsts&
 ProgramConsts:: GetInstanceConst(void) {
+    static const ProgramConsts singleton;
     return singleton;
 }
 
