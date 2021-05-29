@@ -12,7 +12,7 @@ Soultatos Stefanos
 
 ## Usage
 
-* To build the project use:
+* <b>compile</b> 
     ```bash
     mkdir build
     cd build
