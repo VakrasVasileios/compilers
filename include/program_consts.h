@@ -27,8 +27,6 @@ private:
     std::map<std::string, unsigned>   string_map;
     std::map<std::string, unsigned>   libfunc_map;
 
-    static ProgramConsts singleton;
-
     ProgramConsts() = default;
     ProgramConsts(const ProgramConsts&) = delete;
     ProgramConsts(ProgramConsts&&) = delete;
