@@ -1255,11 +1255,9 @@ int yyerror(std::string yaccProvidedMessage) {
     SignalError(yaccProvidedMessage);
     return 1;
 }
- 
-int main(int argc, char** argv) {
-    //Can't reach me for I am... above (LUL)
-    InitLibraryFunctions();
 
+#ifndef TESTING 
+int main(int argc, char** argv) {
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(stderr, "Cannot read file: %s\n", argv[1]);
@@ -1269,6 +1267,8 @@ int main(int argc, char** argv) {
     else {
         yyin = stdin;
     }
+    /* ligma ballzz  */
+    InitLibraryFunctions();
     yyparse();
     #if defined LOGQUADS
         if (NoErrorSignaled()) {
@@ -1290,6 +1290,7 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+#endif
 
 bool error_flag = false;
 

@@ -11,4 +11,8 @@ target_link_libraries(intermediate_code_test PRIVATE gtest)
 target_link_libraries(intermediate_code_test PRIVATE exec)
 target_compile_definitions(intermediate_code_test PRIVATE TESTING=1)
 
-
+link_directories(${compilers_SOURCE_DIR}/src)
+add_executable(opcode_dispatcher_test opcode_dispatcher_test.cpp)
+target_link_libraries(opcode_dispatcher_test PRIVATE gtest)
+target_link_libraries(opcode_dispatcher_test PRIVATE src)
+target_compile_definitions(opcode_dispatcher_test PRIVATE TESTING=1)
