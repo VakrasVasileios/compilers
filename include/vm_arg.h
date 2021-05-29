@@ -36,7 +36,6 @@ typedef struct vmarg {
     unsigned int    value;
 } Vmarg;
 
-
 Vmarg* make_operand (const Expression* expr);
 
 #endif 
