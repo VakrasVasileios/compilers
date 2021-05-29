@@ -9,15 +9,15 @@
 #include <assert.h>
 #include <string>
 
-#define SYMBOL_CAST(expr)       static_cast<Symbol*>(expr)
-#define BOOLCONST_CAST(exr)     static_cast<BoolConstant*>(expr)
-#define INTCONST_CAST(exr)      static_cast<IntConstant*>(expr)
-#define DOUBLECONST_CAST(expr)  static_cast<DoubleConstant*>(expr)
-#define NILCONST_CAST(exr)      static_cast<NilConstant*>(expr)
-#define STRINGCONST_CAST(exr)   static_cast<StringConstant*>(expr)
+#define SYMBOL_CAST(expr)       static_cast<const Symbol*>(expr)
+#define BOOLCONST_CAST(exr)     static_cast<const BoolConstant*>(expr)
+#define INTCONST_CAST(exr)      static_cast<const IntConstant*>(expr)
+#define DOUBLECONST_CAST(expr)  static_cast<const DoubleConstant*>(expr)
+#define NILCONST_CAST(exr)      static_cast<const NilConstant*>(expr)
+#define STRINGCONST_CAST(exr)   static_cast<const StringConstant*>(expr)
 
 Vmarg*
-make_operand (Expression* expr) {
+make_operand (const Expression* expr) {
     Vmarg* arg = new Vmarg();
     switch (expr->get_type()) {
         case VAR:
