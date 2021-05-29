@@ -37,6 +37,6 @@ typedef struct vmarg {
 } Vmarg;
 
 
-void make_operand (Expression* expr, Vmarg* arg);
+Vmarg* make_operand (Expression* expr, Vmarg* arg);
 
 #endif 
