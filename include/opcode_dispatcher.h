@@ -24,9 +24,6 @@ public:
         &IopCodeDispatcher::generate_DIV,
         &IopCodeDispatcher::generate_MOD,
         &IopCodeDispatcher::generate_UMINUS,
-        &IopCodeDispatcher::generate_AND,
-        &IopCodeDispatcher::generate_OR,
-        &IopCodeDispatcher::generate_NOT,
         &IopCodeDispatcher::generate_JUMP,
         &IopCodeDispatcher::generate_IF_EQ,
         &IopCodeDispatcher::generate_IF_NOTEQ,
@@ -68,9 +65,6 @@ private:
     Instruction*        generate_DIV(const Quad* quad);
     Instruction*        generate_MOD(const Quad* quad);
     Instruction*        generate_UMINUS(const Quad* quad);
-    Instruction*        generate_AND(const Quad* quad);
-    Instruction*        generate_OR(const Quad* quad);
-    Instruction*        generate_NOT(const Quad* quad);
     Instruction*        generate_JUMP(const Quad* quad);
     Instruction*        generate_IF_EQ(const Quad* quad);
     Instruction*        generate_IF_NOTEQ(const Quad* quad);

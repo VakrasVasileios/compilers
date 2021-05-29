@@ -18,12 +18,6 @@ std::string IopcodeToString(Iopcode _op) {
             return "mod";
         case UMINUS_t:
             return "uminus";
-        case AND_t:
-            return "and";
-        case OR_t:
-            return "or";
-        case NOT_t:
-            return "not";
         case JUMP_t:
             return "jump";    
         case IF_EQ_t:

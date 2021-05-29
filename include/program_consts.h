@@ -7,8 +7,8 @@
 
 class ProgramConsts {
 public:
-    static auto     GetInstance(void) -> ProgramConsts&;
-    static auto     GetInstanceConst(void) -> const ProgramConsts&;
+    static ProgramConsts&     GetInstance(void);
+    static const ProgramConsts&     GetInstanceConst(void);
 
     unsigned        InsertNumber(double num);
     unsigned        InsertString(const std::string& str);

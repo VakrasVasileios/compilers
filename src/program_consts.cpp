@@ -1,13 +1,13 @@
 #include "../include/program_consts.h"
 #include <assert.h>
 
-auto
-ProgramConsts:: GetInstance(void) -> ProgramConsts& {
+ProgramConsts& 
+ProgramConsts:: GetInstance(void) {
     return singleton;
 }
 
-auto
-ProgramConsts:: GetInstanceConst(void) -> const ProgramConsts& {
+const ProgramConsts&
+ProgramConsts:: GetInstanceConst(void) {
     return singleton;
 }
 

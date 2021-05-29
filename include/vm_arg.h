@@ -1,6 +1,8 @@
 #ifndef VM_ARG_H
 #define VM_ARG_H
 
+#include "expression/expression.h"
+
 /**
  * @brief A virtual machine agument type.
  * 
