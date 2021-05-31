@@ -900,7 +900,15 @@ block:      '{'         {
                             DecreaseScope();
                             DLOG("block -> { stmts }");
                         }
-            ;
+            ; 
+
+funcargs:   '(' idlist ')'  {
+                                enter_scope_space();
+                                reset_funclocal_offset();
+
+                                HideLowerScopes();
+                                stmt_stack.push_back(FUNC_t);
+                            }
 
 funcdef:    FUNCTION        {
                                 auto anonymous_function = DefineNewAnonymousFunc();
@@ -914,11 +922,12 @@ funcdef:    FUNCTION        {
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
                                 $<funcdef>$ = func_def_stmt;
+                                
+                                store_funclocal_offset();
+                                enter_scope_space();
+                                reset_formalarg_offset();
                             }
-            '(' idlist ')'  {
-                                HideLowerScopes();
-                                stmt_stack.push_back(FUNC_t);
-                            }
+            funcargs
             block           {
                                 auto top_func_def = func_def_stmts.top();
                                 auto anonymous_function = top_func_def->get_sym();
@@ -1021,7 +1030,9 @@ const:        INTNUM    {
 multid:     ',' ID  {
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
-                        auto offset = func->get_formal_arguments().size();
+                        // auto offset = func->get_formal_arguments().size();
+
+                        increase_curr_offset();
 
                         auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
                         if (func->HasFormalArg(new_formal_arg)) {
@@ -1043,7 +1054,9 @@ multid:     ',' ID  {
 idlist:     ID      {
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
-                        auto offset = func->get_formal_arguments().size();
+                        // auto offset = func->get_formal_arguments().size();
+                        increase_curr_offset();
+                        auto offset = curr_scope_offset();
 
                         auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
                         if (func->HasFormalArg(new_formal_arg)) {
@@ -1367,15 +1380,10 @@ void InitLibraryFunctions() {
 
 Symbol* NewSymbol(ExprType type, const char* id, Expression* index) {
     assert (id != nullptr);
-    if (InFuncDef()) {
-        auto new_symbol = new Symbol(type, id, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), index);
-        func_def_stmts.top()->IncreaseOffset();
-        
-        return new_symbol;
-    }
-    else {
-        return new Symbol(type, id, yylineno, current_scope, PROGRAM_VAR, program_var_offset++, index);
-    }
+    auto new_symbol = new Symbol(type, id, yylineno, current_scope, curr_scope_space(), curr_scope_offset(), index);
+    increase_curr_offset();
+    
+    return new_symbol;
 }
 
 Symbol* DefineNewSymbol(ExprType type, const char* id, Expression* index) {
