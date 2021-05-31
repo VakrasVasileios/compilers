@@ -1,6 +1,82 @@
 #include "../../include/expression/symbol.h"
 #include <assert.h>
 
+unsigned int programVarOffset       = 0;
+unsigned int functionLocalOffset    = 0;
+unsigned int formalArgOffset        = 0;
+unsigned int scopeSpaceCounter      = 1;
+
+std::stack<unsigned int> funcLocalOffset_stack;
+std::stack<unsigned int> formalOffset_stack;
+
+void
+store_funclocal_offset(void) {
+    funcLocalOffset_stack.push(functionLocalOffset);
+}
+
+void
+restore_funclocal_offser(void) {
+    assert(!funcLocalOffset_stack.empty());
+    functionLocalOffset = funcLocalOffset_stack.top();
+    funcLocalOffset_stack.pop();
+}
+
+void
+reset_funclocal_offset(void) {
+    functionLocalOffset = 0;
+}
+
+void
+reset_formalarg_offset(void) {
+    formalArgOffset = 0;
+}
+
+ScopeSpace
+curr_scope_space(void) {
+    if (scopeSpaceCounter == 1)
+        return PROGRAM_VAR;
+    else if (scopeSpaceCounter % 2 == 0)
+        return FORMAL_ARG;
+    else
+        return FUNCTION_LOCAL;
+}
+
+unsigned int
+curr_scope_offset(void) {
+    switch (curr_scope_space()) {
+        case PROGRAM_VAR:
+            return programVarOffset;
+        case FUNCTION_LOCAL:
+            return functionLocalOffset;
+        case FORMAL_ARG:
+            return formalArgOffset;        
+        default:
+            assert(false);
+    }
+}
+
+void
+increase_curr_offset(void) {
+    switch (curr_scope_space()) {
+        case PROGRAM_VAR    : ++programVarOffset; break;
+        case FUNCTION_LOCAL : ++functionLocalOffset; break;
+        case FORMAL_ARG     : ++formalArgOffset; break;
+        default:
+            assert(false);
+    }
+}
+
+void
+enter_scope_space(void) {
+    ++scopeSpaceCounter;
+}
+
+void
+exit_scope_space(void) {
+    assert(scopeSpaceCounter > 1);
+    --scopeSpaceCounter;
+}
+
 std::string
 Symbol:: get_id() const {
     return id;
@@ -159,7 +235,9 @@ std::ostream& operator<<(std::ostream& os, const Symbol* symbol) {
     return os   << "[" << symbol->sym_to_string() << "]"
                 << " \"" << symbol->get_id() << "\""
                 << " (line " << symbol->get_line() << ")" 
-                << " (scope " << symbol->get_scope() << ")";
+                << " (scope " << symbol->get_scope() << ")"
+                << " [" << symbol->space_to_string() << "]"
+                << "(offset " << symbol->get_offset() << ")";
 }
 
 std::ostream&
