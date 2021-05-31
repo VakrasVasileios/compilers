@@ -60,42 +60,41 @@ namespace target_code {
         ~IopCodeDispatcher() = default;
         /**
          * @brief Emits all of the target code instructions
-         * from a list of intermediate code quads.  
+         * from the list of intermediate code quads.  
          * 
-         * @param quads the list of intermediate code quads.
          */
-        void        Generate(std::vector<Quad*> quads);
+        void        Generate();
     private:
-        Vmarg*      make_operand (Expression* expr);
-        Vmarg*      make_numberoperand (Expression* expr);
-        Vmarg*      make_booloperand (Expression* expr);
-        Vmarg*      make_retvaloperand (Expression* expr);
+        virtual_machine::Vmarg*     make_operand (expression::Expression* expr);
+        virtual_machine::Vmarg*     make_numberoperand (expression::Expression* expr);
+        virtual_machine::Vmarg*     make_booloperand (expression::Expression* expr);
+        virtual_machine::Vmarg*     make_retvaloperand (expression::Expression* expr);
 
-        void        generate(Vmopcode op, Quad* quad);
-        void        generate_relational(Vmopcode op, Quad* quad);
-        void        generate_ASSIGN(Quad* quad);
-        void        generate_ADD(Quad* quad);
-        void        generate_SUB(Quad* quad);
-        void        generate_MUL(Quad* quad);
-        void        generate_DIV(Quad* quad);
-        void        generate_MOD(Quad* quad);
-        void        generate_UMINUS(Quad* quad);
-        void        generate_JUMP(Quad* quad);
-        void        generate_IF_EQ(Quad* quad);
-        void        generate_IF_NOTEQ(Quad* quad);
-        void        generate_IF_LESSEQ(Quad* quad);
-        void        generate_IF_GREATEREQ(Quad* quad);
-        void        generate_IF_LESS(Quad* quad); 
-        void        generate_IF_GREATER(Quad* quad);
-        void        generate_CALL(Quad* quad);
-        void        generate_PARAM(Quad* quad);
-        void        generate_RETURN(Quad* quad);
-        void        generate_GETRETVAL(Quad* quad);
-        void        generate_FUNCSTART(Quad* quad);
-        void        generate_FUNCEND(Quad* quad);
-        void        generate_TABLECREATE(Quad* quad);
-        void        generate_TABLEGETELEM(Quad* quad);
-        void        generate_TABLESETELEM(Quad* quad);
+        void                        generate(virtual_machine::Vmopcode op, Quad* quad);
+        void                        generate_relational(virtual_machine::Vmopcode op, Quad* quad);
+        void                        generate_ASSIGN(Quad* quad);
+        void                        generate_ADD(Quad* quad);
+        void                        generate_SUB(Quad* quad);
+        void                        generate_MUL(Quad* quad);
+        void                        generate_DIV(Quad* quad);
+        void                        generate_MOD(Quad* quad);
+        void                        generate_UMINUS(Quad* quad);
+        void                        generate_JUMP(Quad* quad);
+        void                        generate_IF_EQ(Quad* quad);
+        void                        generate_IF_NOTEQ(Quad* quad);
+        void                        generate_IF_LESSEQ(Quad* quad);
+        void                        generate_IF_GREATEREQ(Quad* quad);
+        void                        generate_IF_LESS(Quad* quad); 
+        void                        generate_IF_GREATER(Quad* quad);
+        void                        generate_CALL(Quad* quad);
+        void                        generate_PARAM(Quad* quad);
+        void                        generate_RETURN(Quad* quad);
+        void                        generate_GETRETVAL(Quad* quad);
+        void                        generate_FUNCSTART(Quad* quad);
+        void                        generate_FUNCEND(Quad* quad);
+        void                        generate_TABLECREATE(Quad* quad);
+        void                        generate_TABLEGETELEM(Quad* quad);
+        void                        generate_TABLESETELEM(Quad* quad);
 
         typedef void (IopCodeDispatcher:: *generator_func_t) (Quad*);
         generator_func_t    generators[26];        
