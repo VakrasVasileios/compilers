@@ -3,22 +3,24 @@
 
 #include "constant.h"
 
-/**
- * @brief A string constant expression.
-**/ 
-class StringConstant final : public Constant {
-public:
-    StringConstant(std::string value) : Constant(CONST_STR), value(value) {};
-    ~StringConstant() = default;
+namespace expression {
     /**
-     * @brief Returns a read access to this StringConstant value.
+     * @brief A string constant expression.
     **/ 
-    std::string     get_value() const;
-    std::string     to_string() const override;
-protected:
-    std::ostream&   LogExpression(std::ostream& os) const override; 
-private:
-    std::string     value;
-};
+    class StringConstant final : public Constant {
+    public:
+        StringConstant(std::string value) : Constant(CONST_STR), value(value) {};
+        ~StringConstant() = default;
+        /**
+         * @brief Returns a read access to this StringConstant value.
+        **/ 
+        std::string     get_value() const;
+        std::string     to_string() const override;
+    protected:
+        std::ostream&   LogExpression(std::ostream& os) const override; 
+    private:
+        std::string     value;
+    };
+}
 
 #endif

@@ -5,13 +5,15 @@
 #include <string>
 #include <ostream>
 
-/**
- * @brief A constant primary expression.
-**/ 
-class Constant : public Primary {
-protected:
-    Constant(ExprType type) : Primary(type){};
-    ~Constant() = default;         
-};
+namespace expression {
+    /**
+     * @brief A constant primary expression.
+    **/ 
+    class Constant : public Primary {
+    protected:
+        Constant(ExprType type) : Primary(type){};
+        ~Constant() = default;         
+    };
+}
 
 #endif

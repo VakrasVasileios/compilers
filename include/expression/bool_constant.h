@@ -3,24 +3,26 @@
 
 #include "constant.h"
 
-/**
- * @brief A bool constant expression.
-**/ 
-class BoolConstant final : public Constant {
-public:
-    BoolConstant(bool value) : Constant(CONST_BOOL), value(value) {};
-    ~BoolConstant() = default;
+namespace expression {
     /**
-     * @brief Returns a read access to this BoolConstant value.
-     * 
-     * @return a read access to this BoolConstant value.
+     * @brief A bool constant expression.
     **/ 
-    bool            get_value() const;
-    std::string     to_string() const override;
-protected:
-    std::ostream&   LogExpression(std::ostream& os) const override;     
-private:
-    bool            value;   
-};
+    class BoolConstant final : public Constant {
+    public:
+        BoolConstant(bool value) : Constant(CONST_BOOL), value(value) {};
+        ~BoolConstant() = default;
+        /**
+         * @brief Returns a read access to this BoolConstant value.
+         * 
+         * @return a read access to this BoolConstant value.
+        **/ 
+        bool            get_value() const;
+        std::string     to_string() const override;
+    protected:
+        std::ostream&   LogExpression(std::ostream& os) const override;     
+    private:
+        bool            value;   
+    };
+}
 
 #endif

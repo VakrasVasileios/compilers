@@ -3,24 +3,26 @@
 
 #include "call_suffix.h"
 
-/**
- * @brief A normal callsuffix.
- * 
- */
-class NormCall final : public CallSuffix {
-public:
+namespace expression {
     /**
-     * @brief Constructs a new NormCall object.
-     * 
-     * @param elist 
-     */
-    NormCall(Elist* elist)
-    : CallSuffix(NORM_CALL, std::string(""), elist) {};
-    /**
-     * @brief Destroys this NormCall object.
+     * @brief A normal callsuffix.
      * 
      */
-    ~NormCall() = default;
-};
+    class NormCall final : public CallSuffix {
+    public:
+        /**
+         * @brief Constructs a new NormCall object.
+         * 
+         * @param elist 
+         */
+        NormCall(Elist* elist)
+        : CallSuffix(NORM_CALL, std::string(""), elist) {};
+        /**
+         * @brief Destroys this NormCall object.
+         * 
+         */
+        ~NormCall() = default;
+    };
+}
 
 #endif 
