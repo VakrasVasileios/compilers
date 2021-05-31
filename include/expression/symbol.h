@@ -163,6 +163,17 @@ namespace expression {
 
         std::ostream&               LogExpression(std::ostream& os) const override;
     };
+    /**
+     * @brief Checks wether a symbol expression is
+     * a table item.
+     * 
+     * @param symbol the symbol expression to be
+     * checked, not null
+     * 
+     * @return wether a symbol expression is
+     * a table item 
+     */
+    bool                        IsTableItem(Symbol* symbol);
 }
 
 #endif

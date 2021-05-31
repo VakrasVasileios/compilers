@@ -167,4 +167,9 @@ namespace expression {
     Symbol:: LogExpression(std::ostream& os) const {
         return os << id;
     }
+
+    inline bool IsTableItem(Symbol* symbol) {
+        PRECONDITION(symbol != nullptr);
+        return symbol->get_type() == TABLE_ITEM;
+    }
 }

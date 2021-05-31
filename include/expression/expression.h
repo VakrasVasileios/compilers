@@ -2,6 +2,7 @@
 #define EXPRESSION_H
 
 #include <string>
+#include "../../util/contract/contract.h"
 
 /**
  * @brief Alpha expression namespace.
@@ -65,6 +66,66 @@ namespace expression {
     private:
         ExprType type;
     };
+    /**
+     * @brief Checks wether an expression is a 
+     * library function.
+     * 
+     * @param expr the expression to be checked, not null
+     * 
+     * @return wether an expression is a 
+     * library function
+     */
+    bool                        IsLibraryFunction(Expression* expr);
+    /**
+     * @brief Checks wether an expression is a 
+     * user function.
+     * 
+     * @param expr the expression to be checked, not null
+     * 
+     * @return wether an expression is a 
+     * user function
+     */
+    bool                        IsUserFunction(Expression* expr);
+    /**
+     * @brief Checks wether an expression is a 
+     * variable.
+     * 
+     * @param expr the expression to be checked, not null
+     * 
+     * @return wether an expression is a 
+     * variable
+     */
+    bool                        IsVariable(Expression* expr);
+    /**
+     * @brief Checks wether an expression is a 
+     * constant boolean.
+     * 
+     * @param expr the expression to be checked, not null
+     * 
+     * @return wether an expression is a 
+     * constant boolean.
+     */
+    bool                        IsConstBool(Expression* expr);
+    /**
+     * @brief Checks wether an expression is a 
+     * constant string.
+     * 
+     * @param expr the expression to be checked, not null
+     * 
+     * @return wether an expression is a 
+     * constant string.
+     */
+    bool                        IsConstString(Expression* expr);
+    /**
+     * @brief Checks wether an expression is a 
+     * table make.
+     * 
+     * @param expr the expression to be checked, not null
+     * 
+     * @return wether an expression is a 
+     * table make.
+     */
+    bool                        IsTableMake(Expression* expr);
 }
 
 #endif

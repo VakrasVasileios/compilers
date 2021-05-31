@@ -1,15 +1,16 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "expression/symbol.h"
-#include "../util/contract/contract.h"
+#include "../expression/symbol.h"
+#include "../../util/contract/contract.h"
 #include <list>
 
-/**
- * @brief Contains multiple symbols across a single scope.
- * 
-**/ 
-class Block final {
+namespace target_code {
+    /**
+     * @brief Contains multiple symbols across a single scope.
+     * 
+    **/ 
+    class Block final {
     public:
         Block() = default;
         ~Block() = default;
@@ -18,7 +19,7 @@ class Block final {
          * 
          * @return a read access to this Block symbols, not null
         **/ 
-        std::list<Symbol*>      get_symbols() const;
+        std::list<expression::Symbol*>      get_symbols() const;
         /**
          * @brief Activates all of the symbols of this Block..
          * 
@@ -39,7 +40,7 @@ class Block final {
         *  @return a read/write access to a reference of the symbol if it's found,
         *  else nullptr
         **/ 
-        Symbol*                 Lookup(std::string id);
+        expression::Symbol*                 Lookup(std::string id);
         /**
          * @brief Inserts a symbol at the end of this Block.
          * 
@@ -47,7 +48,7 @@ class Block final {
          * of this Block, not null
          * 
         **/ 
-        void                    Insert(Symbol* symbol);
+        void                    Insert(expression::Symbol* symbol);
         /**
          * @brief Checks wether this Block contains only hidden variables.
          * 
@@ -57,9 +58,10 @@ class Block final {
 
         friend std::ostream&    operator<<(std::ostream& os, const Block block);
     private:
-       std::list<Symbol*>       symbols;
-        
-       static bool              IsHiddenVariable(Symbol* entry);
-};
+        std::list<expression::Symbol*>       symbols;
+            
+        static bool              IsHiddenVariable(expression::Symbol* entry);
+    };
+}
 
 #endif

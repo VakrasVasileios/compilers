@@ -21,4 +21,8 @@ namespace expression {
         PRECONDITION(arg != nullptr);
         elist->exprs.push_back(arg);
     }
+    
+    inline bool IsMethodCall(CallSuffix* call_suffix) {
+        return call_suffix->get_type() == METHOD_CALL;
+    }
 }

@@ -74,6 +74,17 @@ namespace expression {
         std::string             name;
         Elist*                  elist;
     };
+    /**
+     * @brief Checks wether a call suffix is
+     * of method call type.
+     * 
+     * @param call_suffix the call suffix to be checked,
+     * not null
+     * 
+     * @return wether a call suffix is
+     * of method call type 
+     */
+    bool            IsMethodCall(CallSuffix* call_suffix);
 }
 
 #endif 

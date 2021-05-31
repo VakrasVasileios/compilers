@@ -51,78 +51,7 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    #define OUT_OF_SCOPE        -1
-    #define LIB_FUNC_LINE       0
-    #define TEMP_LINE           0
     #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)
-
-    const unsigned int          global_scope = 0;
-    unsigned int                current_scope = OUT_OF_SCOPE;
-    
-    SymbolTable                 symbol_table;
-    ProgramStack                program_stack;  
-    std::vector<Quad*>          quads;
-
-    unsigned int                program_var_offset = 0;
-    
-    std::stack<LoopStmt*>       loop_stmts;
-    std::stack<WhileStmt*>      while_stmts;
-    std::stack<ForStmt*>        for_stmts;
-    std::stack<FuncDefStmt*>    func_def_stmts;  
-    std::stack<IfStmt*>         if_stmts;
-
-    std::list<StmtType>         stmt_stack;
-
-    bool                        NoErrorSignaled();
-    void                        SignalError(std::string msg);
-    void                        LogWarning(std::string msg);
-    void                        LogQuads(std::ostream& output);
-    void                        LogSymTable(std::ostream& output);
-                           
-    void                        InitLibraryFunctions();
-
-    void                        IncreaseScope();
-    void                        DecreaseScope();
-    void                        HideLowerScopes();
-
-    void                        DefineSymbol(Symbol* symbol);
-    Symbol*                     DefineNewSymbol(ExprType type, const char* symbol, Expression* index);
-    Symbol*                     DefineNewAnonymousFunc();
-    void                        StashFormalArgument(Symbol* symbol);
-    void                        DefineStashedFormalArguments();
-
-    Symbol*                     NewTemp(ExprType type, Expression* index);
-    void                        ResetTemp();
-    Quad*                       Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2);
-
-    Symbol*                     EmitIfTableItem(Symbol* sym);
-    Symbol*                     MemberItem(Symbol* sym, const char* id);
-    Call*                       MakeCall(Symbol* called_symbol, CallSuffix* call_suffix);
-
-    unsigned int                NextQuadLabel();
-
-    bool                        IsLibraryFunction(Expression* expr);
-    bool                        IsUserFunction(Expression* expr);
-    bool                        IsVariable(Expression* expr);
-    bool                        IsConstString(Expression* expr);
-    bool                        IsConstBool(Expression* expr);
-    bool                        IsTableMake(Expression* expr);
-
-    bool                        IsGlobalVar(Symbol* symbol);
-    bool                        IsAtCurrentScope(Symbol* symbol);
-    bool                        IsTableItem(Symbol* symbol);
-    bool                        IsMethodCall(CallSuffix* call_suffix);
-
-    bool                        InLoop();
-    bool                        InFuncDef();
-
-    void                        BackPatch(std::list<unsigned int> l_list, unsigned int q_label);
-    Symbol*                     ConcludeShortCircuit(BoolExpr* expr);
-
-    bool                        IsValidArithmeticOp(Expression* expr);
-    bool                        IsValidArithmeticComp(Expression* expr);
-    bool                        IsValidAssign(Symbol* left_operand);
-    bool                        IsValidBreakContinue();
 %}
 
 %union {                                                    
@@ -685,7 +614,7 @@ primary:      lvalue                {
             ;
 
 lvalue:       ID                    {
-                                        auto symbol = program_stack.Lookup($1);
+                                        auto symbol = Lookup($1);
                                         if (symbol == nullptr) {
                                             symbol = DefineNewSymbol(VAR, $1, nullptr);
                                         } else if (!symbol->is_active()) {
@@ -696,7 +625,7 @@ lvalue:       ID                    {
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
-                                        auto symbol = program_stack.Lookup($2);
+                                        auto symbol = Lookup($2);
                                         if (symbol == nullptr) { 
                                             symbol = DefineNewSymbol(VAR, $2, nullptr);
                                         }
@@ -719,7 +648,7 @@ lvalue:       ID                    {
                                         DLOG("lvalue -> local id");
                                     }
             | COLONCOLON ID         {
-                                        auto symbol = program_stack.LookupGlobal($2);
+                                        auto symbol = LookupGlobal($2);
                                         if (symbol == nullptr || !symbol->is_active()) 
                                             SignalError("No global variable with id: " + std::string($2));
                                         $$ = symbol;
@@ -938,7 +867,7 @@ funcdef:    FUNCTION        {
                                 DLOG("funcdef -> function (idlist) block "); 
                             }
             | FUNCTION ID   {
-                                auto symbol = program_stack.Lookup($2);
+                                auto symbol = Lookup($2);
                                 if (symbol == nullptr) {
                                     symbol = DefineNewSymbol(USER_FUNC, $2, nullptr);
                                 }
@@ -1019,18 +948,7 @@ const:        INTNUM    {
             ;
 
 multid:     ',' ID  {
-                        auto top_func_def_stmt = func_def_stmts.top();
-                        auto func = top_func_def_stmt->get_sym();
-                        auto offset = func->get_formal_arguments().size();
-
-                        auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
-                        if (func->HasFormalArg(new_formal_arg)) {
-                            SignalError("formal argument " + std::string($2) + " already declared");
-                        }
-                        else {
-                            func->AddFormalArg(new_formal_arg);
-                            StashFormalArgument(new_formal_arg);       
-                        }
+                        StashFormalArgument($2, yylineno);
                     } 
             multid  {
                         DLOG("multid -> , id multid");
@@ -1041,18 +959,7 @@ multid:     ',' ID  {
             ;
 
 idlist:     ID      {
-                        auto top_func_def_stmt = func_def_stmts.top();
-                        auto func = top_func_def_stmt->get_sym();
-                        auto offset = func->get_formal_arguments().size();
-
-                        auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
-                        if (func->HasFormalArg(new_formal_arg)) {
-                            SignalError("formal argument " + std::string($1) + " already declared");
-                        }
-                        else {
-                            func->AddFormalArg(new_formal_arg);   
-                            StashFormalArgument(new_formal_arg);  
-                        }
+                        StashFormalArgument($2, yylineno);
                     } 
             multid  { 
                         DLOG("idlist -> id multid"); 
@@ -1291,347 +1198,3 @@ int main(int argc, char** argv) {
     return 0;
 }
 #endif
-
-bool error_flag = false;
-
-inline bool NoErrorSignaled() {
-    return error_flag == false;
-}  
-
-void SignalError(std::string msg) {
-    #if !defined TEST
-        std::cout << "\033[31mError, in line: " << yylineno << ":\033[0m " << msg << std::endl;
-    #else
-        std::cout << "Error, in line: " << yylineno << ": " << msg << std::endl; 
-    #endif    
-    error_flag = 1;
-}
-
-void LogWarning(std::string msg) {
-    #if !defined TEST
-        std::cout << "\033[33mWarning, in line: " << yylineno << ":\033[0m " << msg << std::endl;
-    #else
-        std::cout << "Warning, in line: " << yylineno << ": " << msg << std::endl ;
-    #endif
-}
-
-inline void LogSymTable(std::ostream& output) {
-    output << symbol_table;
-}
-
-void LogQuads(std::ostream& output) {
-    for (auto quad : quads) {
-        output << *quad << std::endl;
-    }
-}
-
-void IncreaseScope() {
-    Block* new_block = new Block();
-    symbol_table.Insert(++current_scope, new_block);
-    program_stack.Push(new_block);
-}
-
-void DecreaseScope() {
-    program_stack.Top()->Deactivate();
-    program_stack.Pop();
-    --current_scope;
-}
-
-void HideLowerScopes() {
-    if (current_scope != global_scope)
-        program_stack.Top()->Deactivate();
-    if (current_scope > 1)
-        program_stack.DeactivateLowerScopes();
-}
-
-void DefineSymbol(Symbol* symbol) {
-    assert(symbol != nullptr);
-    program_stack.Top()->Insert(symbol);
-}
-
-void InitLibraryFunctions() {
-    IncreaseScope(); 
-    DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, PROGRAM_VAR,program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-}
-
-Symbol* NewSymbol(ExprType type, const char* id, Expression* index) {
-    assert (id != nullptr);
-    if (InFuncDef()) {
-        auto new_symbol = new Symbol(type, id, yylineno, current_scope, FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), index);
-        func_def_stmts.top()->IncreaseOffset();
-        
-        return new_symbol;
-    }
-    else {
-        return new Symbol(type, id, yylineno, current_scope, PROGRAM_VAR, program_var_offset++, index);
-    }
-}
-
-Symbol* DefineNewSymbol(ExprType type, const char* id, Expression* index) {
-    assert(id != nullptr);
-    auto new_symbol = NewSymbol(type, id, index);
-    DefineSymbol(new_symbol);
-
-    return new_symbol;
-}
-
-unsigned int anonymus_funcs_counter = 0;
-
-std::string NewAnonymousFuncName() {
-    std::string an = "$";
-    an += std::to_string(anonymus_funcs_counter++);
-
-    return an;
-}
-
-Symbol* NewAnonymousFunc() {
-    return NewSymbol(USER_FUNC, NewAnonymousFuncName().c_str(), nullptr);
-}
-
-Symbol* DefineNewAnonymousFunc() {
-    auto new_an_func = NewAnonymousFunc();
-    DefineSymbol(new_an_func);
-
-    return new_an_func;
-}
-
-std::list<Symbol*>  stashed_formal_arguments;
-
-void DefineStashedFormalArguments() { 
-    for (auto i : stashed_formal_arguments) {
-        DefineSymbol(i);
-    }
-    stashed_formal_arguments.clear();
-}
-
-void StashFormalArgument(Symbol* symbol) {
-    assert(symbol != nullptr);
-    stashed_formal_arguments.push_back(symbol);
-}
-
-unsigned int temp_counter = 0;
-
-inline std::string NewTempName() {
-    return  "^" + std::to_string(temp_counter++); 
-}
-
-inline void ResetTemp() { 
-    temp_counter = 0; 
-}
-
-Symbol* NewTemp(ExprType type, Expression* index) {
-    std::string id = NewTempName();
-
-    auto new_temp = program_stack.Top()->Lookup(id);
-    
-    if (new_temp == nullptr)  
-        new_temp = DefineNewSymbol(type, id.c_str(), index);
-
-    return new_temp;
-}
-
-Quad* Emit(Iopcode op, Expression* result, Expression* arg1, Expression* arg2) {
-    unsigned int label = quads.size() + 1;
-    Quad* q = new quad(op, result, arg1, arg2, label, yylineno);
-    quads.push_back(q);
-
-    return q;
-}
-
-Symbol* EmitIfTableItem(Symbol* sym) {
-    assert (sym != nullptr);
-    if (!IsTableItem(sym)) {
-        return sym;
-    }
-    else {
-        auto temp = NewTemp(TABLE_ITEM, sym->get_index());
-        Emit(TABLEGETELEM_t, temp, sym, sym->get_index());
-
-        return temp;
-    }    
-}
-
-Symbol* MemberItem(Symbol* sym, const char* id) {
-    assert(sym != nullptr);
-    assert(id != nullptr);
-    sym = EmitIfTableItem(sym);
-    auto index = new StringConstant(std::string(id));
-
-    return DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
-}
-
-void checkValidCall(Symbol* called_symbol, std::list<Expression*> params) {
-    assert (called_symbol != nullptr);
-    if (IsUserFunction(called_symbol)) {
-        auto call_args_num = params.size();
-        auto func_def_args_num = called_symbol->get_formal_arguments().size();
-        if (call_args_num < func_def_args_num) 
-            SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
-        else if (call_args_num > func_def_args_num) 
-            LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()));
-    }
-}
-
-Call* MakeCall(Symbol* called_symbol, CallSuffix* call_suffix) {
-    assert (called_symbol != nullptr);
-    assert (call_suffix != nullptr);
-    auto params = call_suffix->get_elist()->exprs;
-
-    checkValidCall(called_symbol, params);
-
-    called_symbol = EmitIfTableItem(called_symbol);
-    for (auto param : params)
-        Emit(PARAM_t, param, nullptr, nullptr);
-
-    auto return_value = NewTemp(VAR, nullptr);
-    Emit(CALL_t, called_symbol, nullptr, nullptr);
-    Emit(GETRETVAL_t, return_value, nullptr, nullptr);
-
-    return new Call(called_symbol, call_suffix, return_value); 
-}
-
-unsigned int NextQuadLabel() {
-    if (quads.size() == 0)
-        return 1;
-    else     
-        return quads.back()->label + 1;
-}
-
-inline bool IsLibraryFunction(Expression* expr) {
-    return expr->get_type() == LIB_FUNC; 
-}
-
-inline bool IsUserFunction(Expression* expr) {
-    return expr->get_type() == USER_FUNC; 
-}
-
-inline bool IsVariable(Expression* expr) {
-    return expr->get_type() == VAR;
-}
-
-inline bool IsConstString(Expression* expr) {
-    return expr->get_type() == CONST_STR;
-}
-
-inline bool IsConstBool(Expression* expr) {
-    return expr->get_type() == CONST_BOOL;
-}
-
-inline bool IsTableMake(Expression* expr) {
-    return expr->get_type() == TABLE_MAKE;
-}
-
-inline bool IsGlobalVar(Symbol* symbol) { 
-    return IsVariable(symbol) && symbol->get_scope() == global_scope; 
-}
-
-inline bool IsAtCurrentScope(Symbol* symbol) {
-    return symbol->get_scope() == current_scope;
-}
-
-inline bool IsTableItem(Symbol* symbol) {
-    return symbol->get_type() == TABLE_ITEM;
-}
-
-inline bool IsMethodCall(CallSuffix* call_suffix) {
-    return call_suffix->get_type() == METHOD_CALL;
-}
-    
-inline bool InLoop() {
-    return loop_stmts.size() != 0; 
-}
-
-inline bool InFuncDef() { 
-    return func_def_stmts.size() != 0; 
-} 
-
-bool IsValidArithmetic(Expression* expr, std::string context) {
-    assert (expr != nullptr);
-    if (IsLibraryFunction(expr)) {
-        SignalError("Invalid use of " + context + " operator on library function " + expr->to_string());
-        return false;
-    }
-    else if (IsUserFunction(expr)) {
-        SignalError("Invalid use of " + context + " operator on user function " + expr->to_string());
-        return false;
-    }
-    else if (IsConstString(expr)) {
-        SignalError("Invalid use of " + context + " operator on const string " + expr->to_string());
-        return false;
-    }
-    else if (IsConstBool(expr)) {
-        SignalError("Invalid use of " + context + " operator on const bool " + expr->to_string());
-        return false;
-    }
-    else if (IsTableMake(expr)) {
-        SignalError("Invalid use of " + context + " operator on table " + expr->to_string());
-        return false;
-    }
-
-    return true;                
-}
-
-inline bool IsValidArithmeticOp(Expression* expr) {
-    assert(expr != nullptr);
-    return IsValidArithmetic(expr, std::string("arithmetic"));
-}
-
-inline bool IsValidArithmeticComp(Expression* expr) {
-    assert(expr != nullptr);
-    return IsValidArithmetic(expr, std::string("comparison"));
-}
-
-bool IsValidAssign(Symbol* left_operand) {
-    assert(left_operand != nullptr);
-    if (IsUserFunction(left_operand) || IsLibraryFunction(left_operand)) {
-        SignalError("Functions are constant their value cannot be changed");
-
-        return false;
-    }
-
-    return true;                
-}
-
-void
-BackPatch(std::list<unsigned int> l_list, unsigned int q_label) {
-    for (unsigned int i : l_list) {
-        if (quads[i-1]->op == JUMP_t) {
-            PatchJumpQuad(quads[i-1], q_label);
-        }
-        else{
-            PatchBranchQuad(quads[i-1], q_label);
-        }
-    }
-}
-
-Symbol*
-ConcludeShortCircuit(BoolExpr* expr) {
-    auto temp = NewTemp(VAR, nullptr);
-
-    BackPatch(expr->true_list, NextQuadLabel());
-    Emit(ASSIGN_t, temp, new BoolConstant(true), nullptr);
-
-    Quad* jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-    PatchJumpQuad(jump_quad, jump_quad->label + 2);
-
-    BackPatch(expr->false_list, NextQuadLabel());
-    Emit(ASSIGN_t, temp, new BoolConstant(false), nullptr);
-
-    return temp;
-}
-
-bool
-IsValidBreakContinue() {
-    return (stmt_stack.empty() || stmt_stack.back() != LOOP_t) ? false : true;
-}
