@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include <stack>
 #include "../../util/contract/contract.h"
 
 
@@ -18,6 +19,16 @@ enum ScopeSpace {
     FUNCTION_LOCAL, // inside of function
     FORMAL_ARG
 };
+
+void            store_funclocal_offset(void);
+void            restore_funclocal_offser(void);
+void            reset_funclocal_offset(void);
+void            reset_formalarg_offset(void);
+ScopeSpace      curr_scope_space(void);
+unsigned int    curr_scope_offset(void);
+void            increase_curr_offset(void);
+void            enter_scope_space(void);
+void            exit_scope_space(void);
 
 /**
  * @brief An lvalue primary expression.
