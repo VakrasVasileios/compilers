@@ -236,7 +236,9 @@ Symbol:: sym_to_string() const {
             if (scope == 0)
                 return "global variable";
             else    
-                return "local variable";    
+                return "local variable";
+        case TABLE_ITEM:
+            return "table item";   
         default:
             assert(false);            
     }
