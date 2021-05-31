@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief The instruction opcodes.
     **/ 

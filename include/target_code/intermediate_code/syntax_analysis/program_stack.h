@@ -6,7 +6,7 @@
 #include <string>
 #include "../../util/contract/contract.h"
 
-namespace target_code {
+namespace syntax_analysis {
     /**
      * @brief A stack containing all of the scope blocks. 
      * The top block is always the current scope block.
@@ -52,7 +52,7 @@ namespace target_code {
          * else nullptr.
          * 
         **/ 
-        expression::Symbol*             Lookup(std::string name);
+        expression::Symbol* Lookup(std::string name);
         /**
          * @brief Searches for a symbol with a name on this ProgramStack,
          * across the global scope. Returns a read/write access to the symbol if it's found,
@@ -62,7 +62,7 @@ namespace target_code {
          * else nullptr.
          * 
         **/ 
-        expression::Symbol*             LookupGlobal(std::string name);
+        expression::Symbol* LookupGlobal(std::string name);
         /**
          * @brief Activates all of the blocks at the lower scopes of this ProgramStack.
          * 

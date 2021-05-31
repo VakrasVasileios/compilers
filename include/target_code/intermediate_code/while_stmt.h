@@ -3,7 +3,7 @@
 
 #include "loop_stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief A while statement.
     **/ 

@@ -9,7 +9,7 @@
 #include "program_stack.h"
 #include "parsed_stmts.h"
 
-namespace intermediate_code {
+namespace syntax_analysis {
     /**
      * @brief Checks wether no errors have been signaled during the
      * syntax analysis.

@@ -6,7 +6,7 @@
 #include "../util/contract/contract.h"
 #include "stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief The type of a loop statement.
     **/

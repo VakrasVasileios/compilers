@@ -21,7 +21,7 @@
  * @brief Namespace for generating intermediate code quads.
  * 
  */
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief A list of all the intermediate code emitted
      * quads.

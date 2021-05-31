@@ -1,7 +1,7 @@
 #ifndef STMT_H
 #define STMT_H
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief A statement type.
      * 

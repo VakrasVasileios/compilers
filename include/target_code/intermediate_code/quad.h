@@ -7,7 +7,7 @@
 #include <iostream>
 #include "../util/contract/contract.h"
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief A quad, the building stone of the intermediate code.
     **/

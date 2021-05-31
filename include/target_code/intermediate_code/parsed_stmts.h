@@ -11,7 +11,7 @@
 #include "func_def_stmt.h"
 #include "if_stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief A stack of all the parsed loop statements.
      * 

@@ -5,7 +5,7 @@
 #include "block.h"
 #include "../../util/contract/contract.h"
 
-namespace target_code {
+namespace syntax_analysis {
     /**
      * @brief A table of block lists across many scopes.
     **/ 

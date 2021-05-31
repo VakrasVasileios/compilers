@@ -6,7 +6,7 @@
 #include "quad.h"
 #include "stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     /**
      * @brief A function definition statement.
      * 

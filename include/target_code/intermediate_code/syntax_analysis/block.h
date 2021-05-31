@@ -5,7 +5,7 @@
 #include "../../util/contract/contract.h"
 #include <list>
 
-namespace target_code {
+namespace syntax_analysis {
     /**
      * @brief Contains multiple symbols across a single scope.
      * 
