@@ -62,8 +62,6 @@
     SymbolTable                 symbol_table;
     ProgramStack                program_stack;  
     std::vector<Quad*>          quads;
-
-    unsigned int                program_var_offset = 0;
     
     std::stack<LoopStmt*>       loop_stmts;
     std::stack<WhileStmt*>      while_stmts;
@@ -159,9 +157,9 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-%type <quad_label>    M
+%type <quad_label>      M funcbody
 
-%type <funcdef>         funcdef 
+%type <funcdef>         funcdef
 
 %type <expr>            term expr
 
@@ -169,7 +167,7 @@
 
 %type <prim>            primary
 %type <con>             const
-%type <sym>             lvalue member
+%type <sym>             lvalue member funcid funcprefix
 %type <call>            call
 %type <call_suffix>     callsuffix
 %type <norm_call>       normcall
@@ -900,7 +898,54 @@ block:      '{'         {
                             DecreaseScope();
                             DLOG("block -> { stmts }");
                         }
-            ; 
+            ;
+
+funcid:     ID              {
+                                auto symbol = program_stack.Lookup($1);
+                                if (symbol == nullptr) {
+                                    symbol = DefineNewSymbol(USER_FUNC, $1, nullptr);
+                                }
+                                else if (!symbol->is_active()) {
+                                    SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                }
+                                else {
+                                    if (IsVariable(symbol)) {
+                                        SignalError(std::string($1) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
+                                    }
+                                    else if (IsLibraryFunction(symbol)) {
+                                        SignalError(std::string($1) + " library function cannot be shadowed by a user function");
+                                    }
+                                    else if (IsAtCurrentScope(symbol)) {
+                                        SignalError("Name collision with function " + std::string($1) + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                    }
+                                    else{
+                                        symbol = DefineNewSymbol(USER_FUNC, $1, nullptr);  // shadow user function
+                                    }
+                                }
+                                $$ = symbol;
+                            }
+            |               {
+                                auto anonymous_function = DefineNewAnonymousFunc();
+                                $$ = anonymous_function;
+                            }
+            ;
+
+funcprefix: FUNCTION funcid {
+                                auto func_def_stmt = new FuncDefStmt($2);
+
+                                func_def_stmts.push(func_def_stmt);
+
+                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                Emit(FUNCSTART_t, $2, nullptr, nullptr);
+
+                                func_def_stmt->set_func_start_jump_quad(jump_quad);
+
+                                $$ = $2;
+                                
+                                store_funclocal_offset();
+                                enter_scope_space();
+                                reset_formalarg_offset();
+                            }
 
 funcargs:   '(' idlist ')'  {
                                 enter_scope_space();
@@ -910,81 +955,19 @@ funcargs:   '(' idlist ')'  {
                                 stmt_stack.push_back(FUNC_t);
                             }
 
-funcdef:    FUNCTION        {
-                                auto anonymous_function = DefineNewAnonymousFunc();
-                                auto func_def_stmt = new FuncDefStmt(anonymous_function);
-
-                                func_def_stmts.push(func_def_stmt);
-
-                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                Emit(FUNCSTART_t, anonymous_function, nullptr, nullptr);
-
-                                func_def_stmt->set_func_start_jump_quad(jump_quad);
-
-                                $<funcdef>$ = func_def_stmt;
-                                
-                                store_funclocal_offset();
-                                enter_scope_space();
-                                reset_formalarg_offset();
+funcbody:   block           {
+                                $$ = curr_scope_offset();
+                                exit_scope_space();
                             }
+
+funcdef:    funcprefix
             funcargs
-            block           {
+            funcbody       {
+                                exit_scope_space();
+ 
                                 auto top_func_def = func_def_stmts.top();
-                                auto anonymous_function = top_func_def->get_sym();
-
-                                auto func_end_quad = Emit(FUNCEND_t, anonymous_function, nullptr, nullptr);
-
-                                top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
-                                top_func_def->PatchReturnJumpQuads(func_end_quad->label);
-
-                                program_stack.ActivateLowerScopes();
-
-                                func_def_stmts.pop();
-
-                                stmt_stack.pop_back();
-
-                                $<funcdef>$ = top_func_def;
-                                DLOG("funcdef -> function (idlist) block "); 
-                            }
-            | FUNCTION ID   {
-                                auto symbol = program_stack.Lookup($2);
-                                if (symbol == nullptr) {
-                                    symbol = DefineNewSymbol(USER_FUNC, $2, nullptr);
-                                }
-                                else if (!symbol->is_active()) {
-                                    SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                }
-                                else {
-                                    if (IsVariable(symbol)) {
-                                        SignalError(std::string($2) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
-                                    }
-                                    else if (IsLibraryFunction(symbol)) {
-                                        SignalError(std::string($2) + " library function cannot be shadowed by a user function");
-                                    }
-                                    else if (IsAtCurrentScope(symbol)) {
-                                        SignalError("Name collision with function " + std::string($2) + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                    }
-                                    else{
-                                        symbol = DefineNewSymbol(USER_FUNC, $2, nullptr);  // shadow user function
-                                    }
-                                }
-                                auto func_def_stmt = new FuncDefStmt(symbol); 
-                                func_def_stmts.push(func_def_stmt);
-
-                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                Emit(FUNCSTART_t, symbol, nullptr, nullptr);
-
-                                func_def_stmt->set_func_start_jump_quad(jump_quad);
-
-                                $<funcdef>$ = func_def_stmt;
-                            }
-            '(' idlist ')'  {
-                                HideLowerScopes();
-                                stmt_stack.push_back(FUNC_t);
-                            }
-            block           { 
-                                auto top_func_def =  func_def_stmts.top();
-                                auto function = top_func_def->get_sym();
+                                auto function = $1;
+                                function->set_total_local($3);
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr);
 
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
@@ -996,7 +979,10 @@ funcdef:    FUNCTION        {
 
                                 stmt_stack.pop_back();
 
+                                restore_funclocal_offser();
+
                                 $<funcdef>$ = top_func_def;
+
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }
             ;
@@ -1030,11 +1016,12 @@ const:        INTNUM    {
 multid:     ',' ID  {
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
-                        // auto offset = func->get_formal_arguments().size();
-
+                        auto offset = curr_scope_offset();
+                        
                         increase_curr_offset();
 
                         auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
+
                         if (func->HasFormalArg(new_formal_arg)) {
                             SignalError("formal argument " + std::string($2) + " already declared");
                         }
@@ -1054,9 +1041,8 @@ multid:     ',' ID  {
 idlist:     ID      {
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
-                        // auto offset = func->get_formal_arguments().size();
-                        increase_curr_offset();
                         auto offset = curr_scope_offset();
+                        increase_curr_offset();
 
                         auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
                         if (func->HasFormalArg(new_formal_arg)) {
@@ -1364,18 +1350,18 @@ void DefineSymbol(Symbol* symbol) {
 
 void InitLibraryFunctions() {
     IncreaseScope(); 
-    DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, PROGRAM_VAR,program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
-    DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, program_var_offset++, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, PROGRAM_VAR,0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
+    DefineSymbol(new Symbol(LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, PROGRAM_VAR, 0, nullptr));
 }
 
 Symbol* NewSymbol(ExprType type, const char* id, Expression* index) {
