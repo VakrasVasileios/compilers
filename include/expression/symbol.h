@@ -102,6 +102,8 @@ public:
      * 
     **/ 
     unsigned int                get_offset() const;
+
+    unsigned int                get_total_local() const;
     /**
      * @brief Returns a read access to this Symbol formal arguments.
      * 
@@ -127,6 +129,8 @@ public:
      * @param active the activity to set this Symbol.
     **/ 
     void                        set_active(bool active);
+
+    void                        set_total_local(unsigned int _lc);
     /**
      * @brief Checks wether this Symbol has already
      * included a formal argument to its list of
@@ -159,6 +163,7 @@ private:
     bool                        active;
     const ScopeSpace            space;
     const unsigned int          offset;
+    unsigned int                total_local;
     std::list<Symbol*>          formal_arguments;
     Expression*                 index;
 

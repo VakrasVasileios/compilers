@@ -107,6 +107,12 @@ Symbol:: get_offset() const {
     return offset;
 }
 
+unsigned int
+Symbol:: get_total_local() const {
+    return total_local;
+}
+
+
 std::list<Symbol*>
 Symbol:: get_formal_arguments() const {
     return formal_arguments;
@@ -115,6 +121,11 @@ Symbol:: get_formal_arguments() const {
 void
 Symbol:: set_active(bool active) {
     this->active = active;
+}
+
+void
+Symbol:: set_total_local(unsigned int _lc) {
+    total_local = _lc;
 }
 
 bool
