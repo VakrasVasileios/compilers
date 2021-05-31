@@ -1,4 +1,4 @@
-#include "../include/program_consts.h"
+#include "../../include/virtual_machine/program_consts.h"
 #include <assert.h>
 
 ProgramConsts& 

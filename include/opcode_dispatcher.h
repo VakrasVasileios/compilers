@@ -1,9 +1,20 @@
 #ifndef OPCODE_DISPATCHER_H
 #define OPCODE_DISPATCHER_H
 
+#include <assert.h>
+#include <string>
 #include "quad.h"
 #include "../util/contract/contract.h"
-#include "instruction.h"
+#include "../include/virtual_machine/instruction.h"
+#include "../include/virtual_machine/vm_arg.h"
+#include "../include/expression/symbol.h"
+#include "../include/expression/bool_constant.h"
+#include "../include/expression/nil_constant.h"
+#include "../include/expression/int_constant.h"
+#include "../include/expression/double_constant.h"
+#include "../include/expression/string_constant.h"
+#include "../include/virtual_machine/program_consts.h"
+
 
 /**
  * @brief An opcode dispatcher.
@@ -58,6 +69,8 @@ public:
      */
     Instruction*        Generate(const Quad* quad);
 private:
+    Vmarg*              make_operand (const Expression* expr);
+
     Instruction*        generate_ASSIGN(const Quad* quad);
     Instruction*        generate_ADD(const Quad* quad);
     Instruction*        generate_SUB(const Quad* quad);

@@ -1,4 +1,5 @@
 add_subdirectory(expression)
+add_subdirectory(virtual_machine)
 
 include_directories(${compilers_SOURCE_DIR}/include)
 
@@ -13,11 +14,11 @@ add_library(src
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
-  program_consts.cpp vm_arg.cpp
   opcode_dispatcher.cpp
 )
 
 target_link_libraries(src expression)
+target_link_libraries(src vm)
 
 # Release mode executables
 add_executable(dlog
@@ -32,7 +33,6 @@ add_executable(phase3
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
-  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -45,7 +45,6 @@ add_executable(r_intermediate_code
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
-  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -57,7 +56,6 @@ add_executable(r_syntax_analysis
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
-  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -70,7 +68,6 @@ add_executable(d_intermediate_code
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
-  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
@@ -82,7 +79,6 @@ add_executable(d_syntax_analysis
   block.cpp instruction_opcodes.cpp program_stack.cpp quad.cpp symbol_table.cpp
   for_stmt.cpp func_def_stmt.cpp if_stmt.cpp 
   loop_stmt.cpp loop_stmt.cpp while_stmt.cpp
-  program_consts.cpp vm_arg.cpp
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}
 )
