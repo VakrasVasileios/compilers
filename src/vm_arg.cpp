@@ -66,10 +66,11 @@ make_operand (const Expression* expr) {
         case LIB_FUNC: {
             arg->type = LIBFUNC_a;
             arg->value = ProgramConsts:: GetInstance().InsertLibFunc(SYMBOL_CAST(expr)->get_id());
+            break;
         }
         case USER_FUNC: {
-            arg->type = USERFUNC_a;
-            // TODO: Pass taddress of user function to arg.val
+            arg->type = USERFUNC_a; // TODO: and 'ere
+            // arg->value = ProgramConsts:: GetInstance()
         }
         default:
             assert(false);
