@@ -5,6 +5,7 @@
 #include <string>
 #include "quad.h"
 #include "../util/contract/contract.h"
+#include "target_code.h"
 #include "../include/virtual_machine/instruction.h"
 #include "../include/virtual_machine/vm_arg.h"
 #include "../include/expression/symbol.h"
@@ -15,89 +16,90 @@
 #include "../include/expression/string_constant.h"
 #include "../include/virtual_machine/program_consts.h"
 
-
-/**
- * @brief An opcode dispatcher.
- * 
- */
-class IopCodeDispatcher {
-public:
+namespace target_code {
     /**
-     * @brief Constructs a new IopCodeDispatcher object.
+     * @brief An opcode dispatcher.
      * 
      */
-    IopCodeDispatcher()
-    : generators {
-        &IopCodeDispatcher::generate_ASSIGN,
-        &IopCodeDispatcher::generate_ADD,
-        &IopCodeDispatcher::generate_SUB,
-        &IopCodeDispatcher::generate_MUL,
-        &IopCodeDispatcher::generate_DIV,
-        &IopCodeDispatcher::generate_MOD,
-        &IopCodeDispatcher::generate_UMINUS,
-        &IopCodeDispatcher::generate_JUMP,
-        &IopCodeDispatcher::generate_IF_EQ,
-        &IopCodeDispatcher::generate_IF_NOTEQ,
-        &IopCodeDispatcher::generate_IF_LESSEQ,
-        &IopCodeDispatcher::generate_IF_GREATEREQ,
-        &IopCodeDispatcher::generate_IF_LESS,
-        &IopCodeDispatcher::generate_IF_GREATER,
-        &IopCodeDispatcher::generate_CALL,
-        &IopCodeDispatcher::generate_PARAM,
-        &IopCodeDispatcher::generate_RETURN,
-        &IopCodeDispatcher::generate_GETRETVAL,
-        &IopCodeDispatcher::generate_FUNCSTART,
-        &IopCodeDispatcher::generate_FUNCEND,
-        &IopCodeDispatcher::generate_TABLECREATE,
-        &IopCodeDispatcher::generate_TABLEGETELEM,
-        &IopCodeDispatcher::generate_TABLESETELEM
-    } {}
-    /**
-     * @brief Destroys this OpCodeDispatcher object.
-     * 
-     */
-    ~IopCodeDispatcher() = default;
-    /**
-     * @brief Generates a virtual machine instruction
-     * from an intermediate code quad.
-     * 
-     * @param quad the quad from which the virtual machine
-     * instuction will be generated, not null 
-     * 
-     * @return a virtual machine instruction from an
-     * intermediate code quad, not null
-     */
-    Instruction*        Generate(const Quad* quad);
-private:
-    Vmarg*              make_operand (const Expression* expr);
+    class IopCodeDispatcher {
+    public:
+        /**
+         * @brief Constructs a new IopCodeDispatcher object.
+         * 
+         */
+        IopCodeDispatcher()
+        : generators {
+            &IopCodeDispatcher::generate_ASSIGN,
+            &IopCodeDispatcher::generate_ADD,
+            &IopCodeDispatcher::generate_SUB,
+            &IopCodeDispatcher::generate_MUL,
+            &IopCodeDispatcher::generate_DIV,
+            &IopCodeDispatcher::generate_MOD,
+            &IopCodeDispatcher::generate_UMINUS,
+            &IopCodeDispatcher::generate_JUMP,
+            &IopCodeDispatcher::generate_IF_EQ,
+            &IopCodeDispatcher::generate_IF_NOTEQ,
+            &IopCodeDispatcher::generate_IF_LESSEQ,
+            &IopCodeDispatcher::generate_IF_GREATEREQ,
+            &IopCodeDispatcher::generate_IF_LESS,
+            &IopCodeDispatcher::generate_IF_GREATER,
+            &IopCodeDispatcher::generate_CALL,
+            &IopCodeDispatcher::generate_PARAM,
+            &IopCodeDispatcher::generate_RETURN,
+            &IopCodeDispatcher::generate_GETRETVAL,
+            &IopCodeDispatcher::generate_FUNCSTART,
+            &IopCodeDispatcher::generate_FUNCEND,
+            &IopCodeDispatcher::generate_TABLECREATE,
+            &IopCodeDispatcher::generate_TABLEGETELEM,
+            &IopCodeDispatcher::generate_TABLESETELEM
+        } {}
+        /**
+         * @brief Destroys this OpCodeDispatcher object.
+         * 
+         */
+        ~IopCodeDispatcher() = default;
+        /**
+         * @brief Emits all of the target code instructions
+         * from a list of intermediate code quads.  
+         * 
+         * @param quads the list of intermediate code quads.
+         */
+        void        Generate(std::vector<Quad*> quads);
+    private:
+        Vmarg*      make_operand (Expression* expr);
+        Vmarg*      make_numberoperand (Expression* expr);
+        Vmarg*      make_booloperand (Expression* expr);
+        Vmarg*      make_retvaloperand (Expression* expr);
 
-    Instruction*        generate_ASSIGN(const Quad* quad);
-    Instruction*        generate_ADD(const Quad* quad);
-    Instruction*        generate_SUB(const Quad* quad);
-    Instruction*        generate_MUL(const Quad* quad);
-    Instruction*        generate_DIV(const Quad* quad);
-    Instruction*        generate_MOD(const Quad* quad);
-    Instruction*        generate_UMINUS(const Quad* quad);
-    Instruction*        generate_JUMP(const Quad* quad);
-    Instruction*        generate_IF_EQ(const Quad* quad);
-    Instruction*        generate_IF_NOTEQ(const Quad* quad);
-    Instruction*        generate_IF_LESSEQ(const Quad* quad);
-    Instruction*        generate_IF_GREATEREQ(const Quad* quad);
-    Instruction*        generate_IF_LESS(const Quad* quad); 
-    Instruction*        generate_IF_GREATER(const Quad* quad);
-    Instruction*        generate_CALL(const Quad* quad);
-    Instruction*        generate_PARAM(const Quad* quad);
-    Instruction*        generate_RETURN(const Quad* quad);
-    Instruction*        generate_GETRETVAL(const Quad* quad);
-    Instruction*        generate_FUNCSTART(const Quad* quad);
-    Instruction*        generate_FUNCEND(const Quad* quad);
-    Instruction*        generate_TABLECREATE(const Quad* quad);
-    Instruction*        generate_TABLEGETELEM(const Quad* quad);
-    Instruction*        generate_TABLESETELEM(const Quad* quad);
+        void        generate(Vmopcode op, Quad* quad);
+        void        generate_relational(Vmopcode op, Quad* quad);
+        void        generate_ASSIGN(Quad* quad);
+        void        generate_ADD(Quad* quad);
+        void        generate_SUB(Quad* quad);
+        void        generate_MUL(Quad* quad);
+        void        generate_DIV(Quad* quad);
+        void        generate_MOD(Quad* quad);
+        void        generate_UMINUS(Quad* quad);
+        void        generate_JUMP(Quad* quad);
+        void        generate_IF_EQ(Quad* quad);
+        void        generate_IF_NOTEQ(Quad* quad);
+        void        generate_IF_LESSEQ(Quad* quad);
+        void        generate_IF_GREATEREQ(Quad* quad);
+        void        generate_IF_LESS(Quad* quad); 
+        void        generate_IF_GREATER(Quad* quad);
+        void        generate_CALL(Quad* quad);
+        void        generate_PARAM(Quad* quad);
+        void        generate_RETURN(Quad* quad);
+        void        generate_GETRETVAL(Quad* quad);
+        void        generate_FUNCSTART(Quad* quad);
+        void        generate_FUNCEND(Quad* quad);
+        void        generate_TABLECREATE(Quad* quad);
+        void        generate_TABLEGETELEM(Quad* quad);
+        void        generate_TABLESETELEM(Quad* quad);
 
-    typedef Instruction* (IopCodeDispatcher:: *const generator_func_t) (const Quad*);
-    generator_func_t    generators[26];        
-};
-
+        typedef void (IopCodeDispatcher:: *generator_func_t) (Quad*);
+        generator_func_t    generators[26];        
+    };
+}
 
 #endif
