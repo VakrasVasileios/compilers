@@ -90,9 +90,9 @@ namespace target_code {
     instruction is generated.                               
     */
     void    
-    IopCodeDispatcher::Generate(Quad* quad){
-        PRECONDITION(quad != nullptr);
-        (this->*generators[quad->op])(quad);
+    IopCodeDispatcher::Generate(std::vector<Quad*> quads){
+        for (auto quad : quads)
+            (this->*generators[quad->op])(quad);
     }
 
     void        
