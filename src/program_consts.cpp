@@ -54,7 +54,21 @@ ProgramConsts:: InsertLibFunc(const std::string& str) {
     }
     return index;
 }
-
+// TODO : This shit 'ere
+/* unsigned
+ProgramConsts:: InsertUserFunc(const Symbol* sym) {
+    unsigned index;
+    if (userfunc_map.find(str) == userfunc_map.end()) {
+        index = userfunc_array.size();
+        userfunc_map.insert( {str, index} );
+        userfunc_array.push_back(str);
+    }
+    else {
+        index = userfunc_map[str];
+    }
+    return index;
+}
+ */
 double
 ProgramConsts:: GetNumber(unsigned index) {
     assert(index < number_array.size());
