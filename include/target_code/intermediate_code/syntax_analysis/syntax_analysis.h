@@ -72,6 +72,12 @@ namespace syntax_analysis {
      */
     void                    DecreaseScope();
     /**
+     * @brief Enables all of the inserted, to the symbol table,
+     * symbols across all scopes, except the global scope.
+     * 
+     */
+    void                    EnableLowerScopes();
+    /**
      * @brief Hides all of the inserted, to the symbol table,
      * symbols across all scopes, except the global scope.
      * 
