@@ -6,6 +6,14 @@
 #include <map>
 
 namespace virtual_machine {
+    typedef struct userfunc_entry {
+        unsigned int    taddress;
+        unsigned int    local_count;
+        std::string     id;
+
+        userfunc_entry(unsigned int _taddress, unsigned int _local_count, std::string _id) : taddress(_taddress), local_count(_local_count), id(_id) {}
+    } Userfunc_entry;
+
     class ProgramConsts {
     public:
         static ProgramConsts&     GetInstance(void);
