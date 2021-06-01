@@ -61,7 +61,7 @@ namespace target_code {
             }
             case expression::USER_FUNC: {
                 arg->type = USERFUNC_a;
-                // TODO: Pass taddress of user function to arg.val
+                arg->value = ProgramConsts:: GetInstance().InsertUserFunc(SYMBOL_CAST(expr));
             }
             default:
                 assert(false);
@@ -71,18 +71,26 @@ namespace target_code {
     }
 
     Vmarg*              
-    IopCodeDispatcher::make_numberoperand (expression::Expression* expr) {
-        return nullptr;
+    IopCodeDispatcher::make_numberoperand (double val) {
+        Vmarg* arg = new Vmarg();
+        arg->type = NUMBER_a;
+        arg->value = val;
+        return arg;
     }
 
     Vmarg*
-    IopCodeDispatcher::make_booloperand (expression::Expression* expr) {
-        return nullptr;
+    IopCodeDispatcher::make_booloperand (unsigned val) {
+        Vmarg* arg = new Vmarg();
+        arg->type = BOOL_a;
+        arg->value = val;
+        return arg;
     }
 
     Vmarg*
     IopCodeDispatcher::make_retvaloperand (expression::Expression* expr) {
-        return nullptr;
+        Vmarg* arg = new Vmarg();
+        arg->type = RETVAL_a;
+        return arg;
     }
     /* 
     The dispatch takes place because the generate functions index in this
