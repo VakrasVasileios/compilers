@@ -1,6 +1,6 @@
-#include "../../include/target_code/for_stmt.h"
+#include "../../../include/target_code/intermediate_code/for_stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     void
     ForStmt:: PatchLoopQuads() {
         auto expr_jump_quad = loop_quads.back();

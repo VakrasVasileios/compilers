@@ -1,9 +1,10 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "../expression/symbol.h"
-#include "../../util/contract/contract.h"
 #include <list>
+#include <iostream>
+#include "../../../../util/contract/contract.h"
+#include "../../../expression/symbol.h"
 
 namespace syntax_analysis {
     /**
@@ -19,17 +20,17 @@ namespace syntax_analysis {
          * 
          * @return a read access to this Block symbols, not null
         **/ 
-        std::list<expression::Symbol*>      get_symbols() const;
+        std::list<expression::Symbol*>  get_symbols() const;
         /**
          * @brief Activates all of the symbols of this Block..
          * 
         **/ 
-        void                    Activate();
+        void                            Activate();
         /**
          * @brief Deactivates all of the symbols of this Block..
          * 
         **/ 
-        void                    Deactivate();   
+        void                            Deactivate();   
         /**
          * @brief Searches for a symbol with an id on this Block.
          * Returns a read/write access to a reference of the symbol if it's found,
@@ -40,7 +41,7 @@ namespace syntax_analysis {
         *  @return a read/write access to a reference of the symbol if it's found,
         *  else nullptr
         **/ 
-        expression::Symbol*                 Lookup(std::string id);
+        expression::Symbol*             Lookup(std::string id);
         /**
          * @brief Inserts a symbol at the end of this Block.
          * 
@@ -48,19 +49,19 @@ namespace syntax_analysis {
          * of this Block, not null
          * 
         **/ 
-        void                    Insert(expression::Symbol* symbol);
+        void                            Insert(expression::Symbol* symbol);
         /**
          * @brief Checks wether this Block contains only hidden variables.
          * 
          * @return wether this Block contains only hidden variables
         **/ 
-        bool                    ContainsOnlyHiddenVars();
+        bool                            ContainsOnlyHiddenVars();
 
-        friend std::ostream&    operator<<(std::ostream& os, const Block block);
+        friend std::ostream&            operator<<(std::ostream& os, const Block block);
     private:
-        std::list<expression::Symbol*>       symbols;
+        std::list<expression::Symbol*>  symbols;
             
-        static bool              IsHiddenVariable(expression::Symbol* entry);
+        static bool                     IsHiddenVariable(expression::Symbol* entry);
     };
 }
 

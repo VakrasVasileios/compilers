@@ -11,7 +11,6 @@ namespace intermediate_code {
         IF_t,
         FUNC_t
     };
-
     /**
      * @brief A statement.
      * 

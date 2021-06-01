@@ -2,8 +2,8 @@
 #define LOOPSTATEMENT_H
 
 #include <list>
+#include "../../../util/contract/contract.h"
 #include "quad.h"
-#include "../util/contract/contract.h"
 #include "stmt.h"
 
 namespace intermediate_code {

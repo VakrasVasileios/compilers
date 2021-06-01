@@ -1,6 +1,6 @@
-#include "../../include/target_code/program_stack.h"
+#include "../../../include/target_code/intermediate_code/syntax_analysis/program_stack.h"
 
-namespace target_code {
+namespace syntax_analysis {
     std::list<Block*>
     ProgramStack:: get_block_list() const {
         return block_list;

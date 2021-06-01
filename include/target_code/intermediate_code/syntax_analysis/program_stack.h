@@ -1,10 +1,10 @@
 #ifndef PROGRAMSTACK_H
 #define PROGRAMSTACK_H
 
-#include "block.h"
 #include <list>
 #include <string>
-#include "../../util/contract/contract.h"
+#include "../../../../util/contract/contract.h"
+#include "block.h"
 
 namespace syntax_analysis {
     /**

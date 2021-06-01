@@ -19,7 +19,6 @@ namespace virtual_machine {
         LIBFUNC_a,
         USERFUNC_a
     };
-
     /**
      * @brief A virtual machine argument.
      * 

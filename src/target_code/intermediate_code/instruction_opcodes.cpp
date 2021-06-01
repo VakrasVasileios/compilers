@@ -1,8 +1,8 @@
-#include "../../include/target_code/instruction_opcodes.h"
+#include "../../../include/target_code/intermediate_code/instruction_opcodes.h"
 #include <string>
 #include <assert.h>
 
-namespace target_code {
+namespace intermediate_code {
     std::string IopcodeToString(Iopcode _op) {
         switch(_op) {
             case ASSIGN_t:

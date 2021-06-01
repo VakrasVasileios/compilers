@@ -1,13 +1,9 @@
 #ifndef INTERMEDIATE_CODE_H
 #define INTERMEDIATE_CODE_H
 
-#include "../../util/contract/contract.h"
+#include "../../../util/contract/contract.h"
+#include "syntax_analysis/syntax_analysis.h"
 #include "quad.h"
-#include "../expression/call.h"
-#include "../expression/bool_expr.h"
-#include "../expression/bool_constant.h"
-#include "../expression/call_suffix.h"
-#include "../expression/string_constant.h"
 #include "stmt.h"
 #include "loop_stmt.h"
 #include "while_stmt.h"
@@ -15,7 +11,6 @@
 #include "func_def_stmt.h"
 #include "if_stmt.h"
 #include "syntax_analysis.h"
-#include "parsed_stmts.h"
 
 /**
  * @brief Namespace for generating intermediate code quads.
@@ -28,6 +23,36 @@ namespace intermediate_code {
      * 
      */
     std::vector<Quad*>          quads;  
+    /**
+     * @brief A stack of all the parsed loop statements.
+     * 
+     */
+    std::stack<LoopStmt*>       loop_stmts;
+    /**
+     * @brief A stack of all the parsed while loop statements.
+     * 
+     */
+    std::stack<WhileStmt*>      while_stmts;
+    /**
+     * @brief A stack of all the parsed for loop statements.
+     * 
+     */
+    std::stack<ForStmt*>        for_stmts;
+    /**
+     * @brief A stack of all the parsed function definition statements.
+     * 
+     */
+    std::stack<FuncDefStmt*>    func_def_stmts;  
+    /**
+     * @brief A stack of all the parsed if statements.
+     * 
+     */
+    std::stack<IfStmt*>         if_stmts;
+    /**
+     * @brief A stack of all the parsed statements.
+     * 
+     */
+    std::list<StmtType>         stmt_stack;
     /**
      * @brief Logs a runtime warning, parsed at a line, with a message. 
      * 
@@ -177,6 +202,18 @@ namespace intermediate_code {
      * @return the validity of a break/continue quad
      */
     bool                        IsValidBreakContinue();
+    /**
+     * @brief Checks wether a loop statement is being parsed.
+     * 
+     * @return wether a loop statement is being parsed 
+     */
+    bool                        InLoop();
+    /**
+     * @brief Checks wether a function definition statement is being parsed.
+     * 
+     * @return wether a function definition statement is being parsed 
+     */
+    bool                        InFuncDef();
 }
 
 #endif

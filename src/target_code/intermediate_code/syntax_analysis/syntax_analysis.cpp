@@ -1,10 +1,10 @@
-#include "../../include/intermediate_code/syntax_analysis.h"
+#include "../../../include/target_code/intermediate_code/syntax_analysis/syntax_analysis.h"
 
 #define OUT_OF_SCOPE       -1
 #define LIB_FUNC_LINE       0
 #define TEMP_LINE           0
 
-namespace target_code {
+namespace syntax_analysis {
     const unsigned int          global_scope = 0;
     unsigned int                current_scope = OUT_OF_SCOPE;
     unsigned int                program_var_offset = 0;

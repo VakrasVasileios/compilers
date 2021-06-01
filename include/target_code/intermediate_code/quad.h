@@ -1,11 +1,11 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "expression/expression.h"
-#include "expression/int_constant.h"
-#include "instruction_opcodes.h"
 #include <iostream>
-#include "../util/contract/contract.h"
+#include "../../../util/contract/contract.h"
+#include "../../expression/expression.h"
+#include "../../expression/int_constant.h"
+#include "instruction_opcodes.h"
 
 namespace intermediate_code {
     /**
@@ -13,14 +13,14 @@ namespace intermediate_code {
     **/
     typedef struct quad {
         Iopcode       op;
-        Expression*   result;
-        Expression*   arg1;
-        Expression*   arg2;
+        expression::Expression*   result;
+        expression::Expression*   arg1;
+        expression::Expression*   arg2;
         unsigned int  label;
         unsigned int  line;
         unsigned int  taddress;
 
-        quad(Iopcode _op, Expression* _res, Expression* _arg1, Expression* _arg2, unsigned int _label, unsigned int _line)
+        quad(Iopcode _op, expression::Expression* _res, expression::Expression* _arg1, expression::Expression* _arg2, unsigned int _label, unsigned int _line)
         : op(_op), result(_res), arg1(_arg1), arg2(_arg2), label(_label), line(_line) {};
     
         friend std::ostream&    operator<<(std::ostream& os, const quad _quad);

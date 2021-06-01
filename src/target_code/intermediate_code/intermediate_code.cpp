@@ -1,8 +1,8 @@
-#include "../../include/target_code/intermediate_code.h"
+#include "../../../include/target_code/intermediate_code/intermediate_code.h"
 
 #define TEMP_LINE 0
 
-namespace target_code {
+namespace intermediate_code {
     void LogWarning(std::string msg, unsigned int line) {
         PRECONDITION(line >= 0);
         #if !defined TEST
@@ -27,10 +27,10 @@ namespace target_code {
     expression::Symbol* NewTemp(expression::ExprType type, expression::Expression* index) {
        std::string id = NewTempName();
 
-        auto new_temp = Lookup(id.c_str());
+        auto new_temp = syntax_analysis::Lookup(id.c_str());
         
         if (new_temp == nullptr)  
-            new_temp = DefineNewSymbol(type, id.c_str(), index, TEMP_LINE);
+            new_temp = syntax_analysis::DefineNewSymbol(type, id.c_str(), index, TEMP_LINE);
 
         return new_temp; 
     }
@@ -77,7 +77,7 @@ namespace target_code {
         sym = EmitIfTableItem(sym, line);
         auto index = new expression::StringConstant(std::string(id));
 
-        return DefineNewSymbol(expression::TABLE_ITEM, sym->get_id().c_str(), index, line);
+        return syntax_analysis::DefineNewSymbol(expression::TABLE_ITEM, sym->get_id().c_str(), index, line);
     }
 
     void checkValidCall(expression::Symbol* called_symbol, 
@@ -87,7 +87,7 @@ namespace target_code {
             auto call_args_num = params.size();
             auto func_def_args_num = called_symbol->get_formal_arguments().size();
             if (call_args_num < func_def_args_num) 
-                SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()), line);
+                syntax_analysis::SignalError("Too few arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()), line);
             else if (call_args_num > func_def_args_num) 
                 LogWarning("Too many arguments passed to function: " + called_symbol->get_id() + ", defined in line: " + std::to_string(called_symbol->get_line()), line);
         }
@@ -142,23 +142,23 @@ namespace target_code {
     bool IsValidArithmetic(expression::Expression* expr, std::string context, unsigned int line) {
         assert (expr != nullptr);
         if (IsLibraryFunction(expr)) {
-            SignalError("Invalid use of " + context + " operator on library function " + expr->to_string(), line);
+            syntax_analysis::SignalError("Invalid use of " + context + " operator on library function " + expr->to_string(), line);
             return false;
         }
         else if (IsUserFunction(expr)) {
-            SignalError("Invalid use of " + context + " operator on user function " + expr->to_string(), line);
+            syntax_analysis::SignalError("Invalid use of " + context + " operator on user function " + expr->to_string(), line);
             return false;
         }
         else if (IsConstString(expr)) {
-            SignalError("Invalid use of " + context + " operator on const string " + expr->to_string(), line);
+            syntax_analysis::SignalError("Invalid use of " + context + " operator on const string " + expr->to_string(), line);
             return false;
         }
         else if (IsConstBool(expr)) {
-            SignalError("Invalid use of " + context + " operator on const bool " + expr->to_string(), line);
+            syntax_analysis::SignalError("Invalid use of " + context + " operator on const bool " + expr->to_string(), line);
             return false;
         }
         else if (IsTableMake(expr)) {
-            SignalError("Invalid use of " + context + " operator on table " + expr->to_string(), line);
+            syntax_analysis::SignalError("Invalid use of " + context + " operator on table " + expr->to_string(), line);
             return false;
         }
 
@@ -178,7 +178,7 @@ namespace target_code {
     bool IsValidAssign(expression::Symbol* left_operand, unsigned int line) {
         PRECONDITION(left_operand != nullptr);
         if (IsUserFunction(left_operand) || IsLibraryFunction(left_operand)) {
-            SignalError("Functions are constant their value cannot be changed", line);
+            syntax_analysis::SignalError("Functions are constant their value cannot be changed", line);
 
             return false;
         }
@@ -188,5 +188,13 @@ namespace target_code {
 
     inline bool IsValidBreakContinue() {
         return (stmt_stack.empty() || stmt_stack.back() != LOOP_t) ? false : true;
+    }
+
+    inline bool InLoop() {
+        return loop_stmts.size() != 0; 
+    }
+
+    inline bool InFuncDef() {
+        return func_def_stmts.size() != 0; 
     }
 }

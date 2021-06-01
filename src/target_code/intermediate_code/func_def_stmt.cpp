@@ -1,6 +1,6 @@
-#include "../../include/target_code/func_def_stmt.h"
+#include "../../../include/target_code/intermediate_code/func_def_stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     expression::Symbol*   
     FuncDefStmt:: get_sym() const {
         return sym;

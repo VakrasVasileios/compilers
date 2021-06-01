@@ -1,4 +1,4 @@
-#include "opcode_dispatcher.h"
+#include "../../include/target_code/target_code.h"
 
 #define SYMBOL_CAST(expr)       static_cast<expression::Symbol*>(expr)
 #define BOOLCONST_CAST(exr)     static_cast<expression::BoolConstant*>(expr)
@@ -91,182 +91,186 @@ namespace target_code {
     */
     void    
     IopCodeDispatcher::Generate(){
-        for (auto quad : quads)
+        for (auto quad : intermediate_code::quads)
             (this->*generators[quad->op])(quad);
     }
 
     void        
-    IopCodeDispatcher::generate(virtual_machine::Vmopcode op,  Quad* quad) {
-        Emit(new virtual_machine::Instruction(op, make_operand(quad->result), make_operand(quad->arg1), make_operand(quad->arg2), quad->line));
+    IopCodeDispatcher::generate(virtual_machine::Vmopcode op,  intermediate_code::Quad* quad) {
+        Emit(new virtual_machine::Instruction(NextInstructionLabel(), op, make_operand(quad->result),
+            make_operand(quad->arg1), make_operand(quad->arg2), quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
     void 
-    IopCodeDispatcher::generate_relational(virtual_machine::Vmopcode op, Quad* quad) {
+    IopCodeDispatcher::generate_relational(virtual_machine::Vmopcode op, intermediate_code::Quad* quad) {
         // TODO
     }
 
     void    
-    IopCodeDispatcher::generate_ASSIGN(Quad* quad) {
+    IopCodeDispatcher::generate_ASSIGN(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == ASSIGN_t);
+        assert(quad->op == intermediate_code::ASSIGN_t);
         generate(virtual_machine::ASSIGN_VM, quad);
     }
 
     void    
-    IopCodeDispatcher::generate_ADD(Quad* quad) {
+    IopCodeDispatcher::generate_ADD(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == ADD_t);
+        assert(quad->op == intermediate_code::ADD_t);
         generate(virtual_machine::ADD_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_SUB(Quad* quad) {
+    IopCodeDispatcher::generate_SUB(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == SUB_t);
+        assert(quad->op == intermediate_code::SUB_t);
         generate(virtual_machine::SUB_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_MUL(Quad* quad) {
+    IopCodeDispatcher::generate_MUL(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == MUL_t);
+        assert(quad->op == intermediate_code::MUL_t);
         generate(virtual_machine::MUL_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_DIV(Quad* quad) {
+    IopCodeDispatcher::generate_DIV(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == DIV_t);
+        assert(quad->op == intermediate_code::DIV_t);
         generate(virtual_machine::DIV_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_MOD(Quad* quad) {
+    IopCodeDispatcher::generate_MOD(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == MOD_t);
+        assert(quad->op == intermediate_code::MOD_t);
         generate(virtual_machine::MOD_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_UMINUS(Quad* quad) {
+    IopCodeDispatcher::generate_UMINUS(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad != nullptr);
-        assert(quad->op == UMINUS_t);
-        Emit(new virtual_machine::Instruction(virtual_machine::MUL_VM, make_operand(quad->result),
+        assert(quad->op == intermediate_code::UMINUS_t);
+        Emit(new virtual_machine::Instruction(NextInstructionLabel(), virtual_machine::MUL_VM, make_operand(quad->result),
             make_operand(quad->arg1), make_operand(new expression::IntConstant(-1)), quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
     void
-    IopCodeDispatcher::generate_JUMP(Quad* quad) {
+    IopCodeDispatcher::generate_JUMP(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == JUMP_t);
+        assert(quad->op == intermediate_code::JUMP_t);
         generate_relational(virtual_machine::JUMP_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_IF_EQ(Quad* quad) {
+    IopCodeDispatcher::generate_IF_EQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == IF_EQ_t);
+        assert(quad->op == intermediate_code::IF_EQ_t);
         generate_relational(virtual_machine::JEQ_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_IF_NOTEQ(Quad* quad) {
+    IopCodeDispatcher::generate_IF_NOTEQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == IF_NOTEQ_t);
+        assert(quad->op == intermediate_code::IF_NOTEQ_t);
         generate_relational(virtual_machine::JNE_VM, quad);
     }
 
     void    
-    IopCodeDispatcher::generate_IF_LESSEQ(Quad* quad) {
+    IopCodeDispatcher::generate_IF_LESSEQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == IF_LESSEQ_t);
+        assert(quad->op == intermediate_code::IF_LESSEQ_t);
         generate_relational(virtual_machine::JLE_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_IF_GREATEREQ(Quad* quad) {
+    IopCodeDispatcher::generate_IF_GREATEREQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == IF_GREATEREQ_t);
+        assert(quad->op == intermediate_code::IF_GREATEREQ_t);
         generate_relational(virtual_machine::JGE_VM, quad);
     }
 
     void
-    IopCodeDispatcher::generate_IF_LESS(Quad* quad) {
+    IopCodeDispatcher::generate_IF_LESS(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == IF_LESS_t);
+        assert(quad->op == intermediate_code::IF_LESS_t);
         generate_relational(virtual_machine::JLT_VM, quad);
     }
 
     void    
-    IopCodeDispatcher::generate_IF_GREATER(Quad* quad) {
+    IopCodeDispatcher::generate_IF_GREATER(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == IF_GREATER_t);
+        assert(quad->op == intermediate_code::IF_GREATER_t);
         generate_relational(virtual_machine::JGT_VM, quad);
     }
 
     void    
-    IopCodeDispatcher::generate_CALL(Quad* quad) {
+    IopCodeDispatcher::generate_CALL(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == CALL_t);
-        Emit(new virtual_machine::Instruction(virtual_machine::CALLFUNC_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
+        assert(quad->op == intermediate_code::CALL_t);
+        Emit(new virtual_machine::Instruction(NextInstructionLabel(),
+             virtual_machine::CALLFUNC_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
     void
-    IopCodeDispatcher::generate_PARAM(Quad* quad) {
+    IopCodeDispatcher::generate_PARAM(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == PARAM_t);
-        Emit(new virtual_machine::Instruction(virtual_machine::PUSHARG_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
+        assert(quad->op == intermediate_code::PARAM_t);
+        Emit(new virtual_machine::Instruction(NextInstructionLabel(),
+             virtual_machine::PUSHARG_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
     void    
-    IopCodeDispatcher::generate_RETURN(Quad* quad) {
+    IopCodeDispatcher::generate_RETURN(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == RET_t);
+        assert(quad->op == intermediate_code::RET_t);
     }
 
     void
-    IopCodeDispatcher::generate_GETRETVAL(Quad* quad) {
+    IopCodeDispatcher::generate_GETRETVAL(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == GETRETVAL_t);
-        Emit(new virtual_machine::Instruction(virtual_machine::ASSIGN_VM, make_operand(quad->result), make_retvaloperand(quad->arg1), nullptr, quad->line));
+        assert(quad->op == intermediate_code::GETRETVAL_t);
+        Emit(new virtual_machine::Instruction(NextInstructionLabel(), virtual_machine::ASSIGN_VM,
+             make_operand(quad->result), make_retvaloperand(quad->arg1), nullptr, quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
     void
-    IopCodeDispatcher::generate_FUNCSTART(Quad* quad) {
+    IopCodeDispatcher::generate_FUNCSTART(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == FUNCSTART_t);
+        assert(quad->op == intermediate_code::FUNCSTART_t);
     }
 
     void    
-    IopCodeDispatcher::generate_FUNCEND(Quad* quad) {
+    IopCodeDispatcher::generate_FUNCEND(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == FUNCEND_t);
+        assert(quad->op == intermediate_code::FUNCEND_t);
     }
 
     void    
-    IopCodeDispatcher::generate_TABLECREATE(Quad* quad) {
+    IopCodeDispatcher::generate_TABLECREATE(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == TABLECREATE_t);
+        assert(quad->op == intermediate_code::TABLECREATE_t);
         generate(virtual_machine::NEWTABLE_VM, quad);
     }
 
     void    
-    IopCodeDispatcher::generate_TABLEGETELEM(Quad* quad) {
+    IopCodeDispatcher::generate_TABLEGETELEM(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == TABLEGETELEM_t);
+        assert(quad->op == intermediate_code::TABLEGETELEM_t);
         generate(virtual_machine::TABLEGETELEM_VM, quad);
     }
 
     void    
-    IopCodeDispatcher::generate_TABLESETELEM(Quad* quad) {
+    IopCodeDispatcher::generate_TABLESETELEM(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
-        assert(quad->op == TABLESETELEM_t);
+        assert(quad->op == intermediate_code::TABLESETELEM_t);
         generate(virtual_machine::TABLESETELEM_VM, quad);
     }
 }

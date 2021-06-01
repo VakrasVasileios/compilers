@@ -6,7 +6,8 @@ namespace expression {
         return called_symbol;
     }
 
-    CallSuffix* Call::get_call_suffix() const {
+    CallSuffix* 
+    Call::get_call_suffix() const {
         return call_suffix;
     }
 

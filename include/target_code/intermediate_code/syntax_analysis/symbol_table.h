@@ -2,8 +2,8 @@
 #define SYMBOL_TABLE_H
 
 #include <vector>
+#include "../../../../util/contract/contract.h"
 #include "block.h"
-#include "../../util/contract/contract.h"
 
 namespace syntax_analysis {
     /**

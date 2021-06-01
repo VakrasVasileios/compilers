@@ -1,6 +1,6 @@
-#include "../../include/intermediate_code/symbol_table.h"
+#include "../../../include/target_code/intermediate_code/syntax_analysis/symbol_table.h"
 
-namespace target_code {
+namespace syntax_analysis {
     std::vector<std::list<Block*> >
     SymbolTable:: get_blocks_table() const {
         return blocks_table;

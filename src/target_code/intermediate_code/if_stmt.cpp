@@ -1,6 +1,6 @@
-#include "../../include/target_code/if_stmt.h"
+#include "../../../include/target_code/intermediate_code/if_stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     Quad*
     IfStmt:: get_if_jump_quad() const {
         return if_jump_quad;

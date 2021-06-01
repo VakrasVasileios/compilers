@@ -1,6 +1,6 @@
-#include "../../include/target_code/loop_stmt.h"
+#include "../../../include/target_code/intermediate_code/loop_stmt.h"
 
-namespace target_code {
+namespace intermediate_code {
     LoopType
     LoopStmt:: get_loop_type() const {
         return loop_type;

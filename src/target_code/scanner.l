@@ -1,6 +1,5 @@
 %{
     #include "parser.hpp"
-    #include "../include/token.h"
     #include <string>
     #include <string.h>
 
@@ -188,27 +187,3 @@ ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
 <<EOF>>             { return 0; }
 
 %%
-/*
-void
-al(int argc, char** argv) {
-    if (argc > 1) {
-        if (!(yyin = fopen(argv[1], "r"))) {
-            fprintf(stderr, "Cannot read file %s\n", argv[1]);
-            return;
-        }
-    }
-    else
-        yyin = stdin;
-
-    alpha_yylex(NULL);
-}
-
-int main(int argc, char** argv) {
-    
-    al(argc, argv);
-
-    logTokenList();
-
-    return 0;
-}
-*/

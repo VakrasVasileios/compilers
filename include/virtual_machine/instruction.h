@@ -11,6 +11,11 @@ namespace virtual_machine {
      */
     typedef struct instruction {
         /**
+         * @brief The label of this Instruction.
+         * 
+         */
+        unsigned int    label;
+        /**
          * @brief The virtal machine opcode of this Instruction.
          * 
          */
@@ -39,15 +44,16 @@ namespace virtual_machine {
         /**
          * @brief Constructs a new instruction object.
          * 
-         * @param opcode    the opcode of the new instruction object, not null
-         * @param result    the result of the new instruction object, not null
-         * @param arg1      the arg1 of the new instruction object, not null
-         * @param arg2      the arg2 of the new instruction object, not null
+         * @param label     the labelof the new instruction object, 
+         * @param opcode    the opcode of the new instruction object
+         * @param result    the result of the new instruction object, can be null
+         * @param arg1      the arg1 of the new instruction object, can be null
+         * @param arg2      the arg2 of the new instruction object, can be null
          * @param src_line  the source line, at which the quad, based on which the
          * new instruction object is generated, was emitted, greater than zero
          */
-        instruction(Vmopcode opcode, Vmarg* result, Vmarg* arg1, Vmarg* arg2, unsigned int src_line)
-        : opcode(opcode), result(result), arg1(arg1), arg2(arg2), src_line(src_line) {};
+        instruction(unsigned int label, Vmopcode opcode, Vmarg* result, Vmarg* arg1, Vmarg* arg2, unsigned int src_line)
+        : label(label), opcode(opcode), result(result), arg1(arg1), arg2(arg2), src_line(src_line) {};
 
     } Instruction;
 }

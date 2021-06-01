@@ -1,7 +1,6 @@
-#include "../../include/target_code/block.h"
-#include <iostream>
+#include "../../../include/target_code/intermediate_code/syntax_analysis/block.h"
 
-namespace target_code {
+namespace syntax_analysis {
     std::list<expression::Symbol*>
     Block:: get_symbols() const {
         return symbols;

@@ -1,6 +1,6 @@
-#include "../../include/target_code/quad.h"
+#include "../../../include/target_code/intermediate_code/quad.h"
 
-namespace target_code {
+namespace intermediate_code {
     std::ostream&
     operator<<(std::ostream& os, const quad _quad) {
         os << std::to_string(_quad.label) << ": " << IopcodeToString(_quad.op) << " ";
