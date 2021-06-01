@@ -1,3 +1,1 @@
-add_subdirectory(expression)
-add_subdirectory(virtual_machine)
 add_subdirectory(target_code)

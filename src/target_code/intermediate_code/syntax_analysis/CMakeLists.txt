@@ -1,5 +1,6 @@
-include_directories(${compilers_SOURCE_DIR}/include)
-add_subdirectory(${compilers_SOURCE_DIR}/src/expression syntax_analysis)
+include_directories(${compilers_SOURCE_DIR}/include/target_code/intermediate_code/syntax_analysis)
+
+add_subdirectory(expression)
 
 add_library(syntax_analysis
     syntax_analysis.cpp

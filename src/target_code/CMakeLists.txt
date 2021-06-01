@@ -1,7 +1,6 @@
-add_subdirectory(intermediate_code)
-add_subdirectory(${compilers_SOURCE_DIR}/src/virtual_machine target_code)
+include_directories(${compilers_SOURCE_DIR}/include/target_code)
 
-include_directories(${compilers_SOURCE_DIR}/include)
+add_subdirectory(intermediate_code)
 
 find_package(BISON 2.4.1)
 find_package(FLEX 2.5.35)
@@ -11,11 +10,10 @@ FLEX_TARGET(scanner_trgt scanner.l ${compilers_SOURCE_DIR}/build/src/scanner.cpp
 ADD_FLEX_BISON_DEPENDENCY(scanner_trgt parser_trgt)
 
 add_library(target_code
-    target_code.cpp opcode_dispatcher.cpp
+    target_code.cpp opcode_dispatcher.cpp program_consts.cpp
 )
 
 target_link_libraries(target_code intermediate_code)
-target_link_libraries(target_code syntax_analysis)
 
 # Release mode executables
 add_executable(dlog

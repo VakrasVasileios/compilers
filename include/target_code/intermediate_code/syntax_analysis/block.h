@@ -4,7 +4,7 @@
 #include <list>
 #include <iostream>
 #include "../../../../util/contract/contract.h"
-#include "../../../expression/symbol.h"
+#include "expression/symbol.h"
 
 namespace syntax_analysis {
     /**

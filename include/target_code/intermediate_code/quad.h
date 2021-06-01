@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include "../../../util/contract/contract.h"
-#include "../../expression/expression.h"
-#include "../../expression/int_constant.h"
+#include "syntax_analysis/expression/expression.h"
+#include "syntax_analysis/expression/int_constant.h"
 #include "instruction_opcodes.h"
 
 namespace intermediate_code {

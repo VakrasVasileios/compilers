@@ -2,8 +2,6 @@
     #include <stdio.h>
     #include <iostream>
     #include <fstream>
-    #include <list>
-    #include <stack>
     #include <string>
     #include "../../include/target_code/target_code.h"
 

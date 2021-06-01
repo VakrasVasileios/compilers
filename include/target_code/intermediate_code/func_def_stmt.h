@@ -2,7 +2,7 @@
 #define FUNCTIONDEF_H
 
 #include <list>
-#include "../../expression/symbol.h"
+#include "syntax_analysis/expression/symbol.h"
 #include "quad.h"
 #include "stmt.h"
 

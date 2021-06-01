@@ -2,7 +2,7 @@
 
 namespace target_code {
     void 
-    Emit(virtual_machine::Instruction* emitted) {
+    Emit(Instruction* emitted) {
         instructions.push_back(emitted);
     }
 
