@@ -67,8 +67,8 @@ namespace target_code {
         void                    Generate();
     private:
         Vmarg*                  make_operand (expression::Expression* expr);
-        Vmarg*                  make_numberoperand (expression::Expression* expr);
-        Vmarg*                  make_booloperand (expression::Expression* expr);
+        Vmarg*                  make_numberoperand (double val);
+        Vmarg*                  make_booloperand (unsigned val);
         Vmarg*                  make_retvaloperand (expression::Expression* expr);
 
         void                    generate(Vmopcode op, intermediate_code::Quad* quad);
