@@ -62,6 +62,13 @@ namespace syntax_analysis {
      */
     void                    InitLibraryFunctions();
     /**
+     * @brief Returns a read/write access to the current scope.
+     * 
+     * @return a read/write access to the current scope, greater or
+     * equal to zero
+     */
+    unsigned int            CurrScope();
+    /**
      * @brief Increases the current scope.
      * 
      */

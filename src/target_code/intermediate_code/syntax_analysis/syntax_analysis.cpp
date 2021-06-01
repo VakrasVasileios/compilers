@@ -48,6 +48,10 @@ namespace syntax_analysis {
         DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
     }
 
+    unsigned int CurrScope() {
+        return current_scope;
+    }
+
     void IncreaseScope() {
         Block* new_block = new Block();
         symbol_table.Insert(++current_scope, new_block);

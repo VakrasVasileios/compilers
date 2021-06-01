@@ -72,17 +72,17 @@ namespace target_code {
 
     Vmarg*              
     IopCodeDispatcher::make_numberoperand (expression::Expression* expr) {
-        
+        return nullptr;
     }
 
     Vmarg*
     IopCodeDispatcher::make_booloperand (expression::Expression* expr) {
-        
+        return nullptr;
     }
 
     Vmarg*
     IopCodeDispatcher::make_retvaloperand (expression::Expression* expr) {
-        
+        return nullptr;
     }
     /* 
     The dispatch takes place because the generate functions index in this
