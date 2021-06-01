@@ -110,6 +110,8 @@ namespace expression {
          */
         Expression*                 get_index() const;
 
+        unsigned int                get_taddress() const;
+
         unsigned int                get_total_local() const;
         /**
          * @brief Sets this Symbol activity.
@@ -119,6 +121,8 @@ namespace expression {
          * @param active the activity to set this Symbol.
         **/ 
         void                        set_active(bool active);
+
+        void                        set_taddress(unsigned _taddr);
 
         void                        set_total_local(unsigned int _lc);
         /**
@@ -154,6 +158,7 @@ namespace expression {
         const ScopeSpace            space;
         const unsigned int          offset;
         unsigned int                total_local;
+        unsigned int                taddress;
         std::list<Symbol*>          formal_arguments;
         Expression*                 index;
 
