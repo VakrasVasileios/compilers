@@ -164,6 +164,7 @@ namespace syntax_analysis {
     expression::Symbol* DefineNewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
         PRECONDITION(id != nullptr);
         auto new_symbol = NewSymbol(type, id, index, line);
+        IncreaseCurrOffset();
         DefineSymbol(new_symbol);
 
         return new_symbol;
@@ -186,6 +187,7 @@ namespace syntax_analysis {
     expression::Symbol* DefineNewAnonymousFunc(unsigned int line) {
         PRECONDITION(line >= 0);
         auto new_an_func = NewAnonymousFunc(line);
+        IncreaseCurrOffset();
         DefineSymbol(new_an_func);
 
         return new_an_func;
