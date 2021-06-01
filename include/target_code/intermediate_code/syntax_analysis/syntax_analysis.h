@@ -72,6 +72,57 @@ namespace syntax_analysis {
      */
     void                    DecreaseScope();
     /**
+     * @brief Stores the function local offset.
+     * 
+     */
+    void                    store_funclocal_offset(void);
+    /**
+     * @brief Restores the function local offset.
+     * 
+     */
+    void                    restore_funclocal_offset(void);
+    /**
+     * @brief Resets the function local offset.
+     * 
+     */
+    void                    reset_funclocal_offset(void);
+    /**
+     * @brief Resets the formal argument offset.
+     * 
+     */
+    void                    reset_formalarg_offset(void);
+    /**
+     * @brief Returns a read/write access to the current
+     * scope space.
+     * 
+     * @return a read/write access to the current
+     * scope space 
+     */
+    expression::ScopeSpace  curr_scope_space(void);
+    /**
+     * @brief Returns a read/write access to the current
+     * scope space offset.
+     * 
+     * @return a read/write access to the current
+     * scope space offset 
+     */
+    unsigned int            curr_scope_offset(void);
+    /**
+     * @brief Increases the current offset.
+     * 
+     */
+    void                    increase_curr_offset(void);
+    /**
+     * @brief Enters a scope space.
+     * 
+     */
+    void                    enter_scope_space(void);
+    /**
+     * @brief Exits a scope space.
+     * 
+     */
+    void                    exit_scope_space(void);
+    /**
      * @brief Enables all of the inserted, to the symbol table,
      * symbols across all scopes, except the global scope.
      * 
@@ -127,15 +178,13 @@ namespace syntax_analysis {
      */
     expression::Symbol*     DefineNewAnonymousFunc(unsigned int line);
     /**
-     * @brief Stashes a new formal argument, with an id,
-     * parsed at a src line, to be inserted to the symbol table later.
+     * @brief Stashes a new formal argument, to be inserted
+     *  to the symbol table later.
      * 
-     * @param id the id of the formal argument to be stashed,
-     * not null
-     * @param line the line on which the formal argument is parsed,
-     * greater or equal to zero
+     * @param new_formal_arg the new formal argument to be stashed,
+     * not null and of FORMAL_ARG scope space
      */
-    void                    StashFormalArgument(const char* id, unsigned int line);
+    void                    StashFormalArgument(expression::Symbol* new_formal_arg);
     /**
      * @brief Inserts the stashed formal arguments to the symbol table.
      * 

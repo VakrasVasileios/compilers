@@ -55,6 +55,82 @@ namespace syntax_analysis {
         --current_scope;
     }
 
+    unsigned int programVarOffset       = 0;
+    unsigned int functionLocalOffset    = 0;
+    unsigned int formalArgOffset        = 0;
+    unsigned int scopeSpaceCounter      = 1;
+
+    std::stack<unsigned int> funcLocalOffset_stack;
+    std::stack<unsigned int> formalOffset_stack;
+
+    void
+    store_funclocal_offset(void) {
+        funcLocalOffset_stack.push(functionLocalOffset);
+    }
+
+    void
+    restore_funclocal_offset(void) {
+        assert(!funcLocalOffset_stack.empty());
+        functionLocalOffset = funcLocalOffset_stack.top();
+        funcLocalOffset_stack.pop();
+    }
+
+    void
+    reset_funclocal_offset(void) {
+        functionLocalOffset = 0;
+    }
+
+    void
+    reset_formalarg_offset(void) {
+        formalArgOffset = 0;
+    }
+
+    expression::ScopeSpace
+    curr_scope_space(void) {
+        if (scopeSpaceCounter == 1)
+            return expression::PROGRAM_VAR;
+        else if (scopeSpaceCounter % 2 == 0)
+            return expression::FORMAL_ARG;
+        else
+            return expression::FUNCTION_LOCAL;
+    }
+
+    unsigned int
+    curr_scope_offset(void) {
+        switch (curr_scope_space()) {
+            case expression::PROGRAM_VAR:
+                return programVarOffset;
+            case expression::FUNCTION_LOCAL:
+                return functionLocalOffset;
+            case expression::FORMAL_ARG:
+                return formalArgOffset;        
+            default:
+                assert(false);
+        }
+    }
+
+    void
+    increase_curr_offset(void) {
+        switch (curr_scope_space()) {
+            case expression::PROGRAM_VAR    : ++programVarOffset; break;
+            case expression::FUNCTION_LOCAL : ++functionLocalOffset; break;
+            case expression::FORMAL_ARG     : ++formalArgOffset; break;
+            default:
+                assert(false);
+        }
+    }
+
+    void
+    enter_scope_space(void) {
+        ++scopeSpaceCounter;
+    }
+
+    void
+    exit_scope_space(void) {
+        assert(scopeSpaceCounter > 1);
+        --scopeSpaceCounter;
+    }
+
     void EnableLowerScopes() {
         program_stack.ActivateLowerScopes();
     }
@@ -83,15 +159,7 @@ namespace syntax_analysis {
 
     expression::Symbol* NewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
         assert (id != nullptr);
-        if (InFuncDef()) {
-            auto new_symbol = new expression::Symbol(type, id, line, current_scope, expression::FUNCTION_LOCAL, func_def_stmts.top()->get_offset(), index);
-            func_def_stmts.top()->IncreaseOffset();
-            
-            return new_symbol;
-        }
-        else {
-            return new expression::Symbol(type, id, line, current_scope, expression::PROGRAM_VAR, program_var_offset++, index);
-        }
+        return new expression::Symbol(type, id, line, current_scope, curr_scope_space(), curr_scope_offset(), index);
     }
 
     expression::Symbol* DefineNewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
@@ -124,20 +192,10 @@ namespace syntax_analysis {
 
     std::list<expression::Symbol*>  stashed_formal_arguments;
 
-    void StashFormalArgument(const char* id, unsigned int line) {
-        PRECONDITION(id != nullptr);
-        auto top_func_def_stmt = func_def_stmts.top();
-        auto func = top_func_def_stmt->get_sym();
-        auto offset = func->get_formal_arguments().size();
-
-        auto new_formal_arg = new expression::Symbol(expression::VAR, id, line, current_scope + 1, expression::FORMAL_ARG, offset, nullptr);
-        if (func->HasFormalArg(new_formal_arg)) {
-            SignalError("formal argument " + std::string(id) + " already declared", line);
-        }
-        else {
-            func->AddFormalArg(new_formal_arg);
-            stashed_formal_arguments.push_back(new_formal_arg);       
-        }
+    void StashFormalArgument(expression::Symbol* new_formal_arg) {
+        PRECONDITION(new_formal_arg != nullptr);
+        PRECONDITION(new_formal_arg->get_space() == expression::FORMAL_ARG);
+        stashed_formal_arguments.push_back(new_formal_arg);       
     }
 
     void DefineStashedFormalArguments() {
