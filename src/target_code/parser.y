@@ -5,38 +5,7 @@
     #include <list>
     #include <stack>
     #include <string>
-    #include "../include/expression/primary.h"
-    #include "../include/expression/arithmetic_expr.h"
-    #include "../include/expression/bool_expr.h"
-    #include "../include/expression/assign_expr.h"
-    #include "../include/expression/symbol.h"
-    #include "../include/expression/bool_constant.h"
-    #include "../include/expression/constant.h"
-    #include "../include/expression/nil_constant.h"
-    #include "../include/expression/string_constant.h"
-    #include "../include/expression/double_constant.h"
-    #include "../include/expression/int_constant.h"
-    #include "../include/expression/numeric_constant.h"
-    #include "../include/expression/elist.h"
-    #include "../include/expression/call.h"
-    #include "../include/expression/call_suffix.h"
-    #include "../include/expression/norm_call.h"
-    #include "../include/expression/method_call.h"
-    #include "../include/expression/tablemake.h"
-    #include "../include/expression/tablemake_elems.h"
-    #include "../include/expression/indexed_elem.h"
-    #include "../include/expression/indexed.h"
-    #include "../include/expression/tablemake_pairs.h"
-    #include "../include/symbol_table.h"
-    #include "../include/program_stack.h"
-    #include "../include/instruction_opcodes.h"
-    #include "../include/quad.h"
-    #include "../include/stmt.h"
-    #include "../include/for_stmt.h"
-    #include "../include/while_stmt.h"
-    #include "../include/loop_stmt.h"
-    #include "../include/func_def_stmt.h"
-    #include "../include/if_stmt.h"
+    #include "../../include/target_code/target_code.h"
 
     #ifdef DELOG
         #define DLOG(message) std::cout << message << std::endl
@@ -55,28 +24,28 @@
 %}
 
 %union {                                                    
-    char*                       stringValue;
-    int                         intValue;
-    double                      doubleValue;
+    char*                                   stringValue;
+    int                                     intValue;
+    double                                  doubleValue;
 
-    unsigned int                quad_label;
+    unsigned int                            quad_label;
 
-    class FuncDefStmt*          funcdef;
+    class intermediate_code::intermediate_code::FuncDefStmt*   funcdef;
 
-    class Expression*           expr;
-    class AssignExpr*           assignexpr;
+    class expression::Expression*           expr;
+    class expression::AssignExpr*           assignexpr;
 
-    class Primary*              prim;
-    class Constant*             con;
-    class Call*                 call;
-    class CallSuffix*           call_suffix;
-    class NormCall*             norm_call;
-    class MethodCall*           method_call;
-    class Elist*                elist;
-    class Symbol*               sym;
-    class TableMake*            tablemake;
-    class Indexed*              indexed;
-    class IndexedElem*          indexed_elem; 
+    class expression::Primary*              prim;
+    class expression::Constant*             con;
+    class expression::Call*                 call;
+    class expression::CallSuffix*           call_suffix;
+    class expression::NormCall*             norm_call;
+    class expression::expression::MethodCall*           method_call;
+    class expression::EList*                elist;
+    class expression::Symbol*               sym;
+    class expression::TableMake*            tablemake;
+    class expression::expression::Indexed*              indexed;
+    class expression::IndexedElem*          indexed_elem; 
 }
 
 %start program
@@ -88,7 +57,11 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
+<<<<<<< HEAD
 %type <quad_label>      M funcbody
+=======
+%type <quad_label>      M
+>>>>>>> stef
 
 %type <funcdef>         funcdef
 
@@ -141,9 +114,9 @@ stmts:      stmt                    {
 
 stmt:         expr ';'              {
                                         if ($1->get_type() == BOOL) {
-                                            ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                            intermediate_code::::ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                         }
-                                        ResetTemp();
+                                        intermediate_code::ResetTemp();
                                         DLOG("stmt -> expr;");
                                     }
             | ifstmt                {
@@ -159,24 +132,24 @@ stmt:         expr ';'              {
                                         DLOG("stmt -> returnstmt");
                                     }
             | BREAK ';'             { 
-                                        if (!IsValidBreakContinue()) {
-                                            SignalError("invalid keyword BREAK outside of loop");
+                                        if (!intermediate_code::IsValidBreakContinue()) {
+                                            syntax_analysis::::SignalError("invalid keyword BREAK outside of loop");
                                         } else {
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
-                                            auto top_loop_stmt = loop_stmts.top();
+                                            auto top_loop_stmt = intermediate_code::intermediate_code::loop_stmts.top();
                                             top_loop_stmt->PushBreakJumpQuad(jump_quad);
                                         }
 
                                         DLOG("stmt -> break;");
                                     }
             | CONTINUE ';'          {
-                                        if (!IsValidBreakContinue()) {
-                                            SignalError("invalid keyword CONTINUE outside of loop");
+                                        if (!intermediate_code::IsValidBreakContinue()) {
+                                            syntax_analysis::::SignalError("invalid keyword CONTINUE outside of loop");
                                         } else {
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
-                                            auto top_loop_stmt = loop_stmts.top();
+                                            auto top_loop_stmt = intermediate_code::intermediate_code::loop_stmts.top();
                                             top_loop_stmt->PushContinueJumpQuad(jump_quad);
                                         }
                                         
@@ -200,62 +173,62 @@ expr:         assignexpr            {
             | expr '+' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(ADD_t, temp, expr1, expr2);
-                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        if (intermediate_code::IsValidArithmeticOp(expr1) & intermediate_code::IsValidArithmeticOp(expr2)) {
+                                            auto temp = intermediate_code::::NewTemp(VAR, nullptr);
+                                            intermediate_code::::Emit(ADD_t, temp, expr1, expr2);
+                                            $$ = new expression::ArithmeticExpr(temp, expr1, expr2);
                                         }
                                         DLOG("expr -> expr + expr");
                                     }
             | expr '-' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(SUB_t, temp, expr1, expr2);
-                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        if (intermediate_code::IsValidArithmeticOp(expr1) & intermediate_code::IsValidArithmeticOp(expr2)) {
+                                            auto temp = intermediate_code::::NewTemp(VAR, nullptr);
+                                            intermediate_code::::Emit(SUB_t, temp, expr1, expr2);
+                                            $$ = new expression::ArithmeticExpr(temp, expr1, expr2);
                                         } 
                                         DLOG("expr -> expr - expr");
                                     }
             | expr '*' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(MUL_t, temp, expr1, expr2);
-                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        if (intermediate_code::IsValidArithmeticOp(expr1) & intermediate_code::IsValidArithmeticOp(expr2)) {
+                                            auto temp = intermediate_code::::NewTemp(VAR, nullptr);
+                                            intermediate_code::::Emit(MUL_t, temp, expr1, expr2);
+                                            $$ = new expression::ArithmeticExpr(temp, expr1, expr2);
                                         }
                                         DLOG("expr -> expr * expr");
                                     }
             | expr '/' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(DIV_t, temp, expr1, expr2);
-                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        if (intermediate_code::IsValidArithmeticOp(expr1) & intermediate_code::IsValidArithmeticOp(expr2)) {
+                                            auto temp = intermediate_code::::NewTemp(VAR, nullptr);
+                                            intermediate_code::::Emit(DIV_t, temp, expr1, expr2);
+                                            $$ = new expression::ArithmeticExpr(temp, expr1, expr2);
                                         }
                                         DLOG("expr -> expr / expr");
                                     }
             | expr '%' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticOp(expr1) & IsValidArithmeticOp(expr2)) {
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(MOD_t, temp, expr1, expr2);
-                                            $$ = new ArithmeticExpr(temp, expr1, expr2);
+                                        if (intermediate_code::IsValidArithmeticOp(expr1) & intermediate_code::IsValidArithmeticOp(expr2)) {
+                                            auto temp = intermediate_code::::NewTemp(VAR, nullptr);
+                                            intermediate_code::::Emit(MOD_t, temp, expr1, expr2);
+                                            $$ = new expression::ArithmeticExpr(temp, expr1, expr2);
                                         } 
                                         DLOG("expr -> expr % expr");
                                     }
             | expr '>' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
-                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        if (intermediate_code::IsValidArithmeticComp(expr1) & intermediate_code::IsValidArithmeticComp(expr2)) {
+                                            expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                            auto greater_quad = Emit(IF_GREATER_t, expr1, expr2, nullptr);
+                                            auto greater_quad = intermediate_code::::Emit(IF_GREATER_t, expr1, expr2, nullptr);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             n_expr->true_list.push_back(greater_quad->label);
                                             n_expr->false_list.push_back(jump_quad->label);
@@ -267,12 +240,12 @@ expr:         assignexpr            {
             | expr GEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
-                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        if (intermediate_code::IsValidArithmeticComp(expr1) & intermediate_code::IsValidArithmeticComp(expr2)) {
+                                            expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                            auto greater_equal_quad = Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
+                                            auto greater_equal_quad = intermediate_code::::Emit(IF_GREATEREQ_t, expr1, expr2, nullptr);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             n_expr->true_list.push_back(greater_equal_quad->label);
                                             n_expr->false_list.push_back(jump_quad->label);
@@ -285,12 +258,12 @@ expr:         assignexpr            {
             | expr '<' expr         {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
-                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        if (intermediate_code::IsValidArithmeticComp(expr1) & intermediate_code::IsValidArithmeticComp(expr2)) {
+                                            expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                            auto less_quad = Emit(IF_LESS_t, expr1, expr2, nullptr);
+                                            auto less_quad = intermediate_code::::Emit(IF_LESS_t, expr1, expr2, nullptr);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             n_expr->true_list.push_back(less_quad->label);
                                             n_expr->false_list.push_back(jump_quad->label);
@@ -302,12 +275,12 @@ expr:         assignexpr            {
             | expr LEQL expr        {
                                         auto expr1 = $1;
                                         auto expr2 = $3;
-                                        if (IsValidArithmeticComp(expr1) & IsValidArithmeticComp(expr2)) {
-                                            BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        if (intermediate_code::IsValidArithmeticComp(expr1) & intermediate_code::IsValidArithmeticComp(expr2)) {
+                                            expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                            auto less_equal_quad = Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
+                                            auto less_equal_quad = intermediate_code::::Emit(IF_LESSEQ_t, expr1, expr2, nullptr);
 
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             n_expr->true_list.push_back(less_equal_quad->label);
                                             n_expr->false_list.push_back(jump_quad->label);
@@ -318,22 +291,22 @@ expr:         assignexpr            {
                                     }
             | expr EQUAL            {
                                         if ($1->get_type() == BOOL) {
-                                            $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                            $1 = intermediate_code::::ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                         }
                                     }
             expr                    {
                                         if ($4->get_type() == BOOL) {
-                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                            $4 = intermediate_code::::ConcludeShortCircuit(BOOL_EXPR_CAST($4));
                                         }
 
                                         auto expr1 = $1;
                                         auto expr2 = $4;
 
-                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                        auto equal_quad = Emit(IF_EQ_t, expr1, expr2, nullptr);
+                                        auto equal_quad = intermediate_code::::Emit(IF_EQ_t, expr1, expr2, nullptr);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                         n_expr->true_list.push_back(equal_quad->label);
                                         n_expr->false_list.push_back(jump_quad->label);
@@ -344,22 +317,22 @@ expr:         assignexpr            {
                                     }
             | expr NOTEQUAL         {
                                         if ($1->get_type() == BOOL) {
-                                            $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                            $1 = intermediate_code::::ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                         }
                                     }
             expr                    {
                                         if ($4->get_type() == BOOL) {
-                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                            $4 = intermediate_code::::ConcludeShortCircuit(BOOL_EXPR_CAST($4));
                                         }
 
                                         auto expr1 = $1;
                                         auto expr2 = $4;
 
-                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                        auto not_equal_quad = Emit(IF_NOTEQ_t,  expr1, expr2, nullptr);
+                                        auto not_equal_quad = intermediate_code::::Emit(IF_NOTEQ_t,  expr1, expr2, nullptr);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                         n_expr->true_list.push_back(not_equal_quad->label);
                                         n_expr->false_list.push_back(jump_quad->label);
@@ -371,10 +344,10 @@ expr:         assignexpr            {
             | expr AND              {
                                         auto tmp_expr1 = $1;
                                         if (tmp_expr1->get_type() != BOOL) {
-                                            BoolExpr* expr1 = new BoolExpr(tmp_expr1, nullptr, nullptr);
+                                            expression::BoolExpr* expr1 = new expression::BoolExpr(tmp_expr1, nullptr, nullptr);
 
-                                            auto equal_quad = Emit(IF_EQ_t, tmp_expr1, new BoolConstant(true), nullptr);
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto equal_quad = intermediate_code::::Emit(IF_EQ_t, tmp_expr1, new BoolConstant(true), nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             expr1->true_list.push_back(equal_quad->label);
                                             expr1->false_list.push_back(jump_quad->label);
@@ -388,18 +361,18 @@ expr:         assignexpr            {
                                         auto q_label = $4;
 
                                         if (expr2->get_type() != BOOL) {
-                                            expr2 = new BoolExpr($5, nullptr, nullptr);
+                                            expr2 = new expression::BoolExpr($5, nullptr, nullptr);
 
-                                            auto equal_quad = Emit(IF_EQ_t, $5, new BoolConstant(true), nullptr);
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto equal_quad = intermediate_code::::Emit(IF_EQ_t, $5, new BoolConstant(true), nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             BOOL_EXPR_CAST(expr2)->true_list.push_back(equal_quad->label);
                                             BOOL_EXPR_CAST(expr2)->false_list.push_back(jump_quad->label);
                                         }
 
-                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                        BackPatch(BOOL_EXPR_CAST(expr1)->true_list, q_label);
+                                        intermediate_code::BackPatch(BOOL_EXPR_CAST(expr1)->true_list, q_label);
                                         n_expr->true_list = BOOL_EXPR_CAST(expr2)->true_list;
                                         n_expr->false_list = BOOL_EXPR_CAST(expr1)->false_list;
                                         n_expr->false_list.merge(BOOL_EXPR_CAST(expr2)->false_list);
@@ -411,10 +384,10 @@ expr:         assignexpr            {
             | expr OR               {
                                         auto tmp_expr1 = $1;
                                         if (tmp_expr1->get_type() != BOOL) {
-                                            BoolExpr* expr1 = new BoolExpr(tmp_expr1, nullptr, nullptr);
+                                            expression::BoolExpr* expr1 = new expression::BoolExpr(tmp_expr1, nullptr, nullptr);
 
-                                            auto equal_quad = Emit(IF_EQ_t, tmp_expr1, new BoolConstant(true), nullptr);
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto equal_quad = intermediate_code::::Emit(IF_EQ_t, tmp_expr1, new BoolConstant(true), nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             expr1->true_list.push_back(equal_quad->label);
                                             expr1->false_list.push_back(jump_quad->label);
@@ -428,18 +401,18 @@ expr:         assignexpr            {
                                         auto q_label = $4;
 
                                         if (expr2->get_type() != BOOL) {
-                                            expr2 = new BoolExpr($5, nullptr, nullptr);
+                                            expr2 = new expression::BoolExpr($5, nullptr, nullptr);
 
-                                            auto equal_quad = Emit(IF_EQ_t, $5, new BoolConstant(true), nullptr);
-                                            auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                            auto equal_quad = intermediate_code::::Emit(IF_EQ_t, $5, new BoolConstant(true), nullptr);
+                                            auto jump_quad = intermediate_code::::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                             BOOL_EXPR_CAST(expr2)->true_list.push_back(equal_quad->label);
                                             BOOL_EXPR_CAST(expr2)->false_list.push_back(jump_quad->label);
                                         }
 
-                                        BoolExpr* n_expr = new BoolExpr(expr1, expr2, nullptr);
+                                        expression::BoolExpr* n_expr = new expression::BoolExpr(expr1, expr2, nullptr);
 
-                                        BackPatch(BOOL_EXPR_CAST(expr1)->false_list, q_label);
+                                        intermediate_code::BackPatch(BOOL_EXPR_CAST(expr1)->false_list, q_label);
                                         n_expr->true_list = BOOL_EXPR_CAST(expr1)->true_list;
                                         n_expr->true_list.merge(BOOL_EXPR_CAST(expr2)->true_list);
                                         n_expr->false_list = BOOL_EXPR_CAST(expr2)->false_list;
@@ -455,7 +428,7 @@ expr:         assignexpr            {
             ;
 
 M:                                  {
-                                        $<quad_label>$ = NextQuadLabel();
+                                        $<quad_label>$ = intermediate_code::intermediate_code::NextQuadLabel();
                                     }
             ;
 
@@ -465,9 +438,9 @@ term:         '(' expr ')'          {
                                     }
             | '-' expr %prec UMINUS {
                                         auto symbol = $2;
-                                        if (IsValidArithmeticOp(symbol)) {
-                                            auto temp = NewTemp(VAR, nullptr);
-                                            Emit(UMINUS_t, temp, symbol, nullptr);
+                                        if (intermediate_code::IsValidArithmeticOp(symbol)) {
+                                            auto temp = intermediate_code::::NewTemp(VAR, nullptr);
+                                            intermediate_code::::Emit(UMINUS_t, temp, symbol, nullptr);
                                             $$ = symbol;
                                         }
                                         DLOG("term -> -expr");
@@ -481,9 +454,9 @@ term:         '(' expr ')'          {
 
                                         BoolExpr* n_expr = new BoolExpr(expr1, nullptr, nullptr);
 
-                                        auto equal_quad = Emit(IF_EQ_t, expr1, new BoolConstant(true),  nullptr);
+                                        auto equal_quad = intermediate_code::Emit(IF_EQ_t, expr1, new BoolConstant(true),  nullptr);
 
-                                        auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                        auto jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
                                         
                                         BOOL_EXPR_CAST(expr1)->true_list.push_back(equal_quad->label);
                                         BOOL_EXPR_CAST(expr1)->false_list.push_back(jump_quad->label);
@@ -497,15 +470,15 @@ term:         '(' expr ')'          {
                                     }
             | PLUSPLUS lvalue       {
                                         auto symbol = $2;
-                                        Symbol* result = NewTemp(VAR, nullptr);
+                                        Symbol* result = intermediate_code::NewTemp(VAR, nullptr);
                                         if (IsValidArithmeticOp(symbol)) {
-                                            if (IsTableItem(symbol)) {
-                                                result = EmitIfTableItem(symbol);
-                                                Emit(ADD_t, result, result, new IntConstant(1));
-                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
+                                            if (expression::IsTableItem(symbol)) {
+                                                result = intermediate_code::EmitIfTableItem(symbol);
+                                                intermediate_code::Emit(ADD_t, result, result, new IntConstant(1));
+                                                intermediate_code::Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
                                             } else {
-                                                Emit(ADD_t, symbol, symbol, new IntConstant(1));
-                                                Emit(ASSIGN_t, result, symbol, nullptr);  
+                                                intermediate_code::Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                                intermediate_code::Emit(ASSIGN_t, result, symbol, nullptr);  
                                             }
                                         } 
                                         $$ = result;     
@@ -513,31 +486,31 @@ term:         '(' expr ')'          {
                                     }
             | lvalue PLUSPLUS       {
                                         auto symbol = $1;
-                                        auto result = NewTemp(VAR, nullptr);
+                                        auto result = intermediate_code::NewTemp(VAR, nullptr);
                                         if (IsValidArithmeticOp(symbol)) {
-                                            if (IsTableItem(symbol)) {
-                                                auto val = EmitIfTableItem(symbol);
-                                                Emit(ASSIGN_t, result, val, nullptr);
-                                                Emit(ADD_t, val, val, new IntConstant(1));
-                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
+                                            if (expression::IsTableItem(symbol)) {
+                                                auto val = intermediate_code::EmitIfTableItem(symbol);
+                                                intermediate_code::Emit(ASSIGN_t, result, val, nullptr);
+                                                intermediate_code::Emit(ADD_t, val, val, new IntConstant(1));
+                                                intermediate_code::Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
                                             } else {
-                                                Emit(ASSIGN_t, result, symbol, nullptr);    
-                                                Emit(ADD_t, symbol, symbol, new IntConstant(1));
+                                                intermediate_code::Emit(ASSIGN_t, result, symbol, nullptr);    
+                                                intermediate_code::Emit(ADD_t, symbol, symbol, new IntConstant(1));
                                             }
                                         } 
                                         $$ = result;
                                         DLOG("term -> lvalue++"); }
             | MINUSMINUS lvalue     { 
                                         auto symbol = $2;
-                                        Symbol* result = NewTemp(VAR, nullptr);
+                                        Symbol* result = intermediate_code::NewTemp(VAR, nullptr);
                                         if (IsValidArithmeticOp(symbol)) {
-                                            if (IsTableItem(symbol)) {
-                                                result = EmitIfTableItem(symbol);
-                                                Emit(SUB_t, result, result, new IntConstant(1));
-                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
+                                            if (expression::IsTableItem(symbol)) {
+                                                result = intermediate_code::EmitIfTableItem(symbol);
+                                                intermediate_code::Emit(SUB_t, result, result, new IntConstant(1));
+                                                intermediate_code::Emit(TABLESETELEM_t, symbol, symbol->get_index(), result);
                                             } else {
-                                                Emit(SUB_t, symbol, symbol, new IntConstant(1));
-                                                Emit(ASSIGN_t, result, symbol, nullptr);  
+                                                intermediate_code::Emit(SUB_t, symbol, symbol, new IntConstant(1));
+                                                intermediate_code::Emit(ASSIGN_t, result, symbol, nullptr);  
                                             }
                                         } 
                                         $$ = result;      
@@ -545,16 +518,16 @@ term:         '(' expr ')'          {
                                     }
             | lvalue MINUSMINUS     { 
                                         auto symbol = $1;
-                                        auto result = NewTemp(VAR, nullptr);
+                                        auto result = intermediate_code::NewTemp(VAR, nullptr);
                                         if (IsValidArithmeticOp(symbol)) {
-                                            if (IsTableItem(symbol)) {
-                                                auto val = EmitIfTableItem(symbol);
-                                                Emit(ASSIGN_t, result, val, nullptr);
-                                                Emit(SUB_t, val, val, new IntConstant(1));
-                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
+                                            if (expression::IsTableItem(symbol)) {
+                                                auto val = intermediate_code::EmitIfTableItem(symbol);
+                                                intermediate_code::Emit(ASSIGN_t, result, val, nullptr);
+                                                intermediate_code::Emit(SUB_t, val, val, new IntConstant(1));
+                                                intermediate_code::Emit(TABLESETELEM_t, symbol, symbol->get_index(), val);
                                             } else {
-                                                Emit(ASSIGN_t, result, symbol, nullptr);    
-                                                Emit(SUB_t, symbol, symbol, new IntConstant(1));
+                                                intermediate_code::Emit(ASSIGN_t, result, symbol, nullptr);    
+                                                intermediate_code::Emit(SUB_t, symbol, symbol, new IntConstant(1));
                                             }
                                         } 
                                         $$ = result;  
@@ -570,18 +543,18 @@ assignexpr:   lvalue '=' expr       {
                                         auto symbol = $1;
                                         auto expr = $3;
                                         if ($3->get_type() == BOOL) {
-                                            expr = ConcludeShortCircuit(BOOL_EXPR_CAST($3));
+                                            expr = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($3));
                                         }
                                         if (IsValidAssign(symbol)) {
-                                            if (IsTableItem(symbol)) {
-                                                Emit(TABLESETELEM_t, symbol, symbol->get_index(), expr);
-                                                auto result = EmitIfTableItem(symbol);
-                                                $$ = new AssignExpr(result, symbol, expr);
+                                            if (expression::IsTableItem(symbol)) {
+                                                intermediate_code::Emit(TABLESETELEM_t, symbol, symbol->get_index(), expr);
+                                                auto result = intermediate_code::EmitIfTableItem(symbol);
+                                                $$ = new expression::AssignExpr(result, symbol, expr);
                                             } else {
-                                                auto result = NewTemp(VAR, nullptr);
-                                                Emit(ASSIGN_t, symbol, expr, nullptr);
-                                                Emit(ASSIGN_t, result, symbol, nullptr);
-                                                $$ = new AssignExpr(result, symbol, expr);
+                                                auto result = intermediate_code::NewTemp(VAR, nullptr);
+                                                intermediate_code::Emit(ASSIGN_t, symbol, expr, nullptr);
+                                                intermediate_code::Emit(ASSIGN_t, result, symbol, nullptr);
+                                                $$ = new expression::AssignExpr(result, symbol, expr);
                                             }
                                         }
                                         DLOG("assignexpr -> lvalue = expr");
@@ -589,7 +562,7 @@ assignexpr:   lvalue '=' expr       {
             ;
 
 primary:      lvalue                {
-                                        $$ = EmitIfTableItem($1);
+                                        $$ = intermediate_code::EmitIfTableItem($1);
 
                                         DLOG("primary -> lvalue");
                                     }
@@ -614,43 +587,43 @@ primary:      lvalue                {
             ;
 
 lvalue:       ID                    {
-                                        auto symbol = Lookup($1);
+                                        auto symbol = intermediate_code::syntax_analysis::Lookup($1);
                                         if (symbol == nullptr) {
-                                            symbol = DefineNewSymbol(VAR, $1, nullptr);
+                                            symbol = syntax_analysis::DefineNewSymbol(VAR, $1, nullptr);
                                         } else if (!symbol->is_active()) {
-                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                            syntax_analysis::SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                         }
                                         $$ = symbol;
 
                                         DLOG("lvalue -> id");
                                     }
             | LOCAL ID              {
-                                        auto symbol = Lookup($2);
+                                        auto symbol = syntax_analysis::Lookup($2);
                                         if (symbol == nullptr) { 
-                                            symbol = DefineNewSymbol(VAR, $2, nullptr);
+                                            symbol = syntax_analysis::DefineNewSymbol(VAR, $2, nullptr);
                                         }
                                         else if (!symbol->is_active()) {
-                                            SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                            syntax_analysis::SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                         }
-                                        else if (IsGlobalVar(symbol)) {
-                                            symbol = DefineNewSymbol(VAR, $2, nullptr);
+                                        else if (syntax_analysis::IsGlobalVar(symbol)) {
+                                            symbol = syntax_analysis::DefineNewSymbol(VAR, $2, nullptr);
                                         }
-                                        else if (IsUserFunction(symbol)){
+                                        else if (expression::IsUserFunction(symbol)){
                                             if(IsAtCurrentScope(symbol)) 
-                                                SignalError("Attempting to redefine a previously declared user function");
+                                                syntax_analysis::SignalError("Attempting to redefine a previously declared user function");
                                             else 
-                                                symbol = DefineNewSymbol(VAR, $2, nullptr);
+                                                symbol = syntax_analysis::DefineNewSymbol(VAR, $2, nullptr);
                                         }
-                                        else if (IsLibraryFunction(symbol)) {
-                                            SignalError("Attempting to redefine a library function");
+                                        else if (expression::IsLibraryFunction(symbol)) {
+                                            syntax_analysis::SignalError("Attempting to redefine a library function");
                                         }
                                         $$ = symbol;
                                         DLOG("lvalue -> local id");
                                     }
             | COLONCOLON ID         {
-                                        auto symbol = LookupGlobal($2);
+                                        auto symbol = syntax_analysis::LookupGlobal($2);
                                         if (symbol == nullptr || !symbol->is_active()) 
-                                            SignalError("No global variable with id: " + std::string($2));
+                                            syntax_analysis::SignalError("No global variable with id: " + std::string($2));
                                         $$ = symbol;
                                         DLOG("lvalue -> ::id");
                                     }
@@ -663,52 +636,52 @@ lvalue:       ID                    {
 member:     lvalue '.' ID           {
                                         auto item = $1;
                                         auto index = $3;
-                                        $$ = MemberItem(item, index);
+                                        $$ = intermediate_code::MemberItem(item, index);
                                         DLOG("member -> lvalue.id");
                                     }
             | lvalue '[' expr ']'   {
                                         auto item = $1;
                                         auto index = $3;
-                                        auto sym = EmitIfTableItem(item);
-                                        $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
+                                        auto sym = intermediate_code::EmitIfTableItem(item);
+                                        $$ = syntax_analysis::DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {
                                         auto item = ($1)->get_ret_val();
                                         auto index = $3;
-                                        $$ = MemberItem(item, index);
+                                        $$ = intermediate_code::MemberItem(item, index);
                                         DLOG("member -> call.id");
                                     }
             | call '[' expr ']'     {
                                         auto item = ($1)->get_ret_val();
                                         auto index = $3;
-                                        auto sym = EmitIfTableItem(item);
-                                        $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
+                                        auto sym = intermediate_code::EmitIfTableItem(item);
+                                        $$ = syntax_analysis::DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index);
                                         DLOG("member -> call[expr]");
                                     }
             ;
 
 call:       call  '(' elist ')'             {
                                                 auto called_symbol = $1->get_ret_val();
-                                                $$ = MakeCall(called_symbol, new NormCall($3));
+                                                $$ = intermediate_code::MakeCall(called_symbol, new NormCall($3));
                                                 DLOG("call -> call(elist)");
                                             }
             | lvalue  callsuffix            {
                                                 auto called_symbol = $1;
                                                 auto call_suffix = $2;
-                                                called_symbol = EmitIfTableItem(called_symbol);
+                                                called_symbol = intermediate_code::EmitIfTableItem(called_symbol);
                                                 if (IsMethodCall(call_suffix)) {
                                                     auto t = called_symbol;
-                                                    called_symbol = EmitIfTableItem(MemberItem(t, call_suffix->get_name().c_str()));
-                                                    // called_symbol = MemberItem(t, call_suffix->get_name().c_str()); //??
+                                                    called_symbol = intermediate_code::EmitIfTableItem(intermediate_code::MemberItem(t, call_suffix->get_name().c_str()));
+                                                    // called_symbol = intermediate_code::MemberItem(t, call_suffix->get_name().c_str()); //??
                                                     call_suffix->InsertArg(t);
                                                 }
-                                                $$ = MakeCall(called_symbol, call_suffix);
+                                                $$ = intermediate_code::MakeCall(called_symbol, call_suffix);
                                             }
             | '(' funcdef ')'  
                 '(' elist ')'               {
                                                 auto called_symbol = $2->get_sym();
-                                                $$ = MakeCall(called_symbol, new NormCall($5)); 
+                                                $$ = intermediate_code::MakeCall(called_symbol, new NormCall($5)); 
                                                 DLOG("call -> (funcdef)(elist)");
                                             }
             ;
@@ -730,82 +703,82 @@ normcall:   '(' elist ')'   {
             ;
 
 methodcall: DOTDOT ID '(' elist ')' {
-                                        $$ = new MethodCall(std::string($2), $4);
+                                        $$ = new expression::MethodCall(std::string($2), $4);
                                         DLOG("methodcall -> ..id(elist)");
                                     }
             ;
 
 multelist:  ',' expr multelist  {
                                     if ($2->get_type() == BOOL) {
-                                        $2 = ConcludeShortCircuit(BOOL_EXPR_CAST($2));
+                                        $2 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($2));
                                     }
-                                    Elist* elist = new Elist();
+                                    expression::Elist* elist = new expression::Elist();
                                     elist->exprs.merge($3->exprs);
                                     elist->exprs.push_back($2);
                                     $$ = elist;
                                     DLOG("multelist -> ,expr multelist");
                                 }
             |                   {
-                                    $$ = new Elist();
+                                    $$ = new expression::Elist();
                                     DLOG("multelist -> EMPTY");
                                 }
             ;
 
 elist:      expr multelist  {
                                 if ($1->get_type() == BOOL) {
-                                    $1 = ConcludeShortCircuit(BOOL_EXPR_CAST($1));
+                                    $1 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($1));
                                 }
-                                Elist* elist = new Elist();
+                                expression::Elist* elist = new expression::Elist();
                                 elist->exprs.merge($2->exprs);
                                 elist->exprs.push_back($1);
                                 $$ = elist; 
                                 DLOG("elist -> expr multelist");
                             }
             |               {
-                                $$ = new Elist();
+                                $$ = new expression::Elist();
                                 DLOG("elist -> EMPTY");
                             }
             ;
 
 objectdef:  '[' elist ']'       {
-                                    auto result = NewTemp(VAR, nullptr);
-                                    Emit(TABLECREATE_t, result, nullptr, nullptr);
+                                    auto result = intermediate_code::NewTemp(VAR, nullptr);
+                                    intermediate_code::Emit(TABLECREATE_t, result, nullptr, nullptr);
 
                                     auto elements = $2->exprs;
                                     unsigned int elem_cnt = 0;
                                     elements.reverse();
                                     for (auto element : elements)
-                                        Emit(TABLESETELEM_t, result, new IntConstant(elem_cnt++), element);
-                                    $$ = new TableMakeElems(result, $2);    
+                                        intermediate_code::Emit(TABLESETELEM_t, result, new IntConstant(elem_cnt++), element);
+                                    $$ = new expression::TableMakeElems(result, $2);    
                                     DLOG("objectdef -> [elist]");
                                 }
             | '[' indexed ']'   {
-                                    auto result = NewTemp(VAR, nullptr);
-                                    Emit(TABLECREATE_t, result, nullptr, nullptr);
+                                    auto result = intermediate_code::NewTemp(VAR, nullptr);
+                                    intermediate_code::Emit(TABLECREATE_t, result, nullptr, nullptr);
                                     auto indexedelems = $2->pairs;
                                     indexedelems.reverse();
                                     for (auto indexedelem : indexedelems) 
-                                        Emit(TABLESETELEM_t, result, indexedelem->pair.first, indexedelem->pair.second);
-                                    $$ = new TableMakePairs(result, $2);    
+                                        intermediate_code::Emit(TABLESETELEM_t, result, indexedelem->pair.first, indexedelem->pair.second);
+                                    $$ = new expression::TableMakePairs(result, $2);    
                                     DLOG("objectdef -> [indexed]");
                                 }
             ;
 
 multindexed:',' indexedelem multindexed {
-                                            Indexed* indexed = new Indexed();
+                                            expression::Indexed* indexed = new expression::Indexed();
                                             indexed->pairs.merge($3->pairs);
                                             indexed->pairs.push_back($2);
                                             $$ = indexed;
                                             DLOG("multindexed -> , indexedelem multidexed"); 
                                         }
             |                           {
-                                            $$ = new Indexed();
+                                            $$ = new expression::Indexed();
                                             DLOG("elsestmt -> EMPTY");
                                         }
             ;
 
 indexed:    indexedelem multindexed {
-                                        Indexed* indexed = new Indexed();
+                                        expression::Indexed* indexed = new expression::Indexed();
                                         indexed->pairs.merge($2->pairs);
                                         indexed->pairs.push_back($1);
                                         $$ = indexed; 
@@ -815,31 +788,74 @@ indexed:    indexedelem multindexed {
 
 indexedelem:'{' expr ':' expr '}'   {
                                         if ($4->get_type() == BOOL) {
-                                            $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                            $4 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($4));
                                         }
-                                        $$ = new IndexedElem(std::pair<Expression*, Expression*>($2, $4));
+                                        $$ = new expression::IndexedElem(std::pair<Expression*, Expression*>($2, $4));
                                     }
             ;
 
 block:      '{'         {
-                            IncreaseScope();
+                            syntax_analysis::IncreaseScope();
                             DefineStashedFormalArguments();
                         }
             stmts '}'   {
-                            DecreaseScope();
+                            syntax_analysis::DecreaseScope();
                             DLOG("block -> { stmts }");
                         }
             ;
 
+<<<<<<< HEAD
 funcid:     ID              {
                                 auto symbol = program_stack.Lookup($1);
                                 if (symbol == nullptr) {
                                     symbol = DefineNewSymbol(USER_FUNC, $1, nullptr);
+=======
+funcdef:    FUNCTION        {
+                                auto anonymous_function = syntax_analysis::DefineNewAnonymousFunc();
+                                auto func_def_stmt = new intermediate_code::FuncDefStmt(anonymous_function);
+
+                                intermediate_code::func_def_stmts.push(func_def_stmt);
+
+                                auto jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                intermediate_code::Emit(FUNCSTART_t, anonymous_function, nullptr, nullptr);
+
+                                func_def_stmt->set_func_start_jump_quad(jump_quad);
+
+                                $<funcdef>$ = func_def_stmt;
+                            }
+            '(' idlist ')'  {
+                                syntax_analysis::HideLowerScopes();
+                                intermediate_code::stmt_stack.push_back(FUNC_t);
+                            }
+            block           {
+                                auto top_func_def = intermediate_code::func_def_stmts.top();
+                                auto anonymous_function = top_func_def->get_sym();
+
+                                auto func_end_quad = intermediate_code::Emit(FUNCEND_t, anonymous_function, nullptr, nullptr);
+
+                                top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
+                                top_func_def->PatchReturnJumpQuads(func_end_quad->label);
+
+                                syntax_analysis::EnableLowerScopes();
+
+                                intermediate_code::func_def_stmts.pop();
+
+                                intermediate_code::stmt_stack.pop_back();
+
+                                $<funcdef>$ = top_func_def;
+                                DLOG("funcdef -> function (idlist) block "); 
+                            }
+            | FUNCTION ID   {
+                                auto symbol = syntax_analysis::Lookup($2);
+                                if (symbol == nullptr) {
+                                    symbol = syntax_analysis::DefineNewSymbol(USER_FUNC, $2, nullptr);
+>>>>>>> stef
                                 }
                                 else if (!symbol->is_active()) {
-                                    SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                    syntax_analysis::SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                 }
                                 else {
+<<<<<<< HEAD
                                     if (IsVariable(symbol)) {
                                         SignalError(std::string($1) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
                                     }
@@ -868,6 +884,26 @@ funcprefix: FUNCTION funcid {
 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                 Emit(FUNCSTART_t, $2, nullptr, nullptr);
+=======
+                                    if (expression::IsVariable(symbol)) {
+                                        syntax_analysis::SignalError(std::string($2) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
+                                    }
+                                    else if (expression::IsLibraryFunction(symbol)) {
+                                        syntax_analysis::SignalError(std::string($2) + " library function cannot be shadowed by a user function");
+                                    }
+                                    else if (IsAtCurrentScope(symbol)) {
+                                        syntax_analysis::SignalError("Name collision with function " + std::string($2) + ", previously defined in line: " + std::to_string(symbol->get_line()));
+                                    }
+                                    else{
+                                        symbol = syntax_analysis::DefineNewSymbol(USER_FUNC, $2, nullptr);  // shadow user function
+                                    }
+                                }
+                                auto func_def_stmt = new intermediate_code::FuncDefStmt(symbol); 
+                                intermediate_code::func_def_stmts.push(func_def_stmt);
+
+                                auto jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                intermediate_code::Emit(FUNCSTART_t, symbol, nullptr, nullptr);
+>>>>>>> stef
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
@@ -877,6 +913,7 @@ funcprefix: FUNCTION funcid {
                                 enter_scope_space();
                                 reset_formalarg_offset();
                             }
+<<<<<<< HEAD
 
 funcargs:   '(' idlist ')'  {
                                 enter_scope_space();
@@ -900,15 +937,25 @@ funcdef:    funcprefix
                                 auto function = $1;
                                 function->set_total_local($3);
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr);
+=======
+            '(' idlist ')'  {
+                                syntax_analysis::HideLowerScopes();
+                                intermediate_code::stmt_stack.push_back(FUNC_t);
+                            }
+            block           { 
+                                auto top_func_def =  intermediate_code::func_def_stmts.top();
+                                auto function = top_func_def->get_sym();
+                                auto func_end_quad = intermediate_code::Emit(FUNCEND_t, function, nullptr, nullptr);
+>>>>>>> stef
 
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
                                 top_func_def->PatchReturnJumpQuads(func_end_quad->label);
 
-                                func_def_stmts.pop();
+                                intermediate_code::func_def_stmts.pop();
 
-                                program_stack.ActivateLowerScopes();
+                                syntax_analysis::EnableLowerScopes();
 
-                                stmt_stack.pop_back();
+                                intermediate_code::stmt_stack.pop_back();
 
                                 restore_funclocal_offser();
 
@@ -945,6 +992,7 @@ const:        INTNUM    {
             ;
 
 multid:     ',' ID  {
+<<<<<<< HEAD
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
                         auto offset = curr_scope_offset();
@@ -960,6 +1008,9 @@ multid:     ',' ID  {
                             func->AddFormalArg(new_formal_arg);
                             StashFormalArgument(new_formal_arg);       
                         }
+=======
+                        syntax_analysis::StashFormalArgument($2, yylineno);
+>>>>>>> stef
                     } 
             multid  {
                         DLOG("multid -> , id multid");
@@ -970,6 +1021,7 @@ multid:     ',' ID  {
             ;
 
 idlist:     ID      {
+<<<<<<< HEAD
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
                         auto offset = curr_scope_offset();
@@ -983,6 +1035,9 @@ idlist:     ID      {
                             func->AddFormalArg(new_formal_arg);   
                             StashFormalArgument(new_formal_arg);  
                         }
+=======
+                        syntax_analysis::StashFormalArgument($2, yylineno);
+>>>>>>> stef
                     } 
             multid  { 
                         DLOG("idlist -> id multid"); 
@@ -994,16 +1049,16 @@ idlist:     ID      {
 
 ifstmt:     IF '(' expr ')'                 {
                                                 if ($3->get_type() == BOOL) {
-                                                    $3 = ConcludeShortCircuit(BOOL_EXPR_CAST($3));
+                                                    $3 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($3));
                                                 }
 
                                                 auto if_stmt = new IfStmt();
                                                 if_stmts.push(if_stmt);
 
-                                                auto branch_quad = Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr);
-                                                auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr); 
+                                                auto branch_quad = intermediate_code::Emit(IF_EQ_t, $3, new BoolConstant(true), nullptr);
+                                                auto jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr); 
 
-                                                PatchBranchQuad(branch_quad, branch_quad->label + 2);
+                                                intermediate_code::PatchBranchQuad(branch_quad, branch_quad->label + 2);
 
                                                 if_stmt->set_if_jump_quad(jump_quad);
                                             }
@@ -1018,15 +1073,15 @@ ifstmt:     IF '(' expr ')'                 {
 elsestmt:   ELSE            {
                                 auto top_if_stmt = if_stmts.top();
 
-                                auto else_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                auto else_jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                 top_if_stmt->PushElseJumpQuad(else_jump_quad);
-                                top_if_stmt->PatchIfJumpQuad(NextQuadLabel());
+                                top_if_stmt->PatchIfJumpQuad(intermediate_code::NextQuadLabel());
                             }
             stmt            {
                                 auto top_if_stmt = if_stmts.top();
 
-                                top_if_stmt->PatchElseJumpQuad(NextQuadLabel());
+                                top_if_stmt->PatchElseJumpQuad(intermediate_code::NextQuadLabel());
                                 top_if_stmt->PopElseJumpQuad();
 
                                 if_stmts.pop();
@@ -1037,7 +1092,7 @@ elsestmt:   ELSE            {
             |               {
                                 auto top_if_stmt = if_stmts.top();
 
-                                top_if_stmt->PatchIfJumpQuad( NextQuadLabel());
+                                top_if_stmt->PatchIfJumpQuad(intermediate_code::NextQuadLabel());
 
                                 if_stmts.pop();
                                 DLOG("elsestmt -> EMPTY");
@@ -1045,42 +1100,42 @@ elsestmt:   ELSE            {
             ;
 
 whilestmt:  WHILE               { 
-                                    auto first_quad_label = NextQuadLabel();
+                                    auto first_quad_label = intermediate_code::NextQuadLabel();
 
                                     auto while_stmt = new WhileStmt(first_quad_label);
 
-                                    while_stmts.push(while_stmt);
-                                    loop_stmts.push(while_stmt);
+                                    intermediate_code::while_stmts.push(while_stmt);
+                                    intermediate_code::loop_stmts.push(while_stmt);
                                 }
             '(' expr ')'        {
                                     if ($4->get_type() == BOOL) {
-                                        $4 = ConcludeShortCircuit(BOOL_EXPR_CAST($4));
+                                        $4 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($4));
                                     }
 
-                                    auto top_while_stmt = while_stmts.top();
+                                    auto top_while_stmt = intermediate_code::while_stmts.top();
 
-                                    auto branch_quad = Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr);
-                                    auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                    auto branch_quad = intermediate_code::Emit(IF_EQ_t, $4, new BoolConstant(true), nullptr);
+                                    auto exit_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                     top_while_stmt->PushLoopQuad(branch_quad);
                                     top_while_stmt->PushLoopQuad(exit_quad);
 
-                                    stmt_stack.push_back(LOOP_t);
+                                    intermediate_code::stmt_stack.push_back(LOOP_t);
                                 }
             stmt                { 
-                                    auto top_while_stmt = while_stmts.top();
+                                    auto top_while_stmt = intermediate_code::while_stmts.top();
 
-                                    auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                    auto loop_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                     top_while_stmt->PushLoopQuad(loop_quad);
                                     top_while_stmt->PatchLoopQuads();
-                                    top_while_stmt->PatchBreakJumpQuads(NextQuadLabel());
+                                    top_while_stmt->PatchBreakJumpQuads(intermediate_code::NextQuadLabel());
                                     top_while_stmt->PatchContinueJumpQuads();
 
-                                    while_stmts.pop();
-                                    loop_stmts.pop();
+                                    intermediate_code::while_stmts.pop();
+                                    intermediate_code::loop_stmts.pop();
 
-                                    stmt_stack.pop_back();
+                                    intermediate_code::stmt_stack.pop_back();
 
                                     //ResetTemp();
                                     DLOG ("whilestmt -> WHILE (expr) stmt"); 
@@ -1088,58 +1143,58 @@ whilestmt:  WHILE               {
             ;
 
 forstmt:    FOR                                     {
-                                                        auto first_quad_label = NextQuadLabel();
+                                                        auto first_quad_label = intermediate_code::NextQuadLabel();
 
                                                         auto for_stmt = new ForStmt(first_quad_label);
 
-                                                        for_stmts.push(for_stmt);
-                                                        loop_stmts.push(for_stmt);
+                                                        intermediate_code::for_stmts.push(for_stmt);
+                                                        intermediate_code::loop_stmts.push(for_stmt);
                                                     }                   
             '(' elist ';'                           {
-                                                        auto top_for_stmt = for_stmts.top();
+                                                        auto top_for_stmt = intermediate_code::for_stmts.top();
 
-                                                        auto logical_expr_first_quad_label = NextQuadLabel();
+                                                        auto logical_expr_first_quad_label = intermediate_code::NextQuadLabel();
 
                                                         top_for_stmt->set_logical_expr_first_quad_label(logical_expr_first_quad_label);
                                                     }
             expr ';'                                {
                                                         if ($7->get_type() == BOOL) {
-                                                            $7 = ConcludeShortCircuit(BOOL_EXPR_CAST($7));
+                                                            $7 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($7));
                                                         }
 
-                                                        auto top_for_stmt = for_stmts.top();
+                                                        auto top_for_stmt = intermediate_code::for_stmts.top();
 
-                                                        auto branch_quad = Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr);
+                                                        auto branch_quad = intermediate_code::Emit(IF_EQ_t, $7, new BoolConstant(true), nullptr);
 
                                                         top_for_stmt->PushLoopQuad(branch_quad);
 
-                                                        auto exit_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                                        auto exit_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                                         top_for_stmt->PushLoopQuad(exit_quad);
 
-                                                        auto exprs_first_quad_label = NextQuadLabel();
+                                                        auto exprs_first_quad_label = intermediate_code::NextQuadLabel();
 
                                                         top_for_stmt->set_exprs_first_quad_label(exprs_first_quad_label);
                                                     }
             elist ')'                               {
-                                                        auto top_for_stmt = for_stmts.top();
-                                                        auto loop_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                                        auto top_for_stmt = intermediate_code::for_stmts.top();
+                                                        auto loop_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
                                                         top_for_stmt->PushLoopQuad(loop_quad);
-                                                        stmt_stack.push_back(LOOP_t);
+                                                        intermediate_code::stmt_stack.push_back(LOOP_t);
                                                     }
             stmt                                    {
-                                                        auto top_for_stmt = for_stmts.top();
-                                                        auto expr_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr); 
+                                                        auto top_for_stmt = intermediate_code::for_stmts.top();
+                                                        auto expr_jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr); 
 
                                                         top_for_stmt->PushLoopQuad(expr_jump_quad);
                                                         top_for_stmt->PatchLoopQuads();
-                                                        top_for_stmt->PatchBreakJumpQuads(NextQuadLabel());
+                                                        top_for_stmt->PatchBreakJumpQuads(intermediate_code::NextQuadLabel());
                                                         top_for_stmt->PatchContinueJumpQuads();
 
-                                                        for_stmts.pop();
-                                                        loop_stmts.pop(); 
+                                                        intermediate_code::for_stmts.pop();
+                                                        intermediate_code::loop_stmts.pop(); 
 
-                                                        stmt_stack.pop_back();
+                                                        intermediate_code::stmt_stack.pop_back();
 
                                                         //ResetTemp();
                                                         DLOG("forstmt -> FOR ( elist ; expr ; elist ) stmt"); 
@@ -1147,12 +1202,12 @@ forstmt:    FOR                                     {
             ;
 
 returnstmt: RETURN      {
-                            if (!InFuncDef()) {
-                                SignalError("Invalid return, used outside a function block");
+                            if (!intermediate_code::InFuncDef()) {
+                                syntax_analysis::SignalError("Invalid return, used outside a function block");
                             } else {
-                                auto top_func_def = func_def_stmts.top();
-                                Emit(RET_t, nullptr, nullptr, nullptr);
-                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                auto top_func_def = intermediate_code::func_def_stmts.top();
+                                intermediate_code::Emit(RET_t, nullptr, nullptr, nullptr);
+                                auto return_jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                 top_func_def->PushReturnJumpQuad(return_jump_quad);
                             }
@@ -1163,15 +1218,15 @@ returnstmt: RETURN      {
             | RETURN    
             expr ';'    {
                             if ($2->get_type() == BOOL) {
-                                $2 = ConcludeShortCircuit(BOOL_EXPR_CAST($2));
+                                $2 = intermediate_code::ConcludeShortCircuit(BOOL_EXPR_CAST($2));
                             }
 
-                            if (!InFuncDef()) 
-                                SignalError("Invalid return, used outside a function block");
+                            if (!intermediate_code::InFuncDef()) 
+                                syntax_analysis::SignalError("Invalid return, used outside a function block");
                             else {
-                                auto top_func_def = func_def_stmts.top();
-                                Emit(RET_t, $2, nullptr, nullptr);
-                                auto return_jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
+                                auto top_func_def = intermediate_code::func_def_stmts.top();
+                                intermediate_code::Emit(RET_t, $2, nullptr, nullptr);
+                                auto return_jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
 
                                 top_func_def->PushReturnJumpQuad(return_jump_quad);
                                 DLOG("returnstmt -> RETURN expr;");
@@ -1182,7 +1237,7 @@ returnstmt: RETURN      {
 %%
 
 int yyerror(std::string yaccProvidedMessage) {
-    SignalError(yaccProvidedMessage);
+    syntax_analysis::SignalError(yaccProvidedMessage);
     return 1;
 }
 
@@ -1198,22 +1253,22 @@ int main(int argc, char** argv) {
         yyin = stdin;
     }
     /* ligma ballzz  */
-    InitLibraryFunctions();
+    syntax_analysis::InitLibraryFunctions();
     yyparse();
     #if defined LOGQUADS
-        if (NoErrorSignaled()) {
-            LogQuads(std::cout);
+        if (syntax_analysis::NoErrorSignaled()) {
+            intermediate_code::LogQuads(std::cout);
         }
     #endif 
     #if defined LOGSYMTABLE
-        if (NoErrorSignaled()) 
-            LogSymTable(std::cout);
+        if (syntax_analysis::NoErrorSignaled()) 
+            syntax_analysis::LogSymTable(std::cout);
     #endif
     #if defined LOGQUADSTXT
-        if (NoErrorSignaled()) {
+        if (syntax_analysis::NoErrorSignaled()) {
             const char *path="../quads.txt";
             std::ofstream quad_file(path);
-            LogQuads(quad_file);
+            intermediate_code::LogQuads(quad_file);
             quad_file.close();
         }
     #endif  

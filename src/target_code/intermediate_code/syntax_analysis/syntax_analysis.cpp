@@ -55,6 +55,10 @@ namespace syntax_analysis {
         --current_scope;
     }
 
+    void EnableLowerScopes() {
+        program_stack.ActivateLowerScopes();
+    }
+
     void HideLowerScopes() {
         if (current_scope != global_scope)
             program_stack.Top()->Deactivate();
