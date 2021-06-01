@@ -50,18 +50,10 @@ namespace syntax_analysis {
          * 
         **/ 
         void                            Insert(expression::Symbol* symbol);
-        /**
-         * @brief Checks wether this Block contains only hidden variables.
-         * 
-         * @return wether this Block contains only hidden variables
-        **/ 
-        bool                            ContainsOnlyHiddenVars();
 
         friend std::ostream&            operator<<(std::ostream& os, const Block block);
     private:
-        std::list<expression::Symbol*>  symbols;
-            
-        static bool                     IsHiddenVariable(expression::Symbol* entry);
+        std::list<expression::Symbol*>  symbols;   
     };
 }
 

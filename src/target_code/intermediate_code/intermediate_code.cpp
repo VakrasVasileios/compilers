@@ -13,11 +13,7 @@ namespace intermediate_code {
 
     void LogWarning(std::string msg, unsigned int line) {
         PRECONDITION(line >= 0);
-        #if !defined TEST
-            std::cout << "\033[33mWarning, in line: " << line << ":\033[0m " << msg << std::endl;
-        #else
-            std::cout << "Warning, in line: " << yylineno << ": " << msg << std::endl ;
-        #endif
+        std::cout << "\033[33mWarning, in line: " << line << ":\033[0m " << msg << std::endl;
     }
 
     void LogQuads(std::ostream& output) {

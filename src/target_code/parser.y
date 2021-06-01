@@ -32,7 +32,7 @@
     double                                  doubleValue;
 
     unsigned int                            quad_label;
-    class FuncDefStmt*   funcdef;
+    class FuncDefStmt*          funcdef;
 
     class Expression*           expr;
     class AssignExpr*           assignexpr;
@@ -851,7 +851,7 @@ funcprefix: FUNCTION funcid {
 
 funcargs:   '(' idlist ')'  {
                                 EnterScopeSpace();
-                                RestoreFuncLocalOffset();
+                                ResetFuncLocalOffset();
                                 HideLowerScopes();
                                 stmt_stack.push_back(FUNC_t);
                             }

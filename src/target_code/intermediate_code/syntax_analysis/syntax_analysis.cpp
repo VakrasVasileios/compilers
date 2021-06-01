@@ -19,11 +19,7 @@ namespace syntax_analysis {
     }  
 
     void SignalError(std::string msg, unsigned int line) {
-        #if !defined TEST
-            std::cout << "\033[31mError, in line: " << line << ":\033[0m " << msg << std::endl;
-        #else
-            std::cout << "Error, in line: " << yylineno << ": " << msg << std::endl; 
-        #endif    
+        std::cout << "\033[31mError, in line: " << line << ":\033[0m " << msg << std::endl;
         error_flag = 1;
     }
 
@@ -70,7 +66,6 @@ namespace syntax_analysis {
     unsigned int scope_space_counter      = 1;
 
     std::stack<unsigned int> func_local_offset_stack;
-    std::stack<unsigned int> formal_offset_stack;
 
     void
     StoreFuncLocalOffset(void) {

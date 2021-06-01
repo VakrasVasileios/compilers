@@ -38,7 +38,6 @@ namespace syntax_analysis {
         std::vector<std::list<Block*> > blocks_table;
 
         static bool                     ContainsAnEntry(std::list<Block*> blockList);
-        static bool                     ContainsOnlyHiddenVariables(std::list<Block*> blockList);
     };
 }
 

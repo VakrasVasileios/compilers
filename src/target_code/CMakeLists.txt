@@ -55,7 +55,6 @@ add_executable(d_intermediate_code
   ${FLEX_scanner_trgt_OUTPUTS}
 )
 target_compile_definitions(d_intermediate_code PRIVATE LOGQUADS=1)
-target_compile_definitions(d_intermediate_code PRIVATE TEST=1)
 target_link_libraries(d_intermediate_code target_code)
 
 add_executable(d_syntax_analysis
@@ -63,5 +62,4 @@ add_executable(d_syntax_analysis
   ${FLEX_scanner_trgt_OUTPUTS}
 )
 target_compile_definitions(d_syntax_analysis PRIVATE LOGSYMTABLE=1)
-target_compile_definitions(d_syntax_analysis PRIVATE TEST=1)
 target_link_libraries(d_syntax_analysis target_code)

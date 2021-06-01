@@ -176,9 +176,9 @@ TEST_F(InterCodeSuite, functions_call_parameters)
 
 TEST_F(InterCodeSuite, functions_call_with_symbol_parameters)
 {
-    expected = "Warning, in line: 10: Too many arguments passed to function: f, defined in line: 1\n"
-               "Warning, in line: 11: Too many arguments passed to function: f, defined in line: 1\n"
-               "Warning, in line: 12: Too many arguments passed to function: f, defined in line: 1\n"
+    expected = "\x1B[33mWarning, in line: 10:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
+               "\x1B[33mWarning, in line: 11:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
+               "\x1B[33mWarning, in line: 12:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
                "1: jump 4 [line 1]\n"
                "2: funcstart f [line 1]\n"
                "3: funcend f [line 2]\n"
@@ -207,15 +207,15 @@ TEST_F(InterCodeSuite, functions_call_with_symbol_parameters)
 
 TEST_F(InterCodeSuite, functions_call_less_parameters)
 {
-    expected = "Error, in line: 4: Too few arguments passed to function: f, defined in line: 1\n";
+    expected = "\x1B[31mError, in line: 4:\x1B[0m Too few arguments passed to function: f, defined in line: 1\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_less_parameters.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(InterCodeSuite, functions_call_nested)
 {
-    expected = "Warning, in line: 10: Too many arguments passed to function: g, defined in line: 6\n"
-               "Warning, in line: 12: Too many arguments passed to function: g, defined in line: 6\n"
+    expected = "\x1B[33mWarning, in line: 10:\x1B[0m Too many arguments passed to function: g, defined in line: 6\n"
+               "\x1B[33mWarning, in line: 12:\x1B[0m Too many arguments passed to function: g, defined in line: 6\n"
                "1: jump 4 [line 2]\n"
                "2: funcstart f [line 2]\n"
                "3: funcend f [line 4]\n"
@@ -243,7 +243,7 @@ TEST_F(InterCodeSuite, functions_call_nested)
 
 TEST_F(InterCodeSuite, functions_call_more_parameters)
 {
-    expected = "Warning, in line: 5: Too many arguments passed to function: f, defined in line: 1\n"
+    expected = "\x1B[33mWarning, in line: 5:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
                "1: jump 4 [line 1]\n"
                "2: funcstart f [line 1]\n"
                "3: funcend f [line 3]\n"
@@ -428,10 +428,10 @@ TEST_F(InterCodeSuite, logical_not_equal_simple)
 
 TEST_F(InterCodeSuite, logical_errors)
 {
-    expected = "Error, in line: 1: Invalid use of comparison operator on const string \"string\"\n"
-               "Error, in line: 3: Invalid use of comparison operator on const bool \'true\'\n"
-               "Error, in line: 5: Invalid use of comparison operator on library function print\n"
-               "Error, in line: 9: Invalid use of comparison operator on user function s\n";
+    expected = "\x1B[31mError, in line: 1:\x1B[0m Invalid use of comparison operator on const string \"string\"\n"
+               "\x1B[31mError, in line: 3:\x1B[0m Invalid use of comparison operator on const bool \'true\'\n"
+               "\x1B[31mError, in line: 5:\x1B[0m Invalid use of comparison operator on library function print\n"
+               "\x1B[31mError, in line: 9:\x1B[0m Invalid use of comparison operator on user function s\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/logical/errors.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -925,11 +925,11 @@ TEST_F(InterCodeSuite, arithmetic_spaghetti)
 
 TEST_F(InterCodeSuite, arithmetic_errors)
 {
-    expected = "Error, in line: 4: Invalid use of arithmetic operator on user function f\n"
-               "Error, in line: 6: Invalid use of arithmetic operator on const bool \'true\'\n"
-               "Error, in line: 6: Invalid use of arithmetic operator on const bool \'false\'\n"
-               "Error, in line: 8: Invalid use of arithmetic operator on const string \"a\"\n"
-               "Error, in line: 10: Invalid use of arithmetic operator on library function print\n";
+    expected = "\x1B[31mError, in line: 4:\x1B[0m Invalid use of arithmetic operator on user function f\n"
+               "\x1B[31mError, in line: 6:\x1B[0m Invalid use of arithmetic operator on const bool \'true\'\n"
+               "\x1B[31mError, in line: 6:\x1B[0m Invalid use of arithmetic operator on const bool \'false\'\n"
+               "\x1B[31mError, in line: 8:\x1B[0m Invalid use of arithmetic operator on const string \"a\"\n"
+               "\x1B[31mError, in line: 10:\x1B[0m Invalid use of arithmetic operator on library function print\n";
 
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/errors.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -959,7 +959,7 @@ TEST_F(InterCodeSuite, arithmetic_uminus)
 }
 
 TEST_F(InterCodeSuite, arithmetic_uminus_bool) {
-    expected = "Error, in line: 1: Invalid use of arithmetic operator on const bool 'true'\n";
+    expected = "\x1B[31mError, in line: 1:\x1B[0m Invalid use of arithmetic operator on const bool 'true'\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -1258,7 +1258,7 @@ TEST_F(InterCodeSuite, backpatch_backpatch2)
 
 TEST_F(InterCodeSuite, backpatch_backpatch3)
 {
-    expected = "Warning, in line: 8: Too many arguments passed to function: $0, defined in line: 8\n"
+    expected = "\x1B[33mWarning, in line: 8:\x1B[0m Too many arguments passed to function: $0, defined in line: 8\n"
                "1: assign f 1 [line 1]\n"
                "2: assign ^0 f [line 1]\n"
                "3: assign e ^0 [line 1]\n"
@@ -1378,74 +1378,75 @@ TEST_F(InterCodeSuite, backpatch_backpatch3)
 
 TEST_F(InterCodeSuite, backpatch_p3t_assignments_complex)
 {
-    expected = "1: assign a 3 [line 1]\n"
-               "2: assign ^0 a [line 1]\n"
-               "3: assign b 6 [line 2]\n"
-               "4: assign ^0 b [line 2]\n"
-               "5: assign c 9 [line 3]\n"
-               "6: assign ^0 c [line 3]\n"
-               "7: assign d 54 [line 4]\n"
-               "8: assign ^0 d [line 4]\n"
-               "9: assign c d [line 6]\n"
-               "10: assign ^0 c [line 6]\n"
-               "11: assign b ^0 [line 6]\n"
-               "12: assign ^1 b [line 6]\n"
-               "13: assign a ^1 [line 6]\n"
-               "14: assign ^2 a [line 6]\n"
-               "15: add ^0 c d [line 8]\n"
-               "16: uminus ^0 ^0 [line 8]\n"
-               "17: sub ^1 a b [line 8]\n"
-               "18: mul ^0 ^0 ^1 [line 8]\n"
-               "19: uminus ^0 ^0 [line 8]\n"
-               "20: uminus ^2 b [line 8]\n"
-               "21: mod ^0 ^0 ^2 [line 8]\n"
-               "22: assign b ^0 [line 8]\n"
-               "23: assign ^3 b [line 8]\n"
-               "24: assign a ^3 [line 8]\n"
-               "25: assign ^4 a [line 8]\n";
+    expected =  "1: assign a 3 [line 1]\n"
+                "2: assign ^0 a [line 1]\n"
+                "3: assign b 6 [line 2]\n"
+                "4: assign ^0 b [line 2]\n"
+                "5: assign c 9 [line 3]\n"
+                "6: assign ^0 c [line 3]\n"
+                "7: assign d 54 [line 4]\n"
+                "8: assign ^0 d [line 4]\n"
+                "9: assign c d [line 6]\n"
+                "10: assign ^0 c [line 6]\n"
+                "11: assign b ^0 [line 6]\n"
+                "12: assign ^1 b [line 6]\n"
+                "13: assign a ^1 [line 6]\n"
+                "14: assign ^2 a [line 6]\n"
+                "15: add ^0 c d [line 8]\n"
+                "16: uminus ^1 ^0 [line 8]\n"
+                "17: sub ^2 a b [line 8]\n"
+                "18: mul ^3 ^0 ^2 [line 8]\n"
+                "19: uminus ^4 ^3 [line 8]\n"
+                "20: uminus ^5 b [line 8]\n"
+                "21: mod ^6 ^3 b [line 8]\n"
+                "22: assign b ^6 [line 8]\n"
+                "23: assign ^7 b [line 8]\n"
+                "24: assign a ^7 [line 8]\n"
+                "25: assign ^8 a [line 8]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_assignments_complex.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(InterCodeSuite, backpatch_p3t_assignments_objects)
 {
-    expected = "1: tablesetelem a 3 3 [line 1]\n"
-               "2: tablegetelem ^0 a 3 [line 1]\n"
-               "3: tablegetelem ^0 a 3 [line 2]\n"
-               "4: tablegetelem ^1 a 3 [line 2]\n"
-               "5: tablesetelem ^0 4 ^1 [line 2]\n"
-               "6: tablegetelem ^2 ^0 4 [line 2]\n"
-               "7: tablegetelem ^0 a 3 [line 3]\n"
-               "8: tablegetelem ^1 ^0 4 [line 3]\n"
-               "9: tablegetelem ^2 ^1 4 [line 3]\n"
-               "10: tablegetelem ^3 ^2 4 [line 3]\n"
-               "11: tablesetelem a \"r\" ^3 [line 3]\n"
-               "12: tablegetelem ^4 a \"r\" [line 3]\n"
-               "13: tablegetelem ^0 a \"r\" [line 4]\n"
-               "14: tablesetelem a \"r\" ^0 [line 4]\n"
-               "15: tablegetelem ^1 a \"r\" [line 4]\n"
-               "16: tablegetelem ^0 a \"r\" [line 5]\n"
-               "17: tablegetelem ^1 a \"r\" [line 5]\n"
-               "18: tablegetelem ^2 ^1 \"q\" [line 5]\n"
-               "19: tablesetelem ^0 \"q\" ^2 [line 5]\n"
-               "20: tablegetelem ^3 ^0 \"q\" [line 5]\n"
-               "21: tablegetelem ^0 a \"r\" [line 6]\n"
-               "22: tablegetelem ^1 ^0 \"q\" [line 6]\n"
-               "23: tablegetelem ^2 ^1 \"r\" [line 6]\n"
-               "24: tablegetelem ^3 ^2 \"s\" [line 6]\n"
-               "25: tablesetelem ^3 3 12 [line 6]\n"
-               "26: tablegetelem ^4 ^3 3 [line 6]\n"
-               "27: tablegetelem ^0 a \"3\" [line 7]\n"
-               "28: tablegetelem ^1 ^0 \"q\" [line 7]\n"
-               "29: tablegetelem ^2 ^1 4 [line 7]\n"
-               "30: call ^2 [line 7]\n"
-               "31: getretval ^3 [line 7]\n"
-               "32: tablesetelem a \"r\" 5 [line 8]\n"
-               "33: tablegetelem ^0 a \"r\" [line 8]\n"
-               "34: tablesetelem a 1 ^0 [line 8]\n"
-               "35: tablegetelem ^1 a 1 [line 8]\n"
-               "36: tablesetelem a \"x\" ^1 [line 8]\n"
-               "37: tablegetelem ^2 a \"x\" [line 8]\n";
+    expected =  "1: tablesetelem a 3 3 [line 1]\n"
+                "2: tablegetelem ^0 a 3 [line 1]\n"
+                "3: tablegetelem ^0 a 3 [line 2]\n"
+                "4: tablegetelem ^1 a 3 [line 2]\n"
+                "5: tablesetelem ^0 4 ^1 [line 2]\n"
+                "6: tablegetelem ^2 ^0 4 [line 2]\n"
+                "7: tablegetelem ^0 a 3 [line 3]\n"
+                "8: tablegetelem ^1 ^0 4 [line 3]\n"
+                "9: tablegetelem ^2 ^1 4 [line 3]\n"
+                "10: tablegetelem ^3 ^2 4 [line 3]\n"
+                "11: tablesetelem a \"r\" ^3 [line 3]\n"
+                "12: tablegetelem ^4 a \"r\" [line 3]\n"
+                "13: tablegetelem ^0 a \"r\" [line 4]\n"
+                "14: tablesetelem a \"r\" ^0 [line 4]\n"
+                "15: tablegetelem ^1 a \"r\" [line 4]\n"
+                "16: tablegetelem ^0 a \"r\" [line 5]\n"
+                "17: tablegetelem ^1 a \"r\" [line 5]\n"
+                "18: tablegetelem ^2 ^1 \"q\" [line 5]\n"
+                "19: tablesetelem ^0 \"q\" ^2 [line 5]\n"
+                "20: tablegetelem ^3 ^0 \"q\" [line 5]\n"
+                "21: tablegetelem ^0 a \"r\" [line 6]\n"
+                "22: tablegetelem ^1 ^0 \"q\" [line 6]\n"
+                "23: tablegetelem ^2 ^1 \"r\" [line 6]\n"
+                "24: tablegetelem ^3 ^2 \"s\" [line 6]\n"
+                "25: tablesetelem ^3 3 12 [line 6]\n"
+                "26: tablegetelem ^4 ^3 3 [line 6]\n"
+                "27: tablegetelem ^0 a \"3\" [line 7]\n"
+                "28: tablegetelem ^1 ^0 \"q\" [line 7]\n"
+                "29: tablegetelem ^2 ^1 4 [line 7]\n"
+                "30: tablegetelem ^3 ^2 4 [line 7]\n"
+                "31: call ^3 [line 7]\n"
+                "32: getretval ^4 [line 7]\n"
+                "33: tablesetelem a \"r\" 5 [line 8]\n"
+                "34: tablegetelem ^0 a \"r\" [line 8]\n"
+                "35: tablesetelem a 1 ^0 [line 8]\n"
+                "36: tablegetelem ^1 a 1 [line 8]\n"
+                "37: tablesetelem a \"x\" ^1 [line 8]\n"
+                "38: tablegetelem ^2 a \"x\" [line 8]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_assignments_objects.asc");
     GTEST_ASSERT_EQ(expected, actual);   
 }
@@ -1652,14 +1653,14 @@ TEST_F(InterCodeSuite, backpatch_p3t_if_else)
 
 TEST_F(InterCodeSuite, backpatch_p3t_funcdecl)
 {
-    expected =  "1: jump 18 [line 2]\n"
+    expected =  "1: jump 8 [line 2]\n"
                 "2: funcstart iamafunction [line 2]\n"
                 "3: add ^0 a b [line 3]\n"
                 "4: return 8 [line 4]\n"
                 "5: jump 7 [line 4]\n"
                 "6: sub ^0 9 0 [line 5]\n"
                 "7: funcend iamafunction [line 6]\n"
-                "8: jump 18 [line 8]\n"
+                "8: jump 11 [line 8]\n"
                 "9: funcstart iamnothing [line 8]\n"
                 "10: funcend iamnothing [line 8]\n"
                 "11: jump 18 [line 10]\n"
@@ -1671,7 +1672,7 @@ TEST_F(InterCodeSuite, backpatch_p3t_funcdecl)
                 "17: funcend $0 [line 10]\n"
                 "18: assign ihavenoname $0 [line 10]\n"
                 "19: assign ^0 ihavenoname [line 10]\n"
-                "20: jump 33 [line 12]\n"
+                "20: jump 23 [line 12]\n"
                 "21: funcstart $1 [line 12]\n"
                 "22: funcend $1 [line 12]\n"
                 "23: jump 33 [line 14]\n"
@@ -1754,9 +1755,9 @@ TEST_F(InterCodeSuite, backpatch_p3t_flow_control)
 
 TEST_F(InterCodeSuite, backpatch_p3t_flow_control_error)
 {
-    expected =  "Error, in line: 3: invalid keyword CONTINUE outside of loop\n"
-                "Error, in line: 4: invalid keyword BREAK outside of loop\n"
-                "Error, in line: 6: Invalid return, used outside a function block\n";
+    expected =  "\x1B[31mError, in line: 3:\x1B[0m invalid keyword CONTINUE outside of loop\n"
+                "\x1B[31mError, in line: 4:\x1B[0m invalid keyword BREAK outside of loop\n"
+                "\x1B[31mError, in line: 6:\x1B[0m Invalid return, used outside a function block\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_flow_control_error.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -1783,72 +1784,72 @@ TEST_F(InterCodeSuite, backpatch_p3t_basic_expr)
                 "7: assign d 8 [line 5]\n"
                 "8: assign ^0 d [line 5]\n"
                 "9: add ^0 a b [line 7]\n"
-                "10: add ^0 ^0 c [line 7]\n"
-                "11: add ^0 ^0 d [line 7]\n"
-                "12: assign e ^0 [line 7]\n"
-                "13: assign ^1 e [line 7]\n"
+                "10: add ^1 ^0 c [line 7]\n"
+                "11: add ^2 ^1 d [line 7]\n"
+                "12: assign e ^2 [line 7]\n"
+                "13: assign ^3 e [line 7]\n"
                 "14: add ^0 c d [line 8]\n"
-                "15: add ^0 b ^0 [line 8]\n"
-                "16: add ^0 a ^0 [line 8]\n"
-                "17: assign e ^0 [line 8]\n"
-                "18: assign ^1 e [line 8]\n"
+                "15: add ^1 b ^0 [line 8]\n"
+                "16: add ^2 a ^1 [line 8]\n"
+                "17: assign e ^2 [line 8]\n"
+                "18: assign ^3 e [line 8]\n"
                 "19: uminus ^0 a [line 9]\n"
-                "20: add ^0 ^0 b [line 9]\n"
-                "21: assign e ^0 [line 9]\n"
-                "22: assign ^1 e [line 9]\n"
+                "20: add ^1 a b [line 9]\n"
+                "21: assign e ^1 [line 9]\n"
+                "22: assign ^2 e [line 9]\n"
                 "23: add ^0 a b [line 10]\n"
-                "24: uminus ^0 ^0 [line 10]\n"
+                "24: uminus ^1 ^0 [line 10]\n"
                 "25: assign e ^0 [line 10]\n"
-                "26: assign ^1 e [line 10]\n"
+                "26: assign ^2 e [line 10]\n"
                 "27: mul ^0 a b [line 12]\n"
                 "28: div ^1 c d [line 12]\n"
-                "29: mod ^1 ^1 e [line 12]\n"
-                "30: sub ^0 ^0 ^1 [line 12]\n"
-                "31: assign e ^0 [line 12]\n"
-                "32: assign ^2 e [line 12]\n"
+                "29: mod ^2 ^1 e [line 12]\n"
+                "30: sub ^3 ^0 ^2 [line 12]\n"
+                "31: assign e ^3 [line 12]\n"
+                "32: assign ^4 e [line 12]\n"
                 "33: mod ^0 d e [line 13]\n"
-                "34: div ^0 c ^0 [line 13]\n"
-                "35: sub ^0 b ^0 [line 13]\n"
-                "36: mul ^0 a ^0 [line 13]\n"
-                "37: assign e ^0 [line 13]\n"
-                "38: assign ^1 e [line 13]\n"
+                "34: div ^1 c ^0 [line 13]\n"
+                "35: sub ^2 b ^1 [line 13]\n"
+                "36: mul ^3 a ^2 [line 13]\n"
+                "37: assign e ^3 [line 13]\n"
+                "38: assign ^4 e [line 13]\n"
                 "39: add ^0 a b [line 15]\n"
-                "40: uminus ^0 ^0 [line 15]\n"
-                "41: add ^1 c d [line 15]\n"
-                "42: uminus ^1 ^1 [line 15]\n"
-                "43: div ^0 ^0 ^1 [line 15]\n"
-                "44: uminus ^0 ^0 [line 15]\n"
-                "45: mod ^0 ^0 e [line 15]\n"
-                "46: assign e ^0 [line 15]\n"
-                "47: assign ^2 e [line 15]\n"
+                "40: uminus ^1 ^0 [line 15]\n"
+                "41: add ^2 c d [line 15]\n"
+                "42: uminus ^3 ^2 [line 15]\n"
+                "43: div ^4 ^0 ^2 [line 15]\n"
+                "44: uminus ^5 ^4 [line 15]\n"
+                "45: mod ^6 ^4 e [line 15]\n"
+                "46: assign e ^6 [line 15]\n"
+                "47: assign ^7 e [line 15]\n"
                 "48: assign ^0 a [line 17]\n"
                 "49: sub a a 1 [line 17]\n"
                 "50: add b b 1 [line 17]\n"
                 "51: assign ^1 b [line 17]\n"
-                "52: sub ^0 ^0 ^1 [line 17]\n"
+                "52: sub ^2 ^0 ^1 [line 17]\n"
                 "53: sub c c 1 [line 17]\n"
-                "54: assign ^2 c [line 17]\n"
-                "55: add ^0 ^0 ^2 [line 17]\n"
-                "56: assign ^3 d [line 17]\n"
+                "54: assign ^3 c [line 17]\n"
+                "55: add ^4 ^2 ^3 [line 17]\n"
+                "56: assign ^5 d [line 17]\n"
                 "57: add d d 1 [line 17]\n"
-                "58: sub ^0 ^0 ^3 [line 17]\n"
+                "58: sub ^6 ^4 ^5 [line 17]\n"
                 "59: tablegetelem ^1 t \"x\" [line 19]\n"
                 "60: assign ^0 ^1 [line 19]\n"
                 "61: sub ^1 ^1 1 [line 19]\n"
                 "62: tablesetelem t \"x\" ^1 [line 19]\n"
-                "63: tablegetelem ^2 t 3 [line 19]\n"
-                "64: add ^2 ^2 1 [line 19]\n"
-                "65: tablesetelem t 3 ^2 [line 19]\n"
-                "66: sub ^0 ^0 ^2 [line 19]\n"
-                "67: tablegetelem ^3 t \"a\" [line 19]\n"
-                "68: sub ^3 ^3 1 [line 19]\n"
-                "69: tablesetelem t \"a\" ^3 [line 19]\n"
-                "70: add ^0 ^0 ^3 [line 19]\n"
-                "71: tablegetelem ^5 t \"z\" [line 19]\n"
-                "72: assign ^4 ^5 [line 19]\n"
-                "73: add ^5 ^5 1 [line 19]\n"
-                "74: tablesetelem t \"z\" ^5 [line 19]\n"
-                "75: sub ^0 ^0 ^4 [line 19]\n";
+                "63: tablegetelem ^3 t 3 [line 19]\n"
+                "64: add ^3 ^3 1 [line 19]\n"
+                "65: tablesetelem t 3 ^3 [line 19]\n"
+                "66: sub ^4 ^0 ^3 [line 19]\n"
+                "67: tablegetelem ^6 t \"a\" [line 19]\n"
+                "68: sub ^6 ^6 1 [line 19]\n"
+                "69: tablesetelem t \"a\" ^6 [line 19]\n"
+                "70: add ^7 ^4 ^6 [line 19]\n"
+                "71: tablegetelem ^9 t \"z\" [line 19]\n"
+                "72: assign ^8 ^9 [line 19]\n"
+                "73: add ^9 ^9 1 [line 19]\n"
+                "74: tablesetelem t \"z\" ^9 [line 19]\n"
+                "75: sub ^10 ^7 ^8 [line 19]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_basic_expr.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }

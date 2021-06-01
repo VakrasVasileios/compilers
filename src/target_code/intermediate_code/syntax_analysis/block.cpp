@@ -30,42 +30,17 @@ namespace syntax_analysis {
         return nullptr;
     }
 
-    bool
-    Block:: IsHiddenVariable(expression::Symbol* entry) {
-        return entry->get_id().at(0) == '^';
-    }
-
     void 
     Block:: Insert(expression::Symbol* entry) {
         PRECONDITION(entry != nullptr);
         symbols.push_back(entry);
     }
 
-    bool
-    Block:: ContainsOnlyHiddenVars() {
-        unsigned int hidden_var_count = 0;
-        for (auto entry : symbols) {
-            if (IsHiddenVariable(entry))
-                hidden_var_count++;
-        } 
-
-        return hidden_var_count == symbols.size();
-    }
-
     std::ostream&
     operator<<(std::ostream& os, const Block block) {
-        #if !defined TEST
-            for(auto entry : block.symbols) {
-                os << entry << "\n";
-            }
-        #else 
-            for(auto entry : block.symbols) {
-                if (!block.IsHiddenVariable(entry))
-                {
-                    os << entry << "\n";
-                }
-            }
-        #endif
+        for(auto entry : block.symbols) {
+            os << entry << "\n";
+        }
 
         return os;    
     }
