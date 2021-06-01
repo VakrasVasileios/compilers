@@ -57,11 +57,7 @@
 %token <intValue>       INTNUM
 %token <doubleValue>    DOUBLENUM
 
-<<<<<<< HEAD
 %type <quad_label>      M funcbody
-=======
-%type <quad_label>      M
->>>>>>> stef
 
 %type <funcdef>         funcdef
 
@@ -804,58 +800,15 @@ block:      '{'         {
                         }
             ;
 
-<<<<<<< HEAD
 funcid:     ID              {
                                 auto symbol = program_stack.Lookup($1);
                                 if (symbol == nullptr) {
                                     symbol = DefineNewSymbol(USER_FUNC, $1, nullptr);
-=======
-funcdef:    FUNCTION        {
-                                auto anonymous_function = syntax_analysis::DefineNewAnonymousFunc();
-                                auto func_def_stmt = new intermediate_code::FuncDefStmt(anonymous_function);
-
-                                intermediate_code::func_def_stmts.push(func_def_stmt);
-
-                                auto jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                intermediate_code::Emit(FUNCSTART_t, anonymous_function, nullptr, nullptr);
-
-                                func_def_stmt->set_func_start_jump_quad(jump_quad);
-
-                                $<funcdef>$ = func_def_stmt;
-                            }
-            '(' idlist ')'  {
-                                syntax_analysis::HideLowerScopes();
-                                intermediate_code::stmt_stack.push_back(FUNC_t);
-                            }
-            block           {
-                                auto top_func_def = intermediate_code::func_def_stmts.top();
-                                auto anonymous_function = top_func_def->get_sym();
-
-                                auto func_end_quad = intermediate_code::Emit(FUNCEND_t, anonymous_function, nullptr, nullptr);
-
-                                top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
-                                top_func_def->PatchReturnJumpQuads(func_end_quad->label);
-
-                                syntax_analysis::EnableLowerScopes();
-
-                                intermediate_code::func_def_stmts.pop();
-
-                                intermediate_code::stmt_stack.pop_back();
-
-                                $<funcdef>$ = top_func_def;
-                                DLOG("funcdef -> function (idlist) block "); 
-                            }
-            | FUNCTION ID   {
-                                auto symbol = syntax_analysis::Lookup($2);
-                                if (symbol == nullptr) {
-                                    symbol = syntax_analysis::DefineNewSymbol(USER_FUNC, $2, nullptr);
->>>>>>> stef
                                 }
                                 else if (!symbol->is_active()) {
                                     syntax_analysis::SignalError("Cannot access " + symbol->get_id() + ", previously defined in line: " + std::to_string(symbol->get_line()));
                                 }
                                 else {
-<<<<<<< HEAD
                                     if (IsVariable(symbol)) {
                                         SignalError(std::string($1) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
                                     }
@@ -884,26 +837,6 @@ funcprefix: FUNCTION funcid {
 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr);
                                 Emit(FUNCSTART_t, $2, nullptr, nullptr);
-=======
-                                    if (expression::IsVariable(symbol)) {
-                                        syntax_analysis::SignalError(std::string($2) + " variable, previously defined in line: " + std::to_string(symbol->get_line()) + ", cannot be redefined as a function");
-                                    }
-                                    else if (expression::IsLibraryFunction(symbol)) {
-                                        syntax_analysis::SignalError(std::string($2) + " library function cannot be shadowed by a user function");
-                                    }
-                                    else if (IsAtCurrentScope(symbol)) {
-                                        syntax_analysis::SignalError("Name collision with function " + std::string($2) + ", previously defined in line: " + std::to_string(symbol->get_line()));
-                                    }
-                                    else{
-                                        symbol = syntax_analysis::DefineNewSymbol(USER_FUNC, $2, nullptr);  // shadow user function
-                                    }
-                                }
-                                auto func_def_stmt = new intermediate_code::FuncDefStmt(symbol); 
-                                intermediate_code::func_def_stmts.push(func_def_stmt);
-
-                                auto jump_quad = intermediate_code::Emit(JUMP_t, nullptr, nullptr, nullptr);
-                                intermediate_code::Emit(FUNCSTART_t, symbol, nullptr, nullptr);
->>>>>>> stef
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);
 
@@ -913,7 +846,6 @@ funcprefix: FUNCTION funcid {
                                 enter_scope_space();
                                 reset_formalarg_offset();
                             }
-<<<<<<< HEAD
 
 funcargs:   '(' idlist ')'  {
                                 enter_scope_space();
@@ -937,16 +869,6 @@ funcdef:    funcprefix
                                 auto function = $1;
                                 function->set_total_local($3);
                                 auto func_end_quad = Emit(FUNCEND_t, function, nullptr, nullptr);
-=======
-            '(' idlist ')'  {
-                                syntax_analysis::HideLowerScopes();
-                                intermediate_code::stmt_stack.push_back(FUNC_t);
-                            }
-            block           { 
-                                auto top_func_def =  intermediate_code::func_def_stmts.top();
-                                auto function = top_func_def->get_sym();
-                                auto func_end_quad = intermediate_code::Emit(FUNCEND_t, function, nullptr, nullptr);
->>>>>>> stef
 
                                 top_func_def->PatchFuncStartJumpQuad(func_end_quad->label + 1);
                                 top_func_def->PatchReturnJumpQuads(func_end_quad->label);
@@ -992,7 +914,6 @@ const:        INTNUM    {
             ;
 
 multid:     ',' ID  {
-<<<<<<< HEAD
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
                         auto offset = curr_scope_offset();
@@ -1008,9 +929,6 @@ multid:     ',' ID  {
                             func->AddFormalArg(new_formal_arg);
                             StashFormalArgument(new_formal_arg);       
                         }
-=======
-                        syntax_analysis::StashFormalArgument($2, yylineno);
->>>>>>> stef
                     } 
             multid  {
                         DLOG("multid -> , id multid");
@@ -1021,7 +939,6 @@ multid:     ',' ID  {
             ;
 
 idlist:     ID      {
-<<<<<<< HEAD
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
                         auto offset = curr_scope_offset();
@@ -1035,9 +952,6 @@ idlist:     ID      {
                             func->AddFormalArg(new_formal_arg);   
                             StashFormalArgument(new_formal_arg);  
                         }
-=======
-                        syntax_analysis::StashFormalArgument($2, yylineno);
->>>>>>> stef
                     } 
             multid  { 
                         DLOG("idlist -> id multid"); 
