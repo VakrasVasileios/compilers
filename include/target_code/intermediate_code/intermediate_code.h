@@ -10,7 +10,6 @@
 #include "for_stmt.h"
 #include "func_def_stmt.h"
 #include "if_stmt.h"
-#include "syntax_analysis.h"
 
 /**
  * @brief Namespace for generating intermediate code quads.
