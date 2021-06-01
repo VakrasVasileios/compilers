@@ -160,7 +160,9 @@ namespace expression {
                 if (scope == 0)
                     return "global variable";
                 else    
-                    return "local variable";    
+                    return "local variable";
+            case TABLE_ITEM:
+                return "table item";
             default:
                 assert(false);            
         }
@@ -170,7 +172,9 @@ namespace expression {
         return os   << "[" << symbol->sym_to_string() << "]"
                     << " \"" << symbol->get_id() << "\""
                     << " (line " << symbol->get_line() << ")" 
-                    << " (scope " << symbol->get_scope() << ")";
+                    << " (scope " << symbol->get_scope() << ")"
+                    /* << " (space " << symbol->space_to_string() << ")"
+                    << " (offset " << symbol->get_offset() << ")" */;
     }
 
     std::ostream&
