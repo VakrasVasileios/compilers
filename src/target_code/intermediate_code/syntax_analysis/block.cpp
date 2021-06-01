@@ -1,4 +1,4 @@
-#include "../../../include/target_code/intermediate_code/syntax_analysis/block.h"
+#include "../../../../include/target_code/intermediate_code/syntax_analysis/block.h"
 
 namespace syntax_analysis {
     std::list<expression::Symbol*>

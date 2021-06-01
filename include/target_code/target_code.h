@@ -17,7 +17,7 @@ namespace target_code {
      * instructions.
      * 
      */
-    std::vector<Instruction*>   instructions;
+    extern std::vector<Instruction*>   instructions;
     /**
      * @brief An opcode dispatcher.
      * 
@@ -106,7 +106,7 @@ namespace target_code {
      * emitted quads during the intermediate code production.
      * 
      */
-    IopCodeDispatcher           opcode_dispatcher;
+    extern IopCodeDispatcher    opcode_dispatcher;
     /**
      * @brief Emits a target code instruction.
      * 

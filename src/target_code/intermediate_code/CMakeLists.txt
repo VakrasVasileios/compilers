@@ -1,6 +1,6 @@
-include_directories(${compilers_SOURCE_DIR}/include/target_code/intermediate_code)
-
 add_subdirectory(syntax_analysis)
+
+include_directories(${compilers_SOURCE_DIR}/include/target_code/intermediate_code)
 
 add_library(intermediate_code
     intermediate_code.cpp

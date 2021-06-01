@@ -22,7 +22,7 @@ namespace expression {
         elist->exprs.push_back(arg);
     }
     
-    inline bool IsMethodCall(CallSuffix* call_suffix) {
+    bool IsMethodCall(CallSuffix* call_suffix) {
         return call_suffix->get_type() == METHOD_CALL;
     }
 }

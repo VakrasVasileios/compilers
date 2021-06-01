@@ -19,31 +19,35 @@
     extern FILE* yyin;
 
     #define BOOL_EXPR_CAST(e)   static_cast<expression::BoolExpr*>(e)
+
+    union bison_begone{
+        class intermediate_code::FuncDefStmt*   funcdef;
+
+        class expression::Expression*           expr;
+        class expression::AssignExpr*           assignexpr;
+
+        class expression::Primary*              prim;
+        class expression::Constant*             con;
+        class expression::Call*                 call;
+        class expression::CallSuffix*           call_suffix;
+        class expression::NormCall*             norm_call;
+        class expression::MethodCall*           method_call;
+        class expression::Elist*                elist;
+        class expression::Symbol*               sym;
+        class expression::TableMake*            tablemake;
+        class expression::Indexed*              indexed;
+        class expression::IndexedElem*          indexed_elem; 
+    };
+    
 %}
 
 %union {                                                    
+    union bison_begone*                     bypass;
     char*                                   stringValue;
     int                                     intValue;
     double                                  doubleValue;
 
     unsigned int                            quad_label;
-
-    class intermediate_code::FuncDefStmt*   funcdef;
-
-    class expression::Expression*           expr;
-    class expression::AssignExpr*           assignexpr;
-
-    class expression::Primary*              prim;
-    class expression::Constant*             con;
-    class expression::Call*                 call;
-    class expression::CallSuffix*           call_suffix;
-    class expression::NormCall*             norm_call;
-    class expression::MethodCall*           method_call;
-    class expression::Elist*                elist;
-    class expression::Symbol*               sym;
-    class expression::TableMake*            tablemake;
-    class expression::Indexed*              indexed;
-    class expression::IndexedElem*          indexed_elem; 
 }
 
 %start program
@@ -57,23 +61,23 @@
 
 %type <quad_label>      M funcbody
 
-%type <funcdef>         funcdef
+%type <bypass->funcdef>         funcdef
 
-%type <expr>            term expr
+%type <bypass->expr>            term expr
 
-%type <assignexpr>      assignexpr
+%type <bypass->assignexpr>      assignexpr
 
-%type <prim>            primary
-%type <con>             const
-%type <sym>             lvalue member funcid funcprefix
-%type <call>            call
-%type <call_suffix>     callsuffix
-%type <norm_call>       normcall
-%type <method_call>     methodcall
-%type <elist>           elist multelist
-%type <tablemake>       objectdef
-%type <indexed>         indexed multindexed
-%type <indexed_elem>    indexedelem
+%type <bypass->prim>            primary
+%type <bypass->con>             const
+%type <bypass->sym>             lvalue member funcid funcprefix
+%type <bypass->call>            call
+%type <bypass->call_suffix>     callsuffix
+%type <bypass->norm_call>       normcall
+%type <bypass->method_call>     methodcall
+%type <bypass->elist>           elist multelist
+%type <bypass->tablemake>       objectdef
+%type <bypass->indexed>         indexed multindexed
+%type <bypass->indexed_elem>    indexedelem
 
 %right      '='
 %left       OR
@@ -878,7 +882,7 @@ funcdef:    funcprefix
 
                                 syntax_analysis::RestoreFuncLocalOffset();
 
-                                $<funcdef>$ = top_func_def;
+                                $<bypass->funcdef>$ = top_func_def;
 
                                 DLOG("funcdef -> function id (idlist) block"); 
                             }

@@ -3,6 +3,14 @@
 #define TEMP_LINE 0
 
 namespace intermediate_code {
+    std::vector<Quad*>          quads;  
+    std::stack<LoopStmt*>       loop_stmts;
+    std::stack<WhileStmt*>      while_stmts;
+    std::stack<ForStmt*>        for_stmts;
+    std::stack<FuncDefStmt*>    func_def_stmts;  
+    std::stack<IfStmt*>         if_stmts;
+    std::list<StmtType>         stmt_stack;
+
     void LogWarning(std::string msg, unsigned int line) {
         PRECONDITION(line >= 0);
         #if !defined TEST
@@ -35,7 +43,7 @@ namespace intermediate_code {
         return new_temp; 
     }
 
-    inline void ResetTemp() {
+    void ResetTemp() {
         temp_counter = 0;
     }
 
@@ -186,15 +194,15 @@ namespace intermediate_code {
         return true;  
     }
 
-    inline bool IsValidBreakContinue() {
+    bool IsValidBreakContinue() {
         return (stmt_stack.empty() || stmt_stack.back() != LOOP_t) ? false : true;
     }
 
-    inline bool InLoop() {
+    bool InLoop() {
         return loop_stmts.size() != 0; 
     }
 
-    inline bool InFuncDef() {
+    bool InFuncDef() {
         return func_def_stmts.size() != 0; 
     }
 }

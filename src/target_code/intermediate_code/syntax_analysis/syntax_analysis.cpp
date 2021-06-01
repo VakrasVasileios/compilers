@@ -1,4 +1,4 @@
-#include "../../../include/target_code/intermediate_code/syntax_analysis/syntax_analysis.h"
+#include "../../../../include/target_code/intermediate_code/syntax_analysis/syntax_analysis.h"
 
 #define OUT_OF_SCOPE       -1
 #define LIB_FUNC_LINE       0
@@ -14,7 +14,7 @@ namespace syntax_analysis {
 
     bool error_flag = false;
 
-    inline bool NoErrorSignaled() {
+    bool NoErrorSignaled() {
         return error_flag == false;
     }  
 
@@ -210,17 +210,17 @@ namespace syntax_analysis {
         stashed_formal_arguments.clear();
     }
 
-    inline bool IsGlobalVar(expression::Symbol* symbol) {
+    bool IsGlobalVar(expression::Symbol* symbol) {
         PRECONDITION(symbol != nullptr);
         return IsVariable(symbol) && symbol->get_scope() == global_scope; 
     }
 
-    inline bool IsAtCurrentScope(expression::Symbol* symbol) {
+    bool IsAtCurrentScope(expression::Symbol* symbol) {
         PRECONDITION(symbol != nullptr);
         return symbol->get_scope() == current_scope;
     }
 
-    inline void LogSymTable(std::ostream& output) {
+    void LogSymTable(std::ostream& output) {
         output << symbol_table;
     }
 } 

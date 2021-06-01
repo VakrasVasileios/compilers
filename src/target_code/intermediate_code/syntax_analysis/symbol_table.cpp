@@ -1,4 +1,4 @@
-#include "../../../include/target_code/intermediate_code/syntax_analysis/symbol_table.h"
+#include "../../../../include/target_code/intermediate_code/syntax_analysis/symbol_table.h"
 
 namespace syntax_analysis {
     std::vector<std::list<Block*> >

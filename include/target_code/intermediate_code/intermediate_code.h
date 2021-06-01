@@ -21,37 +21,37 @@ namespace intermediate_code {
      * quads.
      * 
      */
-    std::vector<Quad*>          quads;  
+    extern std::vector<Quad*>          quads;  
     /**
      * @brief A stack of all the parsed loop statements.
      * 
      */
-    std::stack<LoopStmt*>       loop_stmts;
+    extern std::stack<LoopStmt*>       loop_stmts;
     /**
      * @brief A stack of all the parsed while loop statements.
      * 
      */
-    std::stack<WhileStmt*>      while_stmts;
+    extern std::stack<WhileStmt*>      while_stmts;
     /**
      * @brief A stack of all the parsed for loop statements.
      * 
      */
-    std::stack<ForStmt*>        for_stmts;
+    extern std::stack<ForStmt*>        for_stmts;
     /**
      * @brief A stack of all the parsed function definition statements.
      * 
      */
-    std::stack<FuncDefStmt*>    func_def_stmts;  
+    extern std::stack<FuncDefStmt*>    func_def_stmts;  
     /**
      * @brief A stack of all the parsed if statements.
      * 
      */
-    std::stack<IfStmt*>         if_stmts;
+    extern std::stack<IfStmt*>         if_stmts;
     /**
      * @brief A stack of all the parsed statements.
      * 
      */
-    std::list<StmtType>         stmt_stack;
+    extern std::list<StmtType>         stmt_stack;
     /**
      * @brief Logs a runtime warning, parsed at a line, with a message. 
      * 

@@ -1,6 +1,6 @@
-include_directories(${compilers_SOURCE_DIR}/include/target_code)
-
 add_subdirectory(intermediate_code)
+
+include_directories(${compilers_SOURCE_DIR}/include/target_code)
 
 find_package(BISON 2.4.1)
 find_package(FLEX 2.5.35)

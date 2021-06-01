@@ -178,7 +178,7 @@ namespace expression {
         return os << id;
     }
 
-    inline bool IsTableItem(Symbol* symbol) {
+    bool IsTableItem(Symbol* symbol) {
         PRECONDITION(symbol != nullptr);
         return symbol->get_type() == TABLE_ITEM;
     }
