@@ -75,22 +75,24 @@ namespace syntax_analysis {
      * @brief Stores the function local offset.
      * 
      */
-    void                    store_funclocal_offset(void);
+    void                    StoreFuncLocalOffset(void);
     /**
      * @brief Restores the function local offset.
+     * It's a checked runtime error for no previously
+     * stored function local offsets.
      * 
      */
-    void                    restore_funclocal_offset(void);
+    void                    RestoreFuncLocalOffset(void);
     /**
      * @brief Resets the function local offset.
      * 
      */
-    void                    reset_funclocal_offset(void);
+    void                    ResetFuncLocalOffset(void);
     /**
      * @brief Resets the formal argument offset.
      * 
      */
-    void                    reset_formalarg_offset(void);
+    void                    ResetFormalArgOffset(void);
     /**
      * @brief Returns a read/write access to the current
      * scope space.
@@ -98,7 +100,7 @@ namespace syntax_analysis {
      * @return a read/write access to the current
      * scope space 
      */
-    expression::ScopeSpace  curr_scope_space(void);
+    expression::ScopeSpace  CurrScopeSpace(void);
     /**
      * @brief Returns a read/write access to the current
      * scope space offset.
@@ -106,22 +108,23 @@ namespace syntax_analysis {
      * @return a read/write access to the current
      * scope space offset 
      */
-    unsigned int            curr_scope_offset(void);
+    unsigned int            CurrScopeOffset(void);
     /**
      * @brief Increases the current offset.
      * 
      */
-    void                    increase_curr_offset(void);
+    void                    IncreaseCurrOffset(void);
     /**
      * @brief Enters a scope space.
      * 
      */
-    void                    enter_scope_space(void);
+    void                    EnterScopeSpace(void);
     /**
      * @brief Exits a scope space.
-     * 
+     * It's a checked runtime error for no previously 
+     * entered scope spaces.
      */
-    void                    exit_scope_space(void);
+    void                    ExitScopeSpace(void);
     /**
      * @brief Enables all of the inserted, to the symbol table,
      * symbols across all scopes, except the global scope.

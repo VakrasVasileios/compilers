@@ -841,12 +841,12 @@ funcprefix: FUNCTION funcid {
                                 $$ = $2;
                                 
                                 store_funclocal_offset();
-                                enter_scope_space();
+                                EnterScopeSpace();
                                 reset_formalarg_offset();
                             }
 
 funcargs:   '(' idlist ')'  {
-                                enter_scope_space();
+                                EnterScopeSpace();
                                 reset_funclocal_offset();
 
                                 HideLowerScopes();
@@ -854,14 +854,14 @@ funcargs:   '(' idlist ')'  {
                             }
 
 funcbody:   block           {
-                                $$ = curr_scope_offset();
-                                exit_scope_space();
+                                $$ = CurrScopeOffset();
+                                ExitScopeSpace();
                             }
 
 funcdef:    funcprefix
             funcargs
             funcbody       {
-                                exit_scope_space();
+                                ExitScopeSpace();
  
                                 auto top_func_def = func_def_stmts.top();
                                 auto function = $1;
@@ -914,9 +914,9 @@ const:        INTNUM    {
 multid:     ',' ID  {
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
-                        auto offset = curr_scope_offset();
+                        auto offset = CurrScopeOffset();
                         
-                        increase_curr_offset();
+                        IncreaseCurrOffset();
 
                         auto new_formal_arg = new Symbol(VAR, $2, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
 
@@ -939,8 +939,8 @@ multid:     ',' ID  {
 idlist:     ID      {
                         auto top_func_def_stmt = func_def_stmts.top();
                         auto func = top_func_def_stmt->get_sym();
-                        auto offset = curr_scope_offset();
-                        increase_curr_offset();
+                        auto offset = CurrScopeOffset();
+                        IncreaseCurrOffset();
 
                         auto new_formal_arg = new Symbol(VAR, $1, yylineno, current_scope + 1, FORMAL_ARG, offset, nullptr);
                         if (func->HasFormalArg(new_formal_arg)) {

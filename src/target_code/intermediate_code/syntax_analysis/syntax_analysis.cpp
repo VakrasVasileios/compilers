@@ -55,80 +55,80 @@ namespace syntax_analysis {
         --current_scope;
     }
 
-    unsigned int programVarOffset       = 0;
-    unsigned int functionLocalOffset    = 0;
-    unsigned int formalArgOffset        = 0;
-    unsigned int scopeSpaceCounter      = 1;
+    unsigned int program_var_offset       = 0;
+    unsigned int function_local_offset    = 0;
+    unsigned int formal_arg_offset        = 0;
+    unsigned int scope_space_counter      = 1;
 
-    std::stack<unsigned int> funcLocalOffset_stack;
-    std::stack<unsigned int> formalOffset_stack;
+    std::stack<unsigned int> func_local_offset_stack;
+    std::stack<unsigned int> formal_offset_stack;
 
     void
-    store_funclocal_offset(void) {
-        funcLocalOffset_stack.push(functionLocalOffset);
+    StoreFuncLocalOffset(void) {
+        func_local_offset_stack.push(function_local_offset);
     }
 
     void
-    restore_funclocal_offset(void) {
-        assert(!funcLocalOffset_stack.empty());
-        functionLocalOffset = funcLocalOffset_stack.top();
-        funcLocalOffset_stack.pop();
+    RestoreFuncLocalOffset(void) {
+        PRECONDITION(!func_local_offset_stack.empty());
+        function_local_offset = func_local_offset_stack.top();
+        func_local_offset_stack.pop();
     }
 
     void
-    reset_funclocal_offset(void) {
-        functionLocalOffset = 0;
+    ResetFuncLocalOffset(void) {
+        function_local_offset = 0;
     }
 
     void
-    reset_formalarg_offset(void) {
-        formalArgOffset = 0;
+    ResetFormalArgOffset(void) {
+        formal_arg_offset = 0;
     }
 
     expression::ScopeSpace
-    curr_scope_space(void) {
-        if (scopeSpaceCounter == 1)
+    CurrScopeSpace(void) {
+        if (scope_space_counter == 1)
             return expression::PROGRAM_VAR;
-        else if (scopeSpaceCounter % 2 == 0)
+        else if (scope_space_counter % 2 == 0)
             return expression::FORMAL_ARG;
         else
             return expression::FUNCTION_LOCAL;
     }
 
     unsigned int
-    curr_scope_offset(void) {
-        switch (curr_scope_space()) {
+    CurrScopeOffset(void) {
+        switch (CurrScopeSpace()) {
             case expression::PROGRAM_VAR:
-                return programVarOffset;
+                return program_var_offset;
             case expression::FUNCTION_LOCAL:
-                return functionLocalOffset;
+                return function_local_offset;
             case expression::FORMAL_ARG:
-                return formalArgOffset;        
+                return formal_arg_offset;        
             default:
                 assert(false);
         }
     }
 
     void
-    increase_curr_offset(void) {
-        switch (curr_scope_space()) {
-            case expression::PROGRAM_VAR    : ++programVarOffset; break;
-            case expression::FUNCTION_LOCAL : ++functionLocalOffset; break;
-            case expression::FORMAL_ARG     : ++formalArgOffset; break;
+    IncreaseCurrOffset(void) {
+        switch (CurrScopeSpace()) {
+            case expression::PROGRAM_VAR    : ++program_var_offset; break;
+            case expression::FUNCTION_LOCAL : ++function_local_offset; break;
+            case expression::FORMAL_ARG     : ++formal_arg_offset; break;
             default:
                 assert(false);
         }
     }
 
     void
-    enter_scope_space(void) {
-        ++scopeSpaceCounter;
+    EnterScopeSpace(void) {
+        ++scope_space_counter;
     }
 
     void
-    exit_scope_space(void) {
-        assert(scopeSpaceCounter > 1);
-        --scopeSpaceCounter;
+    ExitScopeSpace(void) {
+        PRECONDITION(scope_space_counter > 1);
+        --scope_space_counter;
     }
 
     void EnableLowerScopes() {
@@ -159,7 +159,7 @@ namespace syntax_analysis {
 
     expression::Symbol* NewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
         assert (id != nullptr);
-        return new expression::Symbol(type, id, line, current_scope, curr_scope_space(), curr_scope_offset(), index);
+        return new expression::Symbol(type, id, line, current_scope, CurrScopeSpace(), CurrScopeOffset(), index);
     }
 
     expression::Symbol* DefineNewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
