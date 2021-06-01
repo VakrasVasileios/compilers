@@ -26,11 +26,11 @@ Soultatos Stefanos
         ```bash
         make phase3
         ```
-    * To build a release version for generating the symbol table output (includes colored error/warning messages and temp values)
+    * To build a release version for generating the symbol table output
         ```bash
         make r_syntax_analysis
         ```
-    * To build a release version for generating the intermediate code (includes colored error/warning messages)
+    * To build a release version for generating the intermediate code
         ```bash
         make r_intermediate_code
         ```
