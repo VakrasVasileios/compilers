@@ -74,7 +74,7 @@ namespace target_code {
     IopCodeDispatcher::make_numberoperand (double val) {
         Vmarg* arg = new Vmarg();
         arg->type = NUMBER_a;
-        arg->value = val;
+        arg->value = ProgramConsts:: GetInstance().InsertNumber(val);
         return arg;
     }
 
