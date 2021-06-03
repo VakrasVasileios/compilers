@@ -56,6 +56,22 @@ namespace target_code {
         return index;
     }
 
+    unsigned
+    ProgramConsts:: InsertUserFunc(expression::Symbol* userfunc) {
+        unsigned index;
+        if (userfunc_map.find(userfunc->get_taddress()) == userfunc_map.end()) {
+            index = userfunc_array.size();
+            Userfunc_entry entry(userfunc->get_taddress(), userfunc->get_total_local(),
+                                userfunc->get_formal_arguments().size(), userfunc->get_id());
+            userfunc_map.insert( {entry.taddress, index} );
+            userfunc_array.push_back(entry);
+        }
+        else {
+            index = userfunc_map[userfunc->get_taddress()];
+        }
+        return index;
+    }
+
     double
     ProgramConsts:: GetNumber(unsigned index) {
         assert(index < number_array.size());
@@ -73,4 +89,12 @@ namespace target_code {
         assert(index < libfunc_array.size());
         return libfunc_array[index];
     }
+
+    unsigned
+    ProgramConsts:: GetUserFunc(unsigned index) {
+        assert(index < userfunc_array.size());
+        return userfunc_array[index].taddress;
+    }
+
 }
+

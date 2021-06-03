@@ -18,7 +18,8 @@ namespace target_code {
         NIL_a,
         LIBFUNC_a,
         USERFUNC_a,
-        LABEL_a
+        LABEL_a,
+        RETVAL_a
     };
     /**
      * @brief A virtual machine argument.
@@ -39,7 +40,7 @@ namespace target_code {
          * @brief Constructs a new Vmarg object.
          * 
          */
-        Vmarg() = default;
+        vmarg() = default;
     } Vmarg;
 }
 

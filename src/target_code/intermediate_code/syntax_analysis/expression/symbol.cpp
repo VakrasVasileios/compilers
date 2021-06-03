@@ -66,6 +66,16 @@ namespace expression {
         return false;  
     }
 
+    unsigned int
+    Symbol:: get_taddress() const {
+        return taddress;
+    }
+
+    void
+    Symbol:: set_taddress(unsigned _taddr) {
+        taddress = _taddr;
+    }
+
     Expression* 
     Symbol:: get_index() const {
         PRECONDITION(get_type() == TABLE_ITEM);
