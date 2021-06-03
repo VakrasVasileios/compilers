@@ -12,6 +12,8 @@
  * 
  */
 namespace target_code {
+
+    void        make_binary_file(void);
     /**
      * @brief A list of all the emitted target code
      * instructions.
