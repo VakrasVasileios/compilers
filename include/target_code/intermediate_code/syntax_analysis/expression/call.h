@@ -47,6 +47,7 @@ namespace expression {
         Symbol*                 get_ret_val() const;
         
         std::string             to_string() const override;
+        unsigned int            to_unsigned() const override;
     protected:
         std::ostream&           LogExpression(std::ostream& os) const override;
     private:

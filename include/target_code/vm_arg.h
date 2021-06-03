@@ -17,7 +17,8 @@ namespace target_code {
         NUMBER_a,
         NIL_a,
         LIBFUNC_a,
-        USERFUNC_a
+        USERFUNC_a,
+        LABEL_a
     };
     /**
      * @brief A virtual machine argument.
@@ -34,6 +35,11 @@ namespace target_code {
          * 
          */
         unsigned int    value;
+        /**
+         * @brief Constructs a new Vmarg object.
+         * 
+         */
+        Vmarg() = default;
     } Vmarg;
 }
 

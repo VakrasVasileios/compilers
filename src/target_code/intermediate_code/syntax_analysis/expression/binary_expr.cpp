@@ -21,6 +21,11 @@ namespace expression {
         return result->to_string();
     }
 
+    unsigned int
+    BinaryExpr::to_unsigned() const {
+        return 0;
+    }
+
     ExprType      
     BinaryExpr::verify_type(ExprType type) {
         PRECONDITION(type == ASSIGN || type == ARITHMETIC || type == BOOL);

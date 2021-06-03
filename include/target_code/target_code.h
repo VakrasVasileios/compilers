@@ -6,6 +6,7 @@
 #include "instruction.h"
 #include "vm_arg.h"
 #include "program_consts.h"
+#include "incomplete_jump.h"
 
 /**
  * @brief Namespace for generating the target code.
@@ -17,7 +18,7 @@ namespace target_code {
      * instructions.
      * 
      */
-    extern std::vector<Instruction*>   instructions;
+    extern std::vector<Instruction*>    instructions;
     /**
      * @brief An opcode dispatcher.
      * 
@@ -72,7 +73,7 @@ namespace target_code {
         Vmarg*                  make_retvaloperand (expression::Expression* expr);
 
         void                    generate(Vmopcode op, intermediate_code::Quad* quad);
-        void                    generate_relational(Vmopcode op, intermediate_code::Quad* quad);
+        void                    generate_branch(Vmopcode op, intermediate_code::Quad* quad);
         void                    generate_ASSIGN(intermediate_code::Quad* quad);
         void                    generate_ADD(intermediate_code::Quad* quad);
         void                    generate_SUB(intermediate_code::Quad* quad);
@@ -106,14 +107,14 @@ namespace target_code {
      * emitted quads during the intermediate code production.
      * 
      */
-    extern IopCodeDispatcher    opcode_dispatcher;
+    extern IopCodeDispatcher        opcode_dispatcher;
     /**
      * @brief Emits a target code instruction.
      * 
      * @param emitted the target code instruction to
      * be emitted, not null
      */
-    void                        Emit(Instruction* emitted);
+    void                            Emit(Instruction* emitted);
     /**
      * @brief Returns a read/write access to the label
      * after the most recently emitted instuction.
@@ -121,7 +122,25 @@ namespace target_code {
      * @return a read/write access to the label
      * after the most recently emitted instuction, greater or equal to zero 
      */
-    unsigned int                 NextInstructionLabel();
+    unsigned int                    NextInstructionLabel();
+    /**
+     * @brief Adds an incomplete jump with a label and a 
+     * intermediate code target address to the list of incomplete
+     * jumps.
+     * 
+     * @param label the label of the instruction holding 
+     * this incomplete_jump, greater or equal to zero
+     * @param i_target_address the i-code jump target address,
+     * greater or equal to zero
+     * 
+     */
+    void                            AddIncompleteJump(unsigned int label, unsigned int i_target_address);
+    /**
+     * @brief Patches all of the terget code instructions with 
+     * incomplete jumps.
+     * 
+     */
+    void                            PatchIncompleteJumps();
 }
 
 #endif

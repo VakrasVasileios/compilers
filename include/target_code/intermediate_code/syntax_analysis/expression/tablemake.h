@@ -19,6 +19,7 @@ namespace expression {
          */
         Symbol*         get_table() const;
         std::string     to_string() const override;
+        unsigned int    to_unsigned() const override;
     protected:
         /**
          * @brief Constructs a new TableMake object.

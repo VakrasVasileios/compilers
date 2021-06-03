@@ -44,7 +44,7 @@ namespace target_code {
         /**
          * @brief Constructs a new instruction object.
          * 
-         * @param label     the labelof the new instruction object, 
+         * @param label     the label of the new instruction object, 
          * @param opcode    the opcode of the new instruction object
          * @param result    the result of the new instruction object, can be null
          * @param arg1      the arg1 of the new instruction object, can be null

@@ -146,6 +146,7 @@ namespace expression {
 
         friend std::ostream&        operator<<(std::ostream& os, const Symbol* symbol);    
         std::string                 to_string() const override;
+        unsigned int                to_unsigned() const override;
     private:
         const std::string           id;
         const unsigned int          line;
