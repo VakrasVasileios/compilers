@@ -2,6 +2,13 @@
 #include <assert.h>
 
 namespace target_code {
+    ProgramConsts:: ProgramConsts() {
+        number_array = new std::vector<double>();
+        string_array = new std::vector<std::string>();
+        libfunc_array = new std::vector<std::string>();
+        userfunc_array = new std::vector<Userfunc_entry>();
+    }
+
     ProgramConsts& 
     ProgramConsts:: GetInstance(void) {
         static ProgramConsts singleton;
@@ -18,9 +25,9 @@ namespace target_code {
     ProgramConsts:: InsertNumber(double num) {
         unsigned index;
         if (number_map.find(num) == number_map.end()) {
-            index = number_array.size();
+            index = number_array->size();
             number_map.insert( {num, index} );
-            number_array.push_back(num);
+            number_array->push_back(num);
         }
         else {
             index = number_map[num];
@@ -32,9 +39,9 @@ namespace target_code {
     ProgramConsts:: InsertString(const std::string& str) {
         unsigned index;
         if (string_map.find(str) == string_map.end()) {
-            index = string_array.size();
+            index = string_array->size();
             string_map.insert( {str, index} );
-            string_array.push_back(str);
+            string_array->push_back(str);
         }
         else {
             index = string_map[str];
@@ -46,9 +53,9 @@ namespace target_code {
     ProgramConsts:: InsertLibFunc(const std::string& str) {
         unsigned index;
         if (libfunc_map.find(str) == libfunc_map.end()) {
-            index = libfunc_array.size();
+            index = libfunc_array->size();
             libfunc_map.insert( {str, index} );
-            libfunc_array.push_back(str);
+            libfunc_array->push_back(str);
         }
         else {
             index = libfunc_map[str];
@@ -60,11 +67,11 @@ namespace target_code {
     ProgramConsts:: InsertUserFunc(expression::Symbol* userfunc) {
         unsigned index;
         if (userfunc_map.find(userfunc->get_taddress()) == userfunc_map.end()) {
-            index = userfunc_array.size();
+            index = userfunc_array->size();
             Userfunc_entry entry(userfunc->get_taddress(), userfunc->get_total_local(),
                                 userfunc->get_formal_arguments().size(), userfunc->get_id());
             userfunc_map.insert( {entry.taddress, index} );
-            userfunc_array.push_back(entry);
+            userfunc_array->push_back(entry);
         }
         else {
             index = userfunc_map[userfunc->get_taddress()];
@@ -74,26 +81,46 @@ namespace target_code {
 
     double
     ProgramConsts:: GetNumber(unsigned index) {
-        assert(index < number_array.size());
-        return number_array[index];
+        assert(index < number_array->size());
+        return (*number_array)[index];
     }
 
     std::string
     ProgramConsts:: GetString(unsigned index) {
-        assert(index < string_array.size());
-        return string_array[index];
+        assert(index < string_array->size());
+        return (*string_array)[index];
     }
 
     std::string
     ProgramConsts:: GetLibFunc(unsigned index) {
-        assert(index < libfunc_array.size());
-        return libfunc_array[index];
+        assert(index < libfunc_array->size());
+        return (*libfunc_array)[index];
     }
 
     unsigned
     ProgramConsts:: GetUserFunc(unsigned index) {
-        assert(index < userfunc_array.size());
-        return userfunc_array[index].taddress;
+        assert(index < userfunc_array->size());
+        return (*userfunc_array)[index].taddress;
+    }
+
+    std::vector<double>*
+    ProgramConsts:: GetNumberArray() const {
+        return number_array;
+    }
+
+    std::vector<std::string>*
+    ProgramConsts:: GetStringArray() const {
+        return string_array;
+    }
+
+    std::vector<std::string>*
+    ProgramConsts:: GetLibFuncArray() const {
+        return libfunc_array;
+    }
+
+    std::vector<Userfunc_entry>*
+    ProgramConsts:: GetUserFuncArray() const {
+        return userfunc_array;
     }
 
 }
