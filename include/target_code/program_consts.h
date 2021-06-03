@@ -33,18 +33,23 @@ namespace target_code {
         std::string     GetLibFunc(unsigned index);
         unsigned        GetUserFunc(unsigned index);
 
+        std::vector<double>*            GetNumberArray() const;
+        std::vector<std::string>*       GetStringArray() const;
+        std::vector<std::string>*       GetLibFuncArray() const;
+        std::vector<Userfunc_entry>*    GetUserFuncArray() const;
+
     private:
-        std::vector<double>         number_array;
-        std::vector<std::string>    string_array;
-        std::vector<std::string>    libfunc_array;
-        std::vector<Userfunc_entry> userfunc_array;
+        std::vector<double>*            number_array;
+        std::vector<std::string>*       string_array;
+        std::vector<std::string>*       libfunc_array;
+        std::vector<Userfunc_entry>*    userfunc_array;
 
         std::map<double, unsigned>          number_map;
         std::map<std::string, unsigned>     string_map;
         std::map<std::string, unsigned>     libfunc_map;
         std::map<unsigned, unsigned>        userfunc_map;
 
-        ProgramConsts() = default;
+        ProgramConsts();
         ProgramConsts(const ProgramConsts&) = delete;
         ProgramConsts(ProgramConsts&&) = delete;
     };
