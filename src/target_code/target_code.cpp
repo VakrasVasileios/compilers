@@ -33,4 +33,13 @@ namespace target_code {
         }
     }
 
+    std::stack<expression::Expression*> funcs;
+    std::map<expression::Expression*, std::list<unsigned int>> return_labels_by_funcs;
+
+    void BackPatchReturnList(std::list<unsigned int> return_list, unsigned int patch_label) {
+        PRECONDITION(patch_label >= 0);
+        for (auto result : return_list)
+            instructions[result]->result->value = patch_label;
+    }
+
 }

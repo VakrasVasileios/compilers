@@ -2,6 +2,7 @@
 #define TARGET_CODE_H
 
 #include <vector>
+#include <stack>
 #include "intermediate_code/intermediate_code.h"
 #include "instruction.h"
 #include "vm_arg.h"
@@ -19,6 +20,19 @@ namespace target_code {
      * 
      */
     extern std::vector<Instruction*>    instructions;
+    /**
+     * @brief A stack of all the function expressions.
+     * 
+     */
+    extern std::stack<expression::Expression*> 
+                                        funcs;
+    /**
+     * @brief Function expressions by their return statements 
+     * generated instruction incomplete result labels.
+     * 
+     */
+    extern std::map<expression::Expression*, std::list<unsigned int>> 
+                                        return_labels_by_funcs;                                 
     /**
      * @brief An opcode dispatcher.
      * 
@@ -70,7 +84,8 @@ namespace target_code {
         Vmarg*                  make_operand (expression::Expression* expr);
         Vmarg*                  make_numberoperand (double val);
         Vmarg*                  make_booloperand (unsigned val);
-        Vmarg*                  make_retvaloperand (expression::Expression* expr);
+        Vmarg*                  make_retvaloperand ();
+        Vmarg*                  make_labeloperand();
 
         void                    generate(Vmopcode op, intermediate_code::Quad* quad);
         void                    generate_branch(Vmopcode op, intermediate_code::Quad* quad);
@@ -141,6 +156,14 @@ namespace target_code {
      * 
      */
     void                            PatchIncompleteJumps();
+    /**
+     * @brief Back patches a return list.
+     * 
+     * @param return_list the return list to backpatch
+     * @param patch_label the label to patch the return list.
+     */
+    void                            BackPatchReturnList(std::list<unsigned int> return_list,
+                                        unsigned int patch_label);
 }
 
 #endif
