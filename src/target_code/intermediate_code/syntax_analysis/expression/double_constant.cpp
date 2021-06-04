@@ -16,6 +16,12 @@ namespace expression {
         return static_cast<unsigned int>(value);    
     }
 
+    void
+    DoubleConstant::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitDoubleConstant(this);
+    }
+
     std::ostream&
     DoubleConstant:: LogExpression(std::ostream& os) const {
         return os << value;

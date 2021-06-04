@@ -23,7 +23,8 @@ namespace expression {
          * @brief Destroys this ArithmeticExpr object.
          * 
          */
-        ~ArithmeticExpr() = default;    
+        ~ArithmeticExpr() = default; 
+        void            Accept(ExpressionVisitor* expr_visitor) override;   
     };
 }
 

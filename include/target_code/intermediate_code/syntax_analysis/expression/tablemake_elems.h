@@ -30,6 +30,7 @@ namespace expression {
          * of inserted elements
          */
         Elist*  get_elements() const;
+        void    Accept(ExpressionVisitor* expr_visitor) override;
     private:
         Elist*  elements;
         Elist*  verify_elements(Elist* elements);

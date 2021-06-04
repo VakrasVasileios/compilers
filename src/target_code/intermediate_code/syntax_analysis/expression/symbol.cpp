@@ -192,6 +192,12 @@ namespace expression {
         return std::stoul(id, nullptr, 0);
     };
 
+    void
+    Symbol::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitSymbol(this);    
+    }
+
     std::ostream&
     Symbol:: LogExpression(std::ostream& os) const {
         return os << id;

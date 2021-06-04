@@ -2,6 +2,7 @@
 #define VM_ARG_H
 
 #include "intermediate_code/syntax_analysis/expression/expression.h"
+#include <ostream>
 
 namespace target_code {
     /**
@@ -41,6 +42,11 @@ namespace target_code {
          * 
          */
         vmarg() = default;
+        vmarg(Vmarg_t, unsigned int value) : type(type), value(value) {};
+        vmarg(Vmarg_t type) : type(type) {};
+        vmarg(unsigned int value) : value(value) {};
+
+        friend std::ostream &operator<<(std::ostream &os, const vmarg &rhs);
     } Vmarg;
 }
 

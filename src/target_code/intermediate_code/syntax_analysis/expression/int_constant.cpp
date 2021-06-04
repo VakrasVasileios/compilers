@@ -16,6 +16,12 @@ namespace expression {
         return value;
     }
 
+    void
+    IntConstant::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitIntConstant(this);    
+    }
+
     std::ostream&
     IntConstant:: LogExpression(std::ostream& os) const {
         return os << value;

@@ -11,6 +11,7 @@ ADD_FLEX_BISON_DEPENDENCY(scanner_trgt parser_trgt)
 
 add_library(target_code
     target_code.cpp opcode_dispatcher.cpp program_consts.cpp
+    instruction.cpp vm_arg.cpp vm_opcodes.cpp make_operand_visitor.cpp
 )
 
 target_link_libraries(target_code intermediate_code)
@@ -49,6 +50,14 @@ target_compile_definitions(r_syntax_analysis PRIVATE LOGSYMTABLE=1)
 target_compile_definitions(r_syntax_analysis PRIVATE NDEBUG=1)
 target_link_libraries(r_syntax_analysis target_code)
 
+add_executable(r_target_code
+  ${BISON_parser_trgt_OUTPUTS}
+  ${FLEX_scanner_trgt_OUTPUTS}
+)
+target_compile_definitions(r_target_code PRIVATE LOGINSTRS=1)
+target_compile_definitions(r_target_code PRIVATE NDEBUG=1)
+target_link_libraries(r_target_code target_code)
+
 # Debug mode executables
 add_executable(d_intermediate_code
   ${BISON_parser_trgt_OUTPUTS}
@@ -63,3 +72,11 @@ add_executable(d_syntax_analysis
 )
 target_compile_definitions(d_syntax_analysis PRIVATE LOGSYMTABLE=1)
 target_link_libraries(d_syntax_analysis target_code)
+
+add_executable(d_target_code
+  ${BISON_parser_trgt_OUTPUTS}
+  ${FLEX_scanner_trgt_OUTPUTS}
+)
+target_compile_definitions(d_target_code PRIVATE LOGINSTRS=1)
+target_compile_definitions(d_target_code PRIVATE LOGQUADSTXT=1)
+target_link_libraries(d_target_code target_code)

@@ -1,6 +1,8 @@
 #ifndef VM_OPCODES_H
 #define VM_OPCODES_H
 
+#include <string>
+
 namespace target_code {
     /**
      * @brief A virtual machine opcode.
@@ -33,6 +35,8 @@ namespace target_code {
         ASSIGN_VM,
         NOP_VM
     };
+
+    std::string VmopcodeToString(Vmopcode _op);
 }
 
 #endif 

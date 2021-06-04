@@ -1180,12 +1180,17 @@ int main(int argc, char** argv) {
     #endif
     #if defined LOGQUADSTXT
         if (NoErrorSignaled()) {
-            const char *path="../quads.txt";
+            const char *path="../../quads.txt";
             std::ofstream quad_file(path);
             LogQuads(quad_file);
             quad_file.close();
         }
     #endif  
+    opcode_dispatcher.Generate();
+    #if defined LOGINSTRS
+        if (NoErrorSignaled()) 
+            LogInstructions(std::cout);
+    #endif
 
     return 0;
 }

@@ -26,6 +26,12 @@ namespace expression {
         return 0; 
     }
 
+    void
+    Call::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitCall(this);    
+    }
+
     std::ostream&
     Call:: LogExpression(std::ostream& os) const {
         return os << ret_val->get_id();

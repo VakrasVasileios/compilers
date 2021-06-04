@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../../../../../util/contract/contract.h"
+#include "expression_visitor.h"
 
 /**
  * @brief Alpha expression namespace.
@@ -53,7 +54,22 @@ namespace expression {
          * string.
          */
         virtual std::string     to_string() const = 0;
+        /**
+         * @brief Returns a read access to this Expression
+         * as an unsigned int.
+         * 
+         * @return a read access to this Expression
+         * as an unsigned int
+         */
         virtual unsigned int    to_unsigned() const = 0;
+        /**
+         * @brief Accepts an expression visitor at this
+         * Expression.
+         * 
+         * @param expr_visitor the expression visitor to be accepted,
+         * not null
+         */
+        virtual void            Accept(ExpressionVisitor* expr_visitor) = 0;
     protected:
         Expression(ExprType _type) : type(_type) {};
         ~Expression() = default;

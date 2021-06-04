@@ -16,6 +16,12 @@ namespace expression {
         return 0;
     }
 
+    void
+    NilConstant::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitNilConstant(this);
+    }
+
     std::ostream&
     NilConstant:: LogExpression(std::ostream& os) const {
         return os << to_string();

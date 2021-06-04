@@ -4,6 +4,7 @@ add_library(expression
     expression.cpp
     primary.cpp
     binary_expr.cpp
+    arithmetic_expr.cpp bool_expr.cpp assign_expr.cpp
     symbol.cpp
     nil_constant.cpp string_constant.cpp bool_constant.cpp int_constant.cpp double_constant.cpp
     call.cpp call_suffix.cpp

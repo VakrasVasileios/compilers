@@ -18,6 +18,12 @@ namespace expression {
         return std::stoul(value, nullptr, 0);
     }
 
+    void
+    StringConstant::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitStringConstant(this);    
+    }
+
     std::ostream&
     StringConstant:: LogExpression(std::ostream& os) const {
         return os << to_string();

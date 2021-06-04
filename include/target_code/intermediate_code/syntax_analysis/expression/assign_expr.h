@@ -24,6 +24,7 @@ namespace expression {
          * 
          */
         ~AssignExpr() = default;
+        void            Accept(ExpressionVisitor* expr_visitor) override;
     };
 }
 

@@ -33,6 +33,7 @@ namespace expression {
          * indexed list of indexed elements, not null
          */
         Indexed*    get_indexed() const;
+        void        Accept(ExpressionVisitor* expr_visitor) override;
     private:
         Indexed*    indexed;
         Indexed*    verify_indexed(Indexed* indexed);

@@ -3,11 +3,13 @@
 
 #include <vector>
 #include <stack>
+#include <iostream>
 #include "intermediate_code/intermediate_code.h"
 #include "instruction.h"
 #include "vm_arg.h"
 #include "program_consts.h"
 #include "incomplete_jump.h"
+#include "make_operand_visitor.h"
 
 /**
  * @brief Namespace for generating the target code.
@@ -70,7 +72,8 @@ namespace target_code {
             &IopCodeDispatcher::generate_TABLECREATE,
             &IopCodeDispatcher::generate_TABLEGETELEM,
             &IopCodeDispatcher::generate_TABLESETELEM
-        } {}
+        }
+        , make_op_visitor(new MakeOperandVisitor()) {}
         /**
          * @brief Destroys this OpCodeDispatcher object.
          * 
@@ -83,6 +86,8 @@ namespace target_code {
          */
         void                    Generate();
     private:
+        MakeOperandVisitor*     make_op_visitor;
+
         Vmarg*                  make_operand (expression::Expression* expr);
         Vmarg*                  make_numberoperand (double val);
         Vmarg*                  make_booloperand (unsigned val);
@@ -132,6 +137,12 @@ namespace target_code {
      * be emitted, not null
      */
     void                            Emit(Instruction* emitted);
+    /**
+     * @brief Logs the emitted instructions to an output.
+     * 
+     * @param output the output to log the emitted instructions
+     */
+    void                            LogInstructions(std::ostream& output);
     /**
      * @brief Returns a read/write access to the label
      * after the most recently emitted instuction.

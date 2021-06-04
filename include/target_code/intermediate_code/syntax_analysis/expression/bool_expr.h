@@ -38,7 +38,7 @@ namespace expression {
          * 
          */
         std::list<unsigned int> false_list;
-        
+        void            Accept(ExpressionVisitor* expr_visitor) override;
     };
 }
 

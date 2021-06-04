@@ -3,6 +3,7 @@
 
 #include "vm_opcodes.h"
 #include "vm_arg.h"
+#include <ostream>
 
 namespace target_code {
     /**
@@ -16,22 +17,22 @@ namespace target_code {
          */
         unsigned int    label;
         /**
-         * @brief The virtal machine opcode of this Instruction.
+         * @brief The virtual machine opcode of this Instruction.
          * 
          */
         Vmopcode        opcode;
         /**
-         * @brief The virtal machine result of this Instruction.
+         * @brief The virtual machine result of this Instruction.
          * 
          */
         Vmarg*           result;
         /**
-         * @brief The virtal machine arg1 of this Instruction.
+         * @brief The virtual machine arg1 of this Instruction.
          * 
          */
         Vmarg*           arg1;
         /**
-         * @brief The virtal machine arg2 of this Instruction.
+         * @brief The virtual machine arg2 of this Instruction.
          * 
          */
         Vmarg*           arg2;
@@ -54,6 +55,8 @@ namespace target_code {
          */
         instruction(unsigned int label, Vmopcode opcode, Vmarg* result, Vmarg* arg1, Vmarg* arg2, unsigned int src_line)
         : label(label), opcode(opcode), result(result), arg1(arg1), arg2(arg2), src_line(src_line) {};
+
+        friend std::ostream &operator<<(std::ostream &os, const instruction rhs);
 
     } Instruction;
 }

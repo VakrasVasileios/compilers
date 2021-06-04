@@ -6,6 +6,12 @@ namespace expression {
         return indexed;
     }
 
+    void
+    TableMakePairs::Accept(ExpressionVisitor* expr_visitor) {
+        PRECONDITION(expr_visitor != nullptr);
+        expr_visitor->VisitTableMakePairs(this);
+    }
+
     Indexed*    
     TableMakePairs::verify_indexed(Indexed* indexed) {
         PRECONDITION(indexed != nullptr);

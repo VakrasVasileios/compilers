@@ -14,6 +14,11 @@ namespace target_code {
         instructions.push_back(emitted);
     }
 
+    void LogInstructions(std::ostream& output) {
+        for (auto instruction : instructions)
+            output << *instruction;
+    }
+
     unsigned int NextInstructionLabel() {
         if (instructions.size() == 0)
             return 1;
