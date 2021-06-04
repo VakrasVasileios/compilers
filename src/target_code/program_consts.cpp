@@ -113,6 +113,18 @@ namespace target_code {
         return string_array;
     }
 
+    std::ostream &operator<<(std::ostream &os, const ProgramConsts &rhs) {
+        os << std::endl << "-----------  number_array  -----------" << std::endl;
+        rhs.LogNumberArray(os);
+        os << std::endl << "-----------  string_array  -----------" << std::endl;
+        rhs.LogStringArray(os);
+        os << std::endl << "-----------  libfunc_array  -----------" << std::endl;
+        rhs.LogLibFuncArray(os);
+        os << std::endl << "-----------  userfunc_array  -----------" << std::endl;
+        rhs.LogUserFuncArray(os);
+        return os;
+    }
+
     std::vector<std::string>*
     ProgramConsts:: GetLibFuncArray() const {
         return libfunc_array;
@@ -123,5 +135,27 @@ namespace target_code {
         return userfunc_array;
     }
 
-}
+    void
+    ProgramConsts::LogNumberArray(std::ostream &os) const {
+        for (int i = 0; i < (*number_array).size(); i++)
+            os << "number_array[" << i << "] " << (*number_array)[i] << std::endl;
+    }
 
+    void
+    ProgramConsts::LogStringArray(std::ostream &os) const {
+        for (int i = 0; i < (*string_array).size(); i++)
+            os << "string_array[" << i << "] " << (*string_array)[i] << std::endl;
+    }
+
+    void
+    ProgramConsts::LogLibFuncArray(std::ostream &os) const {
+        for (int i = 0; i < (*libfunc_array).size(); i++)
+            os << "libfunc_array[" << i << "] " << (*libfunc_array)[i] << std::endl;
+    }
+
+    void
+    ProgramConsts::LogUserFuncArray(std::ostream &os) const {
+        for (int i = 0; i < (*userfunc_array).size(); i++)
+            os << "userfunc_array[" << i << "] " << (*userfunc_array)[i].id << std::endl;
+    }
+}

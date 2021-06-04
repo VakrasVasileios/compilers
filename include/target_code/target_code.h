@@ -144,6 +144,12 @@ namespace target_code {
      */
     void                            LogInstructions(std::ostream& output);
     /**
+     * @brief Logs the program consts to an output.
+     * 
+     * @param output the output to log the program consts
+     */
+    void                            LogProgramConsts(std::ostream& output);
+    /**
      * @brief Returns a read/write access to the label
      * after the most recently emitted instuction.
      * 

@@ -19,6 +19,10 @@ namespace target_code {
             output << *instruction;
     }
 
+    void LogProgramConsts(std::ostream& output) {
+        output << ProgramConsts::GetInstance();
+    }
+
     unsigned int NextInstructionLabel() {
         if (instructions.size() == 0)
             return 1;

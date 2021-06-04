@@ -1188,8 +1188,13 @@ int main(int argc, char** argv) {
     #endif  
     opcode_dispatcher.Generate();
     #if defined LOGINSTRS
-        if (NoErrorSignaled()) 
+        if (NoErrorSignaled()) { 
+            const char *path = "../../program_consts.txt";
+            std::ofstream pconsts_file(path);
+            LogProgramConsts(pconsts_file);
+            pconsts_file.close();
             LogInstructions(std::cout);
+        }
     #endif
 
     return 0;
