@@ -67,7 +67,7 @@ namespace intermediate_code {
             return sym;
         }
         else {
-            auto temp = NewTemp(expression::TABLE_ITEM, sym->get_index());
+            auto temp = NewTemp(expression::VAR, sym->get_index());
             Emit(TABLEGETELEM_t, temp, sym, sym->get_index(), line);
 
             return temp;
