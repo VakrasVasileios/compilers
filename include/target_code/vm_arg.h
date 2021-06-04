@@ -18,6 +18,7 @@ namespace target_code {
         NIL_a,
         LIBFUNC_a,
         USERFUNC_a,
+        LABEL_a,
         RETVAL_a
     };
     /**
@@ -35,6 +36,11 @@ namespace target_code {
          * 
          */
         unsigned int    value;
+        /**
+         * @brief Constructs a new Vmarg object.
+         * 
+         */
+        vmarg() = default;
     } Vmarg;
 }
 

@@ -87,9 +87,16 @@ namespace target_code {
     }
 
     Vmarg*
-    IopCodeDispatcher::make_retvaloperand (expression::Expression* expr) {
+    IopCodeDispatcher::make_retvaloperand() {
         Vmarg* arg = new Vmarg();
         arg->type = RETVAL_a;
+        return arg;
+    }
+
+    Vmarg*
+    IopCodeDispatcher::make_labeloperand() {
+        Vmarg* arg = new Vmarg();
+        arg->type = LABEL_a;
         return arg;
     }
     /* 
@@ -111,8 +118,20 @@ namespace target_code {
     }
 
     void 
-    IopCodeDispatcher::generate_relational(Vmopcode op, intermediate_code::Quad* quad) {
-        // TODO
+    IopCodeDispatcher::generate_branch(Vmopcode op, intermediate_code::Quad* quad) {
+        assert(quad != nullptr);
+        assert(intermediate_code::IsBranchQuad(quad));
+        auto inst = new Instruction(NextInstructionLabel(), op, new Vmarg(),
+                        make_operand(quad->result), make_operand(quad->arg1), quad->line);
+
+        inst->result->type = LABEL_a;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label)
+            inst->result->value = intermediate_code::quads[i_target_address - 1]->taddress;
+        else
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);    
     }
 
     void    
@@ -171,49 +190,58 @@ namespace target_code {
     IopCodeDispatcher::generate_JUMP(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::JUMP_t);
-        generate_relational(JUMP_VM, quad);
+        auto inst = new Instruction(NextInstructionLabel(), JUMP_VM, new Vmarg(), nullptr, nullptr, quad->line);
+
+        inst->result->type = LABEL_a;
+        auto i_target_address = quad->result->to_unsigned();
+        if (i_target_address < quad->label)
+            inst->result->value = intermediate_code::quads[i_target_address - 1]->taddress;
+        else
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);    
     }
 
     void
     IopCodeDispatcher::generate_IF_EQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_EQ_t);
-        generate_relational(JEQ_VM, quad);
+        generate_branch(JEQ_VM, quad);
     }
 
     void
     IopCodeDispatcher::generate_IF_NOTEQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_NOTEQ_t);
-        generate_relational(JNE_VM, quad);
+        generate_branch(JNE_VM, quad);
     }
 
     void    
     IopCodeDispatcher::generate_IF_LESSEQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_LESSEQ_t);
-        generate_relational(JLE_VM, quad);
+        generate_branch(JLE_VM, quad);
     }
 
     void
     IopCodeDispatcher::generate_IF_GREATEREQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_GREATEREQ_t);
-        generate_relational(JGE_VM, quad);
+        generate_branch(JGE_VM, quad);
     }
 
     void
     IopCodeDispatcher::generate_IF_LESS(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_LESS_t);
-        generate_relational(JLT_VM, quad);
+        generate_branch(JLT_VM, quad);
     }
 
     void    
     IopCodeDispatcher::generate_IF_GREATER(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_GREATER_t);
-        generate_relational(JGT_VM, quad);
+        generate_branch(JGT_VM, quad);
     }
 
     void    
@@ -230,7 +258,7 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::PARAM_t);
         Emit(new Instruction(NextInstructionLabel(),
-             PUSHARG_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
+            PUSHARG_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
@@ -238,6 +266,15 @@ namespace target_code {
     IopCodeDispatcher::generate_RETURN(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::RET_t);
+        Emit(new Instruction(NextInstructionLabel(),
+            ASSIGN_VM, make_retvaloperand(), make_operand(quad->result), nullptr, quad->line));
+        quad->taddress = NextInstructionLabel();    
+        
+        auto func = funcs.top(); 
+        return_labels_by_funcs[func].push_back(NextInstructionLabel());
+
+        Emit(new Instruction(NextInstructionLabel(),
+            JUMP_VM, make_labeloperand(), nullptr, nullptr, quad->line));   
     }
 
     void
@@ -245,7 +282,7 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::GETRETVAL_t);
         Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM,
-             make_operand(quad->result), make_retvaloperand(quad->arg1), nullptr, quad->line));
+             make_operand(quad->result), make_retvaloperand(), nullptr, quad->line));
         quad->taddress = NextInstructionLabel();
     }
 
@@ -253,12 +290,24 @@ namespace target_code {
     IopCodeDispatcher::generate_FUNCSTART(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCSTART_t);
+        Emit(new Instruction(NextInstructionLabel(), ENTERFUNC_VM,
+            make_operand(quad->result), nullptr, nullptr, quad->line));
+        quad->taddress = NextInstructionLabel();
+        funcs.push(quad->result);
     }
 
     void    
     IopCodeDispatcher::generate_FUNCEND(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCEND_t);
+        Emit(new Instruction(NextInstructionLabel(), EXITFUNC_VM,
+            make_operand(quad->result), nullptr, nullptr, quad->line));
+        quad->taddress = NextInstructionLabel();
+
+        auto top_func = funcs.top();
+        funcs.pop();
+        auto return_list = return_labels_by_funcs[top_func];
+        BackPatchReturnList(return_list, NextInstructionLabel());   
     }
 
     void    

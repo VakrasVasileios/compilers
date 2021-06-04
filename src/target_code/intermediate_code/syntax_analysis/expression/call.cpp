@@ -21,6 +21,11 @@ namespace expression {
         return ret_val->to_string();
     }
 
+    unsigned int
+    Call::to_unsigned() const {
+        return 0; 
+    }
+
     std::ostream&
     Call:: LogExpression(std::ostream& os) const {
         return os << ret_val->get_id();

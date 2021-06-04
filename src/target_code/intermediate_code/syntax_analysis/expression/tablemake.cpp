@@ -11,6 +11,11 @@ namespace expression {
         return table->to_string();
     }
 
+    unsigned int
+    TableMake::to_unsigned() const {
+        return 0;    
+    }
+
     std::ostream&
     TableMake::LogExpression(std::ostream& os) const {
         return os << table->get_id();

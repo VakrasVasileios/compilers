@@ -187,6 +187,11 @@ namespace expression {
                     << " (offset " << symbol->get_offset() << ")" */;
     }
 
+    unsigned int 
+    Symbol::to_unsigned() const {
+        return std::stoul(id, nullptr, 0);
+    };
+
     std::ostream&
     Symbol:: LogExpression(std::ostream& os) const {
         return os << id;

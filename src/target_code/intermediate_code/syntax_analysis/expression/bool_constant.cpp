@@ -14,6 +14,11 @@ namespace expression {
             return "\'false\'";   
     }
 
+    unsigned int
+    BoolConstant::to_unsigned() const {
+        return 0;    
+    }
+
     std::ostream&
     BoolConstant:: LogExpression(std::ostream& os) const {
         return os << to_string();

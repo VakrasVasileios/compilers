@@ -11,6 +11,11 @@ namespace expression {
         return std::to_string(value);
     }
 
+    unsigned int
+    DoubleConstant::to_unsigned() const {
+        return static_cast<unsigned int>(value);    
+    }
+
     std::ostream&
     DoubleConstant:: LogExpression(std::ostream& os) const {
         return os << value;

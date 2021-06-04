@@ -53,6 +53,7 @@ namespace expression {
          * string.
          */
         virtual std::string     to_string() const = 0;
+        virtual unsigned int    to_unsigned() const = 0;
     protected:
         Expression(ExprType _type) : type(_type) {};
         ~Expression() = default;

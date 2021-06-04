@@ -35,6 +35,7 @@ namespace expression {
         Expression*     get_right_hand_operand() const;
 
         std::string     to_string() const override;
+        unsigned int    to_unsigned() const override;
     protected:
         /**
          * @brief Constructs a new BinaryExpr object.

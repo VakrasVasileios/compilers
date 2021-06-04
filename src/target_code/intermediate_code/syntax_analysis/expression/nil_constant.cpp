@@ -11,6 +11,11 @@ namespace expression {
         return "NIL";
     }
 
+    unsigned int
+    NilConstant::to_unsigned() const {
+        return 0;
+    }
+
     std::ostream&
     NilConstant:: LogExpression(std::ostream& os) const {
         return os << to_string();
