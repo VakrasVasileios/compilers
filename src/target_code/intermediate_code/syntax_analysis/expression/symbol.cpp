@@ -126,7 +126,7 @@ namespace expression {
 
     Expression*
     Symbol:: verify_index(ExprType type, Expression* index) {
-        PRECONDITION(index != nullptr? type == TABLE_ITEM : type != TABLE_ITEM);
+        // PRECONDITION(index != nullptr? type == TABLE_ITEM : type != TABLE_ITEM);
         return index;
     }
 
