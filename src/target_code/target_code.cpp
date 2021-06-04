@@ -73,7 +73,7 @@ namespace target_code {
 
         bin_file.close();
     }
-}
+    
     std::vector<IncompleteJump*> incomplete_jumps;
 
     void AddIncompleteJump(unsigned int label, unsigned int i_target_address) {
@@ -99,5 +99,5 @@ namespace target_code {
         for (auto result : return_list)
             instructions[result]->result->value = patch_label;
     }
-
 }
+
