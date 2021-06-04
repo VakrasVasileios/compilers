@@ -297,17 +297,15 @@ TEST_F(InterCodeSuite, functions_call_anonymous_func_def)
 
 TEST_F(InterCodeSuite, functions_call_method_call) {
     expected =  "1: tablegetelem ^0 a \"f\" [line 1]\n"
-                "2: tablegetelem ^1 ^0 \"f\" [line 1]\n"
-                "3: param a [line 1]\n"
-                "4: call ^1 [line 1]\n"
-                "5: getretval ^2 [line 1]\n"
-                "6: tablegetelem ^0 a \"f\" [line 3]\n"
-                "7: tablegetelem ^1 ^0 \"f\" [line 3]\n"
-                "8: param s [line 3]\n"
-                "9: param 9 [line 3]\n"
-                "10: param a [line 3]\n"
-                "11: call ^1 [line 3]\n"
-                "12: getretval ^2 [line 3]\n";
+                "2: param a [line 1]\n"
+                "3: call ^0 [line 1]\n"
+                "4: getretval ^1 [line 1]\n"
+                "5: tablegetelem ^0 a \"f\" [line 3]\n"
+                "6: param s [line 3]\n"
+                "7: param 9 [line 3]\n"
+                "8: param a [line 3]\n"
+                "9: call ^0 [line 3]\n"
+                "10: getretval ^1 [line 3]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/functions/call_method_call.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
@@ -1173,10 +1171,9 @@ TEST_F(InterCodeSuite, table_emit_iftableitem_assignexpr) {
 
 TEST_F(InterCodeSuite, table_emit_iftableitem_call) {
     expected =  "1: tablegetelem ^0 a 3 [line 1]\n"
-                "2: tablegetelem ^1 ^0 3 [line 1]\n"
-                "3: param s [line 1]\n"
-                "4: call ^1 [line 1]\n"
-                "5: getretval ^2 [line 1]\n";
+                "2: param s [line 1]\n"
+                "3: call ^0 [line 1]\n"
+                "4: getretval ^1 [line 1]\n";
     actual =  exec("./d_intermediate_code ../../test/files/phase3_tests/table/emit_iftableitem_call.asc");     
     GTEST_ASSERT_EQ(expected, actual);              
 }
@@ -1438,15 +1435,14 @@ TEST_F(InterCodeSuite, backpatch_p3t_assignments_objects)
                 "27: tablegetelem ^0 a \"3\" [line 7]\n"
                 "28: tablegetelem ^1 ^0 \"q\" [line 7]\n"
                 "29: tablegetelem ^2 ^1 4 [line 7]\n"
-                "30: tablegetelem ^3 ^2 4 [line 7]\n"
-                "31: call ^3 [line 7]\n"
-                "32: getretval ^4 [line 7]\n"
-                "33: tablesetelem a \"r\" 5 [line 8]\n"
-                "34: tablegetelem ^0 a \"r\" [line 8]\n"
-                "35: tablesetelem a 1 ^0 [line 8]\n"
-                "36: tablegetelem ^1 a 1 [line 8]\n"
-                "37: tablesetelem a \"x\" ^1 [line 8]\n"
-                "38: tablegetelem ^2 a \"x\" [line 8]\n";
+                "30: call ^2 [line 7]\n"
+                "31: getretval ^3 [line 7]\n"
+                "32: tablesetelem a \"r\" 5 [line 8]\n"
+                "33: tablegetelem ^0 a \"r\" [line 8]\n"
+                "34: tablesetelem a 1 ^0 [line 8]\n"
+                "35: tablegetelem ^1 a 1 [line 8]\n"
+                "36: tablesetelem a \"x\" ^1 [line 8]\n"
+                "37: tablegetelem ^2 a \"x\" [line 8]\n";
     actual = exec("./d_intermediate_code ../../test/files/phase3_tests/backpatch/p3t_assignments_objects.asc");
     GTEST_ASSERT_EQ(expected, actual);   
 }
