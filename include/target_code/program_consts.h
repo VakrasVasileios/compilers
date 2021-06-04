@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <ostream>
 #include "intermediate_code/syntax_analysis/expression/symbol.h"
 
 
@@ -38,16 +39,22 @@ namespace target_code {
         std::vector<std::string>*       GetLibFuncArray() const;
         std::vector<Userfunc_entry>*    GetUserFuncArray() const;
 
+        friend std::ostream &operator<<(std::ostream &os, const ProgramConsts &rhs);
     private:
-        std::vector<double>*            number_array;
-        std::vector<std::string>*       string_array;
-        std::vector<std::string>*       libfunc_array;
-        std::vector<Userfunc_entry>*    userfunc_array;
+        std::vector<double>*                number_array;
+        std::vector<std::string>*           string_array;
+        std::vector<std::string>*           libfunc_array;
+        std::vector<Userfunc_entry>*        userfunc_array;
 
         std::map<double, unsigned>          number_map;
         std::map<std::string, unsigned>     string_map;
         std::map<std::string, unsigned>     libfunc_map;
         std::map<unsigned, unsigned>        userfunc_map;
+
+        void                                LogNumberArray(std::ostream &os) const;
+        void                                LogStringArray(std::ostream &os) const;
+        void                                LogLibFuncArray(std::ostream &os) const;
+        void                                LogUserFuncArray(std::ostream &os) const;
 
         ProgramConsts();
         ProgramConsts(const ProgramConsts&) = delete;
