@@ -30,10 +30,6 @@ namespace target_code {
             return instructions.back()->label + 1;
     }
 
-    unsigned int CurrInstructionLabel() {
-        return instructions.size() + 1;
-    }
-
     void
     make_binary_file(void) {
         std::fstream bin_file;
@@ -102,15 +98,6 @@ namespace target_code {
             else 
                 instructions[incomplete_jump->label - 1]->result->value = intermediate_code::quads[incomplete_jump->i_target_address - 1]->taddress;   
         }
-    }
-
-    std::stack<expression::Expression*> funcs;
-    std::map<expression::Expression*, std::list<unsigned int>> return_labels_by_funcs;
-
-    void BackPatchReturnList(std::list<unsigned int> return_list, unsigned int patch_label) {
-        PRECONDITION(patch_label >= 0);
-        for (auto result : return_list)
-            instructions[result]->result->value = patch_label;
     }
 }
 

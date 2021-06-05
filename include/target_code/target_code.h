@@ -23,20 +23,7 @@ namespace target_code {
      * instructions.
      * 
      */
-    extern std::vector<Instruction*>    instructions;
-    /**
-     * @brief A stack of all the function expressions.
-     * 
-     */
-    extern std::stack<expression::Expression*> 
-                                        funcs;
-    /**
-     * @brief Function expressions by their return statements 
-     * generated instruction incomplete result labels.
-     * 
-     */
-    extern std::map<expression::Expression*, std::list<unsigned int>> 
-                                        return_labels_by_funcs;                                 
+    extern std::vector<Instruction*>    instructions;                              
     /**
      * @brief An opcode dispatcher.
      * 
@@ -153,8 +140,6 @@ namespace target_code {
      * after the most recently emitted instuction, greater or equal to zero 
      */
     unsigned int                    NextInstructionLabel();
-
-    unsigned int                    CurrInstructionLabel();
     /**
      * @brief Adds an incomplete jump with a label and a 
      * intermediate code target address to the list of incomplete
@@ -173,14 +158,6 @@ namespace target_code {
      * 
      */
     void                            PatchIncompleteJumps();
-    /**
-     * @brief Back patches a return list.
-     * 
-     * @param return_list the return list to backpatch
-     * @param patch_label the label to patch the return list.
-     */
-    void                            BackPatchReturnList(std::list<unsigned int> return_list,
-                                        unsigned int patch_label);
 }
 
 #endif
