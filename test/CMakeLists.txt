@@ -11,3 +11,7 @@ target_link_libraries(intermediate_code_test PRIVATE gtest)
 target_link_libraries(intermediate_code_test PRIVATE exec)
 target_compile_definitions(intermediate_code_test PRIVATE TESTING=1)
 
+add_executable(target_code_test target_code_test.cpp)
+target_link_libraries(target_code_test PRIVATE gtest)
+target_link_libraries(target_code_test PRIVATE exec)
+target_compile_definitions(target_code_test PRIVATE TESTING=1)

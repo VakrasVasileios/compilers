@@ -10,7 +10,7 @@ namespace target_code {
                 os << " " << *rhs.arg1;
             if (rhs.arg2 != nullptr)    
                 os << " " << *rhs.arg2;
-            os << "[line " << rhs.src_line << "]" << std::endl;
+            os << " [line " << rhs.src_line << "]" << std::endl;
         return os;
     }
 }
