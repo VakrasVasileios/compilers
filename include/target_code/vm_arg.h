@@ -42,9 +42,9 @@ namespace target_code {
          * 
          */
         vmarg() = default;
-        vmarg(Vmarg_t type, unsigned int value) : type(type), value(value) {};
-        vmarg(Vmarg_t type) : type(type) {};
-        vmarg(unsigned int value) : value(value) {};
+        vmarg(Vmarg_t _type, unsigned int _value) : type(_type), value(_value) {};
+        vmarg(Vmarg_t _type) : type(_type) {};
+        vmarg(unsigned int _value) : value(_value) {};
 
         friend std::ostream &operator<<(std::ostream &os, const vmarg &rhs);
     } Vmarg;
