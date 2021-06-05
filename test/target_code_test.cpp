@@ -360,66 +360,66 @@ TEST_F(TargetCodeSuite, return_many_and_nested)
 
 TEST_F(TargetCodeSuite, logical_greater_simple)
 {
-    expected = "1: if_greater 3 2 3 [line 1]\n"
+    expected = "1: jgt 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/logical/greater_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, logical_equal_simple)
 {
-    expected = "1: if_eq 3 2 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/logical/equal_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, logical_greater_equal_simple)
 {
-    expected = "1: if_greatereq 3 2 3 [line 1]\n"
+    expected = "1: jge 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/logical/greater_equal_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, logical_less_equal_simple)
 {
-    expected = "1: if_lesseq 3 2 3 [line 1]\n"
+    expected = "1: jle 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/logical/less_equal_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, logical_less_simple)
 {
-    expected = "1: if_less 3 2 3 [line 1]\n"
+    expected = "1: jlt 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/logical/less_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, logical_not_equal_simple)
 {
-    expected = "1: if_noteq 3 2 3 [line 1]\n"
+    expected = "1: jne 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/logical/not_equal_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -438,12 +438,12 @@ TEST_F(TargetCodeSuite, logical_errors)
 
 TEST_F(TargetCodeSuite, loop_while_simple)
 {
-    expected = "1: if_greater 2 6 3 [line 1]\n"
+    expected = "1: jgt 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n"
-               "6: if_eq ^0 'true' 8 [line 1]\n"
+               "5: assign 0 0 [line 1]\n"
+               "6: jeq 8 0 1 [line 1]\n"
                "7: jump 9 [line 1]\n"
                "8: jump 1 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_simple.asc");
@@ -452,10 +452,10 @@ TEST_F(TargetCodeSuite, loop_while_simple)
 
 TEST_F(TargetCodeSuite, loop_while_simple_with_stms)
 {
-    expected = "1: if_eq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 6 [line 1]\n"
-               "3: assign x 9 [line 2]\n"
-               "4: assign ^0 x [line 2]\n"
+               "3: assign 0 1 [line 2]\n"
+               "4: assign 1 0 [line 2]\n"
                "5: jump 1 [line 5]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -463,23 +463,23 @@ TEST_F(TargetCodeSuite, loop_while_simple_with_stms)
 
 TEST_F(TargetCodeSuite, loop_while_many_nested)
 {
-    expected = "1: if_less x 0 3 [line 1]\n"
+    expected = "1: jlt 3 0 0 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 1 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n"
-               "6: if_eq ^0 'true' 8 [line 1]\n"
+               "5: assign 1 0 [line 1]\n"
+               "6: jeq 8 1 1 [line 1]\n"
                "7: jump 17 [line 1]\n"
-               "8: assign x 0 [line 2]\n"
-               "9: assign ^1 x [line 2]\n"
-               "10: if_eq 1 'true' 12 [line 3]\n"
+               "8: assign 0 0 [line 2]\n"
+               "9: assign 2 0 [line 2]\n"
+               "10: jeq 12 1 1 [line 3]\n"
                "11: jump 16 [line 3]\n"
-               "12: if_eq 0 'true' 14 [line 3]\n"
+               "12: jeq 14 0 1 [line 3]\n"
                "13: jump 15 [line 3]\n"
                "14: jump 12 [line 3]\n"
                "15: jump 10 [line 3]\n"
                "16: jump 1 [line 4]\n"
-               "17: if_eq s 'true' 19 [line 9]\n"
+               "17: jeq 19 3 1 [line 9]\n"
                "18: jump 20 [line 9]\n"
                "19: jump 17 [line 10]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_many_nested.asc");
@@ -488,7 +488,7 @@ TEST_F(TargetCodeSuite, loop_while_many_nested)
 
 TEST_F(TargetCodeSuite, loop_while_continue_single)
 {
-    expected = "1: if_eq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
                "3: jump 1 [line 2]\n"
                "4: jump 1 [line 3]\n";
@@ -498,7 +498,7 @@ TEST_F(TargetCodeSuite, loop_while_continue_single)
 
 TEST_F(TargetCodeSuite, loop_while_continue_many_nested)
 {
-    expected = "1: if_eq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 29 [line 1]\n"
                "3: jump 1 [line 2]\n"
                "4: jump 1 [line 3]\n"
@@ -513,12 +513,12 @@ TEST_F(TargetCodeSuite, loop_while_continue_many_nested)
                "13: jump 1 [line 7]\n"
                "14: jump 1 [line 7]\n"
                "15: jump 1 [line 7]\n"
-               "16: if_less 3 0 18 [line 8]\n"
+               "16: jlt 18 1 2 [line 8]\n"
                "17: jump 20 [line 8]\n"
-               "18: assign ^0 'true' [line 8]\n"
+               "18: assign 0 1 [line 8]\n"
                "19: jump 21 [line 8]\n"
-               "20: assign ^0 'false' [line 8]\n"
-               "21: if_eq ^0 'true' 23 [line 8]\n"
+               "20: assign 0 0 [line 8]\n"
+               "21: jeq 23 0 1 [line 8]\n"
                "22: jump 28 [line 8]\n"
                "23: jump 16 [line 9]\n"
                "24: jump 16 [line 10]\n"
@@ -532,7 +532,7 @@ TEST_F(TargetCodeSuite, loop_while_continue_many_nested)
 
 TEST_F(TargetCodeSuite, loop_while_break_single)
 {
-    expected = "1: if_eq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 5 [line 1]\n"
                "3: jump 5 [line 2]\n"
                "4: jump 1 [line 3]\n";
@@ -542,17 +542,17 @@ TEST_F(TargetCodeSuite, loop_while_break_single)
 
 TEST_F(TargetCodeSuite, loop_for_simple)
 {
-    expected = "1: assign i 0 [line 1]\n"
-               "2: assign ^0 i [line 1]\n"
-               "3: if_less i 20 5 [line 1]\n"
+    expected = "1: assign 0 0 [line 1]\n"
+               "2: assign 1 0 [line 1]\n"
+               "3: jlt 5 0 1 [line 1]\n"
                "4: jump 7 [line 1]\n"
-               "5: assign ^1 'true' [line 1]\n"
+               "5: assign 2 1 [line 1]\n"
                "6: jump 8 [line 1]\n"
-               "7: assign ^1 'false' [line 1]\n"
-               "8: if_eq ^1 'true' 13 [line 1]\n"
+               "7: assign 2 0 [line 1]\n"
+               "8: jeq 13 2 1 [line 1]\n"
                "9: jump 14 [line 1]\n"
-               "10: assign ^2 i [line 1]\n"
-               "11: add i i 1 [line 1]\n"
+               "10: assign 3 0 [line 1]\n"
+               "11: add 0 0 2 [line 1]\n"
                "12: jump 3 [line 1]\n"
                "13: jump 10 [line 2]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_simple.asc");
@@ -561,20 +561,20 @@ TEST_F(TargetCodeSuite, loop_for_simple)
 
 TEST_F(TargetCodeSuite, loop_for_simple_with_stmts)
 {
-    expected = "1: assign i 0 [line 1]\n"
-               "2: assign ^0 i [line 1]\n"
-               "3: if_less i 20 5 [line 1]\n"
+    expected = "1: assign 0 0 [line 1]\n"
+               "2: assign 1 0 [line 1]\n"
+               "3: jlt 5 0 1 [line 1]\n"
                "4: jump 7 [line 1]\n"
-               "5: assign ^1 'true' [line 1]\n"
+               "5: assign 2 1 [line 1]\n"
                "6: jump 8 [line 1]\n"
-               "7: assign ^1 'false' [line 1]\n"
-               "8: if_eq ^1 'true' 13 [line 1]\n"
+               "7: assign 2 0 [line 1]\n"
+               "8: jeq 13 2 1 [line 1]\n"
                "9: jump 16 [line 1]\n"
-               "10: assign ^2 i [line 1]\n"
-               "11: add i i 1 [line 1]\n"
+               "10: assign 3 0 [line 1]\n"
+               "11: add 0 0 2 [line 1]\n"
                "12: jump 3 [line 1]\n"
-               "13: assign x 9 [line 2]\n"
-               "14: assign ^3 x [line 2]\n"
+               "13: assign 4 3 [line 2]\n"
+               "14: assign 5 4 [line 2]\n"
                "15: jump 10 [line 5]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_simple_with_stmts.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -582,56 +582,56 @@ TEST_F(TargetCodeSuite, loop_for_simple_with_stmts)
 
 TEST_F(TargetCodeSuite, loop_for_many_nested)
 {
-    expected =  "1: assign i 0 [line 1]\n"
-                "2: assign ^0 i [line 1]\n"
-                "3: if_less i 20 5 [line 1]\n"
+    expected =  "1: assign 0 0 [line 1]\n"
+                "2: assign 1 0 [line 1]\n"
+                "3: jlt 5 0 1 [line 1]\n"
                 "4: jump 7 [line 1]\n"
-                "5: assign ^1 'true' [line 1]\n"
+                "5: assign 2 1 [line 1]\n"
                 "6: jump 8 [line 1]\n"
-                "7: assign ^1 'false' [line 1]\n"
-                "8: if_eq ^1 'true' 13 [line 1]\n"
+                "7: assign 2 0 [line 1]\n"
+                "8: jeq 13 2 1 [line 1]\n"
                 "9: jump 40 [line 1]\n"
-                "10: assign ^2 i [line 1]\n"
-                "11: add i i 1 [line 1]\n"
+                "10: assign 3 0 [line 1]\n"
+                "11: add 0 0 2 [line 1]\n"
                 "12: jump 3 [line 1]\n"
-                "13: assign i 0 [line 2]\n"
-                "14: assign ^3 i [line 2]\n"
-                "15: if_less i 20 17 [line 2]\n"
+                "13: assign 0 0 [line 2]\n"
+                "14: assign 4 0 [line 2]\n"
+                "15: jlt 17 0 1 [line 2]\n"
                 "16: jump 19 [line 2]\n"
-                "17: assign ^4 'true' [line 2]\n"
+                "17: assign 5 1 [line 2]\n"
                 "18: jump 20 [line 2]\n"
-                "19: assign ^4 'false' [line 2]\n"
-                "20: if_eq ^4 'true' 25 [line 2]\n"
+                "19: assign 5 0 [line 2]\n"
+                "20: jeq 25 5 1 [line 2]\n"
                 "21: jump 39 [line 2]\n"
-                "22: assign ^5 i [line 2]\n"
-                "23: add i i 1 [line 2]\n"
+                "22: assign 6 0 [line 2]\n"
+                "23: add 0 0 2 [line 2]\n"
                 "24: jump 15 [line 2]\n"
-                "25: assign i 0 [line 2]\n"
-                "26: assign ^6 i [line 2]\n"
-                "27: if_less i 20 29 [line 2]\n"
+                "25: assign 0 0 [line 2]\n"
+                "26: assign 7 0 [line 2]\n"
+                "27: jlt 29 0 1 [line 2]\n"
                 "28: jump 31 [line 2]\n"
-                "29: assign ^7 'true' [line 2]\n"
+                "29: assign 8 1 [line 2]\n"
                 "30: jump 32 [line 2]\n"
-                "31: assign ^7 'false' [line 2]\n"
-                "32: if_eq ^7 'true' 37 [line 2]\n"
+                "31: assign 8 0 [line 2]\n"
+                "32: jeq 37 8 1 [line 2]\n"
                 "33: jump 38 [line 2]\n"
-                "34: assign ^8 i [line 2]\n"
-                "35: add i i 1 [line 2]\n"
+                "34: assign 9 0 [line 2]\n"
+                "35: add 0 0 2 [line 2]\n"
                 "36: jump 27 [line 2]\n"
                 "37: jump 34 [line 2]\n"
                 "38: jump 22 [line 2]\n"
                 "39: jump 10 [line 3]\n"
-                "40: assign i 0 [line 6]\n"
-                "41: assign ^9 i [line 6]\n"
-                "42: if_less i 20 44 [line 6]\n"
+                "40: assign 0 0 [line 6]\n"
+                "41: assign 10 0 [line 6]\n"
+                "42: jlt 44 0 1 [line 6]\n"
                 "43: jump 46 [line 6]\n"
-                "44: assign ^10 'true' [line 6]\n"
+                "44: assign 11 1 [line 6]\n"
                 "45: jump 47 [line 6]\n"
-                "46: assign ^10 'false' [line 6]\n"
-                "47: if_eq ^10 'true' 52 [line 6]\n"
+                "46: assign 11 0 [line 6]\n"
+                "47: jeq 52 11 1 [line 6]\n"
                 "48: jump 53 [line 6]\n"
-                "49: assign ^11 i [line 6]\n"
-                "50: add i i 1 [line 6]\n"
+                "49: assign 12 0 [line 6]\n"
+                "50: add 0 0 2 [line 6]\n"
                 "51: jump 42 [line 6]\n"
                 "52: jump 49 [line 6]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_many_nested.asc");
@@ -640,12 +640,12 @@ TEST_F(TargetCodeSuite, loop_for_many_nested)
 
 TEST_F(TargetCodeSuite, loop_for_continue_single)
 {
-    expected = "1: if_less i 0 3 [line 1]\n"
+    expected = "1: jlt i 0 3 [line 1]\n"
                "2: jump 5 [line 1]\n"
                "3: assign ^0 'true' [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign ^0 'false' [line 1]\n"
-               "6: if_eq ^0 'true' 11 [line 1]\n"
+               "6: jeq ^0 'true' 11 [line 1]\n"
                "7: jump 13 [line 1]\n"
                "8: assign ^1 i [line 1]\n"
                "9: add i i 1 [line 1]\n"
@@ -658,12 +658,12 @@ TEST_F(TargetCodeSuite, loop_for_continue_single)
 
 TEST_F(TargetCodeSuite, loop_for_continue_many_nested)
 {
-    expected =  "1: if_less i 0 3 [line 1]\n"
+    expected =  "1: jlt i 0 3 [line 1]\n"
                 "2: jump 5 [line 1]\n"
                 "3: assign ^0 'true' [line 1]\n"
                 "4: jump 6 [line 1]\n"
                 "5: assign ^0 'false' [line 1]\n"
-                "6: if_eq ^0 'true' 11 [line 1]\n"
+                "6: jeq ^0 'true' 11 [line 1]\n"
                 "7: jump 34 [line 1]\n"
                 "8: assign ^1 i [line 1]\n"
                 "9: add i i 1 [line 1]\n"
@@ -676,12 +676,12 @@ TEST_F(TargetCodeSuite, loop_for_continue_many_nested)
                 "16: jump 8 [line 3]\n"
                 "17: jump 8 [line 3]\n"
                 "18: jump 8 [line 3]\n"
-                "19: if_less i 0 21 [line 4]\n"
+                "19: jlt i 0 21 [line 4]\n"
                 "20: jump 23 [line 4]\n"
                 "21: assign ^2 'true' [line 4]\n"
                 "22: jump 24 [line 4]\n"
                 "23: assign ^2 'false' [line 4]\n"
-                "24: if_eq ^2 'true' 29 [line 4]\n"
+                "24: jeq ^2 'true' 29 [line 4]\n"
                 "25: jump 33 [line 4]\n"
                 "26: assign ^3 i [line 4]\n"
                 "27: add i i 1 [line 4]\n"
@@ -697,12 +697,12 @@ TEST_F(TargetCodeSuite, loop_for_continue_many_nested)
 
 TEST_F(TargetCodeSuite, loop_for_break_single)
 {
-    expected = "1: if_less i 8 3 [line 1]\n"
+    expected = "1: jlt i 8 3 [line 1]\n"
                "2: jump 5 [line 1]\n"
                "3: assign ^0 'true' [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign ^0 'false' [line 1]\n"
-               "6: if_eq ^0 'true' 11 [line 1]\n"
+               "6: jeq ^0 'true' 11 [line 1]\n"
                "7: jump 13 [line 1]\n"
                "8: assign ^1 i [line 1]\n"
                "9: add i i 1 [line 1]\n"
@@ -715,12 +715,12 @@ TEST_F(TargetCodeSuite, loop_for_break_single)
 
 TEST_F(TargetCodeSuite, loop_for_break_many_nested)
 {
-    expected =  "1: if_less i 8 3 [line 1]\n"
+    expected =  "1: jlt i 8 3 [line 1]\n"
                 "2: jump 5 [line 1]\n"
                 "3: assign ^0 'true' [line 1]\n"
                 "4: jump 6 [line 1]\n"
                 "5: assign ^0 'false' [line 1]\n"
-                "6: if_eq ^0 'true' 11 [line 1]\n"
+                "6: jeq ^0 'true' 11 [line 1]\n"
                 "7: jump 33 [line 1]\n"
                 "8: assign ^1 i [line 1]\n"
                 "9: add i i 1 [line 1]\n"
@@ -733,12 +733,12 @@ TEST_F(TargetCodeSuite, loop_for_break_many_nested)
                 "16: jump 33 [line 3]\n"
                 "17: jump 33 [line 3]\n"
                 "18: jump 33 [line 3]\n"
-                "19: if_greater j 0 21 [line 4]\n"
+                "19: jgt j 0 21 [line 4]\n"
                 "20: jump 23 [line 4]\n"
                 "21: assign ^2 'true' [line 4]\n"
                 "22: jump 24 [line 4]\n"
                 "23: assign ^2 'false' [line 4]\n"
-                "24: if_eq ^2 'true' 29 [line 4]\n"
+                "24: jeq ^2 'true' 29 [line 4]\n"
                 "25: jump 32 [line 4]\n"
                 "26: assign ^3 j [line 4]\n"
                 "27: add j j 1 [line 4]\n"
@@ -755,7 +755,7 @@ TEST_F(TargetCodeSuite, loop_for_break_many_nested)
 
 TEST_F(TargetCodeSuite, if_simple)
 {
-    expected = "1: if_eq x 'true' 3 [line 1]\n"
+    expected = "1: jeq x 'true' 3 [line 1]\n"
                "2: jump 3 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -763,12 +763,12 @@ TEST_F(TargetCodeSuite, if_simple)
 
 TEST_F(TargetCodeSuite, if_expr)
 {
-    expected = "1: if_greater x 3 3 [line 1]\n"
+    expected = "1: jgt x 3 3 [line 1]\n"
                "2: jump 5 [line 1]\n"
                "3: assign ^0 'true' [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign ^0 'false' [line 1]\n"
-               "6: if_eq ^0 'true' 8 [line 1]\n"
+               "6: jeq ^0 'true' 8 [line 1]\n"
                "7: jump 8 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_expr.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -776,12 +776,12 @@ TEST_F(TargetCodeSuite, if_expr)
 
 TEST_F(TargetCodeSuite, if_stmts)
 {
-    expected = "1: if_less 3 x 3 [line 1]\n"
+    expected = "1: jlt 3 x 3 [line 1]\n"
                "2: jump 5 [line 1]\n"
                "3: assign ^0 'true' [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign ^0 'false' [line 1]\n"
-               "6: if_eq ^0 'true' 8 [line 1]\n"
+               "6: jeq ^0 'true' 8 [line 1]\n"
                "7: jump 10 [line 1]\n"
                "8: assign a f [line 5]\n"
                "9: assign ^1 a [line 5]\n";
@@ -791,11 +791,11 @@ TEST_F(TargetCodeSuite, if_stmts)
 
 TEST_F(TargetCodeSuite, if_nested_many)
 {
-    expected = "1: if_eq a 'true' 3 [line 1]\n"
+    expected = "1: jeq a 'true' 3 [line 1]\n"
                "2: jump 11 [line 1]\n"
-               "3: if_eq sz 'true' 5 [line 2]\n"
+               "3: jeq sz 'true' 5 [line 2]\n"
                "4: jump 11 [line 2]\n"
-               "5: if_eq z 'true' 7 [line 3]\n"
+               "5: jeq z 'true' 7 [line 3]\n"
                "6: jump 9 [line 3]\n"
                "7: assign s 9 [line 4]\n"
                "8: assign ^0 s [line 4]\n"
@@ -807,7 +807,7 @@ TEST_F(TargetCodeSuite, if_nested_many)
 
 TEST_F(TargetCodeSuite, if_else)
 {
-    expected = "1: if_eq a 'true' 3 [line 1]\n"
+    expected = "1: jeq a 'true' 3 [line 1]\n"
                "2: jump 4 [line 1]\n"
                "3: jump 8 [line 2]\n"
                "4: assign b 2 [line 2]\n"
@@ -820,12 +820,12 @@ TEST_F(TargetCodeSuite, if_else)
 
 TEST_F(TargetCodeSuite, if_elseif)
 {
-    expected = "1: if_eq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 1 'true' 3 [line 1]\n"
                "2: jump 6 [line 1]\n"
                "3: assign x 2 [line 1]\n"
                "4: assign ^0 x [line 1]\n"
                "5: jump 10 [line 2]\n"
-               "6: if_eq 1 'true' 8 [line 2]\n"
+               "6: jeq 1 'true' 8 [line 2]\n"
                "7: jump 10 [line 2]\n"
                "8: assign x 3 [line 2]\n"
                "9: assign ^0 x [line 2]\n";
@@ -835,27 +835,27 @@ TEST_F(TargetCodeSuite, if_elseif)
 
 TEST_F(TargetCodeSuite, if_elseif_else)
 {
-    expected = "1: if_eq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 1 'true' 3 [line 1]\n"
                "2: jump 6 [line 1]\n"
                "3: assign x 2 [line 1]\n"
                "4: assign ^0 x [line 1]\n"
                "5: jump 28 [line 2]\n"
-               "6: if_eq 1 'true' 8 [line 2]\n"
+               "6: jeq 1 'true' 8 [line 2]\n"
                "7: jump 11 [line 2]\n"
                "8: assign x 3 [line 2]\n"
                "9: assign ^0 x [line 2]\n"
                "10: jump 28 [line 3]\n"
-               "11: if_eq 1 'true' 13 [line 3]\n"
+               "11: jeq 1 'true' 13 [line 3]\n"
                "12: jump 16 [line 3]\n"
                "13: assign x 3 [line 3]\n"
                "14: assign ^0 x [line 3]\n"
                "15: jump 28 [line 4]\n"
-               "16: if_eq 1 'true' 18 [line 4]\n"
+               "16: jeq 1 'true' 18 [line 4]\n"
                "17: jump 21 [line 4]\n"
                "18: assign x 3 [line 4]\n"
                "19: assign ^0 x [line 4]\n"
                "20: jump 28 [line 5]\n"
-               "21: if_eq 1 'true' 23 [line 5]\n"
+               "21: jeq 1 'true' 23 [line 5]\n"
                "22: jump 26 [line 5]\n"
                "23: assign x 3 [line 5]\n"
                "24: assign ^0 x [line 5]\n"
@@ -868,30 +868,30 @@ TEST_F(TargetCodeSuite, if_elseif_else)
 
 TEST_F(TargetCodeSuite, if_else_many_nested)
 {
-    expected =  "1: if_eq 1 'true' 3 [line 1]\n"
+    expected =  "1: jeq 1 'true' 3 [line 1]\n"
                 "2: jump 16 [line 1]\n"
-                "3: if_eq 2 'true' 5 [line 1]\n"
+                "3: jeq 2 'true' 5 [line 1]\n"
                 "4: jump 13 [line 1]\n"
-                "5: if_eq a 0 7 [line 1]\n"
+                "5: jeq a 0 7 [line 1]\n"
                 "6: jump 9 [line 1]\n"
                 "7: assign ^0 'true' [line 1]\n"
                 "8: jump 10 [line 1]\n"
                 "9: assign ^0 'false' [line 1]\n"
-                "10: if_eq ^0 'true' 12 [line 1]\n"
+                "10: jeq ^0 'true' 12 [line 1]\n"
                 "11: jump 13 [line 1]\n"
                 "12: jump 13 [line 1]\n"
                 "13: assign x 2 [line 1]\n"
                 "14: assign ^1 x [line 1]\n"
                 "15: jump 27 [line 2]\n"
-                "16: if_greater x 0 18 [line 3]\n"
+                "16: jgt x 0 18 [line 3]\n"
                 "17: jump 20 [line 3]\n"
                 "18: assign ^0 'true' [line 3]\n"
                 "19: jump 21 [line 3]\n"
                 "20: assign ^0 'false' [line 3]\n"
-                "21: if_eq ^0 'true' 23 [line 3]\n"
+                "21: jeq ^0 'true' 23 [line 3]\n"
                 "22: jump 24 [line 3]\n"
                 "23: jump 27 [line 4]\n"
-                "24: if_eq x 'true' 26 [line 4]\n"
+                "24: jeq x 'true' 26 [line 4]\n"
                 "25: jump 27 [line 4]\n"
                 "26: jump 27 [line 5]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");
@@ -964,7 +964,7 @@ TEST_F(TargetCodeSuite, arithmetic_uminus_bool) {
 
 TEST_F(TargetCodeSuite, arithmetic_not)
 {
-    expected = "1: if_eq 1 'true' 5 [line 1]\n"
+    expected = "1: jeq 1 'true' 5 [line 1]\n"
                "2: jump 3 [line 1]\n"
                "3: assign ^0 'true' [line 1]\n"
                "4: jump 6 [line 1]\n"
@@ -1182,13 +1182,13 @@ TEST_F(TargetCodeSuite, table_emit_iftableitem_callfunc) {
 
 TEST_F(TargetCodeSuite, short_circuit_simple_or)
 {
-    expected = "1: if_eq a 'true' 9 [line 1]\n"
+    expected = "1: jeq a 'true' 9 [line 1]\n"
                "2: jump 3 [line 1]\n"
-               "3: if_eq b 'true' 9 [line 1]\n"
+               "3: jeq b 'true' 9 [line 1]\n"
                "4: jump 5 [line 1]\n"
-               "5: if_eq c 'true' 7 [line 1]\n"
+               "5: jeq c 'true' 7 [line 1]\n"
                "6: jump 11 [line 1]\n"
-               "7: if_eq f 'true' 11 [line 1]\n"
+               "7: jeq f 'true' 11 [line 1]\n"
                "8: jump 9 [line 1]\n"
                "9: assign ^0 'true' [line 1]\n"
                "10: jump 12 [line 1]\n"
@@ -1201,9 +1201,9 @@ TEST_F(TargetCodeSuite, short_circuit_simple_or)
 
 TEST_F(TargetCodeSuite, backpatch_backpatch0)
 {
-    expected = "1: if_eq a 'true' 3 [line 1]\n"
+    expected = "1: jeq a 'true' 3 [line 1]\n"
                "2: jump 7 [line 1]\n"
-               "3: if_eq 'true' 'true' 7 [line 1]\n"
+               "3: jeq 'true' 'true' 7 [line 1]\n"
                "4: jump 5 [line 1]\n"
                "5: assign ^0 'true' [line 1]\n"
                "6: jump 8 [line 1]\n"
@@ -1216,16 +1216,16 @@ TEST_F(TargetCodeSuite, backpatch_backpatch0)
 
 TEST_F(TargetCodeSuite, backpatch_backpatch1)
 {
-    expected = "1: if_eq a 'true' 7 [line 1]\n"
+    expected = "1: jeq a 'true' 7 [line 1]\n"
                "2: jump 3 [line 1]\n"
-               "3: if_eq b 'true' 5 [line 1]\n"
+               "3: jeq b 'true' 5 [line 1]\n"
                "4: jump 9 [line 1]\n"
-               "5: if_eq c 'true' 7 [line 1]\n"
+               "5: jeq c 'true' 7 [line 1]\n"
                "6: jump 9 [line 1]\n"
                "7: assign ^0 'true' [line 1]\n"
                "8: jump 10 [line 1]\n"
                "9: assign ^0 'false' [line 1]\n"
-               "10: if_eq ^0 'true' 12 [line 1]\n"
+               "10: jeq ^0 'true' 12 [line 1]\n"
                "11: jump 16 [line 1]\n"
                "12: pusharg \"...\" [line 2]\n"
                "13: callfunc print [line 2]\n"
@@ -1237,14 +1237,14 @@ TEST_F(TargetCodeSuite, backpatch_backpatch1)
 
 TEST_F(TargetCodeSuite, backpatch_backpatch2)
 {
-    expected = "1: if_eq a 'true' 5 [line 1]\n"
+    expected = "1: jeq a 'true' 5 [line 1]\n"
                "2: jump 3 [line 1]\n"
-               "3: if_less b 2 5 [line 1]\n"
+               "3: jlt b 2 5 [line 1]\n"
                "4: jump 7 [line 1]\n"
                "5: assign ^0 'true' [line 1]\n"
                "6: jump 8 [line 1]\n"
                "7: assign ^0 'false' [line 1]\n"
-               "8: if_eq ^0 'true' 10 [line 1]\n"
+               "8: jeq ^0 'true' 10 [line 1]\n"
                "9: jump 13 [line 1]\n"
                "10: pusharg \"?\" [line 2]\n"
                "11: callfunc print [line 2]\n"
@@ -1268,29 +1268,29 @@ TEST_F(TargetCodeSuite, backpatch_backpatch3)
                "10: assign ^4 b [line 1]\n"
                "11: assign a ^4 [line 1]\n"
                "12: assign ^5 a [line 1]\n"
-               "13: if_less a b 19 [line 3]\n"
+               "13: jlt a b 19 [line 3]\n"
                "14: jump 15 [line 3]\n"
-               "15: if_greater c d 17 [line 3]\n"
+               "15: jgt c d 17 [line 3]\n"
                "16: jump 21 [line 3]\n"
-               "17: if_less e f 19 [line 3]\n"
+               "17: jlt e f 19 [line 3]\n"
                "18: jump 21 [line 3]\n"
                "19: assign ^0 'true' [line 3]\n"
                "20: jump 22 [line 3]\n"
                "21: assign ^0 'false' [line 3]\n"
                "22: assign x ^0 [line 3]\n"
                "23: assign ^1 x [line 3]\n"
-               "24: if_eq x 'true' 28 [line 5]\n"
+               "24: jeq x 'true' 28 [line 5]\n"
                "25: jump 26 [line 5]\n"
-               "26: if_eq x 'true' 30 [line 5]\n"
+               "26: jeq x 'true' 30 [line 5]\n"
                "27: jump 28 [line 5]\n"
-               "28: if_eq a 'true' 30 [line 5]\n"
+               "28: jeq a 'true' 30 [line 5]\n"
                "29: jump 32 [line 5]\n"
                "30: assign ^0 'true' [line 5]\n"
                "31: jump 33 [line 5]\n"
                "32: assign ^0 'false' [line 5]\n"
                "33: assign y ^0 [line 5]\n"
                "34: assign ^1 y [line 5]\n"
-               "35: if_eq x 'true' 37 [line 8]\n"
+               "35: jeq x 'true' 37 [line 8]\n"
                "36: jump 47 [line 8]\n"
                "37: jump 42 [line 8]\n"
                "38: enterfunc $0 [line 8]\n"
@@ -1300,43 +1300,43 @@ TEST_F(TargetCodeSuite, backpatch_backpatch3)
                "42: pusharg 2 [line 8]\n"
                "43: callfunc $0 [line 8]\n"
                "44: getretval ^0 [line 8]\n"
-               "45: if_eq ^0 'true' 54 [line 8]\n"
+               "45: jeq ^0 'true' 54 [line 8]\n"
                "46: jump 47 [line 8]\n"
                "47: jump 52 [line 8]\n"
                "48: enterfunc $1 [line 8]\n"
                "49: return 'true' [line 8]\n"
                "50: jump 51 [line 8]\n"
                "51: exitfunc $1 [line 8]\n"
-               "52: if_eq $1 'true' 54 [line 8]\n"
+               "52: jeq $1 'true' 54 [line 8]\n"
                "53: jump 56 [line 8]\n"
                "54: assign ^1 'true' [line 8]\n"
                "55: jump 57 [line 8]\n"
                "56: assign ^1 'false' [line 8]\n"
                "57: assign x ^1 [line 8]\n"
                "58: assign ^2 x [line 8]\n"
-               "59: if_eq a 'true' 67 [line 10]\n"
+               "59: jeq a 'true' 67 [line 10]\n"
                "60: jump 61 [line 10]\n"
-               "61: if_eq b 'true' 67 [line 10]\n"
+               "61: jeq b 'true' 67 [line 10]\n"
                "62: jump 63 [line 10]\n"
                "63: assign y x [line 10]\n"
                "64: assign ^0 y [line 10]\n"
-               "65: if_eq ^0 'true' 67 [line 10]\n"
+               "65: jeq ^0 'true' 67 [line 10]\n"
                "66: jump 69 [line 10]\n"
                "67: assign ^1 'true' [line 10]\n"
                "68: jump 70 [line 10]\n"
                "69: assign ^1 'false' [line 10]\n"
-               "70: if_eq ^1 'true' 72 [line 10]\n"
+               "70: jeq ^1 'true' 72 [line 10]\n"
                "71: jump 97 [line 10]\n"
                "72: assign i 0 [line 11]\n"
                "73: assign ^2 i [line 11]\n"
-               "74: if_less i 5 76 [line 11]\n"
+               "74: jlt i 5 76 [line 11]\n"
                "75: jump 80 [line 11]\n"
-               "76: if_eq a 'true' 78 [line 11]\n"
+               "76: jeq a 'true' 78 [line 11]\n"
                "77: jump 80 [line 11]\n"
                "78: assign ^3 'true' [line 11]\n"
                "79: jump 81 [line 11]\n"
                "80: assign ^3 'false' [line 11]\n"
-               "81: if_eq ^3 'true' 86 [line 11]\n"
+               "81: jeq ^3 'true' 86 [line 11]\n"
                "82: jump 93 [line 11]\n"
                "83: add i i 1 [line 11]\n"
                "84: assign ^4 i [line 11]\n"
@@ -1352,14 +1352,14 @@ TEST_F(TargetCodeSuite, backpatch_backpatch3)
                "94: callfunc print [line 16]\n"
                "95: getretval ^0 [line 16]\n"
                "96: jump 114 [line 18]\n"
-               "97: if_eq y 'true' 101 [line 19]\n"
+               "97: jeq y 'true' 101 [line 19]\n"
                "98: jump 99 [line 19]\n"
                "99: assign ^0 'true' [line 19]\n"
                "100: jump 102 [line 19]\n"
                "101: assign ^0 'false' [line 19]\n"
-               "102: if_eq ^0 'true' 104 [line 19]\n"
+               "102: jeq ^0 'true' 104 [line 19]\n"
                "103: jump 114 [line 19]\n"
-               "104: if_eq y 'true' 108 [line 20]\n"
+               "104: jeq y 'true' 108 [line 20]\n"
                "105: jump 106 [line 20]\n"
                "106: assign ^1 'true' [line 20]\n"
                "107: jump 109 [line 20]\n"
@@ -1500,27 +1500,27 @@ TEST_F(TargetCodeSuite, backpatch_p3t_relational)
                 "22: assign ^10 b [line 1]\n"
                 "23: assign a ^10 [line 1]\n"
                 "24: assign ^11 a [line 1]\n"
-                "25: if_greater a b 47 [line 3]\n"
+                "25: jgt a b 47 [line 3]\n"
                 "26: jump 27 [line 3]\n"
-                "27: if_less c d 29 [line 3]\n"
+                "27: jlt c d 29 [line 3]\n"
                 "28: jump 31 [line 3]\n"
-                "29: if_greatereq e f 47 [line 3]\n"
+                "29: jge e f 47 [line 3]\n"
                 "30: jump 31 [line 3]\n"
-                "31: if_lesseq g h 33 [line 3]\n"
+                "31: jle g h 33 [line 3]\n"
                 "32: jump 40 [line 3]\n"
-                "33: if_eq i 'true' 37 [line 3]\n"
+                "33: jeq i 'true' 37 [line 3]\n"
                 "34: jump 35 [line 3]\n"
                 "35: assign ^0 'true' [line 3]\n"
                 "36: jump 38 [line 3]\n"
                 "37: assign ^0 'false' [line 3]\n"
-                "38: if_eq ^0 j 47 [line 3]\n"
+                "38: jeq ^0 j 47 [line 3]\n"
                 "39: jump 40 [line 3]\n"
-                "40: if_eq k 'true' 44 [line 3]\n"
+                "40: jeq k 'true' 44 [line 3]\n"
                 "41: jump 42 [line 3]\n"
                 "42: assign ^1 'true' [line 3]\n"
                 "43: jump 45 [line 3]\n"
                 "44: assign ^1 'false' [line 3]\n"
-                "45: if_noteq ^1 l 47 [line 3]\n"
+                "45: jne ^1 l 47 [line 3]\n"
                 "46: jump 49 [line 3]\n"
                 "47: assign ^2 'true' [line 3]\n"
                 "48: jump 50 [line 3]\n"
@@ -1585,60 +1585,60 @@ TEST_F(TargetCodeSuite, backpatch_p3t_object_creation_expr)
 
 TEST_F(TargetCodeSuite, backpatch_p3t_if_else)
 {
-    expected =  "1: if_eq 'true' 'true' 3 [line 1]\n"
+    expected =  "1: jeq 'true' 'true' 3 [line 1]\n"
                 "2: jump 5 [line 1]\n"
                 "3: assign a 4 [line 2]\n"
                 "4: assign ^0 a [line 2]\n"
-                "5: if_eq 'false' 'true' 7 [line 4]\n"
+                "5: jeq 'false' 'true' 7 [line 4]\n"
                 "6: jump 9 [line 4]\n"
                 "7: assign b 5 [line 5]\n"
                 "8: assign ^0 b [line 5]\n"
-                "9: if_eq a 'true' 11 [line 7]\n"
+                "9: jeq a 'true' 11 [line 7]\n"
                 "10: jump 15 [line 7]\n"
-                "11: if_eq b 'true' 13 [line 8]\n"
+                "11: jeq b 'true' 13 [line 8]\n"
                 "12: jump 15 [line 8]\n"
                 "13: assign c 6 [line 9]\n"
                 "14: assign ^0 c [line 9]\n"
-                "15: if_eq a 'true' 17 [line 11]\n"
+                "15: jeq a 'true' 17 [line 11]\n"
                 "16: jump 20 [line 11]\n"
                 "17: assign d 4 [line 12]\n"
                 "18: assign ^0 d [line 12]\n"
                 "19: jump 22 [line 13]\n"
                 "20: assign c a [line 14]\n"
                 "21: assign ^0 c [line 14]\n"
-                "22: if_eq a 'true' 24 [line 16]\n"
+                "22: jeq a 'true' 24 [line 16]\n"
                 "23: jump 30 [line 16]\n"
-                "24: if_eq b 'true' 26 [line 17]\n"
+                "24: jeq b 'true' 26 [line 17]\n"
                 "25: jump 29 [line 17]\n"
                 "26: assign c 5 [line 18]\n"
                 "27: assign ^0 c [line 18]\n"
                 "28: jump 30 [line 19]\n"
                 "29: sub ^0 d 5 [line 20]\n"
-                "30: if_eq a 'true' 32 [line 22]\n"
+                "30: jeq a 'true' 32 [line 22]\n"
                 "31: jump 38 [line 22]\n"
-                "32: if_eq b 'true' 34 [line 23]\n"
+                "32: jeq b 'true' 34 [line 23]\n"
                 "33: jump 36 [line 23]\n"
                 "34: sub ^0 d 0 [line 24]\n"
                 "35: jump 37 [line 25]\n"
                 "36: sub ^0 d 4 [line 26]\n"
                 "37: jump 39 [line 27]\n"
                 "38: sub ^0 0 d [line 28]\n"
-                "39: if_eq a 'true' 41 [line 30]\n"
+                "39: jeq a 'true' 41 [line 30]\n"
                 "40: jump 45 [line 30]\n"
-                "41: if_eq b 'true' 43 [line 31]\n"
+                "41: jeq b 'true' 43 [line 31]\n"
                 "42: jump 44 [line 31]\n"
                 "43: add ^0 0 d [line 32]\n"
                 "44: jump 46 [line 34]\n"
                 "45: sub ^0 0 0 [line 35]\n"
-                "46: if_eq a 'true' 48 [line 38]\n"
+                "46: jeq a 'true' 48 [line 38]\n"
                 "47: jump 50 [line 38]\n"
                 "48: add ^0 8 0 [line 39]\n"
                 "49: jump 59 [line 40]\n"
-                "50: if_eq b 'true' 52 [line 40]\n"
+                "50: jeq b 'true' 52 [line 40]\n"
                 "51: jump 54 [line 40]\n"
                 "52: add ^0 9 0 [line 41]\n"
                 "53: jump 59 [line 42]\n"
-                "54: if_eq c 'true' 56 [line 42]\n"
+                "54: jeq c 'true' 56 [line 42]\n"
                 "55: jump 58 [line 42]\n"
                 "56: add ^0 8 0 [line 43]\n"
                 "57: jump 59 [line 44]\n"
@@ -1690,42 +1690,42 @@ TEST_F(TargetCodeSuite, backpatch_p3t_flow_control)
 {
     expected =  "1: assign a 1 [line 1]\n"
                 "2: assign ^0 a [line 1]\n"
-                "3: if_eq ^0 'true' 5 [line 1]\n"
+                "3: jeq ^0 'true' 5 [line 1]\n"
                 "4: jump 10 [line 1]\n"
                 "5: sub ^1 2 0 [line 2]\n"
                 "6: jump 10 [line 3]\n"
                 "7: sub ^0 3 0 [line 4]\n"
                 "8: jump 1 [line 5]\n"
                 "9: jump 1 [line 6]\n"
-                "10: if_eq 4 'true' 12 [line 8]\n"
+                "10: jeq 4 'true' 12 [line 8]\n"
                 "11: jump 19 [line 8]\n"
-                "12: if_eq 5 'true' 14 [line 8]\n"
+                "12: jeq 5 'true' 14 [line 8]\n"
                 "13: jump 18 [line 8]\n"
-                "14: if_eq 6 'true' 16 [line 8]\n"
+                "14: jeq 6 'true' 16 [line 8]\n"
                 "15: jump 17 [line 8]\n"
                 "16: jump 14 [line 8]\n"
                 "17: jump 12 [line 8]\n"
                 "18: jump 10 [line 8]\n"
-                "19: if_eq 7 'true' 21 [line 10]\n"
+                "19: jeq 7 'true' 21 [line 10]\n"
                 "20: jump 27 [line 10]\n"
-                "21: if_eq 8 'true' 23 [line 10]\n"
+                "21: jeq 8 'true' 23 [line 10]\n"
                 "22: jump 25 [line 10]\n"
                 "23: sub ^0 9 0 [line 10]\n"
                 "24: jump 26 [line 10]\n"
                 "25: sub ^0 10 0 [line 10]\n"
                 "26: jump 19 [line 10]\n"
-                "27: if_eq 11 'true' 29 [line 12]\n"
+                "27: jeq 11 'true' 29 [line 12]\n"
                 "28: jump 47 [line 12]\n"
                 "29: sub ^0 12 0 [line 13]\n"
-                "30: if_eq 13 'true' 34 [line 13]\n"
+                "30: jeq 13 'true' 34 [line 13]\n"
                 "31: jump 46 [line 13]\n"
                 "32: sub ^1 14 0 [line 13]\n"
                 "33: jump 30 [line 13]\n"
-                "34: if_eq 15 'true' 36 [line 14]\n"
+                "34: jeq 15 'true' 36 [line 14]\n"
                 "35: jump 38 [line 14]\n"
                 "36: sub ^2 16 0 [line 15]\n"
                 "37: jump 43 [line 16]\n"
-                "38: if_eq 17 'true' 40 [line 16]\n"
+                "38: jeq 17 'true' 40 [line 16]\n"
                 "39: jump 42 [line 16]\n"
                 "40: sub ^0 18 0 [line 17]\n"
                 "41: jump 43 [line 18]\n"
@@ -1735,11 +1735,11 @@ TEST_F(TargetCodeSuite, backpatch_p3t_flow_control)
                 "45: jump 32 [line 22]\n"
                 "46: jump 27 [line 22]\n"
                 "47: sub ^0 20 0 [line 24]\n"
-                "48: if_eq 21 'true' 52 [line 24]\n"
+                "48: jeq 21 'true' 52 [line 24]\n"
                 "49: jump 58 [line 24]\n"
                 "50: sub ^1 22 0 [line 24]\n"
                 "51: jump 48 [line 24]\n"
-                "52: if_eq 23 'true' 54 [line 25]\n"
+                "52: jeq 23 'true' 54 [line 25]\n"
                 "53: jump 56 [line 25]\n"
                 "54: jump 56 [line 26]\n"
                 "55: jump 52 [line 26]\n"
