@@ -50,14 +50,6 @@ target_compile_definitions(r_syntax_analysis PRIVATE LOGSYMTABLE=1)
 target_compile_definitions(r_syntax_analysis PRIVATE NDEBUG=1)
 target_link_libraries(r_syntax_analysis target_code)
 
-add_executable(r_target_code
-  ${BISON_parser_trgt_OUTPUTS}
-  ${FLEX_scanner_trgt_OUTPUTS}
-)
-target_compile_definitions(r_target_code PRIVATE LOGINSTRS=1)
-target_compile_definitions(r_target_code PRIVATE NDEBUG=1)
-target_link_libraries(r_target_code target_code)
-
 # Debug mode executables
 add_executable(d_intermediate_code
   ${BISON_parser_trgt_OUTPUTS}
@@ -72,6 +64,16 @@ add_executable(d_syntax_analysis
 )
 target_compile_definitions(d_syntax_analysis PRIVATE LOGSYMTABLE=1)
 target_link_libraries(d_syntax_analysis target_code)
+
+add_executable(d_binary
+  ${BISON_parser_trgt_OUTPUTS}
+  ${FLEX_scanner_trgt_OUTPUTS}
+)
+target_compile_definitions(d_binary PRIVATE LOGINSTRS=1)
+target_compile_definitions(d_binary PRIVATE LOGPCONSTS=1)
+target_compile_definitions(d_binary PRIVATE LOGQUADSTXT=1)
+target_compile_definitions(d_binary PRIVATE LOGSYMTABLE=1)
+target_link_libraries(d_binary target_code)
 
 add_executable(d_target_code
   ${BISON_parser_trgt_OUTPUTS}
