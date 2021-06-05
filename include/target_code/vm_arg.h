@@ -9,7 +9,7 @@ namespace target_code {
      * @brief A virtual machine agument type.
      * 
      */
-    enum Vmarg_t {
+    enum Vmarg_t : int {
         GLOBAL_a,
         LOCAL_a,
         FORMAL_a,
@@ -42,12 +42,14 @@ namespace target_code {
          * 
          */
         vmarg() = default;
-        vmarg(Vmarg_t, unsigned int value) : type(type), value(value) {};
+        vmarg(Vmarg_t type, unsigned int value) : type(type), value(value) {};
         vmarg(Vmarg_t type) : type(type) {};
         vmarg(unsigned int value) : value(value) {};
 
         friend std::ostream &operator<<(std::ostream &os, const vmarg &rhs);
     } Vmarg;
+
+    std::string type_to_string(Vmarg_t _type);
 }
 
 #endif 
