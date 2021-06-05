@@ -1,5 +1,7 @@
 #include "../../include/target_code/target_code.h"
 
+#define RETVAL_VALUE 69420
+
 namespace target_code {
     Vmarg* 
     IopCodeDispatcher::make_operand (expression::Expression* expr) {
@@ -182,12 +184,7 @@ namespace target_code {
         assert(quad->op == intermediate_code::RET_t);
         quad->taddress = NextInstructionLabel();    
         Emit(new Instruction(NextInstructionLabel(),
-            ASSIGN_VM, new Vmarg(RETVAL_a), make_operand(quad->result), nullptr, quad->line));
-        
-        auto func = funcs.top(); 
-        return_labels_by_funcs[func].push_back(NextInstructionLabel());
-        Emit(new Instruction(NextInstructionLabel(),
-            JUMP_VM, new Vmarg(LABEL_a), nullptr, nullptr, quad->line));   
+            ASSIGN_VM, new Vmarg(RETVAL_a, RETVAL_VALUE), make_operand(quad->result), nullptr, quad->line));
     }
 
     void
@@ -196,7 +193,7 @@ namespace target_code {
         assert(quad->op == intermediate_code::GETRETVAL_t);
         quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM,
-             make_operand(quad->result), new Vmarg(RETVAL_a), nullptr, quad->line));
+             make_operand(quad->result), new Vmarg(RETVAL_a, RETVAL_VALUE), nullptr, quad->line));
     }
 
     void
@@ -206,7 +203,6 @@ namespace target_code {
         quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), ENTERFUNC_VM,
             make_operand(quad->result), nullptr, nullptr, quad->line));
-        funcs.push(quad->result);
     }
 
     void    
@@ -214,13 +210,9 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCEND_t);
         quad->taddress = NextInstructionLabel();
+        
         Emit(new Instruction(NextInstructionLabel(), EXITFUNC_VM,
             make_operand(quad->result), nullptr, nullptr, quad->line));
-
-        auto top_func = funcs.top();
-        funcs.pop();
-        auto return_list = return_labels_by_funcs[top_func];
-        BackPatchReturnList(return_list, NextInstructionLabel());   
     }
 
     void    
