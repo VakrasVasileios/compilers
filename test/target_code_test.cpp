@@ -755,7 +755,7 @@ TEST_F(TargetCodeSuite, loop_for_break_many_nested)
 
 TEST_F(TargetCodeSuite, if_simple)
 {
-    expected = "1: jeq x 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 3 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -763,12 +763,12 @@ TEST_F(TargetCodeSuite, if_simple)
 
 TEST_F(TargetCodeSuite, if_expr)
 {
-    expected = "1: jgt x 3 3 [line 1]\n"
+    expected = "1: jgt 3 0 0 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 1 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n"
-               "6: jeq ^0 'true' 8 [line 1]\n"
+               "5: assign 1 0 [line 1]\n"
+               "6: jeq 8 1 1 [line 1]\n"
                "7: jump 8 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_expr.asc");
     GTEST_ASSERT_EQ(expected, actual);
@@ -776,122 +776,122 @@ TEST_F(TargetCodeSuite, if_expr)
 
 TEST_F(TargetCodeSuite, if_stmts)
 {
-    expected = "1: jlt 3 x 3 [line 1]\n"
+    expected = "1: jlt 3 0 0 [line 1]\n"
                "2: jump 5 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 1 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n"
-               "6: jeq ^0 'true' 8 [line 1]\n"
+               "5: assign 1 0 [line 1]\n"
+               "6: jeq 8 1 1 [line 1]\n"
                "7: jump 10 [line 1]\n"
-               "8: assign a f [line 5]\n"
-               "9: assign ^1 a [line 5]\n";
+               "8: assign 2 3 [line 5]\n"
+               "9: assign 4 2 [line 5]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_stmts.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, if_nested_many)
 {
-    expected = "1: jeq a 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 11 [line 1]\n"
-               "3: jeq sz 'true' 5 [line 2]\n"
+               "3: jeq 5 1 1 [line 2]\n"
                "4: jump 11 [line 2]\n"
-               "5: jeq z 'true' 7 [line 3]\n"
+               "5: jeq 7 2 1 [line 3]\n"
                "6: jump 9 [line 3]\n"
-               "7: assign s 9 [line 4]\n"
-               "8: assign ^0 s [line 4]\n"
-               "9: assign k 0 [line 7]\n"
-               "10: assign ^0 k [line 7]\n";
+               "7: assign 3 0 [line 4]\n"
+               "8: assign 4 3 [line 4]\n"
+               "9: assign 5 1 [line 7]\n"
+               "10: assign 6 5 [line 7]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_nested_many.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, if_else)
 {
-    expected = "1: jeq a 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 4 [line 1]\n"
                "3: jump 8 [line 2]\n"
-               "4: assign b 2 [line 2]\n"
-               "5: assign ^0 b [line 2]\n"
-               "6: assign a x [line 2]\n"
-               "7: assign ^0 a [line 2]\n";
+               "4: assign 1 0 [line 2]\n"
+               "5: assign 2 1 [line 2]\n"
+               "6: assign 0 3 [line 2]\n"
+               "7: assign 2 0 [line 2]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_else.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, if_elseif)
 {
-    expected = "1: jeq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 6 [line 1]\n"
-               "3: assign x 2 [line 1]\n"
-               "4: assign ^0 x [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
+               "4: assign 1 0 [line 1]\n"
                "5: jump 10 [line 2]\n"
-               "6: jeq 1 'true' 8 [line 2]\n"
+               "6: jeq 8 0 1 [line 2]\n"
                "7: jump 10 [line 2]\n"
-               "8: assign x 3 [line 2]\n"
-               "9: assign ^0 x [line 2]\n";
+               "8: assign 2 2 [line 2]\n"
+               "9: assign 3 2 [line 2]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_elseif.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, if_elseif_else)
 {
-    expected = "1: jeq 1 'true' 3 [line 1]\n"
+    expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 6 [line 1]\n"
-               "3: assign x 2 [line 1]\n"
-               "4: assign ^0 x [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
+               "4: assign 1 0 [line 1]\n"
                "5: jump 28 [line 2]\n"
-               "6: jeq 1 'true' 8 [line 2]\n"
+               "6: jeq 8 0 1 [line 2]\n"
                "7: jump 11 [line 2]\n"
-               "8: assign x 3 [line 2]\n"
-               "9: assign ^0 x [line 2]\n"
+               "8: assign 2 2 [line 2]\n"
+               "9: assign 3 2 [line 2]\n"
                "10: jump 28 [line 3]\n"
-               "11: jeq 1 'true' 13 [line 3]\n"
+               "11: jeq 13 0 1 [line 3]\n"
                "12: jump 16 [line 3]\n"
-               "13: assign x 3 [line 3]\n"
-               "14: assign ^0 x [line 3]\n"
+               "13: assign 4 2 [line 3]\n"
+               "14: assign 5 4 [line 3]\n"
                "15: jump 28 [line 4]\n"
-               "16: jeq 1 'true' 18 [line 4]\n"
+               "16: jeq 18 0 1 [line 4]\n"
                "17: jump 21 [line 4]\n"
-               "18: assign x 3 [line 4]\n"
-               "19: assign ^0 x [line 4]\n"
+               "18: assign 6 2 [line 4]\n"
+               "19: assign 7 6 [line 4]\n"
                "20: jump 28 [line 5]\n"
-               "21: jeq 1 'true' 23 [line 5]\n"
+               "21: jeq 23 0 1 [line 5]\n"
                "22: jump 26 [line 5]\n"
-               "23: assign x 3 [line 5]\n"
-               "24: assign ^0 x [line 5]\n"
+               "23: assign 8 2 [line 5]\n"
+               "24: assign 9 8 [line 5]\n"
                "25: jump 28 [line 6]\n"
-               "26: assign x 3 [line 6]\n"
-               "27: assign ^0 x [line 6]\n";
+               "26: assign 10 2 [line 6]\n"
+               "27: assign 11 10 [line 6]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_elseif_else.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, if_else_many_nested)
 {
-    expected =  "1: jeq 1 'true' 3 [line 1]\n"
+    expected =  "1: jeq 3 0 1 [line 1]\n"
                 "2: jump 16 [line 1]\n"
-                "3: jeq 2 'true' 5 [line 1]\n"
+                "3: jeq 5 1 1 [line 1]\n"
                 "4: jump 13 [line 1]\n"
-                "5: jeq a 0 7 [line 1]\n"
+                "5: jeq 7 0 2 [line 1]\n"
                 "6: jump 9 [line 1]\n"
-                "7: assign ^0 'true' [line 1]\n"
+                "7: assign 1 1 [line 1]\n"
                 "8: jump 10 [line 1]\n"
-                "9: assign ^0 'false' [line 1]\n"
-                "10: jeq ^0 'true' 12 [line 1]\n"
+                "9: assign 1 0 [line 1]\n"
+                "10: jeq 12 1 1 [line 1]\n"
                 "11: jump 13 [line 1]\n"
                 "12: jump 13 [line 1]\n"
-                "13: assign x 2 [line 1]\n"
-                "14: assign ^1 x [line 1]\n"
+                "13: assign 2 1 [line 1]\n"
+                "14: assign 3 2 [line 1]\n"
                 "15: jump 27 [line 2]\n"
-                "16: jgt x 0 18 [line 3]\n"
+                "16: jgt 18 4 2 [line 3]\n"
                 "17: jump 20 [line 3]\n"
-                "18: assign ^0 'true' [line 3]\n"
+                "18: assign 5 1 [line 3]\n"
                 "19: jump 21 [line 3]\n"
-                "20: assign ^0 'false' [line 3]\n"
-                "21: jeq ^0 'true' 23 [line 3]\n"
+                "20: assign 5 0 [line 3]\n"
+                "21: jeq 23 5 1 [line 3]\n"
                 "22: jump 24 [line 3]\n"
                 "23: jump 27 [line 4]\n"
-                "24: jeq x 'true' 26 [line 4]\n"
+                "24: jeq 26 4 1 [line 4]\n"
                 "25: jump 27 [line 4]\n"
                 "26: jump 27 [line 5]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");
