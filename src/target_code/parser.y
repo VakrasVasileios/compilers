@@ -838,6 +838,7 @@ funcprefix: FUNCTION funcid {
                                 func_def_stmts.push(func_def_stmt);
 
                                 auto jump_quad = Emit(JUMP_t, nullptr, nullptr, nullptr, yylineno);
+                                ($2)->set_taddress(NextQuadLabel());
                                 Emit(FUNCSTART_t, $2, nullptr, nullptr, yylineno);
 
                                 func_def_stmt->set_func_start_jump_quad(jump_quad);

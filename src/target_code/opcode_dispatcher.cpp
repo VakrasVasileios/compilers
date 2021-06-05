@@ -19,14 +19,14 @@ namespace target_code {
     IopCodeDispatcher::Generate(){
         for (auto quad : intermediate_code::quads)
             (this->*generators[quad->op])(quad);
-        //PatchIncompleteJumps();    
+        PatchIncompleteJumps();    
     }
 
     void        
     IopCodeDispatcher::generate(Vmopcode op,  intermediate_code::Quad* quad) {
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), op, make_operand(quad->result),
             make_operand(quad->arg1), make_operand(quad->arg2), quad->line));
-        quad->taddress = NextInstructionLabel();
     }
 
     void 
@@ -50,9 +50,9 @@ namespace target_code {
     IopCodeDispatcher::generate_ASSIGN(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::ASSIGN_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM, make_operand(quad->result),
             make_operand(quad->arg1), nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();
     }
 
     void    
@@ -95,9 +95,9 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::UMINUS_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), MUL_VM, make_operand(quad->result),
             make_operand(quad->arg1), make_operand(new expression::IntConstant(-1)), quad->line));
-        quad->taddress = NextInstructionLabel();
     }
 
     void
@@ -162,31 +162,30 @@ namespace target_code {
     IopCodeDispatcher::generate_CALL(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::CALL_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(),
              CALLFUNC_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();
     }
 
     void
     IopCodeDispatcher::generate_PARAM(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::PARAM_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(),
             PUSHARG_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();
     }
 
     void    
     IopCodeDispatcher::generate_RETURN(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::RET_t);
+        quad->taddress = NextInstructionLabel();    
         Emit(new Instruction(NextInstructionLabel(),
             ASSIGN_VM, new Vmarg(RETVAL_a), make_operand(quad->result), nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();    
         
         auto func = funcs.top(); 
         return_labels_by_funcs[func].push_back(NextInstructionLabel());
-
         Emit(new Instruction(NextInstructionLabel(),
             JUMP_VM, new Vmarg(LABEL_a), nullptr, nullptr, quad->line));   
     }
@@ -195,18 +194,18 @@ namespace target_code {
     IopCodeDispatcher::generate_GETRETVAL(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::GETRETVAL_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM,
              make_operand(quad->result), new Vmarg(RETVAL_a), nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();
     }
 
     void
     IopCodeDispatcher::generate_FUNCSTART(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCSTART_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), ENTERFUNC_VM,
             make_operand(quad->result), nullptr, nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();
         funcs.push(quad->result);
     }
 
@@ -214,9 +213,9 @@ namespace target_code {
     IopCodeDispatcher::generate_FUNCEND(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCEND_t);
+        quad->taddress = NextInstructionLabel();
         Emit(new Instruction(NextInstructionLabel(), EXITFUNC_VM,
             make_operand(quad->result), nullptr, nullptr, quad->line));
-        quad->taddress = NextInstructionLabel();
 
         auto top_func = funcs.top();
         funcs.pop();

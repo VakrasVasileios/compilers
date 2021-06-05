@@ -96,19 +96,11 @@ namespace target_code {
     }
 
     void PatchIncompleteJumps() {
-        std::cout << incomplete_jumps.size() << std::endl;
         for (auto incomplete_jump : incomplete_jumps) {
-            std::cout << 1 << std::endl;
-            if (incomplete_jump->i_target_address == intermediate_code::quads.size()) {
-                std::cout << 2 << std::endl;
-                instructions[incomplete_jump->label]->result->value = instructions.size();
-                std::cout << 3 << std::endl;
-            }
-            else {
-                std::cout << 4 << std::endl;
-                instructions[incomplete_jump->label]->result->value = intermediate_code::quads[incomplete_jump->i_target_address]->taddress;   
-                std::cout << 5 << std::endl;
-            }
+            if (incomplete_jump->i_target_address - 1 == intermediate_code::quads.size()) 
+                instructions[incomplete_jump->label - 1]->result->value = instructions.size() + 1;
+            else 
+                instructions[incomplete_jump->label - 1]->result->value = intermediate_code::quads[incomplete_jump->i_target_address - 1]->taddress;   
         }
     }
 

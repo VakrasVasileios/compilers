@@ -79,4 +79,5 @@ add_executable(d_target_code
 )
 target_compile_definitions(d_target_code PRIVATE LOGINSTRS=1)
 target_compile_definitions(d_target_code PRIVATE LOGQUADSTXT=1)
+target_compile_definitions(d_target_code PRIVATE LOGSYMTABLE=1)
 target_link_libraries(d_target_code target_code)
