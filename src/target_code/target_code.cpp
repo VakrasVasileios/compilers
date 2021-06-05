@@ -30,6 +30,10 @@ namespace target_code {
             return instructions.back()->label + 1;
     }
 
+    unsigned int CurrInstructionLabel() {
+        return instructions.size() + 1;
+    }
+
     void
     make_binary_file(void) {
         std::fstream bin_file;
@@ -62,7 +66,7 @@ namespace target_code {
             bin_file<< i.taddress
                     << i.local_count
                     << i.total_args
-                    << i.id;
+                    << i.id.c_str();
         }
         // write instructions to binary file
         bin_file << (unsigned int)instructions.size();
@@ -92,11 +96,19 @@ namespace target_code {
     }
 
     void PatchIncompleteJumps() {
+        std::cout << incomplete_jumps.size() << std::endl;
         for (auto incomplete_jump : incomplete_jumps) {
-            if (incomplete_jump->i_target_address == intermediate_code::quads.size())
+            std::cout << 1 << std::endl;
+            if (incomplete_jump->i_target_address == intermediate_code::quads.size()) {
+                std::cout << 2 << std::endl;
                 instructions[incomplete_jump->label]->result->value = instructions.size();
-            else
+                std::cout << 3 << std::endl;
+            }
+            else {
+                std::cout << 4 << std::endl;
                 instructions[incomplete_jump->label]->result->value = intermediate_code::quads[incomplete_jump->i_target_address]->taddress;   
+                std::cout << 5 << std::endl;
+            }
         }
     }
 

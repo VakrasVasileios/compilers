@@ -8,38 +8,7 @@ namespace target_code {
 
             return make_op_visitor->get_result();
         }
-
         return nullptr;
-    }
-
-    Vmarg*              
-    IopCodeDispatcher::make_numberoperand (double val) {
-        Vmarg* arg = new Vmarg();
-        arg->type = NUMBER_a;
-        arg->value = ProgramConsts:: GetInstance().InsertNumber(val);
-        return arg;
-    }
-
-    Vmarg*
-    IopCodeDispatcher::make_booloperand (unsigned val) {
-        Vmarg* arg = new Vmarg();
-        arg->type = BOOL_a;
-        arg->value = val;
-        return arg;
-    }
-
-    Vmarg*
-    IopCodeDispatcher::make_retvaloperand() {
-        Vmarg* arg = new Vmarg();
-        arg->type = RETVAL_a;
-        return arg;
-    }
-
-    Vmarg*
-    IopCodeDispatcher::make_labeloperand() {
-        Vmarg* arg = new Vmarg();
-        arg->type = LABEL_a;
-        return arg;
     }
     /* 
     The dispatch takes place because the generate functions index in this
@@ -50,6 +19,7 @@ namespace target_code {
     IopCodeDispatcher::Generate(){
         for (auto quad : intermediate_code::quads)
             (this->*generators[quad->op])(quad);
+        //PatchIncompleteJumps();    
     }
 
     void        
@@ -211,14 +181,14 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::RET_t);
         Emit(new Instruction(NextInstructionLabel(),
-            ASSIGN_VM, make_retvaloperand(), make_operand(quad->result), nullptr, quad->line));
+            ASSIGN_VM, new Vmarg(RETVAL_a), make_operand(quad->result), nullptr, quad->line));
         quad->taddress = NextInstructionLabel();    
         
         auto func = funcs.top(); 
         return_labels_by_funcs[func].push_back(NextInstructionLabel());
 
         Emit(new Instruction(NextInstructionLabel(),
-            JUMP_VM, make_labeloperand(), nullptr, nullptr, quad->line));   
+            JUMP_VM, new Vmarg(LABEL_a), nullptr, nullptr, quad->line));   
     }
 
     void
@@ -226,7 +196,7 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::GETRETVAL_t);
         Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM,
-             make_operand(quad->result), make_retvaloperand(), nullptr, quad->line));
+             make_operand(quad->result), new Vmarg(RETVAL_a), nullptr, quad->line));
         quad->taddress = NextInstructionLabel();
     }
 

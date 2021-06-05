@@ -89,10 +89,6 @@ namespace target_code {
         MakeOperandVisitor*     make_op_visitor;
 
         Vmarg*                  make_operand (expression::Expression* expr);
-        Vmarg*                  make_numberoperand (double val);
-        Vmarg*                  make_booloperand (unsigned val);
-        Vmarg*                  make_retvaloperand ();
-        Vmarg*                  make_labeloperand();
 
         void                    generate(Vmopcode op, intermediate_code::Quad* quad);
         void                    generate_branch(Vmopcode op, intermediate_code::Quad* quad);
@@ -157,6 +153,8 @@ namespace target_code {
      * after the most recently emitted instuction, greater or equal to zero 
      */
     unsigned int                    NextInstructionLabel();
+
+    unsigned int                    CurrInstructionLabel();
     /**
      * @brief Adds an incomplete jump with a label and a 
      * intermediate code target address to the list of incomplete
