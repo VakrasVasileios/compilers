@@ -19,7 +19,7 @@ namespace target_code {
 
     void    
     MakeOperandVisitor::VisitCall(expression::Call* call) {
-        VisitSymbol(call->get_called_symbol());
+        VisitSymbol(call->get_ret_val());
     }
 
     void    
@@ -50,6 +50,7 @@ namespace target_code {
     MakeOperandVisitor::VisitStringConstant(expression::StringConstant* string_const) {
         PRECONDITION(string_const != nullptr);
         result = new Vmarg(STRING_a, ProgramConsts:: GetInstance().InsertString(string_const->get_value()));
+    
     }
 
     void    
@@ -58,7 +59,6 @@ namespace target_code {
         Vmarg* vm_arg;
         switch (sym->get_type()) {
             case expression::USER_FUNC:
-                std::cout << "Balloons " << sym->get_id() << std::endl;
                 vm_arg = new Vmarg(USERFUNC_a, ProgramConsts::GetInstance().InsertUserFunc(sym));
                 break;
             case expression::LIB_FUNC:
