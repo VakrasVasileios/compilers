@@ -23,7 +23,7 @@ TEST_F(TargetCodeSuite, assign_simple)
     GTEST_ASSERT_EQ(expected, actual);
 }
 
-TEST_F(TargetCodeSuite, assign_call_nested)
+TEST_F(TargetCodeSuite, assign_calls_nested)
 {
     expected = "1: jump 4 [line 1]\n"
                "2: enterfunc 0 [line 1]\n"
@@ -33,13 +33,13 @@ TEST_F(TargetCodeSuite, assign_call_nested)
                "6: exitfunc 1 [line 5]\n"
                "7: pusharg 0 [line 7]\n"
                "8: callfunc 1 [line 7]\n"
-               "9: assign 3 0 [line 7]\n"
+               "9: assign 3 69420 [line 7]\n"
                "10: pusharg 3 [line 7]\n"
                "11: callfunc 0 [line 7]\n"
-               "12: assign 4 0 [line 7]\n"
+               "12: assign 4 69420 [line 7]\n"
                "13: assign 2 4 [line 7]\n"
                "14: assign 5 2 [line 7]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/assign/call_nested.asc");
+    actual = exec("./d_target_code ../../test/files/phase3_tests/assign/calls_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -902,21 +902,21 @@ TEST_F(TargetCodeSuite, if_else_many_nested)
 
 TEST_F(TargetCodeSuite, arithmetic_simple)
 {
-    expected = "1: add ^0 x 9 [line 1]\n"
-               "2: sub ^0 a 0 [line 2]\n"
-               "3: mul ^0 8 o [line 3]\n"
-               "4: mod ^0 3 6 [line 4]\n"
-               "5: div ^0 1 1 [line 5]\n";
+    expected = "1: add 1 0 0 [line 1]\n"
+               "2: sub 1 2 1 [line 2]\n"
+               "3: mul 1 2 3 [line 3]\n"
+               "4: mod 1 3 4 [line 4]\n"
+               "5: div 1 5 5 [line 5]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/simple.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, arithmetic_spaghetti)
 {
-    expected = "1: add ^0 x 9 [line 1]\n"
-               "2: add ^1 ^0 8 [line 1]\n"
-               "3: add ^2 ^1 9 [line 1]\n"
-               "4: add ^3 ^2 u [line 1]\n";
+    expected = "1: add 1 0 0 [line 1]\n"
+               "2: add 2 1 1 [line 1]\n"
+               "3: add 3 2 0 [line 1]\n"
+               "4: add 5 3 4 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/spaghetti.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -935,23 +935,23 @@ TEST_F(TargetCodeSuite, arithmetic_errors)
 
 TEST_F(TargetCodeSuite, arithmetic_plusplus_suffix)
 {
-    expected = "1: assign ^0 i [line 1]\n"
-               "2: add i i 1 [line 1]\n";
+    expected = "1: assign 1 0 [line 1]\n"
+               "2: add 0 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, arithmetic_plusplus_prefix)
 {
-    expected = "1: add i i 1 [line 1]\n"
-               "2: assign ^0 i [line 1]\n";
+    expected = "1: add 0 0 0 [line 1]\n"
+               "2: assign 1 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, arithmetic_uminus)
 {
-    expected = "1: uminus ^0 1 [line 1]\n";
+    expected = "1: mul 0 0 1 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/uminus.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -964,27 +964,27 @@ TEST_F(TargetCodeSuite, arithmetic_uminus_bool) {
 
 TEST_F(TargetCodeSuite, arithmetic_not)
 {
-    expected = "1: jeq 1 'true' 5 [line 1]\n"
+    expected = "1: jeq 5 0 1 [line 1]\n"
                "2: jump 3 [line 1]\n"
-               "3: assign ^0 'true' [line 1]\n"
+               "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
-               "5: assign ^0 'false' [line 1]\n";
+               "5: assign 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/not.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, arithmetic_minusminus_prefix)
 {
-    expected = "1: sub a a 1 [line 1]\n"
-               "2: assign ^0 a [line 1]\n";
+    expected = "1: sub 0 0 0 [line 1]\n"
+               "2: assign 1 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, arithmetic_minusminus_suffix)
 {
-    expected = "1: assign ^0 a [line 1]\n"
-               "2: sub a a 1 [line 1]\n";
+    expected = "1: assign 1 0 [line 1]\n"
+               "2: sub 0 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
@@ -993,188 +993,188 @@ TEST_F(TargetCodeSuite, arithmetic_minusminus_suffix)
 
 TEST_F(TargetCodeSuite, table_tablemake_list_single)
 {
-    expected = "1: tablecreate ^0 [line 1]\n"
-               "2: tablesetelem ^0 0 1 [line 1]\n";
+    expected = "1: newtable 0 [line 1]\n"
+               "2: tablesetelem 0 0 1 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_list_single.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, table_tablemake_list_many)
 {
-    expected = "1: callfunc f [line 1]\n"
-               "2: getretval ^0 [line 1]\n"
-               "3: tablecreate ^1 [line 1]\n"
-               "4: tablesetelem ^1 0 1 [line 1]\n"
-               "5: tablesetelem ^1 1 3 [line 1]\n"
-               "6: tablesetelem ^1 2 s [line 1]\n"
-               "7: tablesetelem ^1 3 0 [line 1]\n"
-               "8: tablesetelem ^1 4 ^0 [line 1]\n";
+    expected = "1: callfunc 1 [line 1]\n"
+               "2: assign 2 69420 [line 1]\n"
+               "3: newtable 3 [line 1]\n"
+               "4: tablesetelem 3 0 1 [line 1]\n"
+               "5: tablesetelem 3 1 2 [line 1]\n"
+               "6: tablesetelem 3 3 0 [line 1]\n"
+               "7: tablesetelem 3 2 0 [line 1]\n"
+               "8: tablesetelem 3 4 2 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_list_many.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, table_tablemake_pairs_single)
 {
-    expected = "1: tablecreate ^0 [line 1]\n"
-               "2: tablesetelem ^0 x 0 [line 1]\n";
+    expected = "1: newtable 1 [line 1]\n"
+               "2: tablesetelem 1 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_pairs_single.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, table_tablemake_pairs_many)
 {
-    expected = "1: tablecreate ^0 [line 1]\n"
-               "2: tablesetelem ^0 x 0 [line 1]\n"
-               "3: tablesetelem ^0 x 0 [line 1]\n";
+    expected = "1: newtable 1 [line 1]\n"
+               "2: tablesetelem 1 0 0 [line 1]\n"
+               "3: tablesetelem 1 0 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_pairs_many.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, table_tablemake_pairs_macaroni)
 {
-    expected = "1: assign pi 3.14159 [line 1]\n"
-               "2: assign ^0 pi [line 1]\n"
-               "3: tablecreate ^1 [line 1]\n"
-               "4: tablesetelem ^1 \"pi\" ^0 [line 1]\n"
-               "5: tablesetelem ^1 \"r\" 0 [line 1]\n"
-               "6: tablesetelem ^1 \"x\" 0 [line 1]\n"
-               "7: tablesetelem ^1 \"y\" 0 [line 1]\n"
-               "8: assign circle ^1 [line 1]\n"
-               "9: assign ^2 circle [line 1]\n";
+    expected = "1: assign 1 0 [line 1]\n"
+               "2: assign 2 1 [line 1]\n"
+               "3: newtable 3 [line 1]\n"
+               "4: tablesetelem 3 0 2 [line 1]\n"
+               "5: tablesetelem 3 1 1 [line 1]\n"
+               "6: tablesetelem 3 2 1 [line 1]\n"
+               "7: tablesetelem 3 3 1 [line 1]\n"
+               "8: assign 0 3 [line 1]\n"
+               "9: assign 4 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_pairs_macaroni.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, table_tablemake_nested)
 {
-    expected = "1: tablecreate ^0 [line 1]\n"
-               "2: tablesetelem ^0 0 1 [line 1]\n"
-               "3: tablesetelem ^0 1 2 [line 1]\n"
-               "4: tablesetelem ^0 2 3 [line 1]\n"
-               "5: tablecreate ^1 [line 1]\n"
-               "6: tablesetelem ^1 1 0 [line 1]\n"
-               "7: tablecreate ^2 [line 1]\n"
-               "8: tablesetelem ^2 0 ^1 [line 1]\n"
-               "9: tablesetelem ^2 1 0 [line 1]\n"
-               "10: assign s 2 [line 1]\n"
-               "11: assign ^3 s [line 1]\n"
-               "12: tablecreate ^4 [line 1]\n"
-               "13: tablesetelem ^4 ^3 9 [line 1]\n"
-               "14: tablecreate ^5 [line 1]\n"
-               "15: tablesetelem ^5 0 \"s\" [line 1]\n"
-               "16: tablesetelem ^5 1 ^4 [line 1]\n"
-               "17: tablecreate ^6 [line 1]\n"
-               "18: tablesetelem ^6 0 7 [line 1]\n"
-               "19: tablecreate ^7 [line 1]\n"
-               "20: tablesetelem ^7 0 ^0 [line 1]\n"
-               "21: tablesetelem ^7 1 ^2 [line 1]\n"
-               "22: tablesetelem ^7 2 ^5 [line 1]\n"
-               "23: tablesetelem ^7 3 ^6 [line 1]\n";
+    expected = "1: newtable 0 [line 1]\n"
+               "2: tablesetelem 0 0 1 [line 1]\n"
+               "3: tablesetelem 0 1 2 [line 1]\n"
+               "4: tablesetelem 0 2 3 [line 1]\n"
+               "5: newtable 1 [line 1]\n"
+               "6: tablesetelem 1 1 0 [line 1]\n"
+               "7: newtable 2 [line 1]\n"
+               "8: tablesetelem 2 0 1 [line 1]\n"
+               "9: tablesetelem 2 1 0 [line 1]\n"
+               "10: assign 3 2 [line 1]\n"
+               "11: assign 4 3 [line 1]\n"
+               "12: newtable 5 [line 1]\n"
+               "13: tablesetelem 5 4 4 [line 1]\n"
+               "14: newtable 6 [line 1]\n"
+               "15: tablesetelem 6 0 0 [line 1]\n"
+               "16: tablesetelem 6 1 5 [line 1]\n"
+               "17: newtable 7 [line 1]\n"
+               "18: tablesetelem 7 0 5 [line 1]\n"
+               "19: newtable 8 [line 1]\n"
+               "20: tablesetelem 8 0 0 [line 1]\n"
+               "21: tablesetelem 8 1 2 [line 1]\n"
+               "22: tablesetelem 8 2 6 [line 1]\n"
+               "23: tablesetelem 8 3 7 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_nested.asc");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(TargetCodeSuite, table_tablemember_item_simple) {
-    expected = "1: tablegetelem ^0 a \"o\" [line 1]\n";
+    expected = "1: tablegetelem 2 1 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemember_item_simple.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
 TEST_F(TargetCodeSuite, table_tableelem_item_seq) {
-    expected =  "1: tablegetelem ^0 a \"b\" [line 1]\n"
-                "2: tablegetelem ^1 ^0 \"o\" [line 1]\n";
+    expected =  "1: tablegetelem 2 1 0 [line 1]\n"
+                "2: tablegetelem 4 3 1 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_item_seq.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }        
 
 TEST_F(TargetCodeSuite, table_tableelem_ind_simp) {
-    expected = "1: tablegetelem ^0 a 1 [line 1]\n";
+    expected = "1: tablegetelem 2 1 0 [line 1]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_simp.asc");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
 TEST_F(TargetCodeSuite, table_tablelem_ind_manyexprs) {
-    expected =  "1: tablegetelem ^0 a 1 [line 1]\n"
-                "2: tablegetelem ^0 a s [line 2]\n"
-                "3: assign a 0 [line 3]\n"
-                "4: assign ^0 a [line 3]\n"
-                "5: tablegetelem ^1 a ^0 [line 3]\n"
-                "6: pusharg c [line 4]\n"
-                "7: callfunc y [line 4]\n"
-                "8: getretval ^0 [line 4]\n"
-                "9: pusharg ^0 [line 4]\n"
-                "10: callfunc f [line 4]\n"
-                "11: getretval ^1 [line 4]\n"
-                "12: mul ^2 9 ^1 [line 4]\n"
-                "13: add ^3 s ^2 [line 4]\n"
-                "14: tablegetelem ^4 a ^3 [line 4]\n";
+    expected =  "1: tablegetelem 2 1 0 [line 1]\n"
+                "2: tablegetelem 2 4 3 [line 2]\n"
+                "3: assign 0 1 [line 3]\n"
+                "4: assign 2 0 [line 3]\n"
+                "5: tablegetelem 6 5 2 [line 3]\n"
+                "6: pusharg 9 [line 4]\n"
+                "7: callfunc 8 [line 4]\n"
+                "8: assign 2 69420 [line 4]\n"
+                "9: pusharg 2 [line 4]\n"
+                "10: callfunc 7 [line 4]\n"
+                "11: assign 6 69420 [line 4]\n"
+                "12: mul 10 2 6 [line 4]\n"
+                "13: add 11 3 10 [line 4]\n"
+                "14: tablegetelem 13 12 11 [line 4]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_manyexprs.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(TargetCodeSuite, table_tableelem_it_callfunc) {
-    expected =  "1: callfunc f [line 1]\n"
-                "2: getretval ^0 [line 1]\n"
-                "3: tablegetelem ^1 ^0 \"a\" [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_it_callfunc.asc");
+TEST_F(TargetCodeSuite, table_tableelem_it_call) {
+    expected =  "1: callfunc 0 [line 1]\n"
+                "2: assign 1 69420 [line 1]\n"
+                "3: tablegetelem 3 2 0 [line 1]\n";
+    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_it_call.asc");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(TargetCodeSuite, table_tebleelem_ind_callfunc) {
-    expected =  "1: callfunc f [line 1]\n"
-                "2: getretval ^0 [line 1]\n"
-                "3: tablegetelem ^1 ^0 2 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_callfunc.asc");
+TEST_F(TargetCodeSuite, table_tebleelem_ind_call) {
+    expected =  "1: callfunc 0 [line 1]\n"
+                "2: assign 1 69420 [line 1]\n"
+                "3: tablegetelem 3 2 0 [line 1]\n";
+    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_call.asc");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
 TEST_F(TargetCodeSuite, table_emit_iftableitem_plusplusprefix) {
-    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
-                "2: add ^1 ^1 1 [line 1]\n"
-                "3: tablesetelem a 2 ^1 [line 1]\n";
+    expected =  "1: tablegetelem 3 1 0 [line 1]\n"
+                "2: add 3 3 1 [line 1]\n"
+                "3: tablesetelem 1 0 3 [line 1]\n";
     actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplusprefix.asc");     
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
 TEST_F(TargetCodeSuite, table_emit_iftableitem_plusplussufix) {
-    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
-                "2: assign ^0 ^1 [line 1]\n"
-                "3: add ^1 ^1 1 [line 1]\n"
-                "4: tablesetelem a 2 ^1 [line 1]\n";
+    expected =  "1: tablegetelem 3 1 0 [line 1]\n"
+                "2: assign 2 3 [line 1]\n"
+                "3: add 3 3 1 [line 1]\n"
+                "4: tablesetelem 1 0 3 [line 1]\n";
     actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplussufix.asc");     
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(TargetCodeSuite, table_emit_iftableitem_minusminus_prefix) {
-    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
-                "2: sub ^1 ^1 1 [line 1]\n"
-                "3: tablesetelem a 2 ^1 [line 1]\n";
+    expected =  "1: tablegetelem 3 1 0 [line 1]\n"
+                "2: sub 3 3 1 [line 1]\n"
+                "3: tablesetelem 1 0 3 [line 1]\n";
     actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_prefix.asc");     
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(TargetCodeSuite, table_emit_iftableitem_minusminus_suffix) {
-    expected =  "1: tablegetelem ^1 a 2 [line 1]\n"
-                "2: assign ^0 ^1 [line 1]\n"
-                "3: sub ^1 ^1 1 [line 1]\n"
-                "4: tablesetelem a 2 ^1 [line 1]\n";
+    expected =  "1: tablegetelem 3 1 0 [line 1]\n"
+                "2: assign 2 3 [line 1]\n"
+                "3: sub 3 3 1 [line 1]\n"
+                "4: tablesetelem 1 0 3 [line 1]\n";
     actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_suffix.asc");     
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(TargetCodeSuite, table_emit_iftableitem_assignexpr) {
-    expected =  "1: tablesetelem a 2 9 [line 1]\n"
-                "2: tablegetelem ^0 a 2 [line 1]\n";
+    expected =  "1: tablesetelem 1 0 1 [line 1]\n"
+                "2: tablegetelem 2 1 0 [line 1]\n";
     actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_assignexpr.asc");     
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
-TEST_F(TargetCodeSuite, table_emit_iftableitem_callfunc) {
-    expected =  "1: tablegetelem ^0 a 3 [line 1]\n"
-                "2: pusharg s [line 1]\n"
-                "3: callfunc ^0 [line 1]\n"
-                "4: getretval ^1 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_callfunc.asc");     
+TEST_F(TargetCodeSuite, table_emit_iftableitem_call) {
+    expected =  "1: tablegetelem 3 1 0 [line 1]\n"
+                "2: pusharg 2 [line 1]\n"
+                "3: callfunc 3 [line 1]\n"
+                "4: assign 4 69420 [line 1]\n";
+    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_call.asc");     
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -1531,17 +1531,17 @@ TEST_F(TargetCodeSuite, backpatch_p3t_relational)
 
 TEST_F(TargetCodeSuite, backpatch_p3t_object_creation_expr)
 {
-    expected =  "1: tablecreate ^0 [line 1]\n"
-                "2: tablecreate ^0 [line 3]\n"
+    expected =  "1: newtable ^0 [line 1]\n"
+                "2: newtable ^0 [line 3]\n"
                 "3: tablesetelem ^0 0 1 [line 3]\n"
                 "4: tablesetelem ^0 1 2 [line 3]\n"
                 "5: tablesetelem ^0 2 3 [line 3]\n"
-                "6: tablecreate ^0 [line 5]\n"
-                "7: tablecreate ^1 [line 5]\n"
+                "6: newtable ^0 [line 5]\n"
+                "7: newtable ^1 [line 5]\n"
                 "8: tablesetelem ^1 0 \"hello\" [line 5]\n"
                 "9: tablesetelem ^1 1 \"lol\" [line 5]\n"
-                "10: tablecreate ^2 [line 5]\n"
-                "11: tablecreate ^3 [line 5]\n"
+                "10: newtable ^2 [line 5]\n"
+                "11: newtable ^3 [line 5]\n"
                 "12: tablesetelem ^3 0 'false' [line 5]\n"
                 "13: tablesetelem ^3 1 'true' [line 5]\n"
                 "14: tablesetelem ^3 2 ^0 [line 5]\n"
@@ -1550,17 +1550,17 @@ TEST_F(TargetCodeSuite, backpatch_p3t_object_creation_expr)
                 "17: tablesetelem ^3 5 ^2 [line 5]\n"
                 "18: jump 22 [line 7]\n"
                 "19: enterfunc $0 [line 7]\n"
-                "20: tablecreate ^0 [line 7]\n"
+                "20: newtable ^0 [line 7]\n"
                 "21: exitfunc $0 [line 7]\n"
-                "22: tablecreate ^0 [line 8]\n"
+                "22: newtable ^0 [line 8]\n"
                 "23: tablesetelem ^0 0 1 [line 8]\n"
                 "24: tablesetelem ^0 1 2 [line 8]\n"
                 "25: tablesetelem ^0 2 3 [line 8]\n"
-                "26: tablecreate ^1 [line 8]\n"
+                "26: newtable ^1 [line 8]\n"
                 "27: tablesetelem ^1 1 2 [line 8]\n"
                 "28: tablesetelem ^1 \"bool\" 'false' [line 8]\n"
                 "29: tablesetelem ^1 5 print [line 8]\n"
-                "30: tablecreate ^2 [line 9]\n"
+                "30: newtable ^2 [line 9]\n"
                 "31: tablesetelem ^2 4 5 [line 9]\n"
                 "32: tablesetelem ^2 2 18 [line 9]\n"
                 "33: tablesetelem ^2 \"lulz\" $0 [line 9]\n"
@@ -1571,13 +1571,13 @@ TEST_F(TargetCodeSuite, backpatch_p3t_object_creation_expr)
                 "38: assign four 4 [line 11]\n"
                 "39: assign ^0 four [line 11]\n"
                 "40: exitfunc four [line 11]\n"
-                "41: tablecreate ^0 [line 11]\n"
+                "41: newtable ^0 [line 11]\n"
                 "42: tablesetelem ^0 4 four [line 11]\n"
-                "43: tablecreate ^1 [line 11]\n"
+                "43: newtable ^1 [line 11]\n"
                 "44: tablesetelem ^1 4 ^0 [line 11]\n"
-                "45: tablecreate ^2 [line 11]\n"
+                "45: newtable ^2 [line 11]\n"
                 "46: tablesetelem ^2 4 ^1 [line 11]\n"
-                "47: tablecreate ^3 [line 11]\n"
+                "47: newtable ^3 [line 11]\n"
                 "48: tablesetelem ^3 4 ^2 [line 11]\n";
     actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_object_creation_expr.asc");
     GTEST_ASSERT_EQ(expected, actual);
