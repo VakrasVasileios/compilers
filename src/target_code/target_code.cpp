@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#define MAGIC_NUMBER    340200501
+// #define MAGIC_NUMBER    340200501
 
 namespace target_code {
     std::vector<Instruction*> instructions;
@@ -34,49 +34,63 @@ namespace target_code {
     make_binary_file(void) {
         std::fstream bin_file;
         bin_file.open("alpha.out", std::ios::binary | std::ios::out);
+        const unsigned int magic_num = 340200501;
 
-        bin_file << MAGIC_NUMBER;
+        auto write_unsigned = [&bin_file](unsigned int target) {
+            bin_file.write((char*)&target, sizeof(unsigned int));
+        };
+        auto write_byte = [&bin_file](uint8_t target) {
+            bin_file.write((char*)&target, sizeof(uint8_t));
+        };
+        auto write_double = [&bin_file](double target) {
+            bin_file.write((char*)&target, sizeof(double));
+        };
+        auto write_string = [&bin_file](std::string& target) {
+            bin_file.write(target.c_str(), target.size()+1);
+        };
+
+        write_unsigned(magic_num);
 
         // write string array to binary file
         auto str_arr = ProgramConsts:: GetInstance().GetStringArray();
-        bin_file << (unsigned int)str_arr->size();
+        write_unsigned(str_arr->size());
         for (auto i : *str_arr) {
-            bin_file << i.c_str();
+            write_string(i);
         }
         // write number array to binary file
         auto num_arr = ProgramConsts:: GetInstance().GetNumberArray();
-        bin_file << (unsigned int)num_arr->size();
+        write_unsigned(num_arr->size());
         for (auto i : *num_arr) {
-            bin_file << i;
+            write_double(i);
         }
         // write libfunc array to binary file
         auto lfunc_arr = ProgramConsts:: GetInstance().GetLibFuncArray();
-        bin_file << (unsigned int)lfunc_arr->size();
+        write_unsigned(lfunc_arr->size());
         for (auto i : *lfunc_arr) {
-            bin_file << i.c_str();
+            write_string(i);
         }
         // write userfunc array to binary file
         auto ufunc_arr = ProgramConsts:: GetInstance().GetUserFuncArray();
-        bin_file << (unsigned int)ufunc_arr->size();
+        write_unsigned(ufunc_arr->size());
         for (auto i : *ufunc_arr) {
-            bin_file<< i.taddress
-                    << i.local_count
-                    << i.total_args
-                    << i.id.c_str();
+            write_unsigned(i.taddress);
+            write_unsigned(i.local_count);
+            write_unsigned(i.total_args);
+            write_string(i.id);
         }
         // write instructions to binary file
-        bin_file << (unsigned int)instructions.size();
+        write_unsigned(instructions.size());
         for (auto i : instructions) {
-            bin_file<< (uint8_t)i->opcode
-                    << (uint8_t)i->result->type
-                    << (unsigned int)i->result->value;
+            write_byte(i->opcode);
+            write_byte(i->result->type);
+            write_unsigned(i->result->value);
             if (i->arg1 != nullptr) {
-                bin_file<< (uint8_t)i->arg1->type
-                        << (unsigned int)i->arg1->value;
+                write_byte(i->arg1->type);
+                write_unsigned(i->arg1->value);
             }
             if (i->arg2 != nullptr) {
-                bin_file<< (uint8_t)i->arg2->type
-                        << (unsigned int)i->arg2->value;
+                write_byte(i->arg2->type);
+                write_unsigned(i->arg2->value);
             }
         }
 

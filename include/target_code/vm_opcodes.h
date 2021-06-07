@@ -8,7 +8,7 @@ namespace target_code {
      * @brief A virtual machine opcode.
      * 
      */
-    enum Vmopcode {
+    enum Vmopcode : uint8_t {
         CALLFUNC_VM,
         PUSHARG_VM,
         ENTERFUNC_VM,

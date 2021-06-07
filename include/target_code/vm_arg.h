@@ -9,7 +9,7 @@ namespace target_code {
      * @brief A virtual machine agument type.
      * 
      */
-    enum Vmarg_t : int {
+    enum Vmarg_t : uint8_t {
         GLOBAL_a,
         LOCAL_a,
         FORMAL_a,
