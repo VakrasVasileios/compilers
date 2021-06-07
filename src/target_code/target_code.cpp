@@ -81,6 +81,10 @@ namespace target_code {
         // write instructions to binary file
         write_unsigned(instructions.size());
         for (auto i : instructions) {
+            unsigned int arg_count = 0;
+            arg_count += i->arg1 ? 1 : 0;
+            arg_count += i->arg2 ? 1 : 0;
+            write_unsigned(arg_count);
             write_byte(i->opcode);
             write_byte(i->result->type);
             write_unsigned(i->result->value);

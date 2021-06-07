@@ -23,6 +23,11 @@ namespace virtual_machine {
             executable.read((char*)&unint, sizeof(unsigned int));
             return unint;
         };
+        auto read_byte = [&executable]() -> uint8_t {
+            uint8_t byte;
+            executable.read((char*)&byte, sizeof(uint8_t));
+            return byte;
+        };
 
         // read and check if the magic number is right
         unsigned int magic_num = read_unsigned();
@@ -58,6 +63,19 @@ namespace virtual_machine {
         }
         // read instructions
         size = read_unsigned();
+        for (int i = 0; i < size; i++) {
+            auto arg_count = read_unsigned();
+            auto opcode = read_byte();
+            printf("args: %d\nopcode: %d\n", arg_count, (int)opcode);
+            auto result_opcode = read_byte();
+            auto result_value = read_unsigned();
+            std::cout << "result opcode: " << result_opcode << " result value: " << result_value << std::endl;
+            for (int j = 0; j < arg_count; j++) {
+                auto arg_opcode = read_byte();
+                auto arg_value = read_unsigned();
+                std::cout << "arg opcode: " << arg_opcode << " arg value: " << arg_value << std::endl;
+            }
+        }
 
 
         executable.close();
