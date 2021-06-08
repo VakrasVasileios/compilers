@@ -96,11 +96,11 @@ namespace target_code {
         Jump* inst;
         auto i_target_address = quad->result->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jump(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jump(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             quad->line);
         } else {
-            inst = new Jump(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jump(NextInstructionLabel(), new LabelVmarg(),
             quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -115,11 +115,11 @@ namespace target_code {
         Jeq* inst;
         auto i_target_address = quad->arg2->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jeq(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jeq(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
         } else {
-            inst = new Jeq(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jeq(NextInstructionLabel(), new LabelVmarg(),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -134,11 +134,11 @@ namespace target_code {
         Jne* inst;
         auto i_target_address = quad->arg2->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jne(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jne(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
         } else {
-            inst = new Jne(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jne(NextInstructionLabel(), new LabelVmarg(),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -153,11 +153,11 @@ namespace target_code {
         Jle* inst;
         auto i_target_address = quad->arg2->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jle(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jle(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
         } else {
-            inst = new Jle(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jle(NextInstructionLabel(), new LabelVmarg(),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -172,11 +172,11 @@ namespace target_code {
         Jge* inst;
         auto i_target_address = quad->arg2->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jge(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jge(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
         } else {
-            inst = new Jge(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jge(NextInstructionLabel(), new LabelVmarg(),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -191,11 +191,11 @@ namespace target_code {
         Jlt* inst;
         auto i_target_address = quad->arg2->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jlt(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jlt(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
         } else {
-            inst = new Jlt(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jlt(NextInstructionLabel(), new LabelVmarg(),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -210,11 +210,11 @@ namespace target_code {
         Jgt* inst;
         auto i_target_address = quad->arg2->to_unsigned();
         if (i_target_address < quad->label) {
-            inst = new Jgt(NextInstructionLabel(), new Vmarg(LABEL_a,
+            inst = new Jgt(NextInstructionLabel(), new LabelVmarg(
             intermediate_code::quads[i_target_address - 1]->taddress),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
         } else {
-            inst = new Jgt(NextInstructionLabel(), new Vmarg(LABEL_a),
+            inst = new Jgt(NextInstructionLabel(), new LabelVmarg(),
             make_operand(quad->result), make_operand(quad->arg1), quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
         }
@@ -246,7 +246,7 @@ namespace target_code {
         assert(quad->op == intermediate_code::RET_t);
         quad->taddress = NextInstructionLabel();    
         Emit(new Assign(NextInstructionLabel(),
-            new Vmarg(RETVAL_a, RETVAL_VALUE), make_operand(quad->result),
+            new RetValVmarg(RETVAL_VALUE), make_operand(quad->result),
             quad->line));
     }
 
@@ -256,7 +256,7 @@ namespace target_code {
         assert(quad->op == intermediate_code::GETRETVAL_t);
         quad->taddress = NextInstructionLabel();
         Emit(new Assign(NextInstructionLabel(), make_operand(quad->result),
-            new Vmarg(RETVAL_a, RETVAL_VALUE), quad->line));
+            new RetValVmarg(RETVAL_VALUE), quad->line));
     }
 
     void

@@ -110,12 +110,6 @@ public:
      * opcode
      */
     virtual uint8_t         get_opcode() const = 0;
-    /**
-     * @brief Sets this Instruction result.
-     * 
-     * @param result the result to be set, not null
-     */
-    void                    set_result(Vmarg* result);
 protected:
     /**
      * @brief Checks the state of this Instruction.

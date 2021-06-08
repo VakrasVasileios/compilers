@@ -5,51 +5,369 @@
 #include <ostream>
 
 namespace target_code {
+/**
+ * @brief A virtual machine agument type.
+ * 
+ */
+enum Vmarg_t : uint8_t {
+    GLOBAL_a,
+    LOCAL_a,
+    FORMAL_a,
+    BOOL_a,
+    STRING_a,
+    NUMBER_a,
+    NIL_a,
+    LIBFUNC_a,
+    USERFUNC_a,
+    LABEL_a,
+    RETVAL_a
+};
+
+/**
+ * @brief A virtual machine argument.
+ * 
+ */
+class Vmarg {
+public:    
     /**
-     * @brief A virtual machine agument type.
+     * @brief Constructs a new Vmarg object.
      * 
      */
-    enum Vmarg_t : uint8_t {
-        GLOBAL_a,
-        LOCAL_a,
-        FORMAL_a,
-        BOOL_a,
-        STRING_a,
-        NUMBER_a,
-        NIL_a,
-        LIBFUNC_a,
-        USERFUNC_a,
-        LABEL_a,
-        RETVAL_a
-    };
+    Vmarg() = default;
     /**
-     * @brief A virtual machine argument.
+     * @brief Constructs a new Vmarg object.
+     * 
+     * @param _value the value of this Vmarg object,
+     * greater or equal to zero
+     */
+    Vmarg(unsigned int _value) : value(VerifyValue(_value)) {};
+    /**
+     * @brief Destroys this Vmarg object.
      * 
      */
-    typedef struct vmarg {
-        /**
-         * @brief The type of this virtual machine argument.
-         * 
-         */
-        Vmarg_t         type;
-        /**
-         * @brief The mapped value of this virtual machine argument.
-         * 
-         */
-        unsigned int    value;
-        /**
-         * @brief Constructs a new Vmarg object.
-         * 
-         */
-        vmarg() = default;
-        vmarg(Vmarg_t _type, unsigned int _value) : type(_type), value(_value) {};
-        vmarg(Vmarg_t _type) : type(_type) {};
-        vmarg(unsigned int _value) : value(_value) {};
+    virtual ~Vmarg() = default;
+    /**
+     * @brief Returns a read access to this Vmarg value.
+     * 
+     * @return a read access to this Vmarg value,
+     * greater or equal to zero 
+     */
+    unsigned int        get_value() const;
+    /**
+     * @brief Sets this Vmarg value.
+     * 
+     * @param value the value to set this Vmarg
+     * value, greater or equal to zero
+     */
+    void                set_value(const unsigned int value);
+    /**
+     * @brief Returns a read access to this Vmarg type.
+     * 
+     * @return a read access to this Vmarg type
+     */
+    virtual uint8_t     get_type() const = 0;
 
-        friend std::ostream &operator<<(std::ostream &os, const vmarg &rhs);
-    } Vmarg;
+    friend std::ostream &operator<<(std::ostream &os, const Vmarg* vmarg);   
+private:
+    unsigned int        value;  
+    unsigned int        VerifyValue(unsigned int value) const;  
+};
 
-    std::string type_to_string(Vmarg_t _type);
+/**
+ * @brief A global vm argument.
+ * 
+ */
+class GlobalVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new Global vmarg object.
+     * 
+     * @param value the value of the new Global vmarg object,
+     * greater or equal to zero 
+     */
+    GlobalVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new Global vmarg object.
+     * 
+     */
+    GlobalVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this Global vmarg object.
+     * 
+     */
+    ~GlobalVmarg() = default; 
+    uint8_t     get_type() const override;   
+};
+
+/**
+ * @brief A local vmarg.
+ * 
+ */
+class LocalVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new Local vmarg object.
+     * 
+     * @param value the value of the new Local vmarg object,
+     * greater or equal to zero 
+     */
+    LocalVmarg(unsigned int value) : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new Local vmarg object.
+     * 
+     */
+    LocalVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this Local vmarg object
+     * 
+     */
+    ~LocalVmarg() = default;    
+    uint8_t     get_type() const override; 
+};
+
+/**
+ * @brief A formal vmarg.
+ * 
+ */
+class FormalVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new Formal vmarg object.
+     * 
+     * @param value the value of the new Formal vmarg object,
+     * greater or equal to zero 
+     */
+    FormalVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new Formal vmarg object.
+     * 
+     */
+    FormalVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this Formal vmarg object
+     * 
+     */
+    ~FormalVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A boolean vmarg.
+ * 
+ */
+class BoolVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new Bool vmarg object.
+     * 
+     * @param value the value of the new Bool vmarg object,
+     * greater or equal to zero 
+     */
+    BoolVmarg(unsigned int value) : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new Bool vmarg object.
+     * 
+     */
+    BoolVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this Bool vmarg object
+     * 
+     */
+    ~BoolVmarg() = default;   
+    uint8_t     get_type() const override; 
+};
+
+/**
+ * @brief A string vmarg.
+ * 
+ */
+class StringVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new String vmarg object.
+     * 
+     * @param value the value of the new String vmarg object,
+     * greater or equal to zero 
+     */
+    StringVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new String vmarg object.
+     * 
+     */
+    StringVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this String Vmarg object
+     * 
+     */
+    ~StringVmarg() = default;  
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A number vmarg. 
+ * 
+ */
+class NumberVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new Number vmarg object.
+     * 
+     * @param value the value of the new Number vmarg object,
+     * greater or equal to zero 
+     */
+    NumberVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new Number vmarg object.
+     * 
+     */
+    NumberVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this Number vmarg object
+     * 
+     */
+    ~NumberVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A NIL vmarg.
+ * 
+ */
+class NilVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new NIL vmarg object.
+     * 
+     * @param value the value of the new NIL vmarg object,
+     * greater or equal to zero 
+     */
+    NilVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new NIL vmarg object.
+     * 
+     */
+    NilVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this NIL vmarg object
+     * 
+     */
+    ~NilVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A library function vmarg.
+ * 
+ */
+class LibFuncVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new LibFunc vmarg object.
+     * 
+     * @param value the value of the new LibFunc vmarg object,
+     * greater or equal to zero 
+     */
+    LibFuncVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new LibFunc vmarg object.
+     * 
+     */
+    LibFuncVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this LibFunc vmarg object
+     * 
+     */
+    ~LibFuncVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A user function vmarg.
+ * 
+ */
+class UserFuncVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new UserFunc vmarg object.
+     * 
+     * @param value the value of the new UserFunc vmarg object,
+     * greater or equal to zero 
+     */
+    UserFuncVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new UserFunc vmarg object.
+     * 
+     */
+    UserFuncVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this UserFunc vmarg object
+     * 
+     */
+    ~UserFuncVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A label vmarg.
+ * 
+ */
+class LabelVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new Label vmarg object.
+     * 
+     * @param value the value of the new Global vmarg object,
+     * greater or equal to zero 
+     */
+    LabelVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new Label vmarg object.
+     * 
+     */
+    LabelVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this Label object
+     * 
+     */
+    ~LabelVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
+/**
+ * @brief A retval vmarg.
+ * 
+ */
+class RetValVmarg final : public Vmarg {
+public:
+    /**
+     * @brief Constructs a new RetVal vmarg object.
+     * 
+     * @param value the value of the new RetVal vmarg object,
+     * greater or equal to zero 
+     */
+    RetValVmarg(unsigned int value)
+    : Vmarg(value) {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Constructs a new RetVal vmarg object.
+     * 
+     */
+    RetValVmarg() : Vmarg() {INVARIANT(get_value() >= 0);}
+    /**
+     * @brief Destroys this RetVal vmarg object
+     * 
+     */
+    ~RetValVmarg() = default;
+    uint8_t     get_type() const override;
+};
+
 }
 
 #endif 

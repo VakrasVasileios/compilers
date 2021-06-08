@@ -84,15 +84,15 @@ namespace target_code {
             arg_count += i->get_arg2() ? 1 : 0;
             write_unsigned(arg_count);
             write_byte(i->get_opcode());
-            write_byte(i->get_result()->type);
-            write_unsigned(i->get_result()->value);
+            write_byte(i->get_result()->get_type());
+            write_unsigned(i->get_result()->get_value());
             if (i->get_arg1() != nullptr) {
-                write_byte(i->get_arg1()->type);
-                write_unsigned(i->get_arg1()->value);
+                write_byte(i->get_arg1()->get_type());
+                write_unsigned(i->get_arg1()->get_value());
             }
             if (i->get_arg2() != nullptr) {
-                write_byte(i->get_arg2()->type);
-                write_unsigned(i->get_arg2()->value);
+                write_byte(i->get_arg2()->get_type());
+                write_unsigned(i->get_arg2()->get_value());
             }
         }
 
@@ -111,9 +111,9 @@ namespace target_code {
         for (auto incomplete_jump : incomplete_jumps) {
             auto instruction = instructions[incomplete_jump->label - 1];
             if (incomplete_jump->i_target_address - 1 == intermediate_code::quads.size()) 
-                instruction->set_result(new Vmarg(instruction->get_result()->type, instructions.size() + 1));
+                instruction->get_result()->set_value(instructions.size() + 1);
             else 
-                instruction->set_result(new Vmarg(instruction->get_result()->type, intermediate_code::quads[incomplete_jump->i_target_address - 1]->taddress)); 
+                instruction->get_result()->set_value(intermediate_code::quads[incomplete_jump->i_target_address - 1]->taddress);
         }
     }
 }

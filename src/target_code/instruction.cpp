@@ -36,15 +36,6 @@ Instruction::get_src_line() const {
     return src_line;
 }
 
-void  
-Instruction::set_result(Vmarg* result) {
-    INVARIANT(IsStateValid());
-    PRECONDITION(result != nullptr);
-    this->result = result;
-    POSTCONDITION(result != nullptr);
-    INVARIANT(IsStateValid());
-}
-
 const Vmarg*
 Instruction::VerifyArg(const Vmarg* arg) const {
     PRECONDITION(arg != nullptr);
@@ -79,9 +70,9 @@ std::ostream&
 Assign::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "assign";
-    os << " " << *get_result();
+    os << " " << get_result();
     if (get_arg1() != nullptr)
-        os << " " << *get_arg1();
+        os << " " << get_arg1();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -101,9 +92,9 @@ std::ostream&
 Add::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "add";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -125,9 +116,9 @@ std::ostream&
 Sub::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "sub";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -149,9 +140,9 @@ std::ostream&
 Mul::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "mul";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -173,9 +164,9 @@ std::ostream&
 Div::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "div";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -197,9 +188,9 @@ std::ostream&
 Mod::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "mod";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -221,9 +212,9 @@ std::ostream&
 Jeq::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jeq";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -245,9 +236,9 @@ std::ostream&
 Jne::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jne";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -269,9 +260,9 @@ std::ostream&
 Jgt::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jgt";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -293,9 +284,9 @@ std::ostream&
 Jlt::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jlt";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -317,9 +308,9 @@ std::ostream&
 Jge::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jge";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -341,9 +332,9 @@ std::ostream&
 Jle::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jle";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -365,7 +356,7 @@ std::ostream&
 Jump::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "jump";
-    os << " " << *get_result();
+    os << " " << get_result();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -386,7 +377,7 @@ std::ostream&
 CallFunc::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "callfunc";
-    os << " " << *get_result();
+    os << " " << get_result();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -407,7 +398,7 @@ std::ostream&
 PushArg::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "pusharg";
-    os << " " << *get_result();
+    os << " " << get_result();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -429,7 +420,7 @@ EnterFunc::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "enterfunc";
-    os << " " << *get_result();
+    os << " " << get_result();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     INVARIANT(IsStateValid());
@@ -451,7 +442,7 @@ std::ostream&
 ExitFunc::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "exitfunc";
-    os << " " << *get_result();
+    os << " " << get_result();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -472,7 +463,7 @@ std::ostream&
 NewTable::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "newtable";
-    os << " " << *get_result();
+    os << " " << get_result();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -493,9 +484,9 @@ std::ostream&
 TableGetElem::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "tablegetelem";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -517,9 +508,9 @@ std::ostream&
 TableSetElem::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "tablesetelem";
-    os << " " << *get_result();
-    os << " " << *get_arg1();
-    os << " " << *get_arg2();
+    os << " " << get_result();
+    os << " " << get_arg1();
+    os << " " << get_arg2();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
