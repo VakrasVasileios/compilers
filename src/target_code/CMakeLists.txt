@@ -11,7 +11,7 @@ ADD_FLEX_BISON_DEPENDENCY(scanner_trgt parser_trgt)
 
 add_library(target_code
     target_code.cpp opcode_dispatcher.cpp program_consts.cpp
-    instruction.cpp vm_arg.cpp make_operand_visitor.cpp
+    instruction.cpp vm_arg.cpp make_operand_visitor.cpp instruction_factory.cpp
 )
 
 target_link_libraries(target_code intermediate_code)
