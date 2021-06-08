@@ -5,6 +5,7 @@
 #include <ostream>
 
 namespace target_code {
+    
 /**
  * @brief A virtual machine agument type.
  * 
