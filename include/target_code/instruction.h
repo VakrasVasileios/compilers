@@ -58,7 +58,7 @@ public:
     Instruction(const unsigned int label, Vmarg* result,
     const Vmarg* arg1, const Vmarg* arg2, const unsigned int src_line)
     : label(VerifyLabel(label)), result(VerifyResult(result)), arg1(arg1),
-    arg2(arg2), src_line(VerifySrcLine(src_line)) {INVARIANT(IsStateValid());}
+    arg2(arg2), src_line(VerifySrcLine(src_line)) {}
     /**
      * @brief Destroys this Instruction object.
      * 
@@ -170,7 +170,8 @@ public:
      */
     Assign(const unsigned int label, Vmarg* result, const Vmarg* arg1, 
     const unsigned int src_line)
-    : Instruction(label, result, arg1, nullptr, src_line) {}
+    : Instruction(label, result, arg1, nullptr, src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Assign object.
      * 
@@ -201,7 +202,7 @@ public:
      */
     Add(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line) : Instruction(label, result,
-    VerifyArg(arg1), VerifyArg(arg2), src_line) {}    
+    VerifyArg(arg1), VerifyArg(arg2), src_line) {INVARIANT(IsStateValid());}    
     /**
      * @brief Destroys this Add object.
      * 
@@ -232,7 +233,7 @@ public:
      */
     Sub(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line) : Instruction(label, result,
-    VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    VerifyArg(arg1), VerifyArg(arg2), src_line) {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Sub object.
      * 
@@ -263,7 +264,7 @@ public:
      */
     Mul(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line) : Instruction(label, result,
-    VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    VerifyArg(arg1), VerifyArg(arg2), src_line) {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Mul object.
      * 
@@ -294,7 +295,8 @@ public:
      */
     Div(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Div object.
      * 
@@ -325,7 +327,8 @@ public:
      */
     Mod(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, arg1, arg2, src_line) {}
+    : Instruction(label, result, arg1, arg2, src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Mod object.
      * 
@@ -356,7 +359,8 @@ public:
      */
     Jeq(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jeq object.
      * 
@@ -387,7 +391,8 @@ public:
      */
     Jne(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jne object.
      * 
@@ -418,7 +423,8 @@ public:
      */
     Jgt(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jgt object.
      * 
@@ -449,7 +455,8 @@ public:
      */
     Jlt(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jlt object.
      * 
@@ -480,7 +487,8 @@ public:
      */
     Jge(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jge object.
      * 
@@ -511,7 +519,8 @@ public:
      */
     Jle(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jle object.
      * 
@@ -540,7 +549,8 @@ public:
      */
     Jump(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
-    : Instruction(label, result, nullptr, nullptr, src_line) {}
+    : Instruction(label, result, nullptr, nullptr, src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Jump object.
      * 
@@ -570,7 +580,8 @@ public:
      */
     CallFunc(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
-    : Instruction(label, result, nullptr, nullptr, src_line) {}
+    : Instruction(label, result, nullptr, nullptr, src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this Call Func object.
      * 
@@ -600,7 +611,8 @@ public:
      */
     PushArg(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
-    : Instruction(label, result, nullptr, nullptr, src_line) {}
+    : Instruction(label, result, nullptr, nullptr, src_line)
+    {INVARIANT(IsStateValid());}
     uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
@@ -626,7 +638,8 @@ public:
      */
     EnterFunc(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
-    : Instruction(label, result, nullptr, nullptr, src_line) {}
+    : Instruction(label, result, nullptr, nullptr, src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this EnterFunc object.
      * 
@@ -657,7 +670,8 @@ public:
      */
     ExitFunc(const unsigned int label, Vmarg* result, 
     const unsigned int src_line)
-    : Instruction(label, result, nullptr, nullptr, src_line) {}
+    : Instruction(label, result, nullptr, nullptr, src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this ExitFunc object.
      * 
@@ -687,7 +701,8 @@ public:
      */
     NewTable(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
-    : Instruction(label, result, nullptr, nullptr, src_line) {}
+    : Instruction(label, result, nullptr, nullptr, src_line) 
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this NewTable object.
      * 
@@ -720,7 +735,8 @@ public:
      */
     TableGetElem(const unsigned int label, Vmarg* result,
     const Vmarg* arg1, const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this TableGetElem object.
      * 
@@ -754,7 +770,8 @@ public:
      */
     TableSetElem(const unsigned int label, Vmarg* result,
     const Vmarg* arg1, const Vmarg* arg2, const unsigned int src_line)
-    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
+    : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line)
+    {INVARIANT(IsStateValid());}
     /**
      * @brief Destroys this TableSetElem object.
      * 
