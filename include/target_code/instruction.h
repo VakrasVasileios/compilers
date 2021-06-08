@@ -38,6 +38,9 @@ enum Vmopcode : uint8_t {
     TABLEGETELEM_VM,
     TABLESETELEM_VM
 };    
+
+class InstructionVisitor; // fwd declare
+
 /**
  * @brief A virtual machine instruction.
  * 
@@ -110,6 +113,13 @@ public:
      * opcode
      */
     virtual uint8_t         get_opcode() const = 0;
+    /**
+     * @brief Accepts an instruction visitor at this Instruction.
+     * 
+     * @param visitor the instruction visitor to be accepted at this Instruction
+     * , not null
+     */
+    virtual void            Accept(const InstructionVisitor* visitor) = 0;
 protected:
     /**
      * @brief Checks the state of this Instruction.
@@ -172,6 +182,7 @@ public:
      */
     ~Assign() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -203,6 +214,7 @@ public:
      */
     ~Add() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -234,6 +246,7 @@ public:
      */
     ~Sub() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -265,6 +278,7 @@ public:
      */
     ~Mul() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -297,6 +311,7 @@ public:
      */
     ~Div() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;   
     bool            IsStateValid() const override; 
@@ -329,6 +344,7 @@ public:
      */
     ~Mod() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -361,6 +377,7 @@ public:
      */
     ~Jeq() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;
     bool            IsStateValid() const override;
@@ -393,6 +410,7 @@ public:
      */
     ~Jne() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;
     bool            IsStateValid() const override;
@@ -425,6 +443,7 @@ public:
      */
     ~Jgt() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -457,6 +476,7 @@ public:
      */
     ~Jlt() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -489,6 +509,7 @@ public:
      */
     ~Jge() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -521,6 +542,7 @@ public:
      */
     ~Jle() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -551,6 +573,7 @@ public:
      */
     ~Jump() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -582,6 +605,7 @@ public:
      */
     ~CallFunc() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -608,6 +632,7 @@ public:
     : Instruction(label, result, nullptr, nullptr, src_line)
     {INVARIANT(IsStateValid());}
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -640,6 +665,7 @@ public:
      */
     ~EnterFunc() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -672,6 +698,7 @@ public:
      */
     ~ExitFunc() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -703,6 +730,7 @@ public:
      */
     ~NewTable() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -737,6 +765,7 @@ public:
      */
     ~TableGetElem() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -772,10 +801,140 @@ public:
      */
     ~TableSetElem() = default;
     uint8_t         get_opcode() const override;
+    void            Accept(const InstructionVisitor* visitor) override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
 };
+
+/**
+ * @brief Interface for visiting concrete instructions.
+ * 
+ */
+class InstructionVisitor {
+public:
+    /**
+     * @brief Visits an assign instruction.
+     * 
+     * @param inst the assign instruction to be visited, not null
+     */
+    virtual void VisitAssign(Assign* inst) const = 0;
+    /**
+     * @brief Visits an add instruction.
+     * 
+     * @param inst the add instruction to be visited, not null
+     */
+    virtual void VisitAdd(Add* inst) const = 0;
+    /**
+     * @brief Visits a sub instruction.
+     * 
+     * @param inst the sub instruction to be visited, not null
+     */
+    virtual void VisitSub(Sub* inst) const = 0;
+    /**
+     * @brief Visits a mul instruction.
+     * 
+     * @param inst the mul instruction to be visited, not null
+     */
+    virtual void VisitMul(Mul* inst) const = 0;
+    /**
+     * @brief Visits a div instruction.
+     * 
+     * @param inst the div instruction to be visited, not null
+     */
+    virtual void VisitDiv(Div* inst) const = 0;
+    /**
+     * @brief Visits a mod instruction.
+     * 
+     * @param inst the mod instruction to be visited, not null
+     */
+    virtual void VisitMod(Mod* inst) const = 0;
+    /**
+     * @brief Visits a jeq instruction.
+     * 
+     * @param inst the jeq instruction to be visited, not null
+     */
+    virtual void VisitJeq(Jeq* inst) const = 0;
+    /**
+     * @brief Visits a jne instruction.
+     * 
+     * @param inst the jne instruction to be visited, not null
+     */
+    virtual void VisitJne(Jne* inst) const = 0;
+    /**
+     * @brief Visits a jgt instruction.
+     * 
+     * @param inst the jgt instruction to be visited, not null
+     */
+    virtual void VisitJgt(Jgt* inst) const = 0;
+    /**
+     * @brief Visits a jlt instruction.
+     * 
+     * @param inst the jlt instruction to be visited, not null
+     */
+    virtual void VisitJlt(Jlt* inst) const = 0;
+    /**
+     * @brief Visits a jge instruction.
+     * 
+     * @param inst the jge instruction to be visited, not null
+     */
+    virtual void VisitJge(Jge* inst) const = 0;
+    /**
+     * @brief Visits a jle instruction.
+     * 
+     * @param inst the jle instruction to be visited, not null
+     */
+    virtual void VisitJle(Jle* inst) const = 0;
+    /**
+     * @brief Visits a jump instruction.
+     * 
+     * @param inst the jump instruction to be visited, not null
+     */
+    virtual void VisitJump(Jump* inst) const = 0;
+    /**
+     * @brief Visits a callfunc instruction.
+     * 
+     * @param inst the callfunc instruction to be visited, not null
+     */
+    virtual void VisitCallFunc(CallFunc* inst) const = 0;
+    /**
+     * @brief Visits a pusharg instruction.
+     * 
+     * @param inst the pusharg instruction to be visited, not null
+     */
+    virtual void VisitPushArg(PushArg* inst) const = 0;
+    /**
+     * @brief Visits an enterfunc instruction.
+     * 
+     * @param inst the enterfunc instruction to be visited, not null
+     */
+    virtual void VisitEnterFunc(EnterFunc* inst) const = 0;
+    /**
+     * @brief Visits an exitfunc instruction.
+     * 
+     * @param inst the exitfunc instruction to be visited, not null
+     */
+    virtual void VisitExitFunc(ExitFunc* inst) const = 0;
+    /**
+     * @brief Visits a newtable instruction.
+     * 
+     * @param inst the newtable instruction to be visited, not null
+     */
+    virtual void VisitNewTable(NewTable* inst) const = 0;
+    /**
+     * @brief Visits a tablegetelem instruction.
+     * 
+     * @param inst the tablegetelem instruction to be visited, not null
+     */
+    virtual void VisitTableGetElem(TableGetElem* inst) const = 0;
+    /**
+     * @brief Visits a tablesetelem instruction.
+     * 
+     * @param inst the tablesetelem instruction to be visited, not null
+     */
+    virtual void VisitTableSetElem(TableSetElem* inst) const = 0;
+};
+
 }
 
 #endif 

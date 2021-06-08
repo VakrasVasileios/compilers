@@ -66,6 +66,12 @@ Assign::get_opcode() const {
     return ASSIGN_VM;    
 }
 
+void            
+Assign::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);    
+    visitor->VisitAssign(this);
+}
+
 std::ostream&
 Assign::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -86,6 +92,12 @@ Assign::IsStateValid() const {
 uint8_t
 Add::get_opcode() const {
     return ADD_VM;    
+}
+
+void            
+Add::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitAdd(this);    
 }
 
 std::ostream&
@@ -112,6 +124,12 @@ Sub::get_opcode() const {
     return SUB_VM;    
 }
 
+void            
+Sub::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitSub(this);    
+}
+
 std::ostream&
 Sub::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -134,6 +152,12 @@ Sub::IsStateValid() const {
 uint8_t        
 Mul::get_opcode() const {
     return MUL_VM;    
+}
+
+void            
+Mul::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitMul(this);    
 }
 
 std::ostream&
@@ -160,6 +184,12 @@ Div::get_opcode() const {
     return DIV_VM;    
 }
 
+void            
+Div::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitDiv(this);    
+}
+
 std::ostream&
 Div::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -182,6 +212,12 @@ Div::IsStateValid() const {
 uint8_t        
 Mod::get_opcode() const {
     return MOD_VM;    
+}
+
+void            
+Mod::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitMod(this);    
 }
 
 std::ostream&
@@ -208,6 +244,12 @@ Jeq::get_opcode() const {
     return JEQ_VM;    
 }
 
+void            
+Jeq::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJeq(this);    
+}
+
 std::ostream&
 Jeq::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -230,6 +272,12 @@ Jeq::IsStateValid() const {
 uint8_t        
 Jne::get_opcode() const {
     return JNE_VM;    
+}
+
+void            
+Jne::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJne(this);    
 }
 
 std::ostream&
@@ -256,6 +304,12 @@ Jgt::get_opcode() const {
     return JGT_VM;    
 }
 
+void            
+Jgt::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJgt(this);    
+}
+
 std::ostream&
 Jgt::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -278,6 +332,12 @@ Jgt::IsStateValid() const {
 uint8_t        
 Jlt::get_opcode() const {
     return JLT_VM;    
+}
+
+void            
+Jlt::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJlt(this);    
 }
 
 std::ostream&
@@ -304,6 +364,12 @@ Jge::get_opcode() const {
     return JGE_VM;    
 }
 
+void            
+Jge::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJge(this);    
+}
+
 std::ostream&
 Jge::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -326,6 +392,12 @@ Jge::IsStateValid() const {
 uint8_t        
 Jle::get_opcode() const {
     return JLE_VM;    
+}
+
+void            
+Jle::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJle(this);    
 }
 
 std::ostream&
@@ -352,6 +424,12 @@ Jump::get_opcode() const {
     return JUMP_VM;    
 }
 
+void            
+Jump::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitJump(this);    
+}
+
 std::ostream&
 Jump::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -371,6 +449,12 @@ Jump::IsStateValid() const {
 uint8_t        
 CallFunc::get_opcode() const {
     return CALLFUNC_VM;    
+}
+
+void            
+CallFunc::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitCallFunc(this);    
 }
 
 std::ostream&
@@ -394,6 +478,12 @@ PushArg::get_opcode() const {
     return PUSHARG_VM;    
 }
 
+void            
+PushArg::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitPushArg(this);    
+}
+
 std::ostream&
 PushArg::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -413,6 +503,12 @@ PushArg::IsStateValid() const {
 uint8_t        
 EnterFunc::get_opcode() const {
     return ENTERFUNC_VM;    
+}
+
+void            
+EnterFunc::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitEnterFunc(this);    
 }
 
 std::ostream&
@@ -438,6 +534,12 @@ ExitFunc::get_opcode() const {
     return EXITFUNC_VM;    
 }
 
+void            
+ExitFunc::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitExitFunc(this);    
+}
+
 std::ostream&
 ExitFunc::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -459,6 +561,12 @@ NewTable::get_opcode() const {
     return NEWTABLE_VM;    
 }
 
+void            
+NewTable::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitNewTable(this);    
+}
+
 std::ostream&   
 NewTable::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -478,6 +586,12 @@ NewTable::IsStateValid() const {
 uint8_t        
 TableGetElem::get_opcode() const {
     return TABLEGETELEM_VM;    
+}
+
+void            
+TableGetElem::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitTableGetElem(this);    
 }
 
 std::ostream&   
@@ -502,6 +616,12 @@ TableGetElem::IsStateValid() const {
 uint8_t        
 TableSetElem::get_opcode() const {
     return TABLESETELEM_VM;    
+}
+
+void            
+TableSetElem::Accept(const InstructionVisitor* visitor) {
+    PRECONDITION(visitor != nullptr);
+    visitor->VisitTableSetElem(this);    
 }
 
 std::ostream&   
