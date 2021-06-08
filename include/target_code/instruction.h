@@ -9,6 +9,37 @@
 namespace target_code 
 {
 /**
+ * @brief A virtual machine opcode.
+ * 
+ */
+enum Vmopcode : uint8_t {
+    ASSIGN_VM,
+
+    ADD_VM,
+    SUB_VM,
+    MUL_VM,
+    DIV_VM,
+    MOD_VM,
+
+    JEQ_VM,
+    JNE_VM,
+    JGT_VM,
+    JLT_VM,
+    JGE_VM,
+    JLE_VM,
+
+    JUMP_VM,
+
+    CALLFUNC_VM,
+    PUSHARG_VM,
+    ENTERFUNC_VM,
+    EXITFUNC_VM,
+
+    NEWTABLE_VM,
+    TABLEGETELEM_VM,
+    TABLESETELEM_VM
+};    
+/**
  * @brief A virtual machine instruction.
  * 
  */
@@ -72,6 +103,14 @@ public:
      * source line, greater or equal to zero 
      */
     const unsigned int      get_src_line() const;
+    /**
+     * @brief Returns a read access to this Instruction vm
+     * opcode.
+     * 
+     * @return a read access to this Instruction vm
+     * opcode
+     */
+    virtual uint8_t        get_opcode() const = 0;
 protected:
     /**
      * @brief Checks the state of this Instruction.
@@ -132,6 +171,7 @@ public:
      * 
      */
     ~Assign() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -162,6 +202,7 @@ public:
      * 
      */
     ~Add() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -192,6 +233,7 @@ public:
      * 
      */
     ~Sub() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -222,6 +264,7 @@ public:
      * 
      */
     ~Mul() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -252,6 +295,7 @@ public:
      * 
      */
     ~Div() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;   
     bool            IsStateValid() const override; 
@@ -282,6 +326,7 @@ public:
      * 
      */
     ~Mod() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -312,6 +357,7 @@ public:
      * 
      */
     ~Jeq() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;
     bool            IsStateValid() const override;
@@ -342,6 +388,7 @@ public:
      * 
      */
     ~Jne() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;
     bool            IsStateValid() const override;
@@ -372,6 +419,7 @@ public:
      * 
      */
     ~Jgt() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -402,6 +450,7 @@ public:
      * 
      */
     ~Jlt() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -432,6 +481,7 @@ public:
      * 
      */
     ~Jge() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -462,6 +512,7 @@ public:
      * 
      */
     ~Jle() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -490,6 +541,7 @@ public:
      * 
      */
     ~Jump() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -519,6 +571,7 @@ public:
      * 
      */
     ~CallFunc() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -543,6 +596,7 @@ public:
     PushArg(const unsigned int label, const Vmarg* result,
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -573,6 +627,7 @@ public:
      * 
      */
     ~EnterFunc() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -603,6 +658,7 @@ public:
      * 
      */
     ~ExitFunc() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -632,6 +688,7 @@ public:
      * 
      */
     ~NewTable() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -664,6 +721,7 @@ public:
      * 
      */
     ~TableGetElem() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -697,6 +755,7 @@ public:
      * 
      */
     ~TableSetElem() = default;
+    uint8_t        get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;

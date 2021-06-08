@@ -61,6 +61,11 @@ Instruction::VerifySrcLine(const unsigned int src_line) const {
     return src_line;
 }
 
+uint8_t
+Assign::get_opcode() const {
+    return ASSIGN_VM;    
+}
+
 std::ostream&
 Assign::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -76,6 +81,11 @@ bool
 Assign::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_src_line() >= 0;
+}
+
+uint8_t
+Add::get_opcode() const {
+    return ADD_VM;    
 }
 
 std::ostream&
@@ -96,6 +106,11 @@ Add::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+Sub::get_opcode() const {
+    return SUB_VM;    
+}
+
 std::ostream&
 Sub::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -112,6 +127,11 @@ Sub::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_arg2() != nullptr
     && get_src_line() >= 0;
+}
+
+uint8_t        
+Mul::get_opcode() const {
+    return MUL_VM;    
 }
 
 std::ostream&
@@ -132,6 +152,11 @@ Mul::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+Div::get_opcode() const {
+    return DIV_VM;    
+}
+
 std::ostream&
 Div::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -150,6 +175,11 @@ Div::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+Mod::get_opcode() const {
+    return MOD_VM;    
+}
+
 std::ostream&
 Mod::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -166,6 +196,11 @@ Mod::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_arg2() != nullptr
     && get_src_line() >= 0;
+}
+
+uint8_t        
+Jeq::get_opcode() const {
+    return JEQ_VM;    
 }
 
 std::ostream&
@@ -187,6 +222,11 @@ Jeq::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+Jne::get_opcode() const {
+    return JNE_VM;    
+}
+
 std::ostream&
 Jne::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -204,6 +244,11 @@ Jne::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_arg2() != nullptr
     && get_src_line() >= 0;
+}
+
+uint8_t        
+Jgt::get_opcode() const {
+    return JGT_VM;    
 }
 
 std::ostream&
@@ -225,6 +270,11 @@ Jgt::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+Jlt::get_opcode() const {
+    return JLT_VM;    
+}
+
 std::ostream&
 Jlt::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -242,6 +292,11 @@ Jlt::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_arg2() != nullptr
     && get_src_line() >= 0;
+}
+
+uint8_t        
+Jge::get_opcode() const {
+    return JGE_VM;    
 }
 
 std::ostream&
@@ -263,6 +318,11 @@ Jge::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+Jle::get_opcode() const {
+    return JLE_VM;    
+}
+
 std::ostream&
 Jle::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -280,6 +340,11 @@ Jle::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_arg2() != nullptr
     && get_src_line() >= 0;
+}
+
+uint8_t        
+Jump::get_opcode() const {
+    return JUMP_VM;    
 }
 
 std::ostream&
@@ -300,6 +365,11 @@ Jump::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+CallFunc::get_opcode() const {
+    return CALLFUNC_VM;    
+}
+
 std::ostream&
 CallFunc::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -316,6 +386,11 @@ CallFunc::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+PushArg::get_opcode() const {
+    return PUSHARG_VM;    
+}
+
 std::ostream&
 PushArg::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -329,6 +404,11 @@ bool
 PushArg::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_src_line() >= 0;
+}
+
+uint8_t        
+EnterFunc::get_opcode() const {
+    return ENTERFUNC_VM;    
 }
 
 std::ostream&
@@ -348,6 +428,11 @@ EnterFunc::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+ExitFunc::get_opcode() const {
+    return EXITFUNC_VM;    
+}
+
 std::ostream&
 ExitFunc::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -363,6 +448,11 @@ ExitFunc::IsStateValid() const {
     && get_src_line() >= 0;
 }
 
+uint8_t        
+NewTable::get_opcode() const {
+    return NEWTABLE_VM;    
+}
+
 std::ostream&   
 NewTable::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
@@ -376,6 +466,11 @@ bool
 NewTable::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_src_line() >= 0;
+}
+
+uint8_t        
+TableGetElem::get_opcode() const {
+    return TABLEGETELEM_VM;    
 }
 
 std::ostream&   
@@ -394,6 +489,11 @@ TableGetElem::IsStateValid() const {
     return get_label() >= 0 && get_result != nullptr 
     && get_arg1() != nullptr && get_arg2() != nullptr
     && get_src_line() >= 0;
+}
+
+uint8_t        
+TableSetElem::get_opcode() const {
+    return TABLESETELEM_VM;    
 }
 
 std::ostream&   
