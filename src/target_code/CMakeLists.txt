@@ -35,6 +35,13 @@ target_compile_definitions(phase3 PRIVATE LOGQUADSTXT=1)
 target_compile_definitions(phase3 PRIVATE NDEBUG=1)
 target_link_libraries(phase3 target_code)
 
+add_executable(phase4
+  ${BISON_parser_trgt_OUTPUTS}
+  ${FLEX_scanner_trgt_OUTPUTS}
+)
+target_compile_definitions(phase4 PRIVATE NDEBUG=1)
+target_link_libraries(phase4 target_code)
+
 add_executable(r_intermediate_code
   ${BISON_parser_trgt_OUTPUTS}
   ${FLEX_scanner_trgt_OUTPUTS}

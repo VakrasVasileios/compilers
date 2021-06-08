@@ -9,6 +9,8 @@
 #include "program_consts.h"
 #include "incomplete_jump.h"
 #include "make_operand_visitor.h"
+#include "instruction_factory.h"
+#include "vmarg_factory.h"
 
 /**
  * @brief Namespace for generating the target code.

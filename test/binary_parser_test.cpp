@@ -19,7 +19,9 @@ TEST_F(BinaryParserSuite, assign_simple)
 {
     expected = "1: assign 0 0 [line 1]\n"
                "2: assign 1 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/assign/simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/assign/simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -39,7 +41,9 @@ TEST_F(BinaryParserSuite, assign_calls_nested)
                "12: assign 4 69420 [line 7]\n"
                "13: assign 2 4 [line 7]\n"
                "14: assign 5 2 [line 7]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/assign/calls_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/assign/calls_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -59,7 +63,8 @@ TEST_F(BinaryParserSuite, assign_string)
                "12: assign 1 0 [line 6]\n"
                "13: assign 0 6 [line 7]\n"
                "14: assign 1 0 [line 7]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/assign/string.asc");
+    exec("./phase4 ../../test/files/phase3_tests/assign/string.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -70,7 +75,8 @@ TEST_F(BinaryParserSuite, functions_single)
     expected = "1: jump 4 [line 1]\n"
                "2: enterfunc 0 [line 1]\n"
                "3: exitfunc 0 [line 2]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -88,7 +94,8 @@ TEST_F(BinaryParserSuite, functions_many)
                "10: jump 13 [line 17]\n"
                "11: enterfunc 3 [line 17]\n"
                "12: exitfunc 3 [line 18]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/many.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/many.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -112,7 +119,8 @@ TEST_F(BinaryParserSuite, functions_nested)
                "16: jump 19 [line 16]\n"
                "17: enterfunc 5 [line 16]\n"
                "18: exitfunc 5 [line 27]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -124,7 +132,8 @@ TEST_F(BinaryParserSuite, functions_shadowed)
                "4: enterfunc 1 [line 2]\n"
                "5: exitfunc 1 [line 3]\n"
                "6: exitfunc 0 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/shadowed.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/shadowed.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -139,7 +148,8 @@ TEST_F(BinaryParserSuite, functions_anonymous)
                "7: enterfunc 2 [line 4]\n"
                "8: exitfunc 2 [line 5]\n"
                "9: exitfunc 0 [line 6]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/anonymous.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/anonymous.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -147,7 +157,8 @@ TEST_F(BinaryParserSuite, functions_callfunc_warning)
 {
     expected = "1: callfunc 0 [line 1]\n"
                "2: assign 1 69420 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_warning.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_warning.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -158,7 +169,8 @@ TEST_F(BinaryParserSuite, functions_callfunc_noparameters)
                "3: exitfunc 0 [line 2]\n"
                "4: callfunc 0 [line 4]\n"
                "5: assign 1 69420 [line 4]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_no_parameters.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_no_parameters.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -170,17 +182,14 @@ TEST_F(BinaryParserSuite, functions_callfunc_parameters)
                "4: pusharg 0 [line 4]\n"
                "5: callfunc 0 [line 4]\n"
                "6: assign 1 69420 [line 4]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_parameters.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_parameters.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, functions_callfunc_with_symbol_parameters)
 {
-    expected =  "\x1B[33mWarning, in line: 10:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
-                "\x1B[33mWarning, in line: 11:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
-                "\x1B[33mWarning, in line: 12:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
-                "1: jump 4 [line 1]\n"
-                "2: enterfunc 0 [line 1]\n"
+    expected =  "2: enterfunc 0 [line 1]\n"
                 "3: exitfunc 0 [line 2]\n"
                 "4: pusharg 1 [line 5]\n"
                 "5: callfunc 0 [line 5]\n"
@@ -201,22 +210,22 @@ TEST_F(BinaryParserSuite, functions_callfunc_with_symbol_parameters)
                 "20: pusharg 1 [line 12]\n"
                 "21: callfunc 0 [line 12]\n"
                 "22: assign 2 69420 [line 12]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_with_symbol_parameters.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, functions_callfunc_less_parameters)
 {
     expected = "\x1B[31mError, in line: 4:\x1B[0m Too few arguments passed to function: f, defined in line: 1\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_less_parameters.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_less_parameters.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, functions_call_nested)
 {
-    expected = "\x1B[33mWarning, in line: 10:\x1B[0m Too many arguments passed to function: g, defined in line: 6\n"
-               "\x1B[33mWarning, in line: 12:\x1B[0m Too many arguments passed to function: g, defined in line: 6\n"
-               "1: jump 4 [line 2]\n"
+    expected = "1: jump 4 [line 2]\n"
                 "2: enterfunc 0 [line 2]\n"
                 "3: exitfunc 0 [line 4]\n"
                 "4: jump 7 [line 6]\n"
@@ -237,21 +246,22 @@ TEST_F(BinaryParserSuite, functions_call_nested)
                 "19: pusharg 3 [line 12]\n"
                 "20: callfunc 0 [line 12]\n"
                 "21: assign 5 69420 [line 12]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, functions_call_more_parameters)
 {
-    expected = "\x1B[33mWarning, in line: 5:\x1B[0m Too many arguments passed to function: f, defined in line: 1\n"
-               "1: jump 4 [line 1]\n"
+    expected = "1: jump 4 [line 1]\n"
                "2: enterfunc 0 [line 1]\n"
                "3: exitfunc 0 [line 3]\n"
                "4: pusharg 0 [line 5]\n"
                "5: pusharg 1 [line 5]\n"
                "6: callfunc 0 [line 5]\n"
                "7: assign 2 69420 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_more_parameters.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_more_parameters.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -263,7 +273,8 @@ TEST_F(BinaryParserSuite, functions_call_function_def)
                "4: pusharg 0 [line 1]\n"
                "5: callfunc 0 [line 1]\n"
                "6: assign 1 69420 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_function_def.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_function_def.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -278,7 +289,8 @@ TEST_F(BinaryParserSuite, functions_call_nested_with_func_def)
                "7: pusharg 3 [line 1]\n"
                "8: callfunc 0 [line 1]\n"
                "9: assign 4 69420 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_nested_with_func_def.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -291,7 +303,8 @@ TEST_F(BinaryParserSuite, functions_call_anonymous_func_def)
                "5: pusharg 1 [line 1]\n"
                "6: callfunc 0 [line 1]\n"
                "7: assign 1 69420 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_anonymous_func_def.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -306,7 +319,8 @@ TEST_F(BinaryParserSuite, functions_call_method_call) {
                 "8: pusharg 0 [line 3]\n"
                 "9: callfunc 2 [line 3]\n"
                 "10: assign 3 69420 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/functions/call_method_call.asc");
+    exec("./phase4 ../../test/files/phase3_tests/functions/call_method_call.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -319,7 +333,8 @@ TEST_F(BinaryParserSuite, return_void)
                "3: assign 69420 [line 2]\n"
                "4: jump 5 [line 2]\n"
                "5: exitfunc 0 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/return/return_void.asc");
+    exec("./phase4 ../../test/files/phase3_tests/return/return_void.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -330,7 +345,8 @@ TEST_F(BinaryParserSuite, return_symbol)
                "3: assign 69420 0 [line 6]\n"
                "4: jump 5 [line 6]\n"
                "5: exitfunc 0 [line 7]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/return/return_symbol.asc");
+    exec("./phase4 ../../test/files/phase3_tests/return/return_symbol.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -352,7 +368,8 @@ TEST_F(BinaryParserSuite, return_many_and_nested)
                "14: assign 69420 2 [line 6]\n"
                "15: jump 16 [line 6]\n"
                "16: exitfunc 0 [line 7]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/return/return_many_and_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/return/return_many_and_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -365,7 +382,8 @@ TEST_F(BinaryParserSuite, logical_greater_simple)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/greater_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/greater_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -376,7 +394,8 @@ TEST_F(BinaryParserSuite, logical_equal_simple)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/equal_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/equal_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -387,7 +406,8 @@ TEST_F(BinaryParserSuite, logical_greater_equal_simple)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/greater_equal_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/greater_equal_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -398,7 +418,8 @@ TEST_F(BinaryParserSuite, logical_less_equal_simple)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/less_equal_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/less_equal_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -409,7 +430,8 @@ TEST_F(BinaryParserSuite, logical_less_simple)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/less_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/less_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -420,7 +442,8 @@ TEST_F(BinaryParserSuite, logical_not_equal_simple)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/not_equal_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/not_equal_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -430,7 +453,8 @@ TEST_F(BinaryParserSuite, logical_errors)
                "\x1B[31mError, in line: 3:\x1B[0m Invalid use of comparison operator on const bool \'true\'\n"
                "\x1B[31mError, in line: 5:\x1B[0m Invalid use of comparison operator on library function print\n"
                "\x1B[31mError, in line: 9:\x1B[0m Invalid use of comparison operator on user function s\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/logical/errors.asc");
+    exec("./phase4 ../../test/files/phase3_tests/logical/errors.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -446,7 +470,8 @@ TEST_F(BinaryParserSuite, loop_while_simple)
                "6: jeq 8 0 1 [line 1]\n"
                "7: jump 9 [line 1]\n"
                "8: jump 1 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/while_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -457,7 +482,8 @@ TEST_F(BinaryParserSuite, loop_while_simple_with_stms)
                "3: assign 0 1 [line 2]\n"
                "4: assign 1 0 [line 2]\n"
                "5: jump 1 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/while_simple_with_stmts.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -482,7 +508,8 @@ TEST_F(BinaryParserSuite, loop_while_many_nested)
                "17: jeq 19 3 1 [line 9]\n"
                "18: jump 20 [line 9]\n"
                "19: jump 17 [line 10]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_many_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/while_many_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -492,7 +519,8 @@ TEST_F(BinaryParserSuite, loop_while_continue_single)
                "2: jump 5 [line 1]\n"
                "3: jump 1 [line 2]\n"
                "4: jump 1 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_continue_single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/while_continue_single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -526,7 +554,8 @@ TEST_F(BinaryParserSuite, loop_while_continue_many_nested)
                "26: jump 16 [line 10]\n"
                "27: jump 16 [line 15]\n"
                "28: jump 1 [line 20]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_continue_many_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/while_continue_many_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -536,7 +565,8 @@ TEST_F(BinaryParserSuite, loop_while_break_single)
                "2: jump 5 [line 1]\n"
                "3: jump 5 [line 2]\n"
                "4: jump 1 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/while_break_single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/while_break_single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -555,7 +585,8 @@ TEST_F(BinaryParserSuite, loop_for_simple)
                "11: add 0 0 2 [line 1]\n"
                "12: jump 3 [line 1]\n"
                "13: jump 10 [line 2]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -576,7 +607,8 @@ TEST_F(BinaryParserSuite, loop_for_simple_with_stmts)
                "13: assign 4 3 [line 2]\n"
                "14: assign 5 4 [line 2]\n"
                "15: jump 10 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_simple_with_stmts.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_simple_with_stmts.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -634,7 +666,8 @@ TEST_F(BinaryParserSuite, loop_for_many_nested)
                 "50: add 0 0 2 [line 6]\n"
                 "51: jump 42 [line 6]\n"
                 "52: jump 49 [line 6]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_many_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_many_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -652,7 +685,8 @@ TEST_F(BinaryParserSuite, loop_for_continue_single)
                "10: jump 1 [line 1]\n"
                "11: jump 8 [line 2]\n"
                "12: jump 8 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_continue_single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_continue_single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -691,7 +725,8 @@ TEST_F(BinaryParserSuite, loop_for_continue_many_nested)
                 "31: jump 26 [line 4]\n"
                 "32: jump 26 [line 4]\n"
                 "33: jump 8 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_continue_many_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_continue_many_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -709,7 +744,8 @@ TEST_F(BinaryParserSuite, loop_for_break_single)
                "10: jump 1 [line 1]\n"
                "11: jump 13 [line 2]\n"
                "12: jump 8 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_break_single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_break_single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -747,7 +783,8 @@ TEST_F(BinaryParserSuite, loop_for_break_many_nested)
                 "30: jump 32 [line 4]\n"
                 "31: jump 26 [line 4]\n"
                 "32: jump 8 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/loop/for_break_many_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/loop/for_break_many_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -757,7 +794,8 @@ TEST_F(BinaryParserSuite, if_simple)
 {
     expected = "1: jeq 3 0 1 [line 1]\n"
                "2: jump 3 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -770,7 +808,8 @@ TEST_F(BinaryParserSuite, if_expr)
                "5: assign 1 0 [line 1]\n"
                "6: jeq 8 1 1 [line 1]\n"
                "7: jump 8 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_expr.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_expr.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -785,7 +824,8 @@ TEST_F(BinaryParserSuite, if_stmts)
                "7: jump 10 [line 1]\n"
                "8: assign 2 3 [line 5]\n"
                "9: assign 4 2 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_stmts.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_stmts.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -801,7 +841,8 @@ TEST_F(BinaryParserSuite, if_nested_many)
                "8: assign 4 3 [line 4]\n"
                "9: assign 5 1 [line 7]\n"
                "10: assign 6 5 [line 7]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_nested_many.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_nested_many.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -814,7 +855,8 @@ TEST_F(BinaryParserSuite, if_else)
                "5: assign 2 1 [line 2]\n"
                "6: assign 0 3 [line 2]\n"
                "7: assign 2 0 [line 2]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_else.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_else.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -829,7 +871,8 @@ TEST_F(BinaryParserSuite, if_elseif)
                "7: jump 10 [line 2]\n"
                "8: assign 2 2 [line 2]\n"
                "9: assign 3 2 [line 2]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_elseif.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_elseif.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -862,7 +905,8 @@ TEST_F(BinaryParserSuite, if_elseif_else)
                "25: jump 28 [line 6]\n"
                "26: assign 10 2 [line 6]\n"
                "27: assign 11 10 [line 6]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_elseif_else.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_elseif_else.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -894,7 +938,8 @@ TEST_F(BinaryParserSuite, if_else_many_nested)
                 "24: jeq 26 4 1 [line 4]\n"
                 "25: jump 27 [line 4]\n"
                 "26: jump 27 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/conditional/if_else_many_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -907,7 +952,8 @@ TEST_F(BinaryParserSuite, arithmetic_simple)
                "3: mul 1 2 3 [line 3]\n"
                "4: mod 1 3 4 [line 4]\n"
                "5: div 1 5 5 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -917,7 +963,8 @@ TEST_F(BinaryParserSuite, arithmetic_spaghetti)
                "2: add 2 1 1 [line 1]\n"
                "3: add 3 2 0 [line 1]\n"
                "4: add 5 3 4 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/spaghetti.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/spaghetti.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -929,7 +976,8 @@ TEST_F(BinaryParserSuite, arithmetic_errors)
                "\x1B[31mError, in line: 8:\x1B[0m Invalid use of arithmetic operator on const string \"a\"\n"
                "\x1B[31mError, in line: 10:\x1B[0m Invalid use of arithmetic operator on library function print\n";
 
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/errors.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/errors.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -937,7 +985,8 @@ TEST_F(BinaryParserSuite, arithmetic_plusplus_suffix)
 {
     expected = "1: assign 1 0 [line 1]\n"
                "2: add 0 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/plusplus_suffix.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -945,20 +994,23 @@ TEST_F(BinaryParserSuite, arithmetic_plusplus_prefix)
 {
     expected = "1: add 0 0 0 [line 1]\n"
                "2: assign 1 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/plusplus_prefix.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, arithmetic_uminus)
 {
     expected = "1: mul 0 0 1 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/uminus.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/uminus.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, arithmetic_uminus_bool) {
     expected = "\x1B[31mError, in line: 1:\x1B[0m Invalid use of arithmetic operator on const bool 'true'\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/uminus_bool.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -969,7 +1021,8 @@ TEST_F(BinaryParserSuite, arithmetic_not)
                "3: assign 0 1 [line 1]\n"
                "4: jump 6 [line 1]\n"
                "5: assign 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/not.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/not.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -977,7 +1030,8 @@ TEST_F(BinaryParserSuite, arithmetic_minusminus_prefix)
 {
     expected = "1: sub 0 0 0 [line 1]\n"
                "2: assign 1 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/minusminus_prefix.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -985,7 +1039,8 @@ TEST_F(BinaryParserSuite, arithmetic_minusminus_suffix)
 {
     expected = "1: assign 1 0 [line 1]\n"
                "2: sub 0 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
+    exec("./phase4 ../../test/files/phase3_tests/arithmetic/minusminus_suffix.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -995,7 +1050,8 @@ TEST_F(BinaryParserSuite, table_tablemake_list_single)
 {
     expected = "1: newtable 0 [line 1]\n"
                "2: tablesetelem 0 0 1 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_list_single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemake_list_single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1009,7 +1065,8 @@ TEST_F(BinaryParserSuite, table_tablemake_list_many)
                "6: tablesetelem 3 3 0 [line 1]\n"
                "7: tablesetelem 3 2 0 [line 1]\n"
                "8: tablesetelem 3 4 2 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_list_many.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemake_list_many.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1017,7 +1074,8 @@ TEST_F(BinaryParserSuite, table_tablemake_pairs_single)
 {
     expected = "1: newtable 1 [line 1]\n"
                "2: tablesetelem 1 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_pairs_single.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemake_pairs_single.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1026,7 +1084,8 @@ TEST_F(BinaryParserSuite, table_tablemake_pairs_many)
     expected = "1: newtable 1 [line 1]\n"
                "2: tablesetelem 1 0 0 [line 1]\n"
                "3: tablesetelem 1 0 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_pairs_many.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemake_pairs_many.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1041,7 +1100,8 @@ TEST_F(BinaryParserSuite, table_tablemake_pairs_macaroni)
                "7: tablesetelem 3 3 1 [line 1]\n"
                "8: assign 0 3 [line 1]\n"
                "9: assign 4 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_pairs_macaroni.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemake_pairs_macaroni.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1070,26 +1130,30 @@ TEST_F(BinaryParserSuite, table_tablemake_nested)
                "21: tablesetelem 8 1 2 [line 1]\n"
                "22: tablesetelem 8 2 6 [line 1]\n"
                "23: tablesetelem 8 3 7 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemake_nested.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemake_nested.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, table_tablemember_item_simple) {
     expected = "1: tablegetelem 2 1 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tablemember_item_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tablemember_item_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
 TEST_F(BinaryParserSuite, table_tableelem_item_seq) {
     expected =  "1: tablegetelem 2 1 0 [line 1]\n"
                 "2: tablegetelem 4 3 1 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_item_seq.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tableelem_item_seq.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual); 
 }        
 
 TEST_F(BinaryParserSuite, table_tableelem_ind_simp) {
     expected = "1: tablegetelem 2 1 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_simp.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tableelem_ind_simp.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual); 
 }
 
@@ -1108,7 +1172,8 @@ TEST_F(BinaryParserSuite, table_tablelem_ind_manyexprs) {
                 "12: mul 10 2 6 [line 4]\n"
                 "13: add 11 3 10 [line 4]\n"
                 "14: tablegetelem 13 12 11 [line 4]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_manyexprs.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tableelem_ind_manyexprs.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -1116,7 +1181,8 @@ TEST_F(BinaryParserSuite, table_tableelem_it_call) {
     expected =  "1: callfunc 0 [line 1]\n"
                 "2: assign 1 69420 [line 1]\n"
                 "3: tablegetelem 3 2 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_it_call.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tableelem_it_call.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -1124,7 +1190,8 @@ TEST_F(BinaryParserSuite, table_tebleelem_ind_call) {
     expected =  "1: callfunc 0 [line 1]\n"
                 "2: assign 1 69420 [line 1]\n"
                 "3: tablegetelem 3 2 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/table/tableelem_ind_call.asc");
+    exec("./phase4 ../../test/files/phase3_tests/table/tableelem_ind_call.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -1132,7 +1199,8 @@ TEST_F(BinaryParserSuite, table_emit_iftableitem_plusplusprefix) {
     expected =  "1: tablegetelem 3 1 0 [line 1]\n"
                 "2: add 3 3 1 [line 1]\n"
                 "3: tablesetelem 1 0 3 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplusprefix.asc");     
+     exec("./phase4 ../../test/files/phase3_tests/table/emit_iftableitem_plusplusprefix.asc");     
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);     
 }
 
@@ -1141,7 +1209,8 @@ TEST_F(BinaryParserSuite, table_emit_iftableitem_plusplussufix) {
                 "2: assign 2 3 [line 1]\n"
                 "3: add 3 3 1 [line 1]\n"
                 "4: tablesetelem 1 0 3 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_plusplussufix.asc");     
+     exec("./phase4 ../../test/files/phase3_tests/table/emit_iftableitem_plusplussufix.asc");     
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -1149,7 +1218,8 @@ TEST_F(BinaryParserSuite, table_emit_iftableitem_minusminus_prefix) {
     expected =  "1: tablegetelem 3 1 0 [line 1]\n"
                 "2: sub 3 3 1 [line 1]\n"
                 "3: tablesetelem 1 0 3 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_prefix.asc");     
+     exec("./phase4 ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_prefix.asc");     
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -1158,14 +1228,16 @@ TEST_F(BinaryParserSuite, table_emit_iftableitem_minusminus_suffix) {
                 "2: assign 2 3 [line 1]\n"
                 "3: sub 3 3 1 [line 1]\n"
                 "4: tablesetelem 1 0 3 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_suffix.asc");     
+     exec("./phase4 ../../test/files/phase3_tests/table/emit_iftableitem_minusminus_suffix.asc");     
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
 TEST_F(BinaryParserSuite, table_emit_iftableitem_assignexpr) {
     expected =  "1: tablesetelem 1 0 1 [line 1]\n"
                 "2: tablegetelem 2 1 0 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_assignexpr.asc");     
+     exec("./phase4 ../../test/files/phase3_tests/table/emit_iftableitem_assignexpr.asc");     
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);            
 }
 
@@ -1174,7 +1246,8 @@ TEST_F(BinaryParserSuite, table_emit_iftableitem_call) {
                 "2: pusharg 2 [line 1]\n"
                 "3: callfunc 3 [line 1]\n"
                 "4: assign 4 69420 [line 1]\n";
-    actual =  exec("./d_target_code ../../test/files/phase3_tests/table/emit_iftableitem_call.asc");     
+     exec("./phase4 ../../test/files/phase3_tests/table/emit_iftableitem_call.asc");     
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);              
 }
 
@@ -1193,7 +1266,8 @@ TEST_F(BinaryParserSuite, short_circuit_simple_or)
                "9: assign 4 1 [line 1]\n"
                "10: jump 12 [line 1]\n"
                "11: assign 4 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/short_circuit/simple_or.asc");
+    exec("./phase4 ../../test/files/phase3_tests/short_circuit/simple_or.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1210,7 +1284,8 @@ TEST_F(BinaryParserSuite, backpatch_backpatch0)
                "7: assign 2 0 [line 1]\n"
                "8: assign 0 2 [line 1]\n"
                "9: assign 3 0 [line 1]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/backpatch0.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/backpatch0.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1231,7 +1306,8 @@ TEST_F(BinaryParserSuite, backpatch_backpatch1)
                "13: callfunc 0 [line 2]\n"
                "14: assign 4 69420 [line 2]\n"
                "15: jump 1 [line 2]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/backpatch1.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/backpatch1.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1249,14 +1325,14 @@ TEST_F(BinaryParserSuite, backpatch_backpatch2)
                "10: pusharg 0 [line 2]\n"
                "11: callfunc 0 [line 2]\n"
                "12: assign 3 69420 [line 2]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/backpatch2.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/backpatch2.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(BinaryParserSuite, backpatch_backpatch3)
 {
-    expected =  "\x1B[33mWarning, in line: 8:\x1B[0m Too many arguments passed to function: $0, defined in line: 8\n"
-                "1: assign 5 0 [line 1]\n"
+    expected =  "1: assign 5 0 [line 1]\n"
                 "2: assign 6 5 [line 1]\n"
                 "3: assign 4 6 [line 1]\n"
                 "4: assign 7 4 [line 1]\n"
@@ -1369,7 +1445,8 @@ TEST_F(BinaryParserSuite, backpatch_backpatch3)
                 "111: assign 8 69420 [line 20]\n"
                 "112: jump 114 [line 21]\n"
                 "113: jump 97 [line 22]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/backpatch3.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/backpatch3.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1400,7 +1477,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_assignments_complex)
                 "23: assign 11 2 [line 8]\n"
                 "24: assign 0 11 [line 8]\n"
                 "25: assign 12 0 [line 8]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_assignments_complex.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_assignments_complex.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1443,7 +1521,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_assignments_objects)
                 "35: tablegetelem 6 30 4 [line 8]\n"
                 "36: tablesetelem 29 4 6 [line 8]\n"
                 "37: tablegetelem 7 29 4 [line 8]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_assignments_objects.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_assignments_objects.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);   
 }
 
@@ -1459,7 +1538,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_assignments_simple)
                 "8: add 1 0 3 [line 5]\n"
                 "9: assign 0 1 [line 5]\n"
                 "10: assign 2 0 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_assignments_simple.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_assignments_simple.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1470,7 +1550,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_var_maths)
                 "3: sub 2 5 6 [line 3]\n"
                 "4: div 2 7 8 [line 4]\n"
                 "5: mod 2 9 10 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_var_maths.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_var_maths.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1525,7 +1606,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_relational)
                 "47: assign 14 1 [line 3]\n"
                 "48: jump 50 [line 3]\n"
                 "49: assign 14 0 [line 3]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_relational.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_relational.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1579,7 +1661,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_object_creation_expr)
                 "46: tablesetelem 2 5 1 [line 11]\n"
                 "47: newtable 3 [line 11]\n"
                 "48: tablesetelem 3 5 2 [line 11]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_object_creation_expr.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_object_creation_expr.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1643,7 +1726,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_if_else)
                 "56: add 1 4 3 [line 43]\n"
                 "57: jump 59 [line 44]\n"
                 "58: sub 1 6 3 [line 45]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_if_else.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_if_else.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1681,7 +1765,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_funcdecl)
                 "30: assign 4 69420 [line 14]\n"
                 "31: exitfunc 5 [line 14]\n"
                 "32: exitfunc 4 [line 14]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_funcdecl.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_funcdecl.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1745,7 +1830,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_flow_control)
                 "55: jump 52 [line 26]\n"
                 "56: jump 50 [line 27]\n"
                 "57: jump 50 [line 28]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_flow_control.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_flow_control.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1754,7 +1840,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_flow_control_error)
     expected =  "\x1B[31mError, in line: 3:\x1B[0m invalid keyword CONTINUE outside of loop\n"
                 "\x1B[31mError, in line: 4:\x1B[0m invalid keyword BREAK outside of loop\n"
                 "\x1B[31mError, in line: 6:\x1B[0m Invalid return, used outside a function block\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_flow_control_error.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_flow_control_error.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1765,7 +1852,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_const_maths)
                 "3: sub 0 0 4 [line 3]\n"
                 "4: div 0 5 6 [line 4]\n"
                 "5: mod 0 7 5 [line 5]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_const_maths.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_const_maths.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1846,7 +1934,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_basic_expr)
                 "73: add 19 19 5 [line 19]\n"
                 "74: tablesetelem 17 2 19 [line 19]\n"
                 "75: sub 20 12 18 [line 19]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_basic_expr.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_basic_expr.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -1895,7 +1984,8 @@ TEST_F(BinaryParserSuite, backpatch_p3t_calls)
                 "41: pusharg 5 [line 9]\n"
                 "42: callfunc 0 [line 9]\n"
                 "43: assign 8 69420 [line 9]\n";
-    actual = exec("./d_target_code ../../test/files/phase3_tests/backpatch/p3t_calls.asc");
+    exec("./phase4 ../../test/files/phase3_tests/backpatch/p3t_calls.asc");
+    actual = exec("./avm ../src/target_code/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 

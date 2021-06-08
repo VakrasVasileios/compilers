@@ -83,6 +83,7 @@ namespace target_code {
             arg_count += i->get_arg1() ? 1 : 0;
             arg_count += i->get_arg2() ? 1 : 0;
             write_unsigned(arg_count);
+            write_unsigned(i->get_label());
             write_byte(i->get_opcode());
             write_byte(i->get_result()->get_type());
             write_unsigned(i->get_result()->get_value());
@@ -94,6 +95,7 @@ namespace target_code {
                 write_byte(i->get_arg2()->get_type());
                 write_unsigned(i->get_arg2()->get_value());
             }
+            write_unsigned(i->get_src_line());
         }
 
         bin_file.close();
