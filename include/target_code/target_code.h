@@ -6,7 +6,6 @@
 #include <iostream>
 #include "intermediate_code/intermediate_code.h"
 #include "instruction.h"
-#include "vm_arg.h"
 #include "program_consts.h"
 #include "incomplete_jump.h"
 #include "make_operand_visitor.h"
@@ -76,9 +75,6 @@ namespace target_code {
         MakeOperandVisitor*     make_op_visitor;
 
         Vmarg*                  make_operand (expression::Expression* expr);
-
-        void                    generate(Vmopcode op, intermediate_code::Quad* quad);
-        void                    generate_branch(Vmopcode op, intermediate_code::Quad* quad);
         void                    generate_ASSIGN(intermediate_code::Quad* quad);
         void                    generate_ADD(intermediate_code::Quad* quad);
         void                    generate_SUB(intermediate_code::Quad* quad);

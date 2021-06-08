@@ -24,72 +24,58 @@ namespace target_code {
         PatchIncompleteJumps();    
     }
 
-    void        
-    IopCodeDispatcher::generate(Vmopcode op,  intermediate_code::Quad* quad) {
-        quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(), op, make_operand(quad->result),
-            make_operand(quad->arg1), make_operand(quad->arg2), quad->line));
-    }
-
-    void 
-    IopCodeDispatcher::generate_branch(Vmopcode op, intermediate_code::Quad* quad) {
-        assert(quad != nullptr);
-        assert(intermediate_code::IsBranchQuad(quad));
-        auto inst = new Instruction(NextInstructionLabel(), op, new Vmarg(),
-                        make_operand(quad->result), make_operand(quad->arg1), quad->line);
-
-        inst->result->type = LABEL_a;
-        auto i_target_address = quad->arg2->to_unsigned();
-        if (i_target_address < quad->label)
-            inst->result->value = intermediate_code::quads[i_target_address - 1]->taddress;
-        else
-            AddIncompleteJump(NextInstructionLabel(), i_target_address);
-        quad->taddress = NextInstructionLabel();
-        Emit(inst);    
-    }
-
     void    
     IopCodeDispatcher::generate_ASSIGN(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::ASSIGN_t);
         quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM, make_operand(quad->result),
-            make_operand(quad->arg1), nullptr, quad->line));
+        Emit(new Assign(NextInstructionLabel(), make_operand(quad->result),
+            make_operand(quad->arg1), quad->line));
     }
 
     void    
     IopCodeDispatcher::generate_ADD(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::ADD_t);
-        generate(ADD_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new Add(NextInstructionLabel(), make_operand(quad->result),
+            make_operand(quad->arg1),make_operand(quad->arg2), quad->line));
     }
 
     void
     IopCodeDispatcher::generate_SUB(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::SUB_t);
-        generate(SUB_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new Sub(NextInstructionLabel(), make_operand(quad->result),
+            make_operand(quad->arg1),make_operand(quad->arg2), quad->line));
     }
 
     void
     IopCodeDispatcher::generate_MUL(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::MUL_t);
-        generate(MUL_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new Mul(NextInstructionLabel(), make_operand(quad->result),
+            make_operand(quad->arg1),make_operand(quad->arg2), quad->line));
     }
 
     void
     IopCodeDispatcher::generate_DIV(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::DIV_t);
-        generate(DIV_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new Div(NextInstructionLabel(), make_operand(quad->result),
+            make_operand(quad->arg1),make_operand(quad->arg2), quad->line));
     }
 
     void
     IopCodeDispatcher::generate_MOD(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::MOD_t);
-        generate(MOD_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new Mod(NextInstructionLabel(), make_operand(quad->result),
+            make_operand(quad->arg1),make_operand(quad->arg2), quad->line));
     }
 
     void
@@ -98,22 +84,26 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::UMINUS_t);
         quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(), MUL_VM, make_operand(quad->result),
-            make_operand(quad->arg1), make_operand(new expression::IntConstant(-1)), quad->line));
+        Emit(new Mul(NextInstructionLabel(), make_operand(quad->result),
+        make_operand(quad->arg1), make_operand(new expression::IntConstant(-1)),
+        quad->line ));
     }
 
     void
     IopCodeDispatcher::generate_JUMP(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::JUMP_t);
-        auto inst = new Instruction(NextInstructionLabel(), JUMP_VM, new Vmarg(), nullptr, nullptr, quad->line);
-
-        inst->result->type = LABEL_a;
+        Jump* inst;
         auto i_target_address = quad->result->to_unsigned();
-        if (i_target_address < quad->label)
-            inst->result->value = intermediate_code::quads[i_target_address - 1]->taddress;
-        else
+        if (i_target_address < quad->label) {
+            inst = new Jump(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            quad->line);
+        } else {
+            inst = new Jump(NextInstructionLabel(), new Vmarg(LABEL_a),
+            quad->line);
             AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
         quad->taddress = NextInstructionLabel();
         Emit(inst);    
     }
@@ -122,42 +112,114 @@ namespace target_code {
     IopCodeDispatcher::generate_IF_EQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_EQ_t);
-        generate_branch(JEQ_VM, quad);
+        Jeq* inst;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label) {
+            inst = new Jeq(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+        } else {
+            inst = new Jeq(NextInstructionLabel(), new Vmarg(LABEL_a),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);
     }
 
     void
     IopCodeDispatcher::generate_IF_NOTEQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_NOTEQ_t);
-        generate_branch(JNE_VM, quad);
+        Jne* inst;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label) {
+            inst = new Jne(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+        } else {
+            inst = new Jne(NextInstructionLabel(), new Vmarg(LABEL_a),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);
     }
 
     void    
     IopCodeDispatcher::generate_IF_LESSEQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_LESSEQ_t);
-        generate_branch(JLE_VM, quad);
+        Jle* inst;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label) {
+            inst = new Jle(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+        } else {
+            inst = new Jle(NextInstructionLabel(), new Vmarg(LABEL_a),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);
     }
 
     void
     IopCodeDispatcher::generate_IF_GREATEREQ(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_GREATEREQ_t);
-        generate_branch(JGE_VM, quad);
+        Jge* inst;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label) {
+            inst = new Jge(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+        } else {
+            inst = new Jge(NextInstructionLabel(), new Vmarg(LABEL_a),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);
     }
 
     void
     IopCodeDispatcher::generate_IF_LESS(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_LESS_t);
-        generate_branch(JLT_VM, quad);
+        Jlt* inst;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label) {
+            inst = new Jlt(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+        } else {
+            inst = new Jlt(NextInstructionLabel(), new Vmarg(LABEL_a),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);
     }
 
     void    
     IopCodeDispatcher::generate_IF_GREATER(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::IF_GREATER_t);
-        generate_branch(JGT_VM, quad);
+        Jgt* inst;
+        auto i_target_address = quad->arg2->to_unsigned();
+        if (i_target_address < quad->label) {
+            inst = new Jgt(NextInstructionLabel(), new Vmarg(LABEL_a,
+            intermediate_code::quads[i_target_address - 1]->taddress),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+        } else {
+            inst = new Jgt(NextInstructionLabel(), new Vmarg(LABEL_a),
+            make_operand(quad->result), make_operand(quad->arg1), quad->line);
+            AddIncompleteJump(NextInstructionLabel(), i_target_address);
+        }
+        quad->taddress = NextInstructionLabel();
+        Emit(inst);
     }
 
     void    
@@ -165,8 +227,8 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::CALL_t);
         quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(),
-             CALLFUNC_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
+        Emit(new CallFunc(NextInstructionLabel(),
+            make_operand(quad->result), quad->line));
     }
 
     void
@@ -174,8 +236,8 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::PARAM_t);
         quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(),
-            PUSHARG_VM, make_operand(quad->result), nullptr, nullptr, quad->line));
+        Emit(new PushArg(NextInstructionLabel(),
+            make_operand(quad->result), quad->line));
     }
 
     void    
@@ -183,8 +245,9 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::RET_t);
         quad->taddress = NextInstructionLabel();    
-        Emit(new Instruction(NextInstructionLabel(),
-            ASSIGN_VM, new Vmarg(RETVAL_a, RETVAL_VALUE), make_operand(quad->result), nullptr, quad->line));
+        Emit(new Assign(NextInstructionLabel(),
+            new Vmarg(RETVAL_a, RETVAL_VALUE), make_operand(quad->result),
+            quad->line));
     }
 
     void
@@ -192,8 +255,8 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::GETRETVAL_t);
         quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(), ASSIGN_VM,
-             make_operand(quad->result), new Vmarg(RETVAL_a, RETVAL_VALUE), nullptr, quad->line));
+        Emit(new Assign(NextInstructionLabel(), make_operand(quad->result),
+            new Vmarg(RETVAL_a, RETVAL_VALUE), quad->line));
     }
 
     void
@@ -201,8 +264,8 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCSTART_t);
         quad->taddress = NextInstructionLabel();
-        Emit(new Instruction(NextInstructionLabel(), ENTERFUNC_VM,
-            make_operand(quad->result), nullptr, nullptr, quad->line));
+        Emit(new EnterFunc(NextInstructionLabel(), 
+            make_operand(quad->result), quad->line));
     }
 
     void    
@@ -210,29 +273,34 @@ namespace target_code {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::FUNCEND_t);
         quad->taddress = NextInstructionLabel();
-        
-        Emit(new Instruction(NextInstructionLabel(), EXITFUNC_VM,
-            make_operand(quad->result), nullptr, nullptr, quad->line));
+        Emit(new ExitFunc(NextInstructionLabel(), make_operand(quad->result),
+            quad->line));
     }
 
     void    
     IopCodeDispatcher::generate_TABLECREATE(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::TABLECREATE_t);
-        generate(NEWTABLE_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new NewTable(NextInstructionLabel(), make_operand(quad->result),
+            quad->line));
     }
 
     void    
     IopCodeDispatcher::generate_TABLEGETELEM(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::TABLEGETELEM_t);
-        generate(TABLEGETELEM_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new TableGetElem(NextInstructionLabel(), make_operand(quad->result)
+            ,make_operand(quad->arg1), make_operand(quad->arg2), quad->line));
     }
 
     void    
     IopCodeDispatcher::generate_TABLESETELEM(intermediate_code::Quad* quad) {
         assert(quad != nullptr);
         assert(quad->op == intermediate_code::TABLESETELEM_t);
-        generate(TABLESETELEM_VM, quad);
+        quad->taddress = NextInstructionLabel();
+        Emit(new TableSetElem(NextInstructionLabel(), make_operand(quad->result)
+            ,make_operand(quad->arg1), make_operand(quad->arg2), quad->line));
     }
 }

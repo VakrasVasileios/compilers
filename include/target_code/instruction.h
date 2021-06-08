@@ -2,7 +2,6 @@
 #define INSTRUCTION_H
 
 #include "../../util/contract/contract.h"
-#include "vm_opcodes.h"
 #include "vm_arg.h"
 #include <ostream>
 
@@ -56,7 +55,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new instruction object is generated, was emitted, greater than zero
      */
-    Instruction(const unsigned int label, const Vmarg* result,
+    Instruction(const unsigned int label, Vmarg* result,
     const Vmarg* arg1, const Vmarg* arg2, const unsigned int src_line)
     : label(VerifyLabel(label)), result(VerifyResult(result)), arg1(arg1),
     arg2(arg2), src_line(VerifySrcLine(src_line)) {INVARIANT(IsStateValid());}
@@ -80,7 +79,7 @@ public:
      * @return a read access to this Instruction result,
      * not null 
      */
-    const Vmarg*            get_result() const;
+    Vmarg*                  get_result() const;
     /**
      * @brief Returns a read access to this Instruction arg1.
      * 
@@ -110,7 +109,13 @@ public:
      * @return a read access to this Instruction vm
      * opcode
      */
-    virtual uint8_t        get_opcode() const = 0;
+    virtual uint8_t         get_opcode() const = 0;
+    /**
+     * @brief Sets this Instruction result.
+     * 
+     * @param result the result to be set, not null
+     */
+    void                    set_result(Vmarg* result);
 protected:
     /**
      * @brief Checks the state of this Instruction.
@@ -136,14 +141,14 @@ protected:
     virtual std::ostream&   LogInstruction(std::ostream &os) const = 0;
 private:    
     const unsigned int      label;
-    const Vmarg*            result;
+    Vmarg*                  result;
     const Vmarg*            arg1;
     const Vmarg*            arg2;
     const unsigned int      src_line;
 
-    const unsigned int    VerifyLabel(const unsigned int label) const;
-    const Vmarg*          VerifyResult(const Vmarg* result) const;
-    const unsigned int    VerifySrcLine(const unsigned int src_line) const;
+    const unsigned int      VerifyLabel(const unsigned int label) const;
+    Vmarg*                  VerifyResult(Vmarg* result) const;
+    const unsigned int      VerifySrcLine(const unsigned int src_line) const;
 };
 
 /**
@@ -158,20 +163,20 @@ public:
      * @param label the label of the new Assign instruction object,
      * greater or equal to zero 
      * @param result the result of the new Assign instruction object, not null
-     * @param arg1 the arg1 of the new Assign instruction object, not null
+     * @param arg1 the arg1 of the new Assign instruction object, can be null
      * @param src_line the source line, at which the quad, based on which the
      * new Assign instruction object is generated, was emitted,
      * greater than zero
      */
-    Assign(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
-    const unsigned int src_line) : Instruction(label, result, VerifyArg(arg1),
-    nullptr, src_line) {}
+    Assign(const unsigned int label, Vmarg* result, const Vmarg* arg1, 
+    const unsigned int src_line)
+    : Instruction(label, result, arg1, nullptr, src_line) {}
     /**
      * @brief Destroys this Assign object.
      * 
      */
     ~Assign() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -194,7 +199,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new Add instruction object is generated, was emitted, greater than zero
      */
-    Add(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Add(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line) : Instruction(label, result,
     VerifyArg(arg1), VerifyArg(arg2), src_line) {}    
     /**
@@ -202,7 +207,7 @@ public:
      * 
      */
     ~Add() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -225,7 +230,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Sub instruction object is generated, was emitted, greater than zero
      */
-    Sub(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Sub(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line) : Instruction(label, result,
     VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -233,7 +238,7 @@ public:
      * 
      */
     ~Sub() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -256,7 +261,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Mul instruction object is generated, was emitted, greater than zero
      */
-    Mul(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Mul(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line) : Instruction(label, result,
     VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -264,7 +269,7 @@ public:
      * 
      */
     ~Mul() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -287,7 +292,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Div instruction object is generated, was emitted, greater than zero
      */
-    Div(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Div(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -295,7 +300,7 @@ public:
      * 
      */
     ~Div() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;   
     bool            IsStateValid() const override; 
@@ -318,7 +323,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Mod instruction object is generated, was emitted, greater than zero
      */
-    Mod(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Mod(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, arg1, arg2, src_line) {}
     /**
@@ -326,7 +331,7 @@ public:
      * 
      */
     ~Mod() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -349,7 +354,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Jeq instruction object is generated, was emitted, greater than zero
      */
-    Jeq(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Jeq(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -357,7 +362,7 @@ public:
      * 
      */
     ~Jeq() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;
     bool            IsStateValid() const override;
@@ -380,7 +385,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new Jne instruction object is generated, was emitted, greater than zero
      */
-    Jne(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Jne(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -388,7 +393,7 @@ public:
      * 
      */
     ~Jne() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;
     bool            IsStateValid() const override;
@@ -411,7 +416,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Jgt instruction object is generated, was emitted, greater than zero
      */
-    Jgt(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Jgt(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -419,7 +424,7 @@ public:
      * 
      */
     ~Jgt() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -442,7 +447,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new Jlt instruction object is generated, was emitted, greater than zero
      */
-    Jlt(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Jlt(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -450,7 +455,7 @@ public:
      * 
      */
     ~Jlt() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -473,7 +478,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new Jge instruction object is generated, was emitted, greater than zero
      */
-    Jge(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Jge(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -481,7 +486,7 @@ public:
      * 
      */
     ~Jge() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -504,7 +509,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new Jle instruction object is generated, was emitted, greater than zero
      */
-    Jle(const unsigned int label, const Vmarg* result, const Vmarg* arg1,
+    Jle(const unsigned int label, Vmarg* result, const Vmarg* arg1,
     const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -512,7 +517,7 @@ public:
      * 
      */
     ~Jle() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override; 
     bool            IsStateValid() const override;   
@@ -533,7 +538,7 @@ public:
      * @param src_line  the source line, at which the quad, based on which the
      * new Jump instruction object is generated, was emitted, greater than zero
      */
-    Jump(const unsigned int label, const Vmarg* result,
+    Jump(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
     /**
@@ -541,7 +546,7 @@ public:
      * 
      */
     ~Jump() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;  
     bool            IsStateValid() const override;  
@@ -563,7 +568,7 @@ public:
      * new CallFunc instruction object is generated, was emitted,
      * greater than zero
      */
-    CallFunc(const unsigned int label, const Vmarg* result,
+    CallFunc(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
     /**
@@ -571,7 +576,7 @@ public:
      * 
      */
     ~CallFunc() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -593,10 +598,10 @@ public:
      * new PushArg instruction object is generated, was emitted,
      * greater than zero
      */
-    PushArg(const unsigned int label, const Vmarg* result,
+    PushArg(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -619,7 +624,7 @@ public:
      * new EnterFunc instruction object is generated, was emitted,
      * greater than zero
      */
-    EnterFunc(const unsigned int label, const Vmarg* result,
+    EnterFunc(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
     /**
@@ -627,7 +632,7 @@ public:
      * 
      */
     ~EnterFunc() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -650,7 +655,7 @@ public:
      * new ExitFunc instruction object is generated, was emitted,
      * greater than zero
      */
-    ExitFunc(const unsigned int label, const Vmarg* result, 
+    ExitFunc(const unsigned int label, Vmarg* result, 
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
     /**
@@ -658,7 +663,7 @@ public:
      * 
      */
     ~ExitFunc() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -680,7 +685,7 @@ public:
      * new NewTable instruction object is generated, was emitted,
      * greater than zero
      */
-    NewTable(const unsigned int label, const Vmarg* result,
+    NewTable(const unsigned int label, Vmarg* result,
     const unsigned int src_line)
     : Instruction(label, result, nullptr, nullptr, src_line) {}
     /**
@@ -688,7 +693,7 @@ public:
      * 
      */
     ~NewTable() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -713,7 +718,7 @@ public:
      * new TableGetElem instruction object is generated, was emitted,
      * greater than zero
      */
-    TableGetElem(const unsigned int label, const Vmarg* result,
+    TableGetElem(const unsigned int label, Vmarg* result,
     const Vmarg* arg1, const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -721,7 +726,7 @@ public:
      * 
      */
     ~TableGetElem() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;
@@ -747,7 +752,7 @@ public:
      * @param src_line the source line, at which the quad, based on which the
      * new Add instruction object is generated, was emitted, greater than zero
      */
-    TableSetElem(const unsigned int label, const Vmarg* result,
+    TableSetElem(const unsigned int label, Vmarg* result,
     const Vmarg* arg1, const Vmarg* arg2, const unsigned int src_line)
     : Instruction(label, result, VerifyArg(arg1), VerifyArg(arg2), src_line) {}
     /**
@@ -755,7 +760,7 @@ public:
      * 
      */
     ~TableSetElem() = default;
-    uint8_t        get_opcode() const override;
+    uint8_t         get_opcode() const override;
 private:
     std::ostream&   LogInstruction(std::ostream &os) const override;    
     bool            IsStateValid() const override;

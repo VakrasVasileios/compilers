@@ -14,7 +14,7 @@ Instruction::get_label() const {
     return label;
 }
 
-const Vmarg*
+Vmarg*
 Instruction::get_result() const{
     POSTCONDITION(result != nullptr);
     return result;
@@ -36,6 +36,15 @@ Instruction::get_src_line() const {
     return src_line;
 }
 
+void  
+Instruction::set_result(Vmarg* result) {
+    INVARIANT(IsStateValid());
+    PRECONDITION(result != nullptr);
+    this->result = result;
+    POSTCONDITION(result != nullptr);
+    INVARIANT(IsStateValid());
+}
+
 const Vmarg*
 Instruction::VerifyArg(const Vmarg* arg) const {
     PRECONDITION(arg != nullptr);
@@ -49,8 +58,8 @@ Instruction::VerifyLabel(const unsigned int label) const {
     return label;
 }
 
-const Vmarg*
-Instruction::VerifyResult(const Vmarg* result) const {
+Vmarg*
+Instruction::VerifyResult(Vmarg* result) const {
     PRECONDITION(result != nullptr);
     return result;
 }
@@ -71,7 +80,8 @@ Assign::LogInstruction(std::ostream &os) const {
     INVARIANT(IsStateValid());
     os  << get_label() << ": " << "assign";
     os << " " << get_result();
-    os << " " << get_arg1();
+    if (get_arg1() != nullptr)
+        os << " " << get_arg1();
     os << " [line " << get_src_line() << "]" << std::endl;
     INVARIANT(IsStateValid());
     return os;
@@ -79,8 +89,7 @@ Assign::LogInstruction(std::ostream &os) const {
 
 bool
 Assign::IsStateValid() const {
-    return get_label() >= 0 && get_result != nullptr 
-    && get_arg1() != nullptr && get_src_line() >= 0;
+    return get_label() >= 0 && get_result != nullptr && get_src_line() >= 0;
 }
 
 uint8_t

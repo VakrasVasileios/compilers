@@ -3,8 +3,6 @@
 #include <iostream>
 #include <fstream>
 
-// #define MAGIC_NUMBER    340200501
-
 namespace target_code {
     std::vector<Instruction*> instructions;
     IopCodeDispatcher opcode_dispatcher;
@@ -16,7 +14,7 @@ namespace target_code {
 
     void LogInstructions(std::ostream& output) {
         for (auto instruction : instructions)
-            output << *instruction;
+            output << instruction;
     }
 
     void LogProgramConsts(std::ostream& output) {
@@ -27,7 +25,7 @@ namespace target_code {
         if (instructions.size() == 0)
             return 1;
         else     
-            return instructions.back()->label + 1;
+            return instructions.back()->get_label() + 1;
     }
 
     void
@@ -82,19 +80,19 @@ namespace target_code {
         write_unsigned(instructions.size());
         for (auto i : instructions) {
             unsigned int arg_count = 0;
-            arg_count += i->arg1 ? 1 : 0;
-            arg_count += i->arg2 ? 1 : 0;
+            arg_count += i->get_arg1() ? 1 : 0;
+            arg_count += i->get_arg2() ? 1 : 0;
             write_unsigned(arg_count);
-            write_byte(i->opcode);
-            write_byte(i->result->type);
-            write_unsigned(i->result->value);
-            if (i->arg1 != nullptr) {
-                write_byte(i->arg1->type);
-                write_unsigned(i->arg1->value);
+            write_byte(i->get_opcode());
+            write_byte(i->get_result()->type);
+            write_unsigned(i->get_result()->value);
+            if (i->get_arg1() != nullptr) {
+                write_byte(i->get_arg1()->type);
+                write_unsigned(i->get_arg1()->value);
             }
-            if (i->arg2 != nullptr) {
-                write_byte(i->arg2->type);
-                write_unsigned(i->arg2->value);
+            if (i->get_arg2() != nullptr) {
+                write_byte(i->get_arg2()->type);
+                write_unsigned(i->get_arg2()->value);
             }
         }
 
@@ -111,10 +109,11 @@ namespace target_code {
 
     void PatchIncompleteJumps() {
         for (auto incomplete_jump : incomplete_jumps) {
+            auto instruction = instructions[incomplete_jump->label - 1];
             if (incomplete_jump->i_target_address - 1 == intermediate_code::quads.size()) 
-                instructions[incomplete_jump->label - 1]->result->value = instructions.size() + 1;
+                instruction->set_result(new Vmarg(instruction->get_result()->type, instructions.size() + 1));
             else 
-                instructions[incomplete_jump->label - 1]->result->value = intermediate_code::quads[incomplete_jump->i_target_address - 1]->taddress;   
+                instruction->set_result(new Vmarg(instruction->get_result()->type, intermediate_code::quads[incomplete_jump->i_target_address - 1]->taddress)); 
         }
     }
 }
