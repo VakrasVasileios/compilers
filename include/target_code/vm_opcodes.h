@@ -32,8 +32,7 @@ namespace target_code {
         TABLEGETELEM_VM,
         TABLESETELEM_VM,
 
-        ASSIGN_VM,
-        NOP_VM
+        ASSIGN_VM
     };
 
     std::string VmopcodeToString(Vmopcode _op);
