@@ -15,8 +15,3 @@ add_executable(target_code_test target_code_test.cpp)
 target_link_libraries(target_code_test PRIVATE gtest)
 target_link_libraries(target_code_test PRIVATE exec)
 target_compile_definitions(target_code_test PRIVATE TESTING=1)
-
-add_executable(binary_parser_test binary_parser_test.cpp)
-target_link_libraries(binary_parser_test PRIVATE gtest)
-target_link_libraries(binary_parser_test PRIVATE exec)
-target_compile_definitions(binary_parser_test PRIVATE TESTING=1)

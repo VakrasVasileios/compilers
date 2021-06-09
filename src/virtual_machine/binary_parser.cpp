@@ -35,7 +35,6 @@ namespace virtual_machine
 
         // read and check if the magic number is right
         unsigned int magic_num = read_unsigned();
-        //std::cout << magic_num << std::endl;
         if (magic_num != 340200501) {
             std::cerr << "Not an alpha language executable" << std::endl;
             exit(EXIT_FAILURE);
@@ -43,27 +42,26 @@ namespace virtual_machine
         // read string array
         size = read_unsigned();
         for (int i = 0; i < size; i++) {
-            //std::cout << read_string() << std::endl;
+            read_string();
         }
         // read number array
         size = read_unsigned();
         for (int i = 0; i < size; i++) {
             double num;
             executable.read((char*)&num, sizeof(double));
-            //std::cout << num << std::endl;
         }
         // read lib function IDs
         size = read_unsigned();
         for (int i = 0; i < size; i++) {
-            std::cout << read_string() << std::endl;
+            read_string();
         }
         // read user function
         size = read_unsigned();
         for (int i = 0; i < size; i++) {
-            // std::cout << "taddress: " << read_unsigned() << std::endl;
-            // std::cout << "local count: " << read_unsigned() << std::endl;
-            // std::cout << "total args: " << read_unsigned() << std::endl;
-            // std::cout << "id: " << read_string() << std::endl;         
+            read_unsigned();
+            read_unsigned();
+            read_unsigned();
+            read_string();      
         }
         // read instructions
         size = read_unsigned();
@@ -71,7 +69,6 @@ namespace virtual_machine
             auto arg_count = read_unsigned();
             auto label = read_unsigned();
             auto opcode = read_byte();
-            //printf("args: %d\nopcode: %d\n", arg_count, (int)opcode);
             auto result_opcode = read_byte();
             auto result_value = read_unsigned();
 
@@ -79,7 +76,6 @@ namespace virtual_machine
                 static_cast<target_code::Vmarg_t>(result_opcode), result_value);
             
             target_code::Vmarg* args[2];    
-            //std::cout << "result opcode: " << result_opcode << " result value: " << result_value << std::endl;
             for (int j = 0; j < arg_count; j++) {
                 auto arg_opcode = read_byte();
                 auto arg_value = read_unsigned();
@@ -87,7 +83,6 @@ namespace virtual_machine
                 auto arg = target_code::vmarg_factory::create(
                     static_cast<target_code::Vmarg_t>(arg_opcode), arg_value);
                 args[j] = arg;
-               // std::cout << "arg opcode: " << arg_opcode << " arg value: " << arg_value << std::endl;
             }
             auto src_line = read_unsigned();
 
@@ -95,7 +90,7 @@ namespace virtual_machine
                 static_cast<target_code::Vmopcode>(opcode), label, result,
                 args[0], args[1], src_line);
 
-            parsed_instructions.push_back(instr);    
+           parsed_instructions.push_back(instr);    
         }
         for (auto instr : parsed_instructions)
             std::cout << instr;

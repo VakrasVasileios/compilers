@@ -1188,7 +1188,8 @@ int main(int argc, char** argv) {
         }
     #endif  
     opcode_dispatcher.Generate();
-    make_binary_file();
+    if (NoErrorSignaled())
+        make_binary_file();
     #if defined LOGINSTRS
         if (NoErrorSignaled()) { 
             LogInstructions(std::cout);
