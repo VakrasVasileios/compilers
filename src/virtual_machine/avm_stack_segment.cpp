@@ -40,22 +40,26 @@ AvmStackSegment::pop() {
 
 AvmMemcell&
 AvmStackSegment::operator[](int index) {
-    PRECONDITION(util::in_range<int>(index, 0, cpu::topsp));
+    PRECONDITION(util::in_range<int>(index, cpu::top+1, AVM_STACKSIZE-1));
+    PRECONDITION(!empty());
     return memcells[index];
 }
 
 AvmMemcell
 AvmStackSegment::environment(const target_code::GlobalVmarg vmarg) const {
+    PRECONDITION(!empty());
     return memcells[cpu::top - vmarg.get_value()];
 }
 
 AvmMemcell
 AvmStackSegment::environment(const target_code::LocalVmarg vmarg) const {
+    PRECONDITION(!empty());
     return memcells[cpu::topsp - vmarg.get_value()];
 }
 
 AvmMemcell
 AvmStackSegment::environment(const target_code::FormalVmarg vmarg) const {
+    PRECONDITION(!empty());
     return memcells[cpu::topsp + AVM_STACKENV_SIZE + 1 + vmarg.get_value()];
 }
 
