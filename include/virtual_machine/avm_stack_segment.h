@@ -34,30 +34,33 @@ public:
      * 
      */
     ~AvmStackSegment() = default;
-    /**
-     * @brief Returns a read/write access to the top
-     * avm memcell of this AvmStackSegment.
-     * 
-     * @return a read/write access to the top
-     * avm memcell of this AvmStackSegment 
-     */
-    AvmMemcell  top() const;
-    /**
-     * @brief Pushes a memcell at the top of this
-     * AvmStackSegment.
-     * 
-     * @param _memcell the memcell to be pushed
-     * at the top of this AvmStackSegment.
-     */
-    void        push(AvmMemcell _memcell);
-    /**
-     * @brief Pops an avm memcell from the top of this
-     * non empty AvmStackSegment.
-     * 
-     * @return a read/write access to the popped avm memcell
-     * from the top of this non empty AvmStackSegment
-     */
-    AvmMemcell  pop();
+
+    // /**                                                              // TODO
+    //  * @brief Returns a read/write access to the top
+    //  * avm memcell of this AvmStackSegment.
+    //  * 
+    //  * @return a read/write access to the top
+    //  * avm memcell of this AvmStackSegment 
+    //  */
+    // AvmMemcell  top() const;
+    // /**
+    //  * @brief Pushes a memcell at the top of this
+    //  * AvmStackSegment.
+    //  * 
+    //  * @param _memcell the memcell to be pushed
+    //  * at the top of this AvmStackSegment.
+    //  */
+    // void        push(AvmMemcell _memcell);
+    // /**
+    //  * @brief Pops an avm memcell from the top of this
+    //  * non empty AvmStackSegment.
+    //  * 
+    //  * @return a read/write access to the popped avm memcell
+    //  * from the top of this non empty AvmStackSegment
+    //  */
+    // AvmMemcell  pop();
+
+    
     /**
      * @brief Returns an O(1) access to an inserted 
      * avm memcell.
@@ -94,7 +97,7 @@ public:
      */
     AvmMemcell  environment(const target_code::FormalVmarg vmarg) const;
 private:
-    std::vector<AvmMemcell> memcells;
+    AvmMemcell  memcells[AVM_STACKSIZE];
 };
 }
 
