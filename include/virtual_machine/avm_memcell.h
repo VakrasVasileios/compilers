@@ -151,7 +151,7 @@ public:
      * new TableMemcell object, not null
      */
     TableMemcell(AvmTable* _table_val)
-    : table_val_(verify_avm_table(_table_val)) {}
+    : table_val_(verify_avm_table(_table_val)) {INVARIANT(table_val_ != nullptr);}
     /**
      * @brief Destroys this TableMemcell object.
      * 

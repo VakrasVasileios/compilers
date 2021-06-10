@@ -41,8 +41,10 @@ TableMemcell::table_val() const {
 
 void        
 TableMemcell::set_table_val(AvmTable* table) {
+    INVARIANT(table_val_ != nullptr);
     PRECONDITION(table != nullptr);
-    table_val_ = table;   
+    table_val_ = table;  
+    INVARIANT(table_val_ != nullptr); 
 }
 
 AvmTable*   
