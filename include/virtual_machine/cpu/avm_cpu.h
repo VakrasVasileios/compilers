@@ -1,8 +1,7 @@
 #ifndef AVM_CPU_H
 #define AVM_CPU_H
 
-#include "avm_memcell.h"
-#include "avm_stack_segment.h"
+#include "../memcell/avm_memcell.h"
 
 #define AVM_STACKSIZE       4096
 #define AVM_STACKENV_SIZE   4
@@ -20,12 +19,12 @@ namespace virtual_machine
      * @brief Avm cpu registers.
      * 
      */
-    extern AvmMemcell   ax, bx, cx;
+    extern memcell::AvmMemcell   ax, bx, cx;
     /**
      * @brief Avm cpu special retval register.
      * 
      */
-    extern AvmMemcell   retval;
+    extern memcell::AvmMemcell   retval;
     /**
      * @brief Avm cpu pointer register to the top of the 
      * avm stack segment.
