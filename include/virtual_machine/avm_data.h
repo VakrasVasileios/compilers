@@ -26,7 +26,7 @@ typedef struct avm_data {
  * @brief An avm table.
  * 
  */
-typedef struct avm_table final : public AvmData {
+typedef struct avm_table final : public AvmData { //TODO
     
 } AvmTable;
 

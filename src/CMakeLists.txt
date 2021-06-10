@@ -1,2 +1,3 @@
 add_subdirectory(target_code)
 add_subdirectory(virtual_machine)
+target_link_libraries(avm range)
