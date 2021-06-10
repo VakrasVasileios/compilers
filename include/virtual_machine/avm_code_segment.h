@@ -1,5 +1,5 @@
-#ifndef AVM_CODE_STACK_H
-#define AVM_CODE_STACK_H
+#ifndef AVM_CODE_SEGMENT_H
+#define AVM_CODE_SEGMENT_H
 
 #include <vector>
 #include "../../util/contract/contract.h"
@@ -13,24 +13,24 @@ namespace virtual_machine
  * the instructions.
  * 
  */
-class AvmCodeStack final {
+class AvmCodeSegment final {
 public:
     /**
-     * @brief Constructs a new AvmCodeStack object.
+     * @brief Constructs a new AvmCodeSegment object.
      * 
      */
-    AvmCodeStack() = default;
+    AvmCodeSegment() = default;
     /**
-     * @brief Destroys this AvmCodeStack object.
+     * @brief Destroys this AvmCodeSegment object.
      * 
      */
-    ~AvmCodeStack() = default;
+    ~AvmCodeSegment() = default;
     /**
      * @brief Pushes a target code instruction to this
-     * AvmCodeStack.
+     * AvmCodeSegment.
      * 
      * @param _instr the target code instruction to be
-     * pushed to this AvmCodeStack, not null
+     * pushed to this AvmCodeSegment, not null
      */
     void                            push(const target_code::Instruction* _instr);
     /**

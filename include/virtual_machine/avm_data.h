@@ -2,6 +2,7 @@
 #define AVM_DATA_H
 
 #include <string>
+#include <map>
 
 namespace virtual_machine
 {
@@ -26,8 +27,22 @@ typedef struct avm_data {
  * @brief An avm table.
  * 
  */
-typedef struct avm_table final : public AvmData { //TODO
-    
+typedef struct avm_table final : public AvmData {
+    /**
+     * @brief Constructs a AvmTable object.
+     * 
+     */
+    avm_table() = default;
+    /**
+     * @brief Destroys this AvmTable object.
+     * 
+     */
+    ~avm_table() = default;
+    /**
+     * @brief Thetable value of this AvmTable.
+     * 
+     */
+    std::map<AvmData, AvmData> table_val;
 } AvmTable;
 
 /**

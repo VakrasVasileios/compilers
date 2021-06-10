@@ -2,8 +2,12 @@
 
 namespace virtual_machine 
 {
-unsigned     pc = 0;
-AvmMemcell   ax, bx, cx;
-AvmMemcell   retval;
-unsigned     top = 0, topsp = 0;
+    namespace cpu 
+    {
+    unsigned    pc = 0;
+    AvmMemcell  ax, bx, cx;
+    AvmMemcell  retval;
+    unsigned    top = AVM_STACKSIZE - 1;
+    unsigned    topsp = 0;
+    }
 }
