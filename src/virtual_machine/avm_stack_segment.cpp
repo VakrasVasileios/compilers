@@ -26,7 +26,6 @@ AvmStackSegment::push(AvmMemcell _memcell) {
     memcells[--_top] = _memcell;
     POSTCONDITION(size() == prev__size + 1);
     POSTCONDITION(!empty());
-    POSTCONDITION(top() == _memcell);
 }
 
 AvmMemcell
