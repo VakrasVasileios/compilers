@@ -80,6 +80,8 @@ public:
      * @brief Returns a read/write access to the avm memcell
      * of a global vmarg, at this non empty AvmStackSegment.
      * 
+     * @param vmarg the global vmarg to be accessed
+     * 
      * @return a read/write access to the avm memcell
      * of a global vmarg, at this non empty AvmStackSegment
      */
@@ -88,6 +90,8 @@ public:
      * @brief Returns a read/write access to the avm memcell
      * of a local vmarg, at this non empty AvmStackSegment.
      * 
+     * @param vmarg the local vmarg to be accessed
+     * 
      * @return a read/write access to the avm memcell
      * of a local vmarg, at this non empty AvmStackSegment 
      */
@@ -95,6 +99,8 @@ public:
     /**
      * @brief Returns a read/write access to the avm memcell
      * of a formal vmarg, at this non empty AvmStackSegment.
+     * 
+     * @param vmarg the formal vmarg to be accessed
      * 
      * @return a read/write access to the avm memcell
      * of a formal vmarg, at this non empty AvmStackSegment 

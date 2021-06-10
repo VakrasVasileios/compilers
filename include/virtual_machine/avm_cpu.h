@@ -12,7 +12,7 @@ namespace virtual_machine
     namespace cpu 
     {
     /**
-     * @brief The avm cpu program counter.
+     * @brief The avm cpu program counter register.
      * 
      */
     extern unsigned     pc;
@@ -27,13 +27,13 @@ namespace virtual_machine
      */
     extern AvmMemcell   retval;
     /**
-     * @brief Avm cpu pointer to the top of the 
+     * @brief Avm cpu pointer register to the top of the 
      * avm stack segment.
      * 
      */
     extern unsigned     top;
     /**
-     * @brief Avm cpu pointer to the top call stack
+     * @brief Avm cpu pointer register to the top call stack
      * frame.
      * 
      */
