@@ -4,6 +4,9 @@
 #include "avm_memcell.h"
 #include "avm_stack_segment.h"
 
+#define AVM_STACKSIZE       4096
+#define AVM_STACKENV_SIZE   4
+
 namespace virtual_machine 
 {
     namespace cpu 

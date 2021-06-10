@@ -2,29 +2,42 @@
 
 namespace virtual_machine
 {
-// AvmMemcell
-// AvmStackSegment::top() const {
-//     return memcells.back();
-// }
+    
+int
+AvmStackSegment::size() const {
+    return AVM_STACKSIZE - _top;
+}
 
-// void
-// AvmStackSegment::push(AvmMemcell _memcell) {
-//     auto prev_size = memcells.size();
-//     memcells.push_back(_memcell);
-//     auto new_size = memcells.size();
-//     POSTCONDITION(new_size == prev_size + 1);
-// }
+bool
+AvmStackSegment::empty() const {
+    return size() == 0;
+}
 
-// AvmMemcell
-// AvmStackSegment::pop() {
-//     PRECONDITION(!memcells.empty());
-//     auto prev_size = memcells.size();
-//     auto top = this->top();
-//     memcells.pop_back();
-//     auto new_size = memcells.size();
-//     POSTCONDITION(new_size == prev_size - 1);
-//     return top;
-// }
+AvmMemcell
+AvmStackSegment::top() const {
+    PRECONDITION(!empty());
+    return memcells[_top - 1];
+}
+
+void
+AvmStackSegment::push(AvmMemcell _memcell) {
+    PRECONDITION(!full());
+    auto prev__size = size();
+    memcells[--_top] = _memcell;
+    POSTCONDITION(size() == prev__size + 1);
+    POSTCONDITION(!empty());
+    POSTCONDITION(top() == _memcell);
+}
+
+AvmMemcell
+AvmStackSegment::pop() {
+    PRECONDITION(!empty());
+    auto prev__size = size();
+    auto top = memcells[_top++];
+    POSTCONDITION(size() == prev__size - 1);
+    POSTCONDITION(!full());
+    return top;
+}
 
 AvmMemcell&
 AvmStackSegment::operator[](int index) {
@@ -45,6 +58,11 @@ AvmStackSegment::environment(const target_code::LocalVmarg vmarg) const {
 AvmMemcell
 AvmStackSegment::environment(const target_code::FormalVmarg vmarg) const {
     return memcells[cpu::topsp + AVM_STACKENV_SIZE + 1 + vmarg.get_value()];
+}
+
+bool        
+AvmStackSegment::full() const {
+    return size() == AVM_STACKSIZE - 1;
 }
 
 }
