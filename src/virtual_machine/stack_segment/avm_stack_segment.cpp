@@ -6,7 +6,7 @@ namespace virtual_machine
     {
     int
     AvmStackSegment::size() const {
-        return AVM_STACKSIZE - _top;
+        return AVM_STACKSIZE - cpu::top;
     }
 
     bool
@@ -15,58 +15,62 @@ namespace virtual_machine
     }
 
     memcell::AvmMemcell
-    AvmStackSegment::top() const {
+    AvmStackSegment::top() {
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
-        return memcells[_top - 1];
+        return memcells[cpu::top];
     }
 
     void
     AvmStackSegment::push(memcell::AvmMemcell _memcell) {
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!full());
-        auto prev__size = size();
-        memcells[--_top] = _memcell;
-        POSTCONDITION(size() == prev__size + 1);
+        memcells[--cpu::top] = _memcell;
         POSTCONDITION(!empty());
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
     }
 
     memcell::AvmMemcell
     AvmStackSegment::pop() {
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
-        auto prev__size = size();
-        auto top = memcells[_top++];
-        POSTCONDITION(size() == prev__size - 1);
+        auto top = memcells[cpu::top++];
         POSTCONDITION(!full());
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         return top;
     }
 
     memcell::AvmMemcell&
     AvmStackSegment::operator[](int index) {
-        PRECONDITION(util::in_range<int>(index, cpu::top+1, AVM_STACKSIZE-1));
-        PRECONDITION(!empty());
-        return memcells[index];
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
+        PRECONDITION(util::in_range<int>(index, 0, size() - 1));
+        return memcells[size() - 1 - index];
     }
 
     memcell::AvmMemcell
-    AvmStackSegment::environment(const target_code::GlobalVmarg vmarg) const {
+    AvmStackSegment::environment(const target_code::GlobalVmarg vmarg) {
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
-        return memcells[cpu::top - vmarg.get_value()];
+        return memcells[AVM_STACKSIZE - 1 - vmarg.get_value()];
     }
 
     memcell::AvmMemcell
-    AvmStackSegment::environment(const target_code::LocalVmarg vmarg) const {
+    AvmStackSegment::environment(const target_code::LocalVmarg vmarg) {
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
         return memcells[cpu::topsp - vmarg.get_value()];
     }
 
     memcell::AvmMemcell
-    AvmStackSegment::environment(const target_code::FormalVmarg vmarg) const {
+    AvmStackSegment::environment(const target_code::FormalVmarg vmarg) {
+        INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
         return memcells[cpu::topsp + AVM_STACKENV_SIZE + 1 + vmarg.get_value()];
     }
 
     bool        
     AvmStackSegment::full() const {
-        return size() == AVM_STACKSIZE - 1;
+        return size() == AVM_STACKSIZE;
     }
     }
 }

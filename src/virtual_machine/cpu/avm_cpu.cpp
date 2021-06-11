@@ -4,10 +4,10 @@ namespace virtual_machine
 {
     namespace cpu 
     {
-    unsigned            pc = 0;
-    memcell::AvmMemcell ax, bx, cx;
-    memcell::AvmMemcell retval;
-    unsigned            top = AVM_STACKSIZE - 1;
-    unsigned            topsp = top;
+    unsigned                pc = 0;
+    memcell::AvmMemcell     ax, bx, cx;
+    memcell::AvmMemcell     retval;
+    unsigned                top = AVM_STACKSIZE;
+    unsigned                topsp = top;
     }
 }

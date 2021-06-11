@@ -14,29 +14,29 @@ namespace virtual_machine
      * @brief The avm cpu program counter register.
      * 
      */
-    extern unsigned     pc;
+    extern unsigned             pc;
     /**
      * @brief Avm cpu registers.
      * 
      */
-    extern memcell::AvmMemcell   ax, bx, cx;
+    extern memcell::AvmMemcell  ax, bx, cx;
     /**
      * @brief Avm cpu special retval register.
      * 
      */
-    extern memcell::AvmMemcell   retval;
+    extern memcell::AvmMemcell  retval;
     /**
      * @brief Avm cpu pointer register to the top of the 
      * avm stack segment.
      * 
      */
-    extern unsigned     top;
+    extern unsigned             top;
     /**
      * @brief Avm cpu pointer register to the top call stack
      * frame.
      * 
      */
-    extern unsigned     topsp;
+    extern unsigned             topsp;
     }
 }
 
