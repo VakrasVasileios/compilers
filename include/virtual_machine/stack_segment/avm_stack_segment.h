@@ -81,34 +81,43 @@ namespace virtual_machine
       memcell::AvmMemcell &operator[](int index);
       /**
        * @brief Returns a read/write access to the avm memcell
-       * of a global vmarg, at this non empty AvmStackSegment.
+       * of a global vmarg, at this AvmStackSegment.
+       * In case that the vmarg is not pushed, pushes it
+       * to this AvmStackSegment.
        * 
        * @param vmarg the global vmarg to be accessed
+       * and/or pushed
        * 
        * @return a read/write access to the avm memcell
-       * of a global vmarg, at this non empty AvmStackSegment
+       * of a global vmarg, at this AvmStackSegment
        */
       memcell::AvmMemcell
         environment(const target_code::GlobalVmarg vmarg);
       /**
        * @brief Returns a read/write access to the avm memcell
-       * of a local vmarg, at this non empty AvmStackSegment.
+       * of a local vmarg, at this AvmStackSegment.
+       * In case that the vmarg is not pushed, pushes it
+       * to this AvmStackSegment.
        * 
        * @param vmarg the local vmarg to be accessed
+       * and/or pushed
        * 
        * @return a read/write access to the avm memcell
-       * of a local vmarg, at this non empty AvmStackSegment 
+       * of a local vmarg, at this AvmStackSegment 
        */
       memcell::AvmMemcell
         environment(const target_code::LocalVmarg vmarg);
       /**
        * @brief Returns a read/write access to the avm memcell
-       * of a formal vmarg, at this non empty AvmStackSegment.
+       * of a formal vmarg, at this AvmStackSegment.
+       * In case that the vmarg is not pushed, pushes it
+       * to this AvmStackSegment.
        * 
        * @param vmarg the formal vmarg to be accessed
+       * and/or pushed
        * 
        * @return a read/write access to the avm memcell
-       * of a formal vmarg, at this non empty AvmStackSegment 
+       * of a formal vmarg, at this AvmStackSegment 
        */
       memcell::AvmMemcell
         environment(const target_code::FormalVmarg vmarg);
