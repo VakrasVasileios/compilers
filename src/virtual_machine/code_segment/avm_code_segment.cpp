@@ -15,7 +15,7 @@ namespace virtual_machine
 
     const target_code::Instruction*&
     AvmCodeSegment::operator[](int index) {
-        PRECONDITION(util::in_range<int>(index, 0, instrs.size() - 1));
+        PRECONDITION(util::range::in_range<int>(index, 0, instrs.size() - 1));
         POSTCONDITION(instrs[index] != nullptr);
         return instrs[index];
     }
