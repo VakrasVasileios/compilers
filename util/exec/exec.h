@@ -7,14 +7,20 @@
 #include <array>
 #include "../contract/contract.h"
 
-/**
- * @brief Executes a command from the current working directory.
- * 
- * @param cmd the command that is to be executed, not null
- * 
- * @return the output of the command as a  std::string.
- *  
-**/
-std::string exec(const char* cmd);
+namespace util
+{
+    namespace exec
+    {
+    /**
+     * @brief Executes a command from the current working directory.
+     * 
+     * @param cmd the command that is to be executed, not null
+     * 
+     * @return the output of the command as a  std::string.
+     *  
+    **/
+    std::string exec(const char* cmd);
+    }
+}
 
 #endif

@@ -1,6 +1,3 @@
-link_directories(${compilers_SOURCE_DIR}/libs)
-add_subdirectory(${compilers_SOURCE_DIR}/util/exec test)
-
 add_executable(syntax_analysis_test syntax_analysis_test.cpp)
 target_link_libraries(syntax_analysis_test PRIVATE gtest)
 target_link_libraries(syntax_analysis_test PRIVATE exec)

@@ -1,14 +1,14 @@
 include_directories(${compilers_SOURCE_DIR}/include/virtual_machine)
 
-include_directories(${compilers_SOURCE_DIR}/src/target_code)
-
 add_subdirectory(code_segment)
 add_subdirectory(cpu)
 add_subdirectory(memcell)
 add_subdirectory(stack_segment)
+add_subdirectory(library_functions)
 
-target_link_libraries(cpu memcell)
-target_link_libraries(stack_segment cpu)
+link_directories(cpu memcell)
+link_directories(stack_segment cpu)
+link_directories(library_functions memcell)
 
 add_executable(
     avm
