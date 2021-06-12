@@ -1,9 +1,13 @@
 #include "../../include/virtual_machine/binary_parser.h"
+#include "../../include/virtual_machine/constants/constants.h"
+
 #include <fstream>
 #include <iostream>
 
 namespace virtual_machine 
 {
+    using namespace constants;
+
 void parse_binary(const char* _file) {
     PRECONDITION(_file != nullptr);
     std::fstream executable;
@@ -29,6 +33,11 @@ void parse_binary(const char* _file) {
         executable.read((char*)&byte, sizeof(uint8_t));
         return byte;
     };
+    auto read_double = [&executable]() -> double {
+        double num;
+        executable.read((char*)&num, sizeof(double));
+        return num;
+    };
 
     // read and check if the magic number is right
     unsigned int magic_num = read_unsigned();
@@ -39,27 +48,31 @@ void parse_binary(const char* _file) {
     // read string array
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        read_string();
+        Constants:: GetInstance().InsertString(read_string());
     }
     // read number array
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        double num;
-        executable.read((char*)&num, sizeof(double));
+        Constants:: GetInstance().InsertNumber(read_double());
     }
     // read lib function IDs
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        read_string();
+        Constants:: GetInstance().InsertLibfunc(read_string());
     }
     // read user function
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        read_unsigned();
-        read_unsigned();
-        read_unsigned();
-        read_string();      
+        unsigned taddr = read_unsigned();
+        unsigned totloc = read_unsigned();
+        unsigned totargs = read_unsigned();
+        std::string id = read_string();
+        target_code::Userfunc_entry entry(taddr, totloc, totargs, id);
+        Constants:: GetInstance().InsertUserfunc(entry);
     }
+
+    std::cout << Constants:: GetInstance();
+    
     // read instructions
     size = read_unsigned();
     for (int i = 0; i < size; i++) {

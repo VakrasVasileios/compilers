@@ -1,4 +1,5 @@
 #include "../../include/virtual_machine/binary_parser.h"
+#include "../../include/virtual_machine/constants/constants.h"
 #include <iostream>
 
 
