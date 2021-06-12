@@ -48,24 +48,31 @@ void parse_binary(const char* _file) {
     // read string array
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        Constants::GetInstance().InsertString(read_string());
+        Constants:: GetInstance().InsertString(read_string());
     }
     // read number array
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        Constants::GetInstance().InsertNumber(read_double());
+        Constants:: GetInstance().InsertNumber(read_double());
     }
     // read lib function IDs
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        Constants::GetInstance().InsertLibfunc(read_string());
+        Constants:: GetInstance().InsertLibfunc(read_string());
     }
     // read user function
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
-        target_code::Userfunc_entry entry(read_unsigned(), read_unsigned(), read_unsigned(), read_string());
+        unsigned taddr = read_unsigned();
+        unsigned totloc = read_unsigned();
+        unsigned totargs = read_unsigned();
+        std::string id = read_string();
+        target_code::Userfunc_entry entry(taddr, totloc, totargs, id);
         Constants:: GetInstance().InsertUserfunc(entry);
     }
+
+    std::cout << Constants:: GetInstance();
+    
     // read instructions
     size = read_unsigned();
     for (int i = 0; i < size; i++) {
