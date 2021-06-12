@@ -4,9 +4,11 @@ add_subdirectory(code_segment)
 add_subdirectory(cpu)
 add_subdirectory(memcell)
 add_subdirectory(stack_segment)
+add_subdirectory(library_functions)
 
 link_directories(cpu memcell)
 link_directories(stack_segment cpu)
+link_directories(library_functions memcell)
 
 add_executable(
     avm
