@@ -1,4 +1,4 @@
-#include "avm_stack_segment.h"
+#include "../../../include/virtual_machine/stack_segment/avm_stack_segment.h"
 
 namespace virtual_machine
 {

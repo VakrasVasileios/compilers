@@ -36,6 +36,11 @@ namespace virtual_machine
          * accepted, not null
          */
         virtual void    accept(const AvmMemcellVisitor* visitor) {}
+        friend bool     operator==(AvmMemcell const& lhs,
+                            AvmMemcell const& rhs);
+        virtual bool    to_bool() const;                    
+    protected:
+        virtual bool    equals(AvmMemcell const& other) const {};
     };
 
     /**
@@ -73,8 +78,10 @@ namespace virtual_machine
          */
         void    set_num_val(const double _num_val); 
         void    accept(const AvmMemcellVisitor* visitor) override;
+        bool    to_bool() const override;
     private:
         double num_val_;
+        bool    equals(AvmMemcell const& other) const override;
     };
 
     /**
@@ -111,8 +118,10 @@ namespace virtual_machine
          */
         void        set_str_val(const std::string str_val);
         void        accept(const AvmMemcellVisitor* visitor) override;
+        bool        to_bool() const override;
     private:
         std::string str_val_;
+        bool    equals(AvmMemcell const& other) const override;
     };
 
     /**
@@ -149,8 +158,10 @@ namespace virtual_machine
          */
         void    set_bool_val(const bool val);
         void    accept(const AvmMemcellVisitor* visitor) override;
+        bool    to_bool() const override;
     private:
         bool bool_val_;
+        bool    equals(AvmMemcell const& other) const override;
     };
 
     /**
@@ -189,9 +200,11 @@ namespace virtual_machine
          */
         void        set_table_val(AvmTable* table);
         void        accept(const AvmMemcellVisitor* visitor) override;
+        bool        to_bool() const override;
     private:
         AvmTable*   table_val_;
         AvmTable*   verify_avm_table(AvmTable* table) const;
+        bool        equals(AvmMemcell const& other) const override;
     };
 
     /**
@@ -231,9 +244,11 @@ namespace virtual_machine
          * as the data of this UserfuncMemcell
          */
         void            set_func_val(const unsigned int _func_val);
-        void            accept(const AvmMemcellVisitor* visitor) override;       
+        void            accept(const AvmMemcellVisitor* visitor) override;  
+        bool            to_bool() const override;     
     private:
-        unsigned int func_val_;
+        unsigned int    func_val_;
+        bool            equals(AvmMemcell const& other) const override;
     };
 
     /**
@@ -272,8 +287,10 @@ namespace virtual_machine
          */
         void        set_lib_func_val(const std::string _lib_func_val);
         void        accept(const AvmMemcellVisitor* visitor) override;
+        bool        to_bool() const override;
     private:
         std::string lib_func_val_;
+        bool        equals(AvmMemcell const& other) const override;
     };
 
     /**
@@ -293,6 +310,9 @@ namespace virtual_machine
          */
         ~NilMemcell() = default;
         void        accept(const AvmMemcellVisitor* visitor) override;
+        bool        to_bool() const override;
+    private:
+        bool        equals(AvmMemcell const& other) const override;    
     };
 
     /**
@@ -312,6 +332,9 @@ namespace virtual_machine
          */
         ~UndefMemcell() = default;
         void        accept(const AvmMemcellVisitor* visitor) override;
+        bool        to_bool() const override;
+    private:
+        bool        equals(AvmMemcell const& other) const override;    
     };
 
     /**

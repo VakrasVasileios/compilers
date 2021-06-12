@@ -148,7 +148,7 @@ namespace virtual_machine
      * @brief Avm library function id data.
      * 
      */
-    struct lib_func_data final : public AvmData {
+    typedef struct lib_func_data final : public AvmData {
         /**
          * @brief Constructs a new LibFuncData object.
          * 

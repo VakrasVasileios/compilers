@@ -24,7 +24,7 @@ namespace virtual_machine
        * 
        */
       AvmStackSegment() 
-      {INVARIANT(util::in_range<int>(size(), 0, AVM_STACKSIZE));}
+      {INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));}
       /**
        * @brief Destroys this AvmStackSegment object.
        * 

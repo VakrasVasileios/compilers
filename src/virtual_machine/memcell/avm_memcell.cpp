@@ -4,6 +4,10 @@ namespace virtual_machine
 {
     namespace memcell
     {
+    bool  operator==(AvmMemcell const& lhs, AvmMemcell const& rhs) {
+        return lhs.equals(rhs);
+    }
+
     double  
     NumMemcell::num_val() const {
         return num_val_;    
@@ -18,6 +22,55 @@ namespace virtual_machine
     NumMemcell::accept(const AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_num_memcell(this);
+    }
+
+    bool
+    NumMemcell::to_bool() const {
+        return num_val_ != 0;    
+    }
+
+    namespace 
+    {
+    NumMemcell const *num_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<NumMemcell const*>(&memcell);
+    }  
+
+    StringMemcell const *str_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<StringMemcell const*>(&memcell);
+    }
+
+    BoolMemcell const *bool_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<BoolMemcell const*>(&memcell);
+    }
+
+    TableMemcell const *table_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<TableMemcell const*>(&memcell);
+    }
+
+    UserfuncMemcell const *userfunc_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<UserfuncMemcell const*>(&memcell);
+    }
+
+    LibfuncMemcell const *libfunc_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<LibfuncMemcell const*>(&memcell);
+    }
+
+    NilMemcell const *nill_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<NilMemcell const*>(&memcell);
+    }
+
+    UndefMemcell const *undef_memcell_cast(AvmMemcell const& memcell) {
+        return dynamic_cast<UndefMemcell const*>(&memcell);
+    }
+
+    }
+
+    bool    
+    NumMemcell::equals(AvmMemcell const& other) const {
+        if (auto num_memcell = num_memcell_cast(other))
+            return num_val_ == num_memcell->num_val();
+        else    
+            return to_bool() == other.to_bool();        
     }
 
     std::string
@@ -36,6 +89,19 @@ namespace virtual_machine
         visitor->visit_string_memcell(this);
     }
 
+    bool
+    StringMemcell::to_bool() const {
+        return !str_val_.empty();    
+    }
+
+    bool    
+    StringMemcell::equals(AvmMemcell const& other) const {
+        if (auto str_memcell = str_memcell_cast(other))
+            return str_val_ == str_memcell->str_val();
+        else
+            return to_bool() == other.to_bool();
+    }
+
     bool    
     BoolMemcell::bool_val() const {
         return bool_val_;    
@@ -50,6 +116,16 @@ namespace virtual_machine
     BoolMemcell::accept(const AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_bool_memcell(this);
+    }
+
+    bool
+    BoolMemcell::to_bool() const {
+        return bool_val_;   
+    }
+
+    bool    
+    BoolMemcell::equals(AvmMemcell const& other) const {
+       return to_bool() == other.to_bool();
     }
 
     AvmTable*   
@@ -78,6 +154,19 @@ namespace virtual_machine
         return table;    
     }
 
+    bool        
+    TableMemcell::equals(AvmMemcell const& other) const {
+        if (auto table_memcell = table_memcell_cast(other))
+            return table_val_ == table_memcell->table_val();
+        else    
+            return to_bool() == other.to_bool(); 
+    }
+
+    bool
+    TableMemcell::to_bool() const {
+        return true;   
+    }
+
     unsigned int    
     UserfuncMemcell::func_val() const {
         return func_val_;    
@@ -92,6 +181,19 @@ namespace virtual_machine
     UserfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_userfunc_memcell(this);
+    }
+
+    bool            
+    UserfuncMemcell::equals(AvmMemcell const& other) const {
+       if (auto userfunc_memcell = userfunc_memcell_cast(other))
+            return func_val_ == userfunc_memcell->func_val();
+        else
+            return to_bool() == other.to_bool();
+    }
+
+    bool
+    UserfuncMemcell::to_bool() const {
+        return true;   
     }
 
     std::string 
@@ -110,16 +212,49 @@ namespace virtual_machine
         visitor->visit_libfunc_memcell(this);
     }
 
+    bool        
+    LibfuncMemcell::equals(AvmMemcell const& other) const {
+        if (auto libfunc_memcell = libfunc_memcell_cast(other))
+            return lib_func_val_ == libfunc_memcell->lib_func_val();
+        else
+            return to_bool() == other.to_bool();
+    }
+
+    bool
+    LibfuncMemcell::to_bool() const {
+        return true;   
+    }
+
     void
     NilMemcell::accept(const AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_nill_memcell(this);
     }
 
+    bool        
+    NilMemcell::equals(AvmMemcell const& other) const {
+        return to_bool() == other.to_bool();  
+    }
+
+    bool
+    NilMemcell::to_bool() const {
+        return false;   
+    }
+
     void
     UndefMemcell::accept(const AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_undef_memcell(this);
+    }
+
+    bool        
+    UndefMemcell::equals(AvmMemcell const& other) const {
+        return to_bool() == other.to_bool();    
+    }
+
+    bool
+    UndefMemcell::to_bool() const {
+        return false;   
     }
     }
 }

@@ -12,3 +12,8 @@ add_executable(target_code_test target_code_test.cpp)
 target_link_libraries(target_code_test PRIVATE gtest)
 target_link_libraries(target_code_test PRIVATE exec)
 target_compile_definitions(target_code_test PRIVATE TESTING=1)
+
+add_executable(stack_segment_test stack_segment_test.cpp)
+target_link_libraries(stack_segment_test PRIVATE gtest)
+target_link_libraries(stack_segment_test PRIVATE stack_segment)
+target_compile_definitions(stack_segment_test PRIVATE TESTING=1)
