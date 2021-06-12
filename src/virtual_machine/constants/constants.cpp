@@ -3,8 +3,8 @@
 
 namespace constants{
 
-auto
-Constants:: GetInstance() -> Constants& {
+Constants&
+Constants:: GetInstance() {
     static Constants instance;
     return instance;
 }
@@ -50,30 +50,36 @@ Constants:: GetUserfunc(unsigned index) {
 }
 
 void
-Constants:: LogArrays() {
-    std::cout << "--------string array--------" << std::endl;
+Constants:: LogArrays(std::ostream& os) const {
+    os << "--------string array--------\n";
     for(int i = 0; i < string_array.size(); i++) {
-        std::cout << "[" << i << "]\t" << string_array[i] << std::endl;
+        os << "[" << i << "]\t" << string_array[i] << '\n';
     }
 
-    std::cout << "--------number array--------" << std::endl;
+    os << "--------number array--------\n";
     for(int i = 0; i < number_array.size(); i++) {
-        std::cout << "[" << i << "]\t" << number_array[i] << std::endl;
+        os << "[" << i << "]\t" << number_array[i] << '\n';
     }
 
-    std::cout << "--------libfunc array--------" << std::endl;
+    os << "--------libfunc array--------\n";
     for(int i = 0; i < libfunc_array.size(); i++) {
-        std::cout << "[" << i << "]\t" << libfunc_array[i] << std::endl;
+        os << "[" << i << "]\t" << libfunc_array[i] << '\n';
     }
 
-    std::cout << "--------userfunc array--------" << std::endl;
+    os << "--------userfunc array--------\n";
     for(int i = 0; i < userfunc_array.size(); i++) {
-        std::cout   << "[" << i << "]\t" 
-                    << userfunc_array[i].taddress
-                    << userfunc_array[i].local_count
-                    << userfunc_array[i].total_args
-                    << userfunc_array[i].id << std::endl;
+        os  << "[" << i << "]\t" 
+            << ' ' << userfunc_array[i].taddress
+            << ' ' << userfunc_array[i].local_count
+            << ' ' << userfunc_array[i].total_args
+            << ' ' << userfunc_array[i].id << '\n';
     }
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Constants& cons) {
+    cons.LogArrays(os);
+    return os;
 }
 
 }

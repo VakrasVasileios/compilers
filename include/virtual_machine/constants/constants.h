@@ -3,13 +3,13 @@
 
 #include <vector>
 #include <string>
-#include "target_code/target_code.h"
+#include "../target_code/target_code.h"
 
 namespace constants {
 
     class Constants final {
     public:
-        static auto    GetInstance() -> Constants&;
+        static Constants&                   GetInstance();
 
         void                                InsertNumber(double);
         void                                InsertString(std::string);
@@ -21,17 +21,19 @@ namespace constants {
         std::string                         GetLibfunc(unsigned);
         target_code::Userfunc_entry         GetUserfunc(unsigned);
 
-        void    LogArrays();
+        friend std::ostream&                operator<<(std::ostream& os, const Constants& cons);
 
     private:
         Constants() = default;
-        Constants(Constants&) = delete;
+        Constants(const Constants&) = delete;
         Constants(Constants&&) = delete;
 
         std::vector<double>                         number_array;
         std::vector<std::string>                    string_array;
         std::vector<std::string>                    libfunc_array;
         std::vector<target_code::Userfunc_entry>    userfunc_array;
+        
+        void    LogArrays(std::ostream& os) const;
     };
 }
 #endif
