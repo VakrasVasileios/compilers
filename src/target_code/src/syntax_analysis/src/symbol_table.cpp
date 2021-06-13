@@ -1,6 +1,9 @@
-#include "../../../../include/target_code/intermediate_code/syntax_analysis/symbol_table.h"
+#include "symbol_table.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     std::vector<std::list<Block*> >
     SymbolTable:: get_blocks_table() const {
         return blocks_table;
@@ -32,7 +35,8 @@ namespace syntax_analysis {
         {        
             if (symbol_table.ContainsAnEntry(blockList))
             {
-                os << "-----------     Scope #" << scope << "     -----------\n";
+                os 
+                << "-----------     Scope #" << scope << "     -----------\n";
                 for (auto block : blockList)
                 {
                     os << *block;
@@ -42,5 +46,6 @@ namespace syntax_analysis {
         }
 
         return os;
+    }
     }
 }

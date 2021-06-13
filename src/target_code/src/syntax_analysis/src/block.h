@@ -3,10 +3,13 @@
 
 #include <list>
 #include <iostream>
-#include "../../../../util/contract/contract.h"
-#include "expression/symbol.h"
+#include "../../../../../util/contract/include/contract.h"
+#include "../../expression/include/expression.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     /**
      * @brief Contains multiple symbols across a single scope.
      * 
@@ -33,13 +36,13 @@ namespace syntax_analysis {
         void                            Deactivate();   
         /**
          * @brief Searches for a symbol with an id on this Block.
-         * Returns a read/write access to a reference of the symbol if it's found,
-        *  else nullptr.
+         * Returns a read/write access to a reference of the symbol
+         * if it's found, else nullptr.
         * 
         *  @param id the id with which to search for a symbol on this Block
         * 
-        *  @return a read/write access to a reference of the symbol if it's found,
-        *  else nullptr
+        *  @return a read/write access to a reference of the symbol if it's
+        *  found, else nullptr
         **/ 
         expression::Symbol*             Lookup(std::string id);
         /**
@@ -51,10 +54,12 @@ namespace syntax_analysis {
         **/ 
         void                            Insert(expression::Symbol* symbol);
 
-        friend std::ostream&            operator<<(std::ostream& os, const Block block);
+        friend std::ostream&            operator<<(std::ostream& os,
+                                            const Block block);
     private:
         std::list<expression::Symbol*>  symbols;   
     };
+    }
 }
 
 #endif

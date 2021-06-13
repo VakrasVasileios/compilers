@@ -3,10 +3,13 @@
 
 #include <list>
 #include <string>
-#include "../../../../util/contract/contract.h"
+#include "../../../../../util/contract/include/contract.h"
 #include "block.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     /**
      * @brief A stack containing all of the scope blocks. 
      * The top block is always the current scope block.
@@ -26,7 +29,8 @@ namespace syntax_analysis {
         /**
          * @brief Returns a read/write access to this ProgramStack top block.
          * 
-         * @return a read/write access to this ProgramStack top block, can be null.
+         * @return a read/write access to this ProgramStack top block,
+         * can be null.
          * 
         **/ 
         Block*              Top();
@@ -45,8 +49,8 @@ namespace syntax_analysis {
         void                Pop();
         /**
          * @brief Searches for a symbol with a name on this ProgramStack,
-         * across all scopes. Returns a read/write access to the symbol if it's found,
-         * else nullptr.
+         * across all scopes. Returns a read/write access to the symbol if it's
+         * found, else nullptr.
          * 
          * @return a read/write access to the symbol if it's found,
          * else nullptr.
@@ -55,8 +59,8 @@ namespace syntax_analysis {
         expression::Symbol* Lookup(std::string name);
         /**
          * @brief Searches for a symbol with a name on this ProgramStack,
-         * across the global scope. Returns a read/write access to the symbol if it's found,
-         * else nullptr.
+         * across the global scope. Returns a read/write access to the symbol
+         * if it's found, else nullptr.
          * 
          * @return a read/write access to the symbol if it's found,
          * else nullptr.
@@ -64,18 +68,21 @@ namespace syntax_analysis {
         **/ 
         expression::Symbol* LookupGlobal(std::string name);
         /**
-         * @brief Activates all of the blocks at the lower scopes of this ProgramStack.
+         * @brief Activates all of the blocks at the lower scopes of this
+         * ProgramStack.
          * 
         **/ 
         void                ActivateLowerScopes();
         /**
-         * @brief Deactivates all of the blocks variables at the lower scopes of this ProgramStack.
+         * @brief Deactivates all of the blocks variables at the lower scopes
+         * of this ProgramStack.
          * 
         **/  
         void                DeactivateLowerScopes();
     private:
         std::list<Block*>   block_list;  
     };
+    }
 }
 
 #endif

@@ -2,35 +2,13 @@
 #define SYNTAX_ANALYSIS_H
 
 #include <iostream>
-#include "../../../../util/contract/contract.h"
-#include "expression/arithmetic_expr.h"
-#include "expression/assign_expr.h"
-#include "expression/binary_expr.h"
-#include "expression/bool_constant.h"
-#include "expression/bool_expr.h"
-#include "expression/call_suffix.h"
-#include "expression/call.h"
-#include "expression/constant.h"
-#include "expression/double_constant.h"
-#include "expression/elist.h"
-#include "expression/expression.h"
-#include "expression/indexed_elem.h"
-#include "expression/indexed.h"
-#include "expression/int_constant.h"
-#include "expression/method_call.h"
-#include "expression/nil_constant.h"
-#include "expression/norm_call.h"
-#include "expression/numeric_constant.h"
-#include "expression/primary.h"
-#include "expression/string_constant.h"
-#include "expression/symbol.h"
-#include "expression/tablemake_elems.h"
-#include "expression/tablemake_pairs.h"
-#include "expression/tablemake.h"
-#include "symbol_table.h"
-#include "program_stack.h"
+#include "../../../../../util/contract/include/contract.h"
+#include "../../expression/include/expression.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     /**
      * @brief Checks wether no errors have been signaled during the
      * syntax analysis.
@@ -171,11 +149,13 @@ namespace syntax_analysis {
      * @param type the type of the symbol
      * @param id the id of the symbol, not null 
      * @param index the index of the symbol, can be null 
-     * @param line the line on which the symbol is parsed, greater or equal to zero
+     * @param line the line on which the symbol is parsed, greater or equal
+     * to zero
      * 
      * @return the inserted, to the symbol table, new symbol, not null
      */
-    expression::Symbol*     DefineNewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line);
+    expression::Symbol*     DefineNewSymbol(expression::ExprType type,
+        const char* id, expression::Expression* index, unsigned int line);
     /**
      * @brief Inserts a new anonymous function, parsed at a src line,
      * to the symbol table.
@@ -194,7 +174,8 @@ namespace syntax_analysis {
      * @param new_formal_arg the new formal argument to be stashed,
      * not null and of FORMAL_ARG scope space
      */
-    void                    StashFormalArgument(expression::Symbol* new_formal_arg);
+    void                    
+        StashFormalArgument(expression::Symbol* new_formal_arg);
     /**
      * @brief Inserts the stashed formal arguments to the symbol table.
      * 
@@ -216,6 +197,7 @@ namespace syntax_analysis {
      * @return  wether a symbol is already defined at the current scope
      */
     bool                    IsAtCurrentScope(expression::Symbol* symbol);
+    }
 }
 
 #endif 

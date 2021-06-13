@@ -1,6 +1,9 @@
-#include "../../../../include/target_code/intermediate_code/syntax_analysis/program_stack.h"
+#include "program_stack.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     std::list<Block*>
     ProgramStack:: get_block_list() const {
         return block_list;
@@ -59,5 +62,6 @@ namespace syntax_analysis {
         for (; iter != block_list.end(); ++iter) {
             (*iter)->Deactivate();
         }
+    }
     }
 }

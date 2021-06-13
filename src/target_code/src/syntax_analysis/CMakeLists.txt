@@ -1,0 +1,2 @@
+add_subdirectory(src)
+target_include_directories(syntax_analysis PUBLIC include/syntax_analysis.h)

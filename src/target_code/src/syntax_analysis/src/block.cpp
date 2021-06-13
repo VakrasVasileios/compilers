@@ -1,6 +1,9 @@
-#include "../../../../include/target_code/intermediate_code/syntax_analysis/block.h"
+#include "block.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     std::list<expression::Symbol*>
     Block:: get_symbols() const {
         return symbols;
@@ -43,5 +46,6 @@ namespace syntax_analysis {
         }
 
         return os;    
+    }
     }
 }

@@ -1,11 +1,18 @@
-#include "../../../../include/target_code/intermediate_code/syntax_analysis/syntax_analysis.h"
+#include <stack>
+#include "../include/syntax_analysis.h"
+#include "block.h"
+#include "program_stack.h"
+#include "symbol_table.h"
 
 #define OUT_OF_SCOPE       -1
 #define LIB_FUNC_LINE       0
 #define TEMP_LINE           0
 #define LIB_FUNC_OFFSET     0
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     const unsigned int          global_scope = 0;
     unsigned int                current_scope = OUT_OF_SCOPE;
 
@@ -19,7 +26,8 @@ namespace syntax_analysis {
     }  
 
     void SignalError(std::string msg, unsigned int line) {
-        std::cout << "\033[31mError, in line: " << line << ":\033[0m " << msg << std::endl;
+        std::cout << "\033[31mError, in line: " << line <<
+        ":\033[0m " << msg << std::endl;
         error_flag = 1;
     }
 
@@ -30,18 +38,42 @@ namespace syntax_analysis {
 
     void InitLibraryFunctions() {
         IncreaseScope(); 
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "print", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "input", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "objectmemberkeys", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "objecttotalmembers", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "objectcopy", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "totalarguments", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "argument", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "typeof", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "strtonum", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "sqrt", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "cos", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
-        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "sin", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "print", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "input", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "objectmemberkeys", LIB_FUNC_LINE, global_scope,
+          expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "objecttotalmembers", LIB_FUNC_LINE, global_scope,
+          expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "objectcopy", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "totalarguments", LIB_FUNC_LINE, global_scope,
+          expression::PROGRAM_VAR, LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "argument", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "typeof", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "strtonum", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC,
+         "sqrt", LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "cos",
+         LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR, LIB_FUNC_OFFSET,
+          nullptr));
+        DefineSymbol(new expression::Symbol(expression::LIB_FUNC, "sin",
+         LIB_FUNC_LINE, global_scope, expression::PROGRAM_VAR,
+          LIB_FUNC_OFFSET, nullptr));
     }
 
     unsigned int CurrScope() {
@@ -156,12 +188,15 @@ namespace syntax_analysis {
         return program_stack.LookupGlobal(id);
     }
 
-    expression::Symbol* NewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
+    expression::Symbol* NewSymbol(expression::ExprType type, const char* id,
+        expression::Expression* index, unsigned int line) {
         assert (id != nullptr);
-        return new expression::Symbol(type, id, line, current_scope, CurrScopeSpace(), CurrScopeOffset(), index);
+        return new expression::Symbol(type, id, line, current_scope,
+            CurrScopeSpace(), CurrScopeOffset(), index);
     }
 
-    expression::Symbol* DefineNewSymbol(expression::ExprType type, const char* id, expression::Expression* index, unsigned int line) {
+    expression::Symbol* DefineNewSymbol(expression::ExprType type,
+        const char* id, expression::Expression* index, unsigned int line) {
         PRECONDITION(id != nullptr);
         auto new_symbol = NewSymbol(type, id, index, line);
         IncreaseCurrOffset();
@@ -181,7 +216,8 @@ namespace syntax_analysis {
 
     expression::Symbol* NewAnonymousFunc(unsigned int line) {
         assert(line >= 0);
-        return NewSymbol(expression::USER_FUNC, NewAnonymousFuncName().c_str(), nullptr, line);
+        return NewSymbol(expression::USER_FUNC, NewAnonymousFuncName().c_str(),
+            nullptr, line);
     }
 
     expression::Symbol* DefineNewAnonymousFunc(unsigned int line) {
@@ -219,5 +255,6 @@ namespace syntax_analysis {
 
     void LogSymTable(std::ostream& output) {
         output << symbol_table;
+    }
     }
 } 

@@ -2,10 +2,13 @@
 #define SYMBOL_TABLE_H
 
 #include <vector>
-#include "../../../../util/contract/contract.h"
+#include "../../../../../util/contract/include/contract.h"
 #include "block.h"
 
-namespace syntax_analysis {
+namespace target_code
+{
+    namespace syntax_analysis 
+    {
     /**
      * @brief A table of block lists across many scopes.
     **/ 
@@ -31,14 +34,18 @@ namespace syntax_analysis {
          * or equal to zero.
          * @param block the block to be inserted, not null 
         **/ 
-        void                            Insert(unsigned int scope, Block* block);
+        void                            Insert(unsigned int scope,
+                                            Block* block);
 
-        friend std::ostream&            operator<<(std::ostream& os, const SymbolTable symbol_table);
+        friend std::ostream&            operator<<(std::ostream& os,
+                                            const SymbolTable symbol_table);
     private:
         std::vector<std::list<Block*> > blocks_table;
 
-        static bool                     ContainsAnEntry(std::list<Block*> blockList);
+        static bool                     ContainsAnEntry(std::list<Block*>
+                                            blockList);
     };
+    }
 }
 
 #endif
