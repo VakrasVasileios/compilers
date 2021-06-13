@@ -9,14 +9,16 @@ class StackSegmentSuite : public ::testing::Test
 {
 protected:
     virtual_machine::stack_segment::AvmStackSegment stack;
-    virtual_machine::memcell::AvmMemcell            memcell;
-    virtual_machine::memcell::AvmMemcell            memcell2;
+    virtual_machine::memcell::AvmMemcell*           memcell;
+    virtual_machine::memcell::AvmMemcell*           memcell2;
     target_code::GlobalVmarg*                       global_vmarg_5;
     target_code::GlobalVmarg*                       global_vmarg_0;
     target_code::LocalVmarg*                        local_vmarg;
     target_code::FormalVmarg*                       formal_vmarg;
 
     void SetUp() override {
+        memcell = new virtual_machine::memcell::NumMemcell(1);
+        memcell2 = new virtual_machine::memcell::NumMemcell(2);
         global_vmarg_5 = new target_code::GlobalVmarg(5);
         global_vmarg_0 = new target_code::GlobalVmarg(0);
         local_vmarg = new target_code::LocalVmarg(2);
@@ -100,16 +102,16 @@ TEST_F(StackSegmentSuite, environment_pushed_vmarg_leaves_size_intact) {
 }
 
 TEST_F(StackSegmentSuite, environment_pushed_vmarg_returns_it) {
-    stack.environment(*global_vmarg_0);
-    stack.environment(*global_vmarg_5);
-    GTEST_ASSERT_EQ(*global_vmarg_0, stack.environment(*global_vmarg_0));
+    auto gmemcell0 = stack.environment(*global_vmarg_0);
+    auto gmemcell5 = stack.environment(*global_vmarg_5);
+    GTEST_ASSERT_EQ(gmemcell0, stack.environment(*global_vmarg_0));
 }
 
 TEST_F(StackSegmentSuite, environment_global_vmarg_pushes_it_at_start) {
     stack.environment(*local_vmarg);
     stack.environment(*formal_vmarg);
-    stack.environment(*global_vmarg_0);
-    GTEST_ASSERT_EQ(stack[0], *global_vmarg_0);
+    auto gmemcell0 = stack.environment(*global_vmarg_0);
+    GTEST_ASSERT_EQ(stack[0], gmemcell0);
 }
 
 #ifdef TESTING
