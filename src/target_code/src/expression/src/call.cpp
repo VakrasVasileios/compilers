@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/call.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     Symbol*
     Call:: get_called_symbol() const {
         return called_symbol;
@@ -53,5 +56,6 @@ namespace expression {
     Call:: verify_ret_val(Symbol* ret_val) {
         PRECONDITION(ret_val != nullptr);
         return ret_val;
+    }
     }
 }

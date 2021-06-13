@@ -1,7 +1,10 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/expression.h"
+#include "../include/expression.h"
 #include <assert.h>
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     ExprType
     Expression:: get_type() const {
         return type;
@@ -39,5 +42,6 @@ namespace expression {
     bool IsTableMake(Expression* expr) {
         PRECONDITION(expr != nullptr);
         return expr->get_type() == TABLE_MAKE;
+    }
     }
 }

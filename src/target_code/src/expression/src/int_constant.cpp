@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/int_constant.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     int 
     IntConstant:: get_value() const {
         return value;
@@ -25,5 +28,6 @@ namespace expression {
     std::ostream&
     IntConstant:: LogExpression(std::ostream& os) const {
         return os << value;
+    }
     }
 }

@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/call_suffix.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     CallSuffixType 
     CallSuffix:: get_type() const {
         return type;
@@ -21,8 +24,9 @@ namespace expression {
         PRECONDITION(arg != nullptr);
         elist->exprs.push_back(arg);
     }
-    
+
     bool IsMethodCall(CallSuffix* call_suffix) {
         return call_suffix->get_type() == METHOD_CALL;
+    }
     }
 }

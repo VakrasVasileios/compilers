@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/tablemake.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     Symbol*
     TableMake:: get_table() const {
         return table;
@@ -25,5 +28,6 @@ namespace expression {
     TableMake:: verify_table(Symbol* table) {
         PRECONDITION(table != nullptr);
         return table;
+    }
     }
 }

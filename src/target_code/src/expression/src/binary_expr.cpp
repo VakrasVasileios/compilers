@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/binary_expr.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     Expression* 
     BinaryExpr::get_result() const {
         return result;
@@ -47,5 +50,6 @@ namespace expression {
     std::ostream&   
     BinaryExpr:: LogExpression(std::ostream& os) const {
         return os << result;
+    }
     }
 }

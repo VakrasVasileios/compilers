@@ -1,8 +1,10 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/symbol.h"
+#include "../include/expression.h"
 #include <assert.h>
 
-
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     unsigned int
     Symbol:: get_total_local() const {
         return total_local;
@@ -96,7 +98,8 @@ namespace expression {
 
     ExprType
     Symbol:: verify_type(ExprType type) {
-        PRECONDITION(type == VAR || type == LIB_FUNC || type == USER_FUNC || type == TABLE_ITEM);
+        PRECONDITION(type == VAR || type == LIB_FUNC ||
+            type == USER_FUNC || type == TABLE_ITEM);
         return type;
     }
 
@@ -132,12 +135,14 @@ namespace expression {
 
     bool
     Symbol:: is_state_valid() {
-        bool is_type_valid = get_type() == VAR || get_type() == LIB_FUNC || get_type() == USER_FUNC;
+        bool is_type_valid = get_type() == VAR || get_type() == LIB_FUNC ||
+            get_type() == USER_FUNC;
         bool is_id_valid = !id.empty();
         bool is_line_valid = line >= 0;
         bool is_scope_valid = scope >= 0;
         bool is_offset_valid = offset >= 0;
-        bool is_index_valid = index != nullptr? get_type() == TABLE_ITEM : get_type() != TABLE_ITEM;
+        bool is_index_valid = index != nullptr? 
+            get_type() == TABLE_ITEM : get_type() != TABLE_ITEM;
 
         return  is_type_valid && is_id_valid && is_line_valid &&
                 is_scope_valid && is_offset_valid && is_index_valid;
@@ -206,5 +211,6 @@ namespace expression {
     bool IsTableItem(Symbol* symbol) {
         PRECONDITION(symbol != nullptr);
         return symbol->get_type() == TABLE_ITEM;
+    }
     }
 }

@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/bool_constant.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     bool
     BoolConstant:: get_value() const {
         return value;
@@ -28,5 +31,6 @@ namespace expression {
     std::ostream&
     BoolConstant:: LogExpression(std::ostream& os) const {
         return os << to_string();
+    }
     }
 }

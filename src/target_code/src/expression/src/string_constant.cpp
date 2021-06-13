@@ -1,8 +1,10 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/string_constant.h"
-
+#include "../include/expression.h"
 #include <iostream>
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     std::string 
     StringConstant:: get_value() const {
         return value;
@@ -27,5 +29,6 @@ namespace expression {
     std::ostream&
     StringConstant:: LogExpression(std::ostream& os) const {
         return os << to_string();
+    }
     }
 }

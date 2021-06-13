@@ -1,6 +1,9 @@
-#include "../../../../../include/target_code/intermediate_code/syntax_analysis/expression/tablemake_pairs.h"
+#include "../include/expression.h"
 
-namespace expression {
+namespace target_code
+{
+    namespace expression 
+    {
     Indexed* 
     TableMakePairs::get_indexed() const {
         return indexed;
@@ -16,5 +19,6 @@ namespace expression {
     TableMakePairs::verify_indexed(Indexed* indexed) {
         PRECONDITION(indexed != nullptr);
         return indexed;
+    }
     }
 }
