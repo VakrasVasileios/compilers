@@ -1,0 +1,3 @@
+add_subdirectory(src)
+add_subdirectory(test)
+target_include_directories(stack_segment PUBLIC include/avm_stack_segment.h)

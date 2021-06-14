@@ -1,0 +1,2 @@
+add_subdirectory(src)
+target_include_directories(code_segment PUBLIC include/avm_code_segment.h)

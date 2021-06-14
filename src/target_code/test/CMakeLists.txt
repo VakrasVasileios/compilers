@@ -1,0 +1,14 @@
+add_executable(syntax_analysis_test syntax_analysis_test.cpp)
+target_link_libraries(syntax_analysis_test PRIVATE gtest)
+target_link_libraries(syntax_analysis_test PRIVATE exec)
+target_compile_definitions(syntax_analysis_test PRIVATE TESTING=1)
+
+add_executable(intermediate_code_test intermediate_code_test.cpp)
+target_link_libraries(intermediate_code_test PRIVATE gtest)
+target_link_libraries(intermediate_code_test PRIVATE exec)
+target_compile_definitions(intermediate_code_test PRIVATE TESTING=1)
+
+add_executable(target_code_test target_code_test.cpp)
+target_link_libraries(target_code_test PRIVATE gtest)
+target_link_libraries(target_code_test PRIVATE exec)
+target_compile_definitions(target_code_test PRIVATE TESTING=1)

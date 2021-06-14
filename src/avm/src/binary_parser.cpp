@@ -1,10 +1,10 @@
-#include "../../include/virtual_machine/binary_parser.h"
-#include "../../include/virtual_machine/constants/constants.h"
+#include "binary_parser.h"
+#include "constants/include/constants.h"
 
 #include <fstream>
 #include <iostream>
 
-namespace virtual_machine 
+namespace avm 
 {
     using namespace constants;
 
@@ -82,7 +82,7 @@ void parse_binary(const char* _file) {
         auto result_opcode = read_byte();
         auto result_value = read_unsigned();
 
-        auto result = target_code::vmarg_factory::create(
+        auto result = target_code::create_vmarg(
             static_cast<target_code::Vmarg_t>(result_opcode), result_value);
         
         target_code::Vmarg* args[2];    
@@ -90,13 +90,13 @@ void parse_binary(const char* _file) {
             auto arg_opcode = read_byte();
             auto arg_value = read_unsigned();
 
-            auto arg = target_code::vmarg_factory::create(
+            auto arg = target_code::create_vmarg(
                 static_cast<target_code::Vmarg_t>(arg_opcode), arg_value);
             args[j] = arg;
         }
         auto src_line = read_unsigned();
 
-        auto instr = target_code::instruction_factory::create(
+        auto instr = target_code::create_instruction(
             static_cast<target_code::Vmopcode>(opcode), label, result,
             args[0], args[1], src_line);
     }

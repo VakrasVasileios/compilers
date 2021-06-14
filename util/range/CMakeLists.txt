@@ -1,1 +1,2 @@
-add_library(range range.cpp range.h) 
+add_subdirectory(src)
+target_include_directories(range PUBLIC include/range.h)

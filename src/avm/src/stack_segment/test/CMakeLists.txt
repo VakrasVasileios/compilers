@@ -1,0 +1,4 @@
+add_executable(stack_segment_test stack_segment_test.cpp)
+target_link_libraries(stack_segment_test PRIVATE gtest)
+target_link_libraries(stack_segment_test PRIVATE stack_segment)
+target_compile_definitions(stack_segment_test PRIVATE TESTING=1)
