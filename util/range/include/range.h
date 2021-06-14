@@ -19,7 +19,9 @@ namespace util
      * the high and low values
      */
     template <typename T>
-    bool    in_range(const T& value, const T& low, const T& high);
+    bool    in_range(const T& value, const T& low, const T& high) {
+        return value >= low and value <= high;
+    }
     }
 }
 

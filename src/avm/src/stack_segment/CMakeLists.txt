@@ -1,3 +1,3 @@
 add_subdirectory(src)
-add_subdirectory(test)
 target_include_directories(stack_segment PUBLIC include)
+add_subdirectory(test)

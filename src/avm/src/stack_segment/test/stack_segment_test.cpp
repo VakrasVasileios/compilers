@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/virtual_machine/stack_segment/avm_stack_segment.h"
+#include "../include/avm_stack_segment.h"
 
 /**
  * @brief Test suite for the avm stack segment.
@@ -11,10 +11,10 @@ protected:
     avm::stack_segment::AvmStackSegment stack;
     avm::memcell::AvmMemcell*           memcell;
     avm::memcell::AvmMemcell*           memcell2;
-    target_code::GlobalVmarg*                       global_vmarg_5;
-    target_code::GlobalVmarg*                       global_vmarg_0;
-    target_code::LocalVmarg*                        local_vmarg;
-    target_code::FormalVmarg*                       formal_vmarg;
+    target_code::GlobalVmarg*           global_vmarg_5;
+    target_code::GlobalVmarg*           global_vmarg_0;
+    target_code::LocalVmarg*            local_vmarg;
+    target_code::FormalVmarg*           formal_vmarg;
 
     void SetUp() override {
         memcell = new avm::memcell::NumMemcell(1);
