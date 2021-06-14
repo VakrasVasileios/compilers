@@ -24,7 +24,10 @@ namespace avm
        * 
        */
       AvmStackSegment() 
-      {INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));}
+      {
+        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
+        cpu::top = AVM_STACKSIZE;
+      }
       /**
        * @brief Destroys this AvmStackSegment object.
        * 
@@ -78,7 +81,7 @@ namespace avm
        * @return an O(1) access to an inserted 
        * avm memcell
        */
-      memcell::AvmMemcell* &operator[](int index);
+      memcell::AvmMemcell* operator[](int index);
       /**
        * @brief Returns a read/write access to the avm memcell
        * of a global vmarg, at this AvmStackSegment.

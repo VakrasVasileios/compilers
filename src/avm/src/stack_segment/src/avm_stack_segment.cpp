@@ -40,11 +40,11 @@ namespace avm
         return top;
     }
 
-    memcell::AvmMemcell*&
+    memcell::AvmMemcell*
     AvmStackSegment::operator[](int index) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(util::range::in_range<int>(index, 0, size() - 1));
-        return memcells[size() - 1 - index];
+        return memcells[AVM_STACKSIZE - 1 - index];
     }
 
     namespace 
