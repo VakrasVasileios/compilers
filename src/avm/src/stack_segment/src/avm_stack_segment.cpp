@@ -34,7 +34,8 @@ namespace avm
     AvmStackSegment::pop() {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
-        auto top = memcells[cpu::top++];
+        auto top = AvmStackSegment::top();
+        delete memcells[cpu::top++];
         POSTCONDITION(!full());
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return top;
