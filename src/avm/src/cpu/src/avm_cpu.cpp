@@ -4,10 +4,10 @@ namespace avm
 {
     namespace cpu 
     {
-    unsigned                pc = 0;
-    memcell::AvmMemcell     ax, bx, cx;
-    memcell::AvmMemcell     retval;
-    unsigned                top = AVM_STACKSIZE;
-    unsigned                topsp = top;
+    unsigned                 pc = 0;
+    memcell::AvmMemcell     *ax, *bx, *cx;
+    memcell::AvmMemcell     *retval;
+    unsigned                 top = AVM_STACKSIZE;
+    unsigned                 topsp = top;
     }
 }
