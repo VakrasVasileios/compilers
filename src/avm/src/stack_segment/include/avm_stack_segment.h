@@ -12,8 +12,6 @@
 
 namespace avm
 {
-    class Cpu; // fwd declare
-    
     namespace stack_segment 
     {
     /**
@@ -127,8 +125,6 @@ namespace avm
        */
       memcell::AvmMemcell*
         environment(const target_code::FormalVmarg vmarg);
-
-      friend                Cpu;  
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
       unsigned              top_;

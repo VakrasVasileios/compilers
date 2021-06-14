@@ -3,26 +3,31 @@
 
 #include "../../memcell/include/avm_memcell.h"
 #include "../../stack_segment/include/avm_stack_segment.h"
+#include "../../constants/include/constants.h"
 
 namespace avm 
 {
-class Cpu final {
-public:
-    /**
-     * @brief Constructs a new Cpu object.
-     * 
-     */
-    Cpu() : pc_(0) {}
-    /**
-     * @brief Destroys this Cpu object.
-     * 
-     */
-    ~Cpu() = default;    
-private:
-    unsigned pc_;
-    memcell::AvmMemcell *ax_, *bx_, *cx_;
-    memcell::AvmMemcell *retval_;
-};
+/**
+ * @brief The avm stack memory segment.
+ * 
+ */
+extern stack_segment::AvmStackSegment   avm_stack;
+extern constants::Constants             constants;
+/**
+ * @brief The avm cpu program counter register.
+ * 
+ */
+extern unsigned                         pc;
+/**
+ * @brief Avm cpu registers.
+ * 
+ */
+extern memcell::AvmMemcell*             ax, *bx, *cx;
+/**
+ * @brief Avm cpu special retval register.
+ * 
+ */
+extern memcell::AvmMemcell*             retval;
 }
 
 
