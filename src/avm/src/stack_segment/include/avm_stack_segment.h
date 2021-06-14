@@ -26,7 +26,9 @@ namespace avm
       AvmStackSegment() 
       {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        cpu::top = AVM_STACKSIZE;
+        #ifdef TESTING
+          cpu::top = AVM_STACKSIZE;
+        #endif  
       }
       /**
        * @brief Destroys this AvmStackSegment object.
