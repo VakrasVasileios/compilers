@@ -30,14 +30,14 @@ protected:
 
 TEST_F(SyntaxAnalysisSuite, Error0) {
   expected = "\x1B[31mError, in line: 4:\x1B[0m No global variable with id: Global\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error0.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error0.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
  TEST_F(SyntaxAnalysisSuite, Error1) {
   expected = "\x1B[31mError, in line: 6:\x1B[0m Cannot access f, previously defined in line: 4\n"
           "\x1B[31mError, in line: 7:\x1B[0m Cannot access f, previously defined in line: 4\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error1.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error1.asc");
   GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -48,32 +48,32 @@ TEST_F(SyntaxAnalysisSuite, Error2) {
           "\x1B[31mError, in line: 15:\x1B[0m Invalid return, used outside a function block\n"
           "\x1B[31mError, in line: 16:\x1B[0m invalid keyword BREAK outside of loop\n"
           "\x1B[31mError, in line: 17:\x1B[0m invalid keyword CONTINUE outside of loop\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error2.asc");    
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error2.asc");    
   GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(SyntaxAnalysisSuite, Error3) {
   expected = "\x1B[31mError, in line: 10:\x1B[0m Cannot access x, previously defined in line: 4\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error3.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error3.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(SyntaxAnalysisSuite, Error4) {
   expected = "\x1B[31mError, in line: 4:\x1B[0m x variable, previously defined in line: 3, cannot be redefined as a function\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error4.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error4.asc");
   GTEST_ASSERT_EQ(expected, actual);
  }
 
 TEST_F(SyntaxAnalysisSuite, Error5) {
   expected = "\x1B[31mError, in line: 5:\x1B[0m Name collision with function f, previously defined in line: 4\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error5.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error5.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(SyntaxAnalysisSuite, Error6) {
   expected = "\x1B[31mError, in line: 11:\x1B[0m Cannot access x, previously defined in line: 6\n"
           "\x1B[31mError, in line: 12:\x1B[0m Cannot access y, previously defined in line: 6\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error6.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error6.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -82,32 +82,32 @@ TEST_F(SyntaxAnalysisSuite, Error7) {
           "\x1B[31mError, in line: 5:\x1B[0m Functions are constant their value cannot be changed\n"
           "\x1B[31mError, in line: 6:\x1B[0m Invalid use of arithmetic operator on library function print\n"
           "\x1B[31mError, in line: 7:\x1B[0m Invalid use of arithmetic operator on user function foo\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error7.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error7.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(SyntaxAnalysisSuite, Error8) {
   expected = "\x1B[31mError, in line: 3:\x1B[0m x variable, previously defined in line: 1, cannot be redefined as a function\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error8.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error8.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(SyntaxAnalysisSuite, Error9) {
   expected = "\x1B[31mError, in line: 4:\x1B[0m Cannot access x, previously defined in line: 1\n"; 
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error9.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error9.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(SyntaxAnalysisSuite, Error10) {
   expected =  "\x1B[31mError, in line: 6:\x1B[0m print library function cannot be shadowed by a user function\n"
               "\x1B[31mError, in line: 11:\x1B[0m Attempting to redefine a library function\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error10.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error10.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
 TEST_F(SyntaxAnalysisSuite, Error11) {
   expected = "\x1B[31mError, in line: 1:\x1B[0m formal argument x already declared\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Errors/Error11.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Errors/Error11.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -128,7 +128,7 @@ TEST_F(SyntaxAnalysisSuite, Anonymous) {
           "-----------     Scope #3     -----------\n"
           "[formal variable] \"AnonymousThree\" (line 15) (scope 3)\n"
           "[formal variable] \"AnonymousFour\" (line 20) (scope 3)\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Anonymous.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Working/Anonymous.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -137,7 +137,7 @@ TEST_F(SyntaxAnalysisSuite, Block) {
    expected +="-----------     Scope #1     -----------\n"
             "[local variable] \"x\" (line 2) (scope 1)\n"
             "[local variable] \"^0\" (line 0) (scope 1)\n";
-   actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Block.asc");
+   actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Working/Block.asc");
    GTEST_ASSERT_EQ(expected, actual);
 }
 
@@ -151,7 +151,7 @@ TEST_F(SyntaxAnalysisSuite, GlobalAndLocal) {
                 "-----------     Scope #1     -----------\n"
                 "[local variable] \"global\" (line 9) (scope 1)\n";
           
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/GlobalAndLocal.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Working/GlobalAndLocal.asc");
   GTEST_ASSERT_EQ(expected, actual); 
 }
 
@@ -196,7 +196,7 @@ TEST_F(SyntaxAnalysisSuite, Random) {
               "-----------     Scope #2     -----------\n"
               "[local variable] \"^4\" (line 0) (scope 2)\n"
               "[local variable] \"^9\" (line 0) (scope 2)\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/Random.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Working/Random.asc");
    GTEST_ASSERT_EQ(expected, actual);
  }
 
@@ -214,7 +214,7 @@ TEST_F(SyntaxAnalysisSuite, ShadowedNameOffFunctions) {
                 "[user function] \"F\" (line 16) (scope 2)\n"
                 "-----------     Scope #3     -----------\n"
                 "[user function] \"F\" (line 21) (scope 3)\n";
-  actual = util::exec::exec("./d_syntax_analysis ../../test/files/phase2_tests/Working/ShadowedNameOffunctions.asc");
+  actual = util::exec::exec("../src/d_syntax_analysis  files/phase2_tests/Working/ShadowedNameOffunctions.asc");
   GTEST_ASSERT_EQ(expected, actual);
 }
 

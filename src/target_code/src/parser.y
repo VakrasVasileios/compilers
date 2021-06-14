@@ -18,10 +18,10 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    using namespace expression;
-    using namespace syntax_analysis;
-    using namespace intermediate_code;
     using namespace target_code;
+    using namespace target_code::syntax_analysis;
+    using namespace target_code::intermediate_code;
+    using namespace target_code::expression;
 
     #define BOOL_EXPR_CAST(e)   static_cast<BoolExpr*>(e)    
 %}

@@ -1,7 +1,3 @@
 add_subdirectory(src)
 add_subdirectory(test)
-target_include_directories(target_code PUBLIC include/instruction_factory.h)
-target_include_directories(target_code PUBLIC include/instruction.h)
-target_include_directories(target_code PUBLIC include/vmarg.h)
-target_include_directories(target_code PUBLIC include/vmarg_factory.h)
-target_include_directories(target_code PUBLIC include/userfunc_entry.h)
+target_include_directories(target_code PUBLIC include)

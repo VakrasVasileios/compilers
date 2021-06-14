@@ -1,2 +1,2 @@
 add_subdirectory(src)
-target_include_directories(range PUBLIC include/range.h)
+target_include_directories(range PUBLIC include)

@@ -1,2 +1,2 @@
 add_subdirectory(src)
-target_include_directories(exec PUBLIC include/exec.h)
+target_include_directories(exec PUBLIC include)

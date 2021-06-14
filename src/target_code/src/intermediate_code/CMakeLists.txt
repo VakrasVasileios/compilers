@@ -1,2 +1,2 @@
 add_subdirectory(src)
-target_include_directories(intermediate_code PUBLIC include/intermediate_code.h)
+target_include_directories(intermediate_code PUBLIC include)

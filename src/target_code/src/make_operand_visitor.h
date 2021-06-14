@@ -3,7 +3,7 @@
 
 #include "expression/include/expression.h"
 #include "program_consts.h"
-#include "vm_arg.h"
+#include "../include/vm_arg.h"
 
 namespace target_code {
     /**

@@ -1,6 +1,7 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include <iostream>
 #include <string>
 #include <list>
 #include "../../../../../util/contract/include/contract.h"
@@ -844,29 +845,6 @@ namespace target_code
     };
 
     /**
-     * @brief An indexed list of indexed elements.
-     * 
-     */
-    class Indexed final {
-    public:
-        /**
-         * @brief Constructs a new Indexed object.
-         * 
-         */
-        Indexed() = default;
-        /**
-            * @brief Destroys this Indexed object.
-            * 
-            */
-        ~Indexed() = default;
-        /**
-            * @brief This Indexed list of indexed elements.
-            * 
-            */
-        std::list<IndexedElem*> pairs;
-    };
-
-    /**
      * @brief An indexed element of a pair of expressions.
      * 
      */
@@ -888,6 +866,29 @@ namespace target_code
          * 
          */
         std::pair<Expression*, Expression*>  pair;
+    };
+
+    /**
+     * @brief An indexed list of indexed elements.
+     * 
+     */
+    class Indexed final {
+    public:
+        /**
+         * @brief Constructs a new Indexed object.
+         * 
+         */
+        Indexed() = default;
+        /**
+            * @brief Destroys this Indexed object.
+            * 
+            */
+        ~Indexed() = default;
+        /**
+            * @brief This Indexed list of indexed elements.
+            * 
+            */
+        std::list<IndexedElem*> pairs;
     };
 
     /**

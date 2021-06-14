@@ -1,4 +1,4 @@
-#include "instruction_factory.h"
+#include "../include/instruction_factory.h"
 
 namespace target_code 
 {
