@@ -2,42 +2,27 @@
 #define AVM_CPU_H
 
 #include "../../memcell/include/avm_memcell.h"
-
-#define AVM_STACKSIZE       4096
-#define AVM_STACKENV_SIZE   4
+#include "../../stack_segment/include/avm_stack_segment.h"
 
 namespace avm 
 {
-    namespace cpu 
-    {
+class Cpu final {
+public:
     /**
-     * @brief The avm cpu program counter register.
+     * @brief Constructs a new Cpu object.
      * 
      */
-    extern unsigned             pc;
+    Cpu() : pc_(0) {}
     /**
-     * @brief Avm cpu registers.
+     * @brief Destroys this Cpu object.
      * 
      */
-    extern memcell::AvmMemcell*  ax, *bx, *cx;
-    /**
-     * @brief Avm cpu special retval register.
-     * 
-     */
-    extern memcell::AvmMemcell* retval;
-    /**
-     * @brief Avm cpu pointer register to the top of the 
-     * avm stack segment.
-     * 
-     */
-    extern unsigned              top;
-    /**
-     * @brief Avm cpu pointer register to the top call stack
-     * frame.
-     * 
-     */
-    extern unsigned             topsp;
-    }
+    ~Cpu() = default;    
+private:
+    unsigned pc_;
+    memcell::AvmMemcell *ax_, *bx_, *cx_;
+    memcell::AvmMemcell *retval_;
+};
 }
 
 
