@@ -82,6 +82,9 @@ namespace avm
 
             void VisitPushArg(target_code::PushArg* inst) const override {
                 assert(inst != nullptr);
+                auto arg = translate_operand(inst->get_result(), registers::ax); // may need to check env
+                memory::stack_segment.push(arg); // May need to: memory::stack_segment.top() = arg, with overload
+                ++total_actuals;
             }
 
             void VisitEnterFunc(target_code::EnterFunc* inst) const override {
