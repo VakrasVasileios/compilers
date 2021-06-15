@@ -36,7 +36,7 @@ GlobalVmarg::get_type() const {
 }
 
 void        
-GlobalVmarg::Accept(const VmargVisitor* visitor) {
+GlobalVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitGlobalVmarg(this);
 }
@@ -47,7 +47,7 @@ LocalVmarg::get_type() const {
 }
 
 void        
-LocalVmarg::Accept(const VmargVisitor* visitor) {
+LocalVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitLocalVmarg(this);    
 }
@@ -58,7 +58,7 @@ FormalVmarg::get_type() const {
 }
 
 void        
-FormalVmarg::Accept(const VmargVisitor* visitor) {
+FormalVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitFormalVmarg(this);    
 }
@@ -69,7 +69,7 @@ BoolVmarg::get_type() const {
 }
 
 void        
-BoolVmarg::Accept(const VmargVisitor* visitor) {
+BoolVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitBoolVmarg(this);    
 }
@@ -80,7 +80,7 @@ StringVmarg::get_type() const {
 }
 
 void        
-StringVmarg::Accept(const VmargVisitor* visitor) {
+StringVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitStringVmarg(this);    
 }
@@ -91,7 +91,7 @@ NumberVmarg::get_type() const {
 }
 
 void        
-NumberVmarg::Accept(const VmargVisitor* visitor) {
+NumberVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitNumberVmarg(this);    
 }
@@ -102,7 +102,7 @@ NilVmarg::get_type() const {
 }
 
 void        
-NilVmarg::Accept(const VmargVisitor* visitor) {
+NilVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitNilVmarg(this);    
 }
@@ -113,7 +113,7 @@ LibFuncVmarg::get_type() const {
 }
 
 void        
-LibFuncVmarg::Accept(const VmargVisitor* visitor) {
+LibFuncVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitLibFuncVmarg(this);    
 }
@@ -124,7 +124,7 @@ UserFuncVmarg::get_type() const {
 }
 
 void       
-UserFuncVmarg::Accept(const VmargVisitor* visitor) {
+UserFuncVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitUserFuncVmarg(this);    
 }
@@ -135,7 +135,7 @@ LabelVmarg::get_type() const {
 }
 
 void        
-LabelVmarg::Accept(const VmargVisitor* visitor) {
+LabelVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitLabelVmarg(this);    
 }
@@ -146,7 +146,7 @@ RetValVmarg::get_type() const {
 }
 
 void        
-RetValVmarg::Accept(const VmargVisitor* visitor) {
+RetValVmarg::Accept(VmargVisitor* visitor) {
     PRECONDITION(visitor != nullptr);
     visitor->VisitRetValVmarg(this);    
 }

@@ -76,7 +76,7 @@ public:
      * @param visitor the vmarg visitor to be accepted at this vmarg,
      * not null
      */
-    virtual void        Accept(const VmargVisitor* visitor) = 0;
+    virtual void        Accept(VmargVisitor* visitor) = 0;
 
     friend std::ostream &operator<<(std::ostream &os, const Vmarg* vmarg);   
 private:
@@ -109,7 +109,7 @@ public:
      */
     ~GlobalVmarg() = default; 
     uint8_t     get_type() const override;   
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -136,7 +136,7 @@ public:
      */
     ~LocalVmarg() = default;    
     uint8_t     get_type() const override; 
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -164,7 +164,7 @@ public:
      */
     ~FormalVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -191,7 +191,7 @@ public:
      */
     ~BoolVmarg() = default;   
     uint8_t     get_type() const override; 
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -219,7 +219,7 @@ public:
      */
     ~StringVmarg() = default;  
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -247,7 +247,7 @@ public:
      */
     ~NumberVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -275,7 +275,7 @@ public:
      */
     ~NilVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -303,7 +303,7 @@ public:
      */
     ~LibFuncVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -331,7 +331,7 @@ public:
      */
     ~UserFuncVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -359,7 +359,7 @@ public:
      */
     ~LabelVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -387,7 +387,7 @@ public:
      */
     ~RetValVmarg() = default;
     uint8_t     get_type() const override;
-    void        Accept(const VmargVisitor* visitor) override;
+    void        Accept(VmargVisitor* visitor) override;
 };
 
 /**
@@ -401,67 +401,67 @@ public:
      * 
      * @param arg the global vmarg to be visited, not null
      */
-    virtual void VisitGlobalVmarg(GlobalVmarg* arg) const = 0;
+    virtual void VisitGlobalVmarg(GlobalVmarg* arg) = 0;
     /**
      * @brief Visits a local vmarg.
      * 
      * @param arg the local vmarg to be visited, not null
      */
-    virtual void VisitLocalVmarg(LocalVmarg* arg) const = 0;
+    virtual void VisitLocalVmarg(LocalVmarg* arg) = 0;
     /**
      * @brief Visits a formal vmarg.
      * 
      * @param arg the formal vmarg to be visited, not null
      */
-    virtual void VisitFormalVmarg(FormalVmarg* arg) const = 0;
+    virtual void VisitFormalVmarg(FormalVmarg* arg) = 0;
     /**
      * @brief Visits a bool vmarg.
      * 
      * @param arg the bool vmarg to be visited, not null
      */
-    virtual void VisitBoolVmarg(BoolVmarg* arg) const = 0;
+    virtual void VisitBoolVmarg(BoolVmarg* arg) = 0;
     /**
      * @brief Visits a string vmarg.
      * 
      * @param arg the string vmarg to be visited, not null
      */
-    virtual void VisitStringVmarg(StringVmarg* arg) const = 0;
+    virtual void VisitStringVmarg(StringVmarg* arg) = 0;
     /**
      * @brief Visits a number vmarg.
      * 
      * @param arg the number vmarg to be visited, not null
      */
-    virtual void VisitNumberVmarg(NumberVmarg* arg) const = 0;
+    virtual void VisitNumberVmarg(NumberVmarg* arg) = 0;
     /**
      * @brief Visits a nil vmarg.
      * 
      * @param arg the nil vmarg to be visited, not null
      */
-    virtual void VisitNilVmarg(NilVmarg* arg) const = 0;
+    virtual void VisitNilVmarg(NilVmarg* arg) = 0;
     /**
      * @brief Visits a libfunc vmarg.
      * 
      * @param arg the libfunc vmarg to be visited, not null
      */
-    virtual void VisitLibFuncVmarg(LibFuncVmarg* arg) const = 0;
+    virtual void VisitLibFuncVmarg(LibFuncVmarg* arg) = 0;
     /**
      * @brief Visits a userfunc vmarg.
      * 
      * @param arg the userfunc vmarg to be visited, not null
      */
-    virtual void VisitUserFuncVmarg(UserFuncVmarg* arg) const = 0;
+    virtual void VisitUserFuncVmarg(UserFuncVmarg* arg) = 0;
     /**
      * @brief Visits a label vmarg.
      * 
      * @param arg the label vmarg to be visited, not null
      */
-    virtual void VisitLabelVmarg(LabelVmarg* arg) const = 0;
+    virtual void VisitLabelVmarg(LabelVmarg* arg) = 0;
     /**
      * @brief Visits a retval vmarg.
      * 
      * @param arg the retval vmarg to be visited, not null
      */
-    virtual void VisitRetValVmarg(RetValVmarg* arg) const = 0;
+    virtual void VisitRetValVmarg(RetValVmarg* arg) = 0;
 };
 
 }

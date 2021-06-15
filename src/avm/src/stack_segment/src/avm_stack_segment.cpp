@@ -6,7 +6,7 @@ namespace avm
     {
     int
     AvmStackSegment::size() const {
-        return AVM_STACKSIZE - cpu::top;
+        return AVM_STACKSIZE - top_;
     }
 
     bool
@@ -18,14 +18,14 @@ namespace avm
     AvmStackSegment::top() {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
-        return memcells[cpu::top];
+        return memcells[top_];
     }
 
     void
     AvmStackSegment::push(memcell::AvmMemcell* _memcell) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!full());
-        memcells[--cpu::top] = _memcell;
+        memcells[--top_] = _memcell;
         POSTCONDITION(!empty());
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
     }
@@ -35,7 +35,7 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
         auto top = AvmStackSegment::top();
-        delete memcells[cpu::top++];
+        delete memcells[top_++];
         POSTCONDITION(!full());
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return top;
@@ -48,20 +48,12 @@ namespace avm
         return memcells[AVM_STACKSIZE - 1 - index];
     }
 
-    namespace 
-    {
-    bool index_out_of_bounds(const unsigned int index) {
-        assert(util::range::in_range<int>(index, 0, AVM_STACKSIZE - 1));
-        return index < cpu::top;
-    }
-    }
-
     memcell::AvmMemcell*
     AvmStackSegment::environment(const target_code::GlobalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         auto global_vmarg_index = AVM_STACKSIZE - 1 - vmarg.get_value();
         if (index_out_of_bounds(global_vmarg_index))
-            cpu::top = global_vmarg_index;
+            top_ = global_vmarg_index;
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));    
         return memcells[global_vmarg_index];
     }
@@ -69,9 +61,9 @@ namespace avm
     memcell::AvmMemcell*
     AvmStackSegment::environment(const target_code::LocalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        auto local_vmarg_index = cpu::topsp - vmarg.get_value();
+        auto local_vmarg_index = topsp_ - vmarg.get_value();
         if (index_out_of_bounds(local_vmarg_index))
-            cpu::top = local_vmarg_index;
+            top_ = local_vmarg_index;
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return memcells[local_vmarg_index];
     }
@@ -79,10 +71,10 @@ namespace avm
     memcell::AvmMemcell*
     AvmStackSegment::environment(const target_code::FormalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        auto formal_vmarg_index = cpu::topsp + AVM_STACKENV_SIZE + 1 + 
+        auto formal_vmarg_index = topsp_ + AVM_STACKENV_SIZE + 1 + 
             vmarg.get_value();
         if (index_out_of_bounds(formal_vmarg_index))
-            cpu::top = formal_vmarg_index;
+            top_ = formal_vmarg_index;
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));    
         return memcells[formal_vmarg_index];
     }
@@ -91,5 +83,12 @@ namespace avm
     AvmStackSegment::full() const {
         return size() == AVM_STACKSIZE;
     }
+
+    bool
+    AvmStackSegment::index_out_of_bounds(const unsigned int index) const {
+        assert(util::range::in_range<int>(index, 0, AVM_STACKSIZE - 1));
+        return index < top_;
+    }
+
     }
 }

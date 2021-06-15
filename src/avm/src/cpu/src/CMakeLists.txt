@@ -1,4 +1,3 @@
-add_library(cpu
-    avm_cpu.cpp
+add_library(cpu 
+    avm_cpu.cpp operand_translator.cpp
 )
-target_link_libraries(cpu memcell)

@@ -6,7 +6,9 @@
 #include "../../../../../util/range/include/range.h"
 #include "../../../../target_code/include/vm_arg.h"
 #include "../../memcell/include/avm_memcell.h"
-#include "../../cpu/include/avm_cpu.h"
+
+#define AVM_STACKSIZE       4096
+#define AVM_STACKENV_SIZE   4
 
 namespace avm
 {
@@ -23,12 +25,9 @@ namespace avm
        * @brief Constructs a new AvmStackSegment object.
        * 
        */
-      AvmStackSegment() 
+      AvmStackSegment() : top_(AVM_STACKSIZE), topsp_(top_)
       {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        #ifdef TESTING
-          cpu::top = AVM_STACKSIZE;
-        #endif  
       }
       /**
        * @brief Destroys this AvmStackSegment object.
@@ -128,7 +127,10 @@ namespace avm
         environment(const target_code::FormalVmarg vmarg);
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
+      unsigned              top_;
+      unsigned              topsp_;
       bool                  full() const;
+      bool                  index_out_of_bounds(const unsigned int index) const;
     };
     }
 }
