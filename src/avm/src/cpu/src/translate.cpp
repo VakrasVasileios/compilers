@@ -102,7 +102,10 @@ namespace avm
         OperandTranslator* translator = new OperandTranslator(_register);
         vmarg->Accept(translator);
 
-        return translator->result();
+        auto result = translator->result();
+        POSTCONDITION(result != nullptr);
+
+        return result;
     }
     }
 }
