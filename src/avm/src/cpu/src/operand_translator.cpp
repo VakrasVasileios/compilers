@@ -91,5 +91,15 @@ namespace avm
         POSTCONDITION(result_ != nullptr);
         return result_;
     }
+
+    memcell::AvmMemcell* translate_operand(target_code::Vmarg* vmarg,
+        memcell::AvmMemcell* _register) {
+        PRECONDITION(vmarg != nullptr);
+
+        OperandTranslator* translator = new OperandTranslator(_register);
+        vmarg->Accept(translator);
+
+        return translator->result();
+    }
     }
 }
