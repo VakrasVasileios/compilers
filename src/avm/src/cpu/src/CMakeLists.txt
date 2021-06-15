@@ -1,5 +1,5 @@
 add_library(cpu 
-    cpu.cpp operand_translator.cpp operand_translator.h
+    cpu.cpp translate.cpp translate.h execute.cpp execute.h
 )
 target_link_libraries(cpu target_code)
 target_link_libraries(cpu registers)
