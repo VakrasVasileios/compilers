@@ -66,10 +66,11 @@ namespace avm
 
         void VisitCallFunc(target_code::CallFunc* inst) const override {
             assert(inst != nullptr);
-            auto func =
-                cpu::translate_operand(inst->get_result(), registers::ax);
-            call_save_environment();    
-            call_memcell(func);
+            auto func = cpu::translate_operand(inst->get_result(),
+                registers::ax);
+                
+            cpu::save_environment();    
+            cpu::call_memcell(func);
         }
 
         void VisitPushArg(target_code::PushArg* inst) const override {

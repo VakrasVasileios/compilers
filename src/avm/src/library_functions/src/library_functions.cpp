@@ -4,6 +4,8 @@ namespace avm
 {
     namespace library_functions
     {
-    // TODO    
+    void call_libfunc(std::string libfunc_id) {
+        // TODO
+    }   
     }
 }

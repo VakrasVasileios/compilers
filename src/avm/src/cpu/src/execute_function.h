@@ -13,7 +13,7 @@ namespace avm
      * the stack segment.
      * 
      */
-    void call_save_environment();
+    void save_environment();
     /**
      * @brief Executes a call to a memcell.
      * 
