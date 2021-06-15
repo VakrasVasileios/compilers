@@ -88,5 +88,24 @@ namespace avm
         memcell->accept(caller);
     }
 
+    namespace
+    {
+        inline memcell::NumMemcell* num_memcell_cast(
+            memcell::AvmMemcell* memcell) {
+            auto result = dynamic_cast<memcell::NumMemcell*>(memcell);
+            assert (result != nullptr);
+            return result;
+        }
+    }
+
+    unsigned get_envvalue(unsigned index) {
+        PRECONDITION(index >= 0);
+        auto memcell = memory::stack_segment[index];
+        auto result = num_memcell_cast(memcell)->num_val();
+        POSTCONDITION(result >= 0);
+
+        return result;
+    }
+
     }
 }

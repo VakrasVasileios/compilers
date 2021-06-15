@@ -2,6 +2,11 @@
 #include "translate.h"
 #include "execute_function.h"
 
+#define AVM_NUMACTUALS_OFFSET   +4
+#define AVM_SAVEDPC_OFFSET      +3
+#define AVM_SAVEDTOP_OFFSET     +2
+#define AVM_SAVEDTOPSP_OFFSET   +1
+
 namespace avm
 {
     namespace cpu
@@ -81,10 +86,30 @@ namespace avm
 
             void VisitEnterFunc(target_code::EnterFunc* inst) const override {
                 assert(inst != nullptr);
+                auto func = translate_operand(inst->get_result(),
+                    registers::ax);
+
+                total_actuals = 0;
+                auto func_info = memory::Constants::GetInstance().GetUserfunc(
+                    registers::pc);
+                registers::topsp = registers::top;
+                registers::top = registers::top - func_info.local_count;
             }
 
             void VisitExitFunc(target_code::ExitFunc* inst) const override {
                 assert(inst != nullptr);
+                auto old_top = registers::top;
+                registers::top = get_envvalue(registers::topsp +
+                    AVM_SAVEDTOP_OFFSET);    
+                registers::pc = get_envvalue(registers::topsp +
+                    AVM_SAVEDPC_OFFSET);  
+                registers::topsp = get_envvalue(registers::topsp +
+                    AVM_SAVEDTOPSP_OFFSET); 
+
+                do{
+                    memory::stack_segment.pop();
+                } while(old_top++ <= registers::top);         
+
             }
 
             void VisitNewTable(target_code::NewTable* inst) const override {

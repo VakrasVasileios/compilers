@@ -9,6 +9,12 @@ namespace avm
     namespace cpu
     {
     /**
+     * @brief The total space that a function
+     * call will tak up at the stack segment.
+     * 
+     */
+    extern unsigned total_actuals;
+    /**
      * @brief Saves the environment registers to
      * the stack segment.
      * 
@@ -21,6 +27,18 @@ namespace avm
      * , not null
      */
     void call_memcell(memcell::AvmMemcell* memcell);
+    /**
+     * @brief Returns a read/write access to a previously
+     * stored to the stack segment environment value.
+     * 
+     * @param index the index of the environment value,
+     * greater or equal to zero
+     * 
+     * @return a read/write access to the numeric value
+     * of a previously stored to the stack segment environment
+     * value, greater or equal to zero
+     */
+    unsigned get_envvalue(unsigned index);
     }
 }
 
