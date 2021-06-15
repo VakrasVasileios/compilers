@@ -38,6 +38,13 @@ namespace avm
      */
     extern unsigned             topsp;
     }
+
+    namespace execute {
+        class ExVisitor : public target_code::InstructionVisitor {
+            void VisitAdd(target_code::Add* inst);
+            void VisitAssign(target_code::Assign* inst);
+        };
+    }
 }
 
 
