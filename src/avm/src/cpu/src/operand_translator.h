@@ -20,7 +20,7 @@ namespace avm
          * @brief Constructs a new OperandTranslator object.
          * 
          * @param register the avm cpu register on which to load
-         * the avm memcell in case of a constant vmarg.
+         * the avm memcell in case of a constant vmarg, can be null
          * 
          */
         OperandTranslator(memcell::AvmMemcell* _register) 
@@ -62,6 +62,20 @@ namespace avm
         memcell::AvmMemcell* result_;
         memcell::AvmMemcell* register_;
     };
+
+    /**
+     * @brief Translates a vmarg operand into a memcell.
+     * 
+     * @param vmarg the vmarg operand to be translated,
+     * not null
+     * @param _register the register to write the result,
+     * in case of a constant value, can be null
+     * 
+     * @return a read/write access to the translated memcell,
+     * not null 
+     */
+    memcell::AvmMemcell* translate_operand(target_code::Vmarg* vmarg,
+         memcell::AvmMemcell* _register);
     }
 }
 

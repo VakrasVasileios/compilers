@@ -4,7 +4,7 @@ namespace avm
 {
     namespace memory
     {
-    CodeSegment  memory;
-    StackSegment stack_segment;
+    CodeSegment     code_segment;
+    StackSegment    stack_segment;
     }
 }

@@ -100,6 +100,8 @@ namespace avm
             auto instr = target_code::create_instruction(
                 static_cast<target_code::Vmopcode>(opcode), label, result,
                 args[0], args[1], src_line);
+                
+            code_segment.push(instr);    
         }
         executable.close();
     }

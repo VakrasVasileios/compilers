@@ -14,7 +14,7 @@ namespace avm
      * Here all of the target code instructions are loaded.
      * 
      */
-    extern CodeSegment       memory;
+    extern CodeSegment       code_segment;
     /**
      * @brief The main memory stack segment.
      * Here all of the 'alpha' variables are loaded.
