@@ -14,6 +14,11 @@ namespace avm
         return size() == 0;
     }
 
+    bool        
+    StackSegment::full() const {
+        return size() == AVM_STACKSIZE;
+    }
+
     memcell::AvmMemcell*
     StackSegment::top() {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
@@ -48,6 +53,14 @@ namespace avm
         return memcells[AVM_STACKSIZE - 1 - index];
     }
 
+    namespace
+    {
+    bool index_out_of_bounds(const unsigned int index) {
+        assert(util::range::in_range<int>(index, 0, AVM_STACKSIZE - 1));
+        return index < registers::top;
+    }
+    }
+
     memcell::AvmMemcell*
     StackSegment::environment(const target_code::GlobalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
@@ -78,17 +91,5 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));    
         return memcells[formal_vmarg_index];
     }
-
-    bool        
-    StackSegment::full() const {
-        return size() == AVM_STACKSIZE;
-    }
-
-    bool
-    StackSegment::index_out_of_bounds(const unsigned int index) const {
-        assert(util::range::in_range<int>(index, 0, AVM_STACKSIZE - 1));
-        return index < registers::top;
-    }
-
     }
 }

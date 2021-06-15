@@ -46,6 +46,12 @@ namespace avm
        * @return  wether this StackSegment is empty
        */
       bool                empty() const;
+      /**
+       * @brief Checks wether this StackSegment is full.
+       * 
+       * @return wether this StackSegment is full 
+       */
+      bool                full() const;
       /**                                                    
        * @brief Returns a read/write access to the top
        * avm memcell of this non empty StackSegment.
@@ -125,8 +131,6 @@ namespace avm
         environment(const target_code::FormalVmarg vmarg);
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
-      bool                  full() const;
-      bool                  index_out_of_bounds(const unsigned int index) const;
     };
     }
 }
