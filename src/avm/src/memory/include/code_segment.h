@@ -34,7 +34,7 @@ namespace avm
          * @param _instr the target code instruction to be
          * pushed to this CodeSegment, not null
          */
-        void  push(const target_code::Instruction* _instr);
+        void  push(target_code::Instruction* _instr);
         /**
          * @brief Returns an O(1) access to an inserted 
          * target code instruction.
@@ -45,9 +45,9 @@ namespace avm
          * @return an O(1) access to an inserted 
          * target code instruction, not null
          */
-        const target_code::Instruction* &operator[](int index);
+        target_code::Instruction*  &operator[](int index);
     private:
-        std::vector<const target_code::Instruction*> instrs;    
+        std::vector<target_code::Instruction*> instrs;    
     };
     }
 }

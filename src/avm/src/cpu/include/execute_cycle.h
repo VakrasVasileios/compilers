@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef EXECUTE_CYCLE_H
+#define EXECUTE_CYCLE_H
 
 namespace avm 
 {
@@ -10,7 +10,7 @@ namespace avm
      * at the code segment.
      * 
      */
-    void run();
+    void execute_cycle();
     }
 }
 
