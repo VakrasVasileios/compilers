@@ -26,8 +26,8 @@ namespace avm
             void VisitAdd(target_code::Add* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
 
                 delete registers::ax;
                 registers::ax = *registers::bx + registers::cx;
@@ -36,8 +36,8 @@ namespace avm
             void VisitSub(target_code::Sub* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
 
                 delete registers::ax;
                 registers::ax = *registers::bx - registers::cx;
@@ -46,8 +46,8 @@ namespace avm
             void VisitMul(target_code::Mul* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
 
                 delete registers::ax;
                 registers::ax = *registers::bx * registers::cx;
@@ -56,8 +56,8 @@ namespace avm
             void VisitDiv(target_code::Div* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
 
                 delete registers::ax;
                 registers::ax = *registers::bx / registers::cx;
@@ -66,8 +66,8 @@ namespace avm
             void VisitMod(target_code::Mod* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
 
                 delete registers::ax;
                 registers::ax = *registers::bx % registers::cx;
@@ -76,8 +76,8 @@ namespace avm
             void VisitJeq(target_code::Jeq* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
 
                 if (registers::bx == registers::cx) {
                     assert(dynamic_cast<memcell::NumMemcell*>(registers::ax) != nullptr);
@@ -120,8 +120,8 @@ namespace avm
 
             void VisitPushArg(target_code::PushArg* inst) const override {
                 assert(inst != nullptr);
-                auto arg = translate_operand(inst->get_result(), registers::ax); // may need to check env
-                memory::stack_segment.push(arg); // May need to: memory::stack_segment.top() = arg, with overload
+                auto arg = translate_operand(inst->get_result(), registers::ax);
+                memory::stack_segment.push(arg);
                 ++total_actuals;
             }
 
@@ -134,7 +134,7 @@ namespace avm
                 auto func_info = memory::Constants::GetInstance().GetUserfunc(
                     registers::pc);
                 registers::topsp = registers::top;
-                registers::top = registers::top - func_info.local_count;  // NO PUSH?
+                registers::top = registers::top - func_info.local_count;
             }
 
             void VisitExitFunc(target_code::ExitFunc* inst) const override {
@@ -147,10 +147,8 @@ namespace avm
                 registers::topsp = get_envvalue(registers::topsp +
                     AVM_SAVEDTOPSP_OFFSET); 
 
-                do{
-                    memory::stack_segment.pop();
-                } while(old_top++ <= registers::top);         
-
+                while(++old_top <= registers::top)
+                    memory::stack_segment.pop();       
             }
 
             void VisitNewTable(target_code::NewTable* inst) const override {
