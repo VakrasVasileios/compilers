@@ -66,8 +66,8 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         auto global_vmarg_index = AVM_STACKSIZE - 1 - vmarg.get_value();
         if (index_out_of_bounds(global_vmarg_index))
-            registers::top = global_vmarg_index;
-        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));    
+            registers::top = global_vmarg_index; // SEG FAULT?
+        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));   
         return memcells[global_vmarg_index];
     }
 
@@ -76,7 +76,7 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         auto local_vmarg_index = registers::topsp - vmarg.get_value();
         if (index_out_of_bounds(local_vmarg_index))
-            registers::top = local_vmarg_index;
+            registers::top = local_vmarg_index;  // SEG FAULT?
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return memcells[local_vmarg_index];
     }
@@ -87,7 +87,7 @@ namespace avm
         auto formal_vmarg_index = registers::topsp + AVM_STACKENV_SIZE + 1 + 
             vmarg.get_value();
         if (index_out_of_bounds(formal_vmarg_index))
-            registers::top = formal_vmarg_index;
+            registers::top = formal_vmarg_index;  // SEG FAULT?
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));    
         return memcells[formal_vmarg_index];
     }

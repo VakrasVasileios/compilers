@@ -5,7 +5,7 @@ namespace avm
     namespace memory
     {
     void 
-    CodeSegment::push(const target_code::Instruction* _instr) {
+    CodeSegment::push(target_code::Instruction* _instr) {
         PRECONDITION(_instr != nullptr);
         auto prev_size = instrs.size();
         instrs.push_back(_instr);
@@ -13,7 +13,7 @@ namespace avm
         POSTCONDITION(new_size == prev_size + 1);
     }
 
-    const target_code::Instruction*&
+    target_code::Instruction*&
     CodeSegment::operator[](int index) {
         PRECONDITION(util::range::in_range<int>(index, 0, instrs.size() - 1));
         POSTCONDITION(instrs[index] != nullptr);

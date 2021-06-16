@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef RUN_H
+#define RUN_H
 
 namespace avm 
 {

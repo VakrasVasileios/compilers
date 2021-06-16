@@ -1,7 +1,7 @@
 #include <iostream>
 #include "registers/include/registers.h"
 #include "binary_parser/include/binary_parser.h"
-#include "cpu/include/cpu.h"
+#include "cpu/include/run.h"
 
 namespace 
 {
