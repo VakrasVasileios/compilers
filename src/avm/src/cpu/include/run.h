@@ -1,5 +1,5 @@
-#ifndef EXECUTE_CYCLE_H
-#define EXECUTE_CYCLE_H
+#ifndef RUN_H
+#define RUN_H
 
 namespace avm 
 {
@@ -10,7 +10,7 @@ namespace avm
      * at the code segment.
      * 
      */
-    void execute_cycle();
+    void run();
     }
 }
 

@@ -15,7 +15,7 @@ namespace avm
         memory::stack_segment.push(new memcell::NumMemcell(total_actuals));
         memory::stack_segment.push(new memcell::NumMemcell(registers::pc + 1));
         memory::stack_segment.push(new memcell::NumMemcell(
-            registers::top + total_actuals + 1));
+            registers::top + total_actuals + 2));
         memory::stack_segment.push(new memcell::NumMemcell(registers::topsp));
     }
 

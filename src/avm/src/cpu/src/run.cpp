@@ -1,4 +1,4 @@
-#include "../include/execute_cycle.h"
+#include "../include/run.h"
 #include "execution_cycle.h"
 #include "execute.h"
 
@@ -6,12 +6,12 @@ namespace avm
 {
     namespace cpu
     {
-    void execute_cycle() {
-        if (execution_finished)
-            return;
-        else
+        namespace
+        {
+        void execute_cycle() {
+        assert (!execution_finished);
         if (registers::pc == AVM_ENDING_PC) {
-            execution_finished = 1;
+            execution_finished = true;
             return;
         }
         else {
@@ -24,6 +24,13 @@ namespace avm
             if (registers::pc == old_pc)
                 registers::pc++;
         }    
+        }
+        }
+    
+    void run() {
+        do {
+            execute_cycle();
+        } while (!execution_finished);
     }
     }
 }

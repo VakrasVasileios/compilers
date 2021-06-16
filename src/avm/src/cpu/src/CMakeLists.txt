@@ -1,5 +1,5 @@
 add_library(cpu 
-    execute_cycle.cpp translate.cpp translate.h execute.cpp execute.h
+    run.cpp translate.cpp translate.h execute.cpp execute.h
     execute_function.cpp execute_function.h execution_cycle.cpp
     execution_cycle.h
 )

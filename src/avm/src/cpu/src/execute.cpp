@@ -96,7 +96,7 @@ namespace avm
                 auto func_info = memory::Constants::GetInstance().GetUserfunc(
                     registers::pc);
                 registers::topsp = registers::top;
-                registers::top = registers::top - func_info.local_count;
+                registers::top = registers::top - func_info.local_count;  // NO PUSH?
             }
 
             void VisitExitFunc(target_code::ExitFunc* inst) const override {
