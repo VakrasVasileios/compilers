@@ -51,7 +51,7 @@ namespace avm
        * 
        * @return wether this StackSegment is full 
        */
-      bool                full() const;
+      bool                full() const;                       
       /**                                                    
        * @brief Returns a read/write access to the top
        * avm memcell of this non empty StackSegment.
@@ -90,45 +90,84 @@ namespace avm
       /**
        * @brief Returns a read/write access to the avm memcell
        * of a global vmarg, at this StackSegment.
-       * In case that the vmarg is not pushed, pushes it
-       * to this StackSegment.
        * 
-       * @param vmarg the global vmarg to be accessed
-       * and/or pushed
+       * @param vmarg the global vmarg to be accessed,
+       * can't correspond to an index that is 2 or more 
+       * positions out of bounds
        * 
        * @return a read/write access to the avm memcell
        * of a global vmarg, at this StackSegment
        */
-      memcell::AvmMemcell*
-        environment(const target_code::GlobalVmarg vmarg);
+      memcell::AvmMemcell* environment(const target_code::GlobalVmarg vmarg);
       /**
        * @brief Returns a read/write access to the avm memcell
        * of a local vmarg, at this StackSegment.
-       * In case that the vmarg is not pushed, pushes it
-       * to this StackSegment.
        * 
-       * @param vmarg the local vmarg to be accessed
-       * and/or pushed
+       * @param vmarg the local vmarg to be accessed,
+       * can't correspond to an index that is 2 or more 
+       * positions out of bounds
        * 
        * @return a read/write access to the avm memcell
        * of a local vmarg, at this StackSegment 
        */
-      memcell::AvmMemcell*
-        environment(const target_code::LocalVmarg vmarg);
+      memcell::AvmMemcell* environment(const target_code::LocalVmarg vmarg);
       /**
        * @brief Returns a read/write access to the avm memcell
        * of a formal vmarg, at this StackSegment.
-       * In case that the vmarg is not pushed, pushes it
-       * to this StackSegment.
        * 
-       * @param vmarg the formal vmarg to be accessed
-       * and/or pushed
+       * @param vmarg the formal vmarg to be accessed,
+       * can't correspond to an index that is 2 or more 
+       * positions out of bounds
        * 
        * @return a read/write access to the avm memcell
        * of a formal vmarg, at this StackSegment 
        */
-      memcell::AvmMemcell*
-        environment(const target_code::FormalVmarg vmarg);
+      memcell::AvmMemcell* environment(const target_code::FormalVmarg vmarg);
+      /**
+       * @brief Checks wether a given index is 2 or more 
+       * positions out of bounds of this StackSegment.
+       * 
+       * @param index the index to check wether it's 
+       * 2 or more positions out of bounds, must be in range
+       * of the defined stack size
+       * 
+       * @return wether a given index is 2 or more 
+       * positions out of bounds of this StackSegment
+       */
+      bool                illegal_index(const unsigned int index) const;
+      /**
+       * @brief Returns a read access to the corresponding index
+       * of a local target code vmarg.
+       * 
+       * @param vmarg the local target code vmarg
+       * 
+       * @return a read access to the corresponding index
+       * of a local target code vmarg
+       */
+      unsigned            corresponding_index(const
+                            target_code::LocalVmarg vmarg) const;
+      /**
+       * @brief Returns a read access to the corresponding index
+       * of a global target code vmarg.
+       * 
+       * @param vmarg the global target code vmarg
+       * 
+       * @return a read access to the corresponding index
+       * of a global target code vmarg
+       */                      
+      unsigned            corresponding_index(const
+                            target_code::GlobalVmarg vmarg) const; 
+      /**
+       * @brief Returns a read access to the corresponding index
+       * of a formal target code vmarg.
+       * 
+       * @param vmarg the formal target code vmarg
+       * 
+       * @return a read access to the corresponding index
+       * of a formal target code vmarg
+       */                       
+      unsigned            corresponding_index(const
+                            target_code::FormalVmarg vmarg) const;                     
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
     };
