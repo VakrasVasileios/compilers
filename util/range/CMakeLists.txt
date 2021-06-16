@@ -1,1 +1,1 @@
-add_library(range range.cpp range.h) 
+add_subdirectory(test)

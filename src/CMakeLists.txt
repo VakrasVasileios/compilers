@@ -1,3 +1,2 @@
 add_subdirectory(target_code)
-add_subdirectory(virtual_machine)
-link_directories(vitual_machine target_code)
+add_subdirectory(avm)

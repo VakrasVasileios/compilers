@@ -1,0 +1,2 @@
+add_subdirectory(src)
+target_include_directories(binary_parser PUBLIC include)
