@@ -1,4 +1,6 @@
 #include "../include/avm_memcell.h"
+#include <iostream>
+#include <math.h>
 
 namespace avm 
 {
@@ -73,6 +75,50 @@ namespace avm
             return to_bool() == other.to_bool();        
     }
 
+    NumMemcell*
+    NumMemcell::operator+(NumMemcell* _mem) {
+        NumMemcell* ret = new NumMemcell();
+        ret->num_val_ = num_val_ + _mem->num_val_;
+        return ret;
+    }
+
+    NumMemcell* 
+    NumMemcell::operator-(NumMemcell* _mem) {
+        NumMemcell* ret = new NumMemcell();
+        ret->num_val_ = num_val_ - _mem->num_val_;
+        return ret;
+    }
+
+    NumMemcell*
+    NumMemcell::operator*(NumMemcell* _mem) {
+        NumMemcell* ret = new NumMemcell();
+        ret->num_val_ = num_val_ * _mem->num_val_;
+        return ret;
+    }
+
+    NumMemcell*
+    NumMemcell::operator/(NumMemcell* _mem) {
+        NumMemcell* ret = new NumMemcell();
+        if (_mem->num_val_ != 0)
+            ret->num_val_ = num_val_ / _mem->num_val_;
+        else {
+            std::cerr << "Error, division with zero!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        return ret;
+    }
+    NumMemcell*
+    NumMemcell::operator%(NumMemcell* _mem) {
+        NumMemcell* ret = new NumMemcell();
+        if (_mem->num_val_ != 0)
+            ret->num_val_ = fmod(num_val_, _mem->num_val_);
+        else {
+            std::cerr << "Error, division with zero!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        return ret;
+    }
+
     std::string
     StringMemcell::str_val() const {
         return str_val_;    
@@ -101,6 +147,14 @@ namespace avm
         else
             return to_bool() == other.to_bool();
     }
+
+    StringMemcell*
+    StringMemcell::operator+(StringMemcell* _mem) {
+        StringMemcell* ret = new StringMemcell("");
+        ret->str_val_ = str_val_ + _mem->str_val_;
+        return ret;
+    }
+
 
     bool    
     BoolMemcell::bool_val() const {

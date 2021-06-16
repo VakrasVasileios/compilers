@@ -36,8 +36,15 @@ namespace avm
          * accepted, not null
          */
         virtual void    accept(const AvmMemcellVisitor* visitor) = 0;
+
         friend bool     operator==(AvmMemcell const& lhs,
                             AvmMemcell const& rhs);
+        AvmMemcell*     operator+(AvmMemcell*);
+        AvmMemcell*     operator-(AvmMemcell*);
+        AvmMemcell*     operator*(AvmMemcell*);
+        AvmMemcell*     operator/(AvmMemcell*);
+        AvmMemcell*     operator%(AvmMemcell*);
+        
         virtual bool    to_bool() const = 0;                    
     protected:
         virtual bool    equals(AvmMemcell const& other) const = 0;
@@ -56,6 +63,7 @@ namespace avm
          * NumMemcell object. 
          */
         NumMemcell(const double _num_val) : num_val_(_num_val) {}
+        NumMemcell() = default;
         /**
          * @brief Destroys this NumMemcell object.
          * 
@@ -79,8 +87,14 @@ namespace avm
         void    set_num_val(const double _num_val); 
         void    accept(const AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
+
+        NumMemcell* operator+(NumMemcell* _mem);
+        NumMemcell* operator-(NumMemcell* _mem);
+        NumMemcell* operator*(NumMemcell* _mem);
+        NumMemcell* operator/(NumMemcell* _mem);
+        NumMemcell* operator%(NumMemcell* _mem);
     private:
-        double num_val_;
+        double  num_val_;
         bool    equals(AvmMemcell const& other) const override;
     };
 
@@ -119,6 +133,8 @@ namespace avm
         void        set_str_val(const std::string str_val);
         void        accept(const AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
+
+        StringMemcell*     operator+(StringMemcell*);
     private:
         std::string str_val_;
         bool    equals(AvmMemcell const& other) const override;
@@ -160,7 +176,7 @@ namespace avm
         void    accept(const AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
     private:
-        bool bool_val_;
+        bool    bool_val_;
         bool    equals(AvmMemcell const& other) const override;
     };
 
