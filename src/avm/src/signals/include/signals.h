@@ -1,16 +1,14 @@
-#ifndef EXECUTION_CYCLE_H
-#define EXECUTION_CYCLE_H
+#ifndef SIGNALS_H
+#define SIGNALS_H
 
 #include <string>
 #include <iostream>
-#include "../../memory/include/memory.h"
-#include "../../../../target_code/include/instruction.h"
 
 #define AVM_ENDING_PC 0
 
 namespace avm
 {
-    namespace cpu
+    namespace signals
     {
     /**
      * @brief Signals wether the execution cycle is finished.

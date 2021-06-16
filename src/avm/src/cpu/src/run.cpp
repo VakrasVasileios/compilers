@@ -1,5 +1,7 @@
 #include "../include/run.h"
-#include "execution_cycle.h"
+#include "../../signals/include/signals.h"
+#include "../../registers/include/registers.h"
+#include "../../memory/include/memory.h"
 #include "execute.h"
 
 namespace avm
@@ -9,16 +11,18 @@ namespace avm
         namespace
         {
         void execute_cycle() {
-        assert (!execution_finished);
+        assert (!signals::execution_finished);
         if (registers::pc == AVM_ENDING_PC) {
-            execution_finished = true;
+            signals::execution_finished = true;
             return;
         }
         else {
             assert (registers::pc < AVM_ENDING_PC);
             auto instruction = memory::code_segment[registers::pc];
-            if (instruction->get_src_line())
-                curr_line = instruction->get_src_line();
+
+            signals::curr_line = instruction->get_src_line();
+            assert (signals::curr_line != 0);
+            
             unsigned old_pc = registers::pc;
             execute(instruction);
             if (registers::pc == old_pc)
@@ -30,7 +34,7 @@ namespace avm
     void run() {
         do {
             execute_cycle();
-        } while (!execution_finished);
+        } while (!signals::execution_finished);
     }
     }
 }

@@ -153,6 +153,9 @@ namespace avm
 
             void VisitNewTable(target_code::NewTable* inst) const override {
                 assert(inst != nullptr);
+                auto lv = translate_operand(inst->get_result(), nullptr);
+
+                lv = new memcell::TableMemcell(new memcell::AvmTable());
             }
 
             void VisitTableGetElem(target_code::TableGetElem* inst) const

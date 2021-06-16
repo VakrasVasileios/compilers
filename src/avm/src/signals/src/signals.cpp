@@ -1,19 +1,19 @@
-#include "execution_cycle.h"
+#include "../include/signals.h"
 
 namespace avm
 {
-    namespace cpu
+    namespace signals
     {
         bool        execution_finished = false;
         unsigned    curr_line = 0;
 
         void log_error(std::string msg, std::ostream& os) {
-            os << msg << std::endl;
+            os << msg << ", at line: " << curr_line << std::endl;
             execution_finished = true;
         }
 
         void log_warning(std::string msg, std::ostream& os) {
-            os << msg << std::endl;
+            os << msg << ", at line: " << curr_line << std::endl;
         }
     }
 }

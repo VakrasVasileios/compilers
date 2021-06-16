@@ -1,7 +1,7 @@
 #include "execute_function.h"
 #include "../../memory/include/memory.h"
 #include "../../registers/include/registers.h"
-#include "execution_cycle.h"
+#include "../../signals/include/signals.h"
 #include "../../library_functions/include/library_functions.h"
 
 namespace avm
@@ -29,7 +29,7 @@ namespace avm
             void visit_num_memcell(memcell::NumMemcell* memcell) const override
             {
                 assert(memcell != nullptr);
-                log_error("Cannot bind numerical value to function call",
+                signals::log_error("Cannot bind numerical value to function call",
                     std::cerr);
             }
 
@@ -42,13 +42,13 @@ namespace avm
             void visit_bool_memcell(memcell::BoolMemcell* memcell) const
             override {
                 assert(memcell != nullptr);
-                log_error("Cannot bind bool value to function call", std::cerr);
+                signals::log_error("Cannot bind bool value to function call", std::cerr);
             }
 
             void visit_table_memcell(memcell::TableMemcell* memcell)
             const override {
                 assert(memcell != nullptr);
-                log_error("Cannot bind table value to function call",
+                signals::log_error("Cannot bind table value to function call",
                     std::cerr);
             }
 
@@ -70,13 +70,13 @@ namespace avm
             void visit_nill_memcell(memcell::NilMemcell* memcell) const
             override {
                 assert(memcell != nullptr);
-                log_error("Cannot bind NIL to function call", std::cerr);
+                signals::log_error("Cannot bind NIL to function call", std::cerr);
             }
 
             void visit_undef_memcell(memcell::UndefMemcell* memcell) const
             override {
                 assert(memcell != nullptr);
-                log_error("Cannot bind undifined value to function call",
+                signals::log_error("Cannot bind undifined value to function call",
                     std::cerr);
             }
         };

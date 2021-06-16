@@ -1,3 +1,4 @@
+add_subdirectory(signals)
 add_subdirectory(memcell)
 add_subdirectory(memory)
 add_subdirectory(registers)
