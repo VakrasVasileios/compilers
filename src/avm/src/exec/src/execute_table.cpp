@@ -65,12 +65,6 @@ namespace avm
                 signals::log_error("Illegal use of NIL type as a table",
                     std::cerr);
             }
-
-            void visit_undef_memcell(memcell::UndefMemcell* memcell) override {
-                assert(memcell != nullptr);
-                signals::log_error("Illegal use of undefined type as a table",
-                    std::cerr);
-            }
         private:
             memcell::AvmMemcell* key_;
             memcell::AvmMemcell* value_;  
@@ -137,12 +131,6 @@ namespace avm
             void visit_nill_memcell(memcell::NilMemcell* memcell) override {
                 assert(memcell != nullptr);
                 signals::log_error("Illegal use of NIL type as a table",
-                    std::cerr);
-            }
-
-            void visit_undef_memcell(memcell::UndefMemcell* memcell) override {
-                assert(memcell != nullptr);
-                signals::log_error("Illegal use of undefined type as a table",
                     std::cerr);
             }
         private:

@@ -7,7 +7,6 @@ namespace avm
 {
     namespace memcell
     {
-
         //--------------AvmMemcell--------------//
         std::ostream& operator << (std::ostream& os,
                 const AvmMemcell& memcell) {
@@ -727,24 +726,6 @@ namespace avm
         }
         //--------------NilMemcell--------------//
 
-        //--------------UndefMemcell--------------//
-        void
-        UndefMemcell::accept(AvmMemcellVisitor* visitor) {
-            PRECONDITION(visitor != nullptr);
-            visitor->visit_undef_memcell(this);
-        }
-
-        AvmMemcell*        
-        UndefMemcell::equals(AvmMemcell const& other) const {
-            return new BoolMemcell(to_bool() == other.to_bool());    
-        }
-
-        bool
-        UndefMemcell::to_bool() const {
-            return false;   
-        }
-        //--------------UndefMemcell--------------//
-
         namespace 
         {
             NumMemcell const *num_memcell_cast(AvmMemcell const& memcell) {
@@ -773,10 +754,6 @@ namespace avm
 
             NilMemcell const *nill_memcell_cast(AvmMemcell const& memcell) {
                 return dynamic_cast<NilMemcell const*>(&memcell);
-            }
-
-            UndefMemcell const *undef_memcell_cast(AvmMemcell const& memcell) {
-                return dynamic_cast<UndefMemcell const*>(&memcell);
             }
         } //namespace
     } //namespace memcell

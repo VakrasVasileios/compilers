@@ -451,28 +451,6 @@ namespace avm
     };
 
     /**
-     * @brief A memcell with undefined data.
-     * 
-     */
-    class UndefMemcell final : public AvmMemcell {
-    public:
-        /**
-         * @brief Constructs a new UndefMemcell object.
-         * 
-         */
-        UndefMemcell() {}
-        /**
-         * @brief Destroys this UndefMemcell object.
-         * 
-         */
-        ~UndefMemcell() = default;
-        void        accept(AvmMemcellVisitor* visitor) override;
-        bool        to_bool() const override;
-    private:
-        AvmMemcell* equals(AvmMemcell const& other) const override;
-    };
-
-    /**
      * @brief Interface for visiting concrete avm memcells.
      * 
      */
@@ -526,12 +504,6 @@ namespace avm
          * @param memcell the memcell containing NIL data
          */
         virtual void    visit_nill_memcell(NilMemcell* memcell) = 0;
-        /**
-         * @brief Visits a memcell containing undefined data.
-         * 
-         * @param memcell the memcell containing undefined data
-         */
-        virtual void    visit_undef_memcell(UndefMemcell* memcell) = 0;
     };
     }
 }
