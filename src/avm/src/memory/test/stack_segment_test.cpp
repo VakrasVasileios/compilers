@@ -71,28 +71,33 @@ TEST_F(StackSegmentSuite, pop_after_n_pushes_returns_top_element) {
     GTEST_ASSERT_EQ(stack->pop(), memcell2);
 }
 
-TEST_F(StackSegmentSuite,
-    environment_non_pushed_vmarg_with_n_offset_new_stack_size_is_n_plus_1) {
-    stack->environment(*global_vmarg_5);
-    GTEST_ASSERT_EQ(stack->size(), global_vmarg_5->get_value() + 1);
-}
-
 TEST_F(StackSegmentSuite, overload_access_works_from_zero) {
     stack->push(memcell);
     stack->push(memcell2);
     GTEST_ASSERT_EQ((*stack)[0], memcell);
 }
 
+TEST_F(StackSegmentSuite, vmarg_with_valid_offset_has_legal_index) {
+    GTEST_ASSERT_FALSE(stack->illegal_index(stack->corresponding_index(
+        *global_vmarg_0)));
+}
+
+TEST_F(StackSegmentSuite, vmarg_with_invalid_offset_has_illegal_index) {
+    GTEST_ASSERT_TRUE(stack->illegal_index(stack->corresponding_index(
+        *global_vmarg_5)));
+}
+
 TEST_F(StackSegmentSuite, environment_pushed_vmarg_leaves_size_intact) {
-    stack->environment(*global_vmarg_5);
-    stack->environment(*global_vmarg_5);
-    GTEST_ASSERT_EQ(stack->size(), 6);
+    auto new_memcell = stack->environment(*global_vmarg_0);
+    stack->push(new_memcell);
+    stack->environment(*global_vmarg_0);
+    GTEST_ASSERT_EQ(stack->size(), 1);
 }
 
 TEST_F(StackSegmentSuite, environment_pushed_vmarg_returns_it) {
-    auto gmemcell0 = stack->environment(*global_vmarg_0);
-    auto gmemcell5 = stack->environment(*global_vmarg_5);
-    GTEST_ASSERT_EQ(gmemcell0, stack->environment(*global_vmarg_0));
+    auto new_memcell = stack->environment(*global_vmarg_0);
+    stack->push(new_memcell);
+    GTEST_ASSERT_EQ(new_memcell, stack->environment(*global_vmarg_0));
 }
 
 #ifdef TESTING

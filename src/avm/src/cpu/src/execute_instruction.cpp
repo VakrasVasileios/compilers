@@ -1,11 +1,9 @@
-#include "execute.h"
+#include "execute_instruction.h"
 #include "translate.h"
-#include "execute_function.h"
-
-#define AVM_NUMACTUALS_OFFSET   +4
-#define AVM_SAVEDPC_OFFSET      +3
-#define AVM_SAVEDTOP_OFFSET     +2
-#define AVM_SAVEDTOPSP_OFFSET   +1
+#include "../../exec/include/execute_arithmetic.h"
+#include "../../exec/include/execute_function.h"
+#include "../../exec/include/execute_table.h"
+#include "../../exec/include/execute_branch.h"
 
 namespace avm
 {
@@ -13,7 +11,6 @@ namespace avm
     {
         namespace
         {
-            
         class InstructionExecuter : public target_code::InstructionVisitor {
         public:
             InstructionExecuter() = default;
@@ -26,63 +23,59 @@ namespace avm
             void VisitAdd(target_code::Add* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
-
-                delete registers::ax;
-                registers::ax = *registers::bx + *registers::cx;
+                registers::bx = translate_operand(inst->get_arg1(),
+                    registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(),
+                    registers::cx);
+                exec::execute_add(registers::ax , registers::bx, registers::cx);
             }
 
             void VisitSub(target_code::Sub* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
-
-                delete registers::ax;
-                registers::ax = *registers::bx - *registers::cx;
+                registers::bx = translate_operand(inst->get_arg1(),
+                    registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(),
+                    registers::cx);
+                exec::execute_sub(registers::ax , registers::bx, registers::cx);
             }
 
             void VisitMul(target_code::Mul* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
-
-                delete registers::ax;
-                registers::ax = *registers::bx * *registers::cx;
+                registers::bx = translate_operand(inst->get_arg1(),
+                    registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(),
+                    registers::cx);
+                exec::execute_mul(registers::ax , registers::bx, registers::cx);
             }
 
             void VisitDiv(target_code::Div* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
-
-                delete registers::ax;
-                registers::ax = *registers::bx / *registers::cx;
+                registers::bx = translate_operand(inst->get_arg1(),
+                    registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(),
+                    registers::cx);
+                exec::execute_div(registers::ax , registers::bx, registers::cx);
             }
 
             void VisitMod(target_code::Mod* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
-
-                delete registers::ax;
-                registers::ax = *registers::bx % *registers::cx;
+                registers::bx = translate_operand(inst->get_arg1(),
+                    registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(),
+                    registers::cx);
+                exec::execute_mod(registers::ax , registers::bx, registers::cx);
             }
 
             void VisitJeq(target_code::Jeq* inst) const override {
                 assert(inst != nullptr);
                 registers::ax = translate_operand(inst->get_result(), nullptr);
-                registers::bx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg1()), registers::bx);
-                registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
-
-                if (registers::bx == registers::cx) {
-                    assert(dynamic_cast<memcell::NumMemcell*>(registers::ax) != nullptr);
-                    registers::pc = dynamic_cast<memcell::NumMemcell*>(registers::ax)->num_val();
-                }
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                registers::cx = translate_operand(inst->get_arg2(), registers::cx);
+                exec::execute_jeq(registers::ax, registers::bx, registers::cx);
             }
 
             void VisitJne(target_code::Jne* inst) const override {
@@ -113,63 +106,54 @@ namespace avm
                 assert(inst != nullptr);
                 auto func = translate_operand(inst->get_result(),
                     registers::ax);
-                    
-                save_environment();    
-                call_memcell(func);
+                exec::execute_callfunc(func);
             }
 
             void VisitPushArg(target_code::PushArg* inst) const override {
                 assert(inst != nullptr);
-                auto arg = translate_operand(inst->get_result(), registers::ax); // may need to check env
-                memory::stack_segment.push(arg); // May need to: memory::stack_segment.top() = arg, with overload
-                ++total_actuals;
+                auto arg = translate_operand(inst->get_result(), registers::ax);
+                exec::execute_pusharg(arg);
             }
 
             void VisitEnterFunc(target_code::EnterFunc* inst) const override {
                 assert(inst != nullptr);
                 auto func = translate_operand(inst->get_result(),
                     registers::ax);
-
-                total_actuals = 0;
-                auto func_info = memory::Constants::GetInstance().GetUserfunc(
-                    registers::pc);
-                registers::topsp = registers::top;
-                registers::top = registers::top - func_info.local_count;  // NO PUSH?
+                exec::execute_enterfunc(func);
             }
 
             void VisitExitFunc(target_code::ExitFunc* inst) const override {
                 assert(inst != nullptr);
-                auto old_top = registers::top;
-                registers::top = get_envvalue(registers::topsp +
-                    AVM_SAVEDTOP_OFFSET);    
-                registers::pc = get_envvalue(registers::topsp +
-                    AVM_SAVEDPC_OFFSET);  
-                registers::topsp = get_envvalue(registers::topsp +
-                    AVM_SAVEDTOPSP_OFFSET); 
-
-                do{
-                    memory::stack_segment.pop();
-                } while(old_top++ <= registers::top);         
-
+                exec::execute_exitfunc();
             }
 
             void VisitNewTable(target_code::NewTable* inst) const override {
                 assert(inst != nullptr);
+                auto lv = translate_operand(inst->get_result(), nullptr);
+                exec::execute_newtable(lv);
             }
 
             void VisitTableGetElem(target_code::TableGetElem* inst) const
             override {
                 assert(inst != nullptr);
+                auto lv = translate_operand(inst->get_result(), nullptr);
+                auto table = translate_operand(inst->get_arg1(), nullptr);
+                auto key = translate_operand(inst->get_arg2(), registers::ax);
+                exec::execute_tablegetelem(lv, table, key);
             }
 
             void VisitTableSetElem(target_code::TableSetElem* inst) const
             override {
                 assert(inst != nullptr);
+                auto table = translate_operand(inst->get_result(), nullptr);
+                auto key = translate_operand(inst->get_arg1(), registers::ax);
+                auto value = translate_operand(inst->get_arg1(), registers::bx);
+                exec::execute_tablesetelem(table, key, value);
             }
         };
         }
 
-    void  execute(target_code::Instruction* instr) {
+    void  execute_instruction(target_code::Instruction* instr) {
         PRECONDITION(instr != nullptr);
         InstructionExecuter* executer = new InstructionExecuter();
         instr->Accept(executer);

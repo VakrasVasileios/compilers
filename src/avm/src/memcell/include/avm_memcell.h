@@ -2,8 +2,8 @@
 #define AVM_MEMCELL_H
 
 #include <string>
+#include <map>
 #include "../../../../../util/contract/include/contract.h"
-#include "avm_data.h"
 
 namespace avm
 {
@@ -35,7 +35,7 @@ namespace avm
          * @param visitor the avm memcell visitor to be
          * accepted, not null
          */
-        virtual void    accept(const AvmMemcellVisitor* visitor) = 0;
+        virtual void    accept(AvmMemcellVisitor* visitor) = 0;
 
         friend AvmMemcell*     operator==(AvmMemcell const& lhs,
                             AvmMemcell const& rhs);
@@ -101,7 +101,7 @@ namespace avm
          * the numerical data of this NumMemcell
          */
         void    set_num_val(const double _num_val); 
-        void    accept(const AvmMemcellVisitor* visitor) override;
+        void    accept(AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
 
     private:
@@ -153,7 +153,7 @@ namespace avm
          * data of this StringMemCell
          */
         void        set_str_val(const std::string str_val);
-        void        accept(const AvmMemcellVisitor* visitor) override;
+        void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
 
         StringMemcell*     operator+(StringMemcell*);
@@ -207,7 +207,7 @@ namespace avm
          * boolean data of this BoolMemcell.
          */
         void    set_bool_val(const bool val);
-        void    accept(const AvmMemcellVisitor* visitor) override;
+        void    accept(AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
     private:
         bool        bool_val_;
@@ -234,38 +234,45 @@ namespace avm
         /**
          * @brief Constructs a new TableMemcell object.
          * 
-         * @param _table_val the table data of the
-         * new TableMemcell object, not null
          */
-        TableMemcell(AvmTable* _table_val)
-        : table_val_(verify_avm_table(_table_val))
-        {INVARIANT(table_val_ != nullptr);}
+        TableMemcell() = default;
         /**
          * @brief Destroys this TableMemcell object.
          * 
          */
         ~TableMemcell() = default;
         /**
-         * @brief Returns a read access to the table data
-         * of this TableMemcell.
+         * @brief Checks wether this TableMemcell contains
+         * a key memcell.
          * 
-         * @return a read access to the table data
-         * of this TableMemcell, not null 
+         * @param key the key memcell to be checked, not null
+         * 
+         * @return wether this TableMemcell contains
+         * a key memcell 
          */
-        AvmTable*   table_val() const;
+        bool                contains(AvmMemcell* key) const;
         /**
-         * @brief Sets the table data of this TableMemcell.
+         * @brief Returns a read/write access to the memcell value
+         * that is mapped with a key memcell at this TableMemcell.
          * 
-         * @param table the table value to set the table data
-         * of this TableMemcell, not null
+         * @param key the key memcell, not null and must be mapped
+         * at this TableMemcell 
+         * 
+         * @return a read/write access to the memcell value
+         * that is mapped with a key memcell at this TableMemcell, 
+         * not null 
          */
-        void        set_table_val(AvmTable* table);
-        void        accept(const AvmMemcellVisitor* visitor) override;
-        bool        to_bool() const override;
+        AvmMemcell*         get_elem(AvmMemcell* key) const;
+        /**
+         * @brief Inserts a key/value memcell pair to this TableMemcell.
+         * 
+         * @param key the key memcell, not null
+         * @param value the value memcell, not null
+         */
+        void                set_elem(AvmMemcell* key, AvmMemcell* value);
+        void                accept(AvmMemcellVisitor* visitor) override;
+        bool                to_bool() const override;
     private:
-        AvmTable*   table_val_;
-        AvmTable*   verify_avm_table(AvmTable* table) const;
-
         AvmMemcell* equals(AvmMemcell const& other) const override;
         
         AvmMemcell* add(AvmMemcell const& other) const override;
@@ -278,6 +285,8 @@ namespace avm
         AvmMemcell* geq(AvmMemcell const& other) const override;
         AvmMemcell* lt(AvmMemcell const& other) const override;
         AvmMemcell* leq(AvmMemcell const& other) const override;
+        
+        std::map<AvmMemcell*, AvmMemcell*> table_val_; // consts? by value or ref?????
     };
 
     /**
@@ -317,7 +326,7 @@ namespace avm
          * as the data of this UserfuncMemcell
          */
         void            set_func_val(const unsigned int _func_val);
-        void            accept(const AvmMemcellVisitor* visitor) override;  
+        void            accept(AvmMemcellVisitor* visitor) override;  
         bool            to_bool() const override;     
     private:
         unsigned int    func_val_;
@@ -371,7 +380,7 @@ namespace avm
          * be set as the data of this LibfuncMemcell
          */
         void        set_lib_func_val(const std::string _lib_func_val);
-        void        accept(const AvmMemcellVisitor* visitor) override;
+        void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
     private:
         std::string lib_func_val_;
@@ -406,7 +415,7 @@ namespace avm
          * 
          */
         ~NilMemcell() = default;
-        void        accept(const AvmMemcellVisitor* visitor) override;
+        void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
     private:
         AvmMemcell* equals(AvmMemcell const& other) const override;
@@ -439,7 +448,7 @@ namespace avm
          * 
          */
         ~UndefMemcell() = default;
-        void        accept(const AvmMemcellVisitor* visitor) override;
+        void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
     private:
         AvmMemcell* equals(AvmMemcell const& other) const override;
@@ -456,25 +465,25 @@ namespace avm
          * 
          * @param memcell the memcell containing numerical data
          */
-        virtual void    visit_num_memcell(NumMemcell* memcell) const = 0;
+        virtual void    visit_num_memcell(NumMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing string data.
          * 
          * @param memcell the memcell containing string data
          */
-        virtual void    visit_string_memcell(StringMemcell* memcell) const = 0;
+        virtual void    visit_string_memcell(StringMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing bool data.
          * 
          * @param memcell the memcell containing bool data
          */
-        virtual void    visit_bool_memcell(BoolMemcell* memcell) const = 0;
+        virtual void    visit_bool_memcell(BoolMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing table data.
          * 
          * @param memcell the memcell containing table data
          */
-        virtual void    visit_table_memcell(TableMemcell* memcell) const = 0;
+        virtual void    visit_table_memcell(TableMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing the address of a user
          * function as data.
@@ -483,7 +492,7 @@ namespace avm
          * as data.
          */
         virtual void    
-            visit_userfunc_memcell(UserfuncMemcell* memcell) const = 0;
+            visit_userfunc_memcell(UserfuncMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing the id of a library
          * function as data.
@@ -492,19 +501,19 @@ namespace avm
          * as data.
          */
         virtual void    
-            visit_libfunc_memcell(LibfuncMemcell* memcell) const = 0;
+            visit_libfunc_memcell(LibfuncMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing NIL data.
          * 
          * @param memcell the memcell containing NIL data
          */
-        virtual void    visit_nill_memcell(NilMemcell* memcell) const = 0;
+        virtual void    visit_nill_memcell(NilMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing undefined data.
          * 
          * @param memcell the memcell containing undefined data
          */
-        virtual void    visit_undef_memcell(UndefMemcell* memcell) const = 0;
+        virtual void    visit_undef_memcell(UndefMemcell* memcell) = 0;
     };
     }
 }
