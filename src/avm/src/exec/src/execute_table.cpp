@@ -1,9 +1,10 @@
-#include "execute_table.h"
+#include "../include/execute_table.h"
+#include "../include/execute_assign.h"
 #include "../../signals/include/signals.h"
 
 namespace avm
 {
-    namespace cpu
+    namespace exec
     {
 
     void execute_newtable(memcell::AvmMemcell* memcell) {
@@ -113,13 +114,10 @@ namespace avm
 
             void visit_table_memcell(memcell::TableMemcell* memcell) override {
                 assert(memcell != nullptr);
-                if (memcell->contains(key_)) {
-                    delete lv_;
-                    lv_ = memcell->get_elem(key_);
-                }
-                else {
+                if (memcell->contains(key_))
+                    execute_assign(lv_, memcell->get_elem(key_));
+                else
                     signals::log_warning("Key not found", std::cerr);
-                }
             }
 
             void visit_userfunc_memcell(memcell::UserfuncMemcell* memcell)

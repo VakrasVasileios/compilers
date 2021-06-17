@@ -1,5 +1,6 @@
 #include "execute_instruction.h"
 #include "translate.h"
+#include "../../exec/include/execute_assign.h"
 #include "../../exec/include/execute_arithmetic.h"
 #include "../../exec/include/execute_function.h"
 #include "../../exec/include/execute_table.h"
@@ -9,8 +10,8 @@ namespace avm
 {
     namespace cpu
     {
-        namespace
-        {
+    namespace
+    {
         class InstructionExecuter : public target_code::InstructionVisitor {
         public:
             InstructionExecuter() = default;
@@ -18,6 +19,9 @@ namespace avm
 
             void VisitAssign(target_code::Assign* inst) const override {
                 assert(inst != nullptr);
+                auto lv = translate_operand(inst->get_result(), nullptr);
+                auto rv = translate_operand(inst->get_arg1(), registers::ax);
+                exec::execute_assign(lv, rv);
             }
 
             void VisitAdd(target_code::Add* inst) const override {
@@ -151,7 +155,7 @@ namespace avm
                 exec::execute_tablesetelem(table, key, value);
             }
         };
-        }
+    }
 
     void  execute_instruction(target_code::Instruction* instr) {
         PRECONDITION(instr != nullptr);
