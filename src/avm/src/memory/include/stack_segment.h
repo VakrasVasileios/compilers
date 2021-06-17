@@ -13,6 +13,12 @@ namespace avm
     namespace memory 
     {
     /**
+     * @brief The total space that a function
+     * call will tak up at the stack segment.
+     * 
+     */
+    extern unsigned total_actuals;
+    /**
      * @brief The avm stack segment containing the global
      * variables and the call stack section.
      * 

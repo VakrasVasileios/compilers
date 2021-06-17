@@ -2,7 +2,7 @@
 #include "../../signals/include/signals.h"
 #include "../../registers/include/registers.h"
 #include "../../memory/include/memory.h"
-#include "execute.h"
+#include "execute_instruction.h"
 
 namespace avm
 {
@@ -21,7 +21,7 @@ namespace avm
             signals::curr_line = instruction->get_src_line();
             assert (signals::curr_line != 0);
             unsigned old_pc = registers::pc;
-            execute(instruction);
+            execute_instruction(instruction);
             if (registers::pc == old_pc)
                 registers::pc++;
             }

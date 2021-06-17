@@ -4,6 +4,9 @@ namespace avm
 {
     namespace memory
     {
+
+    unsigned total_actuals = 0;
+        
     int
     StackSegment::size() const {
         INVARIANT(util::range::in_range<int>(AVM_STACKSIZE - registers::top,

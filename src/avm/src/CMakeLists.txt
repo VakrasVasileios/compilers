@@ -3,6 +3,7 @@ add_subdirectory(memcell)
 add_subdirectory(memory)
 add_subdirectory(registers)
 add_subdirectory(binary_parser)
+add_subdirectory(exec)
 add_subdirectory(cpu)
 add_subdirectory(library_functions)
 

@@ -5,8 +5,16 @@
 
 namespace avm
 {
-    namespace cpu
+    namespace exec
     {
+    /**
+     * @brief Executes the newtable target code instruction for
+     * a memcell.
+     * 
+     * @param memcell the memcell to execute the newtable target
+     * code instruction, not null
+     */
+    void execute_newtable(memcell::AvmMemcell* memcell);
     /**
      * @brief Executes the tablesetelem instruction for a
      * memcell.
@@ -16,7 +24,7 @@ namespace avm
      * @param key the key of the new element, not null
      * @param value the value of the new element, not null
      */
-    void tablesetelem_memcell(memcell::AvmMemcell* memcell,
+    void execute_tablesetelem(memcell::AvmMemcell* memcell,
         const memcell::AvmMemcell* key, const memcell::AvmMemcell* value);
     /**
      * @brief Executes the tablegetelem instruction for a memcell.
@@ -26,11 +34,8 @@ namespace avm
      * @param memcell the memcell to execute the tablegetelem,
      * the table, not null
      * @param key the key of the element, not null
-     * 
-     * @return  a read access to the mapped to the key memcell
-     * at a memcell, not null
      */
-    memcell::AvmMemcell* tablegetelem_memcell(memcell::AvmMemcell* lvalue, 
+    void execute_tablegetelem(memcell::AvmMemcell* lvalue, 
         memcell::AvmMemcell* memcell, const memcell::AvmMemcell* key) ;   
     }
 }

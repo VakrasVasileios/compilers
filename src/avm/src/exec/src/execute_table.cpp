@@ -5,8 +5,14 @@ namespace avm
 {
     namespace cpu
     {
-        namespace
-        {
+
+    void execute_newtable(memcell::AvmMemcell* memcell) {
+        PRECONDITION(memcell != nullptr);
+        memcell = new memcell::TableMemcell();
+    }
+
+    namespace
+    {
         class MemcellTableElemSetter final : public memcell::AvmMemcellVisitor {
         public:
             MemcellTableElemSetter(memcell::AvmMemcell* _key,
@@ -68,18 +74,18 @@ namespace avm
             memcell::AvmMemcell* key_;
             memcell::AvmMemcell* value_;  
         };
-        }
-        void tablesetelem_memcell(memcell::AvmMemcell* memcell,
-            memcell::AvmMemcell* key, memcell::AvmMemcell* value) {
-            PRECONDITION(memcell != nullptr);
-            PRECONDITION(key != nullptr);
-            PRECONDITION(value != nullptr);
-            auto visitor = new MemcellTableElemSetter(key, value);
-            memcell->accept(visitor);
-        }
+    }
+    void execute_tablesetelem(memcell::AvmMemcell* memcell,
+        memcell::AvmMemcell* key, memcell::AvmMemcell* value) {
+        PRECONDITION(memcell != nullptr);
+        PRECONDITION(key != nullptr);
+        PRECONDITION(value != nullptr);
+        auto visitor = new MemcellTableElemSetter(key, value);
+        memcell->accept(visitor);
+    }
 
-        namespace
-        {
+    namespace
+    {
         class MemcellTableElemGetter final : public memcell::AvmMemcellVisitor {
         public:
             MemcellTableElemGetter(memcell::AvmMemcell* _lv,
@@ -147,14 +153,14 @@ namespace avm
         };
         }
 
-        memcell::AvmMemcell* tablegetelem_memcell(memcell::AvmMemcell* lvalue,
-            memcell::AvmMemcell* memcell, memcell::AvmMemcell* key) 
-            {
-            PRECONDITION(lvalue != nullptr);
-            PRECONDITION(memcell != nullptr);
-            PRECONDITION(key != nullptr);
-            auto visitor = new MemcellTableElemGetter(lvalue, key);
-            memcell->accept(visitor);
-        }
+   void execute_tablegetelem(memcell::AvmMemcell* lvalue,
+        memcell::AvmMemcell* memcell, memcell::AvmMemcell* key) 
+        {
+        PRECONDITION(lvalue != nullptr);
+        PRECONDITION(memcell != nullptr);
+        PRECONDITION(key != nullptr);
+        auto visitor = new MemcellTableElemGetter(lvalue, key);
+        memcell->accept(visitor);
+    }
     }
 }
