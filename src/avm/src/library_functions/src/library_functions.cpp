@@ -34,7 +34,7 @@ namespace avm
             }
         }
 
-        void libfunc_typeof(){
+        void libfunc_typeof() {
             unsigned n = total_actuals();
             if (n != 1) {
                 signals::log_error(
@@ -46,7 +46,7 @@ namespace avm
             }
         }
 
-        void libfunc_input(){
+        void libfunc_input() {
             unsigned n = total_actuals();
             if (n != 0) {
                 signals::log_error(
@@ -57,7 +57,7 @@ namespace avm
             }
         }
 
-        void libfunc_objectmemberkeys(){
+        void libfunc_objectmemberkeys() {
             // if (n != 1) {
             //     signals::log_error(
             //         "one argument (not " + n + ") expected in \'typeof\'!",
@@ -69,11 +69,11 @@ namespace avm
             // }
         }
 
-        void libfunc_objecttotalmembers(){
+        void libfunc_objecttotalmembers() {
 
         }
 
-        void libfunc_objectcopy(){
+        void libfunc_objectcopy() {
 
         }
 

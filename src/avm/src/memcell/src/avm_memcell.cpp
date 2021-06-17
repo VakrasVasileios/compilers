@@ -412,12 +412,15 @@ namespace avm
 
         std::string  
         BoolMemcell::get_type() const {
-            return "bool";    
+            return "boolean";    
         }
 
         std::ostream&   
         BoolMemcell::log(std::ostream& os) const {
-            return os << bool_val_;    
+            if (bool_val_)
+                return os << "true";
+            else
+                return os << "false";   
         }
 
         AvmMemcell*    
@@ -617,12 +620,12 @@ namespace avm
 
         std::string     
         UserfuncMemcell::get_type() const {
-            return "userfunc";    
+            return "userfunction";    
         }
 
         std::ostream&   
         UserfuncMemcell::log(std::ostream& os) const {
-            return os << func_val_; //TODO???    
+            return os << "user function"; 
         }
 
         AvmMemcell*
@@ -712,12 +715,12 @@ namespace avm
 
         std::string  
         LibfuncMemcell::get_type() const {
-            return "libfunc";    
+            return "libraryfunction";    
         }
 
         std::ostream&   
         LibfuncMemcell::log(std::ostream& os) const {
-            return os << lib_func_val_; // TODO??    
+            return os << "library function";  
         }
 
         AvmMemcell*
@@ -794,12 +797,12 @@ namespace avm
 
         std::string  
         NilMemcell::get_type() const {
-            return "NIL";    
+            return "nil";    
         }
 
         std::ostream& 
         NilMemcell::log(std::ostream& os) const {
-            return os << "NIL";    
+            return os << "nil";    
         }
 
         AvmMemcell*
