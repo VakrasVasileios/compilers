@@ -12,14 +12,15 @@ namespace avm
 {
     namespace binary_parser
     {
-    /**
-     * @brief Loads the target code instructions to the code
-     * memory segment and stores the used constants.
-     * 
-     * @param _file the binary file to parse,
-     * not null
-     */
-    void parse_binary(const char* _file);
+        extern unsigned int global_offset;
+        /**
+         * @brief Loads the target code instructions to the code
+         * memory segment and stores the used constants.
+         * 
+         * @param _file the binary file to parse,
+         * not null
+         */
+        void parse_binary(const char* _file);
     }
 }
 

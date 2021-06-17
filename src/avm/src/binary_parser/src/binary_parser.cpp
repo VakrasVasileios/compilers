@@ -8,7 +8,7 @@ namespace avm
     namespace binary_parser
     {
     using namespace memory;
-
+    unsigned int global_offset;
     void parse_binary(const char* _file) {
         PRECONDITION(_file != nullptr);
         std::fstream executable;
@@ -46,6 +46,8 @@ namespace avm
             std::cerr << "Not an alpha language executable" << std::endl;
             exit(EXIT_FAILURE);
         }
+
+        global_offset = read_unsigned();
         // read string array
         size = read_unsigned();
         for (int i = 0; i < size; i++) {
@@ -72,8 +74,6 @@ namespace avm
             Constants:: GetInstance().InsertUserfunc(entry);
         }
 
-        std::cout << Constants:: GetInstance();
-        
         // read instructions
         size = read_unsigned();
         for (int i = 0; i < size; i++) {

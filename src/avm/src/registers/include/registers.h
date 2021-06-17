@@ -36,7 +36,7 @@ namespace avm
      * @brief Initializes the avm registers.
      * 
      */
-    void                                    initialize();
+    void                                    initialize(unsigned int);
     }
 }
 

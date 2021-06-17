@@ -48,6 +48,7 @@ namespace target_code {
         };
 
         write_unsigned(magic_num);
+        write_unsigned(syntax_analysis::GetProgramVarOffset());
 
         // write string array to binary file
         auto str_arr = ProgramConsts:: GetInstance().GetStringArray();
