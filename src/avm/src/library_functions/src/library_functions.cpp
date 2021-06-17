@@ -17,7 +17,7 @@ namespace avm
     namespace
     {
         unsigned total_actuals() {
-            memory::stack_segment.get_envvalue(registers::topsp +
+            return memory::stack_segment.get_envvalue(registers::topsp +
                 AVM_NUMACTUALS_OFFSET);
         }
 
@@ -150,7 +150,7 @@ namespace avm
         }
 
         void execute_enterlibfunc() {
-            registers::tops = registers::top;
+            registers::topsp = registers::top;
             exec::total_actuals = 0;
         }
 
@@ -173,7 +173,7 @@ namespace avm
             auto lib_func = libfuncs_by_id[libfunc_id];
             execute_enterlibfunc();
             execute_libfunc(lib_func);
-            execute_exitlibfunc()          
+            execute_exitlibfunc();          
         }    
     }   
     }

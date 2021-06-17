@@ -16,7 +16,7 @@ namespace avm
             }
         }
 
-        void execute_jnq(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
+        void execute_jne(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
             memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
@@ -69,6 +69,12 @@ namespace avm
                 assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
             }
+        }
+
+        void execute_jmp(memcell::AvmMemcell* res) {
+            PRECONDITION(res != nullptr);
+            assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
+            registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
         }
     }
 }
