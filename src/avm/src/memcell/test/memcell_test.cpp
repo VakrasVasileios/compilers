@@ -1,12 +1,6 @@
 #include <gtest/gtest.h>
 #include "../include/avm_memcell.h"
 
-#define NUM_MEMCELL_VAL         6
-#define STR_MEMCELL_VAL         "aaa"
-#define BOOL_MEMCELL_VAL        false
-#define USERFUNC_MEMCELL_VAL    40
-#define LIBFUNC_MEMCELL_VAL     "print"
-
 /**
  * @brief Test suite for the avm memcells.
  * 
@@ -30,13 +24,15 @@ protected:
     avm::memcell::LibfuncMemcell*   clibfunc_;
     avm::memcell::NilMemcell*       cnil_;
 
+    std::stringstream               out;
+
     void SetUp() override {
-        cnum_ = new avm::memcell::NumMemcell(NUM_MEMCELL_VAL);
-        cstr_ = new avm::memcell::StringMemcell(STR_MEMCELL_VAL);
-        cbool_ = new avm::memcell::BoolMemcell(BOOL_MEMCELL_VAL);
+        cnum_ = new avm::memcell::NumMemcell(6);
+        cstr_ = new avm::memcell::StringMemcell("aaa");
+        cbool_ = new avm::memcell::BoolMemcell(false);
         ctable_ = new avm::memcell::TableMemcell();
-        cuserfunc_ = new avm::memcell::UserfuncMemcell(USERFUNC_MEMCELL_VAL);
-        clibfunc_ = new avm::memcell::LibfuncMemcell(LIBFUNC_MEMCELL_VAL);
+        cuserfunc_ = new avm::memcell::UserfuncMemcell(40);
+        clibfunc_ = new avm::memcell::LibfuncMemcell("print");
         cnil_ = new avm::memcell::NilMemcell();
 
         fnum_ = cnum_;
@@ -119,6 +115,42 @@ TEST_F(MemcellSuite, type_libfunc_is_libraryfunction) {
 
 TEST_F(MemcellSuite, type_table_is_table) {
     GTEST_ASSERT_EQ(ftable_->get_type(), "table");
+}
+
+TEST_F(MemcellSuite, out_op_num_is_num_val) {
+    out << *fnum_;
+    GTEST_ASSERT_EQ(out.str(), "6");
+}
+
+TEST_F(MemcellSuite, out_op_true_bool_is_true) {
+    cbool_->set_bool_val(true);
+    out << *fbool_;
+    GTEST_ASSERT_EQ(out.str(), "true");
+}
+
+TEST_F(MemcellSuite, out_op_false_bool_is_false) {
+    out << *fbool_;
+    GTEST_ASSERT_EQ(out.str(), "false");
+}
+
+TEST_F(MemcellSuite, out_op_str_is_itsvalue) {
+    out << *fstr_;
+    GTEST_ASSERT_EQ(out.str(),  "aaa");
+}
+
+TEST_F(MemcellSuite, out_op_nil_is_nil) {
+    out << *fnil_;
+    GTEST_ASSERT_EQ(out.str(), "nil");
+}
+
+TEST_F(MemcellSuite, out_op_userfunc_is_user_function) {
+    out << *fuserfunc_;
+    GTEST_ASSERT_EQ(out.str(), "user function");
+}
+
+TEST_F(MemcellSuite, out_op_libfunc_is_library_function) {
+    out << *flibfunc_;
+    GTEST_ASSERT_EQ(out.str(), "library function");
 }
 
 #ifdef TESTING
