@@ -13,12 +13,6 @@ namespace avm
     namespace memory 
     {
     /**
-     * @brief The total space that a function
-     * call will tak up at the stack segment.
-     * 
-     */
-    extern unsigned total_actuals;
-    /**
      * @brief The avm stack segment containing the global
      * variables and the call stack section.
      * 
@@ -173,7 +167,24 @@ namespace avm
        * of a formal target code vmarg
        */                       
       unsigned            corresponding_index(const
-                            target_code::FormalVmarg vmarg) const;                     
+                            target_code::FormalVmarg vmarg) const; 
+      /**
+       * @brief Pushes an environment value to this StackSegment.
+       * 
+       * @param envvalue the environment value
+       */
+      void                push_envvalue(unsigned envvalue);                      
+      /**
+       * @brief Returns a read access to a previosuly stored
+       * environment value.
+       * 
+       * @param index the index of the previously stored environment
+       * value, greater or equal to zero
+       * 
+       * @return  a read access to a previosuly stored
+       * environment value, greater or equal to zero
+       */
+      unsigned            get_envvalue(unsigned index) const;                                          
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
     };
