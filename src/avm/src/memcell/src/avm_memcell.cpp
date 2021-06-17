@@ -121,6 +121,11 @@ namespace avm
             visitor->visit_num_memcell(this);
         }
 
+        std::string  
+        NumMemcell::get_type() const {
+            return "number";
+        }
+
         bool
         NumMemcell::to_bool() const {
             return num_val_ != 0;    
@@ -297,6 +302,11 @@ namespace avm
             return !str_val_.empty();    
         }
 
+        std::string  
+        StringMemcell::get_type() const {
+            return "string";    
+        }
+
         std::ostream&   
         StringMemcell::log(std::ostream& os) const {
             return os << str_val_;    
@@ -398,6 +408,11 @@ namespace avm
         bool
         BoolMemcell::to_bool() const {
             return bool_val_;   
+        }
+
+        std::string  
+        BoolMemcell::get_type() const {
+            return "bool";    
         }
 
         std::ostream&   
@@ -505,6 +520,11 @@ namespace avm
             return true;   
         }
 
+        std::string         
+        TableMemcell::get_type() const {
+            return "table";
+        }
+
         std::ostream&   
         TableMemcell::log(std::ostream& os) const {
             return os; //TODO    
@@ -593,6 +613,11 @@ namespace avm
         bool
         UserfuncMemcell::to_bool() const {
             return true;   
+        }
+
+        std::string     
+        UserfuncMemcell::get_type() const {
+            return "userfunc";    
         }
 
         std::ostream&   
@@ -685,6 +710,11 @@ namespace avm
             return true;   
         }
 
+        std::string  
+        LibfuncMemcell::get_type() const {
+            return "libfunc";    
+        }
+
         std::ostream&   
         LibfuncMemcell::log(std::ostream& os) const {
             return os << lib_func_val_; // TODO??    
@@ -760,6 +790,11 @@ namespace avm
         bool
         NilMemcell::to_bool() const {
             return false;   
+        }
+
+        std::string  
+        NilMemcell::get_type() const {
+            return "NIL";    
         }
 
         std::ostream& 

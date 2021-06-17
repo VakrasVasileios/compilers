@@ -184,6 +184,5 @@ namespace avm
         InstructionExecuter* executer = new InstructionExecuter();
         instr->Accept(executer);
     }
-
     }
 }

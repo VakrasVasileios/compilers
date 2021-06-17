@@ -7,6 +7,7 @@
 #include "../../registers/include/registers.h"
 #include "../../memory/include/memory.h"
 #include "../../exec/include/execute_function.h"
+#include "../../exec/include/execute_assign.h"
 
 namespace avm
 {
@@ -29,27 +30,43 @@ namespace avm
         void libfunc_print() {
             unsigned n = total_actuals();
             for (unsigned i = 0; i < n; i++) {
-                std::cout << get_actual(i) << std::endl;
+                std::cout << get_actual(i);
             }
         }
 
         void libfunc_typeof(){
-            // unsigned totalactuals = cpu::topsp+3;
-            // if(totalactuals!=1)
-            //     std::cout << "one argument not 'n' expected in typeof!" << totalactuals;
-            // else{
-            //     //clean retval
-            //     // set retval with the typeof the argument
-            //     // cpu::retval
-            // }
+            unsigned n = total_actuals();
+            if (n != 1) {
+                signals::log_error(
+                    "one argument (not " + n + ") expected in \'typeof\'!",
+                        std::cerr);
+            } else {
+                exec::execute_assign(registers::retval,
+                    get_actual(0)->get_type());
+            }
         }
 
         void libfunc_input(){
-
+            unsigned n = total_actuals();
+            if (n != 0) {
+                signals::log_error(
+                    "no arguments (not " + n + ") expected in \'input\'!",
+                        std::cerr);
+            } else {
+                exec::execute_assign(registers::retval, std::cin >>);
+            }
         }
 
         void libfunc_objectmemberkeys(){
-
+            // if (n != 1) {
+            //     signals::log_error(
+            //         "one argument (not " + n + ") expected in \'typeof\'!",
+            //             std::cerr);
+            // } else {
+            //     auto table = get_actual(0);
+            //     exec::execute_assign(registers::retval,
+            //         get_actual(0)->get_type());
+            // }
         }
 
         void libfunc_objecttotalmembers(){
