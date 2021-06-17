@@ -6,309 +6,635 @@ namespace avm
 {
     namespace memcell
     {
-    bool  operator==(AvmMemcell const& lhs, AvmMemcell const& rhs) {
-        return lhs.equals(rhs);
-    }
-
-    double  
-    NumMemcell::num_val() const {
-        return num_val_;    
-    }
-
-    void    
-    NumMemcell::set_num_val(const double _num_val) {
-        num_val_ = _num_val;    
-    }
-
-    void
-    NumMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_num_memcell(this);
-    }
-
-    bool
-    NumMemcell::to_bool() const {
-        return num_val_ != 0;    
-    }
-
-    namespace 
-    {
-    NumMemcell const *num_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<NumMemcell const*>(&memcell);
-    }  
-
-    StringMemcell const *str_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<StringMemcell const*>(&memcell);
-    }
-
-    BoolMemcell const *bool_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<BoolMemcell const*>(&memcell);
-    }
-
-    TableMemcell const *table_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<TableMemcell const*>(&memcell);
-    }
-
-    UserfuncMemcell const *userfunc_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<UserfuncMemcell const*>(&memcell);
-    }
-
-    LibfuncMemcell const *libfunc_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<LibfuncMemcell const*>(&memcell);
-    }
-
-    NilMemcell const *nill_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<NilMemcell const*>(&memcell);
-    }
-
-    UndefMemcell const *undef_memcell_cast(AvmMemcell const& memcell) {
-        return dynamic_cast<UndefMemcell const*>(&memcell);
-    }
-
-    }
-
-    bool    
-    NumMemcell::equals(AvmMemcell const& other) const {
-        if (auto num_memcell = num_memcell_cast(other))
-            return num_val_ == num_memcell->num_val();
-        else    
-            return to_bool() == other.to_bool();        
-    }
-
-    NumMemcell*
-    NumMemcell::operator+(NumMemcell* _mem) {
-        NumMemcell* ret = new NumMemcell();
-        ret->num_val_ = num_val_ + _mem->num_val_;
-        return ret;
-    }
-
-    NumMemcell* 
-    NumMemcell::operator-(NumMemcell* _mem) {
-        NumMemcell* ret = new NumMemcell();
-        ret->num_val_ = num_val_ - _mem->num_val_;
-        return ret;
-    }
-
-    NumMemcell*
-    NumMemcell::operator*(NumMemcell* _mem) {
-        NumMemcell* ret = new NumMemcell();
-        ret->num_val_ = num_val_ * _mem->num_val_;
-        return ret;
-    }
-
-    NumMemcell*
-    NumMemcell::operator/(NumMemcell* _mem) {
-        NumMemcell* ret = new NumMemcell();
-        if (_mem->num_val_ != 0)
-            ret->num_val_ = num_val_ / _mem->num_val_;
-        else {
-            std::cerr << "Error, division with zero!" << std::endl;
-            exit(EXIT_FAILURE);
+        //--------------AvmMemcell--------------//
+        AvmMemcell*
+        operator==(AvmMemcell const& lhs, AvmMemcell const& rhs) {
+            return lhs.equals(rhs);
         }
-        return ret;
-    }
-    NumMemcell*
-    NumMemcell::operator%(NumMemcell* _mem) {
-        NumMemcell* ret = new NumMemcell();
-        if (_mem->num_val_ != 0)
-            ret->num_val_ = fmod(num_val_, _mem->num_val_);
-        else {
-            std::cerr << "Error, division with zero!" << std::endl;
-            exit(EXIT_FAILURE);
+
+        AvmMemcell*
+        AvmMemcell::operator+(AvmMemcell const& other) {
+            return add(other);
         }
-        return ret;
-    }
 
-    std::string
-    StringMemcell::str_val() const {
-        return str_val_;    
-    }
+        AvmMemcell*
+        AvmMemcell::operator-(AvmMemcell const& other) {
+            return sub(other);
+        }
 
-    void        
-    StringMemcell::set_str_val(const std::string str_val) {
-        str_val_ = str_val;    
-    }
+        AvmMemcell*
+        AvmMemcell::operator*(AvmMemcell const& other) {
+            return mul(other);
+        }
 
-    void
-    StringMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_string_memcell(this);
-    }
+        AvmMemcell*
+        AvmMemcell::operator/(AvmMemcell const& other) {
+            return div(other);
+        }
 
-    bool
-    StringMemcell::to_bool() const {
-        return !str_val_.empty();    
-    }
+        AvmMemcell*
+        AvmMemcell::operator%(AvmMemcell const& other) {
+            return mod(other);
+        }
 
-    bool    
-    StringMemcell::equals(AvmMemcell const& other) const {
-        if (auto str_memcell = str_memcell_cast(other))
-            return str_val_ == str_memcell->str_val();
-        else
-            return to_bool() == other.to_bool();
-    }
+        AvmMemcell*
+        AvmMemcell::operator>(AvmMemcell const& other) {
+            return gt(other);
+        }
 
-    StringMemcell*
-    StringMemcell::operator+(StringMemcell* _mem) {
-        StringMemcell* ret = new StringMemcell("");
-        ret->str_val_ = str_val_ + _mem->str_val_;
-        return ret;
-    }
+        AvmMemcell*
+        AvmMemcell::operator>=(AvmMemcell const& other) {
+            return geq(other);
+        }
 
+        AvmMemcell*
+        AvmMemcell::operator<(AvmMemcell const& other) {
+            return lt(other);
+        }
 
-    bool    
-    BoolMemcell::bool_val() const {
-        return bool_val_;    
-    }
+        AvmMemcell*
+        AvmMemcell::operator<=(AvmMemcell const& other) {
+            return leq(other);
+        }
+        //--------------AvmMemcell--------------//
 
-    void    
-    BoolMemcell::set_bool_val(const bool val) {
-        bool_val_ = val;    
-    }
+        //--------------NumMemcell--------------//
+        double  
+        NumMemcell::num_val() const {
+            return num_val_;    
+        }
 
-    void
-    BoolMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_bool_memcell(this);
-    }
+        void    
+        NumMemcell::set_num_val(const double _num_val) {
+            num_val_ = _num_val;    
+        }
 
-    bool
-    BoolMemcell::to_bool() const {
-        return bool_val_;   
-    }
+        void
+        NumMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_num_memcell(this);
+        }
 
-    bool    
-    BoolMemcell::equals(AvmMemcell const& other) const {
-       return to_bool() == other.to_bool();
-    }
+        bool
+        NumMemcell::to_bool() const {
+            return num_val_ != 0;    
+        }
 
-    AvmTable*   
-    TableMemcell::table_val() const {
-        POSTCONDITION(table_val_ != nullptr);
-        return table_val_;    
-    }
+        AvmMemcell*    
+        NumMemcell::equals(AvmMemcell const& other) const {
+            if (auto num_memcell = num_memcell_cast(other))
+                return new BoolMemcell(num_val_ == num_memcell->num_val());
+            else    
+                return new BoolMemcell(to_bool() == other.to_bool());        
+        }
 
-    void        
-    TableMemcell::set_table_val(AvmTable* table) {
-        INVARIANT(table_val_ != nullptr);
-        PRECONDITION(table != nullptr);
-        table_val_ = table;  
-        INVARIANT(table_val_ != nullptr); 
-    }
+        AvmMemcell*
+        NumMemcell::add(AvmMemcell const& other) const {
+            if (auto num = num_memcell_cast(other)) {
+                NumMemcell* ret = new NumMemcell();
+                ret->num_val_ = num_val_ + num->num_val_;
+                return ret;
+            }
+            else if (auto str = str_memcell_cast(other)) {
+                StringMemcell* ret = new StringMemcell("");
+                std::string tmp(std::to_string(num_val_));
+                ret->set_str_val(tmp+str->str_val());
+                return ret;
+            }
+            else {
+                std::cerr << "Invalid operation \'+\'" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    void
-    TableMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_table_memcell(this);
-    }
+        AvmMemcell*
+        NumMemcell::sub(AvmMemcell const& other) const {
+            NumMemcell* ret = new NumMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                ret->num_val_ = num_val_ - num->num_val_;
+                return ret;
+            }
+            else {
+                std::cerr << "Second operand is not a number" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    AvmTable*   
-    TableMemcell::verify_avm_table(AvmTable* table) const {
-        PRECONDITION(table != nullptr);
-        return table;    
-    }
+        AvmMemcell*
+        NumMemcell::mul(AvmMemcell const& other) const {
+            NumMemcell* ret = new NumMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                ret->num_val_ = num_val_ * num->num_val_;
+                return ret;
+            }
+            else {
+                std::cerr << "Second operand is not a number" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    bool        
-    TableMemcell::equals(AvmMemcell const& other) const {
-        if (auto table_memcell = table_memcell_cast(other))
-            return table_val_ == table_memcell->table_val();
-        else    
-            return to_bool() == other.to_bool(); 
-    }
+        AvmMemcell*
+        NumMemcell::div(AvmMemcell const& other) const {
+            NumMemcell* ret = new NumMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                if (num->num_val_ != 0) {
+                    ret->num_val_ = num_val_ / num->num_val_;
+                    return ret;
+                }
+                else {
+                    std::cerr << "Division with zero" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+            }
+            else {
+                std::cerr << "Second operand is not a number" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    bool
-    TableMemcell::to_bool() const {
-        return true;   
-    }
+        AvmMemcell*
+        NumMemcell::mod(AvmMemcell const& other) const {
+            NumMemcell* ret = new NumMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                if (num->num_val_ != 0) {
+                    ret->num_val_ = fmod(num_val_, num->num_val_);
+                    return ret;
+                }
+                else {
+                    std::cerr << "Modulation with zero" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+            }
+            else {
+                std::cerr << "Second operand is not a number" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    unsigned int    
-    UserfuncMemcell::func_val() const {
-        return func_val_;    
-    }
+        AvmMemcell*
+        NumMemcell::gt(AvmMemcell const& other) const {
+            BoolMemcell* ret = new BoolMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                ret->set_bool_val(num_val_ > num->num_val_);
+                return ret;
+            }
+            else {
+                std::cerr << "Invalid '>' operation with non-numeric rh operand" << std::endl;
+            }
+        }
 
-    void            
-    UserfuncMemcell::set_func_val(const unsigned int _func_val) {
-        func_val_ = _func_val;    
-    }
+        AvmMemcell*
+        NumMemcell::geq(AvmMemcell const& other) const {
+            BoolMemcell* ret = new BoolMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                ret->set_bool_val(num_val_ >= num->num_val_);
+                return ret;
+            }
+            else {
+                std::cerr << "Invalid '>=' operation with non-numeric rh operand" << std::endl;
+            }
+        }
 
-    void
-    UserfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_userfunc_memcell(this);
-    }
+        AvmMemcell*
+        NumMemcell::lt(AvmMemcell const& other) const {
+            BoolMemcell* ret = new BoolMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                ret->set_bool_val(num_val_ < num->num_val_);
+                return ret;
+            }
+            else {
+                std::cerr << "Invalid '<' operation with non-numeric rh operand" << std::endl;
+            }
+        }
 
-    bool            
-    UserfuncMemcell::equals(AvmMemcell const& other) const {
-       if (auto userfunc_memcell = userfunc_memcell_cast(other))
-            return func_val_ == userfunc_memcell->func_val();
-        else
-            return to_bool() == other.to_bool();
-    }
+        AvmMemcell*
+        NumMemcell::leq(AvmMemcell const& other) const {
+            BoolMemcell* ret = new BoolMemcell();
+            if (auto num = num_memcell_cast(other)) {
+                ret->set_bool_val(num_val_ <= num->num_val_);
+                return ret;
+            }
+            else {
+                std::cerr << "Invalid '<=' operation with non-numeric rh operand" << std::endl;
+            }
+        }
+        //--------------NumMemcell--------------//
 
-    bool
-    UserfuncMemcell::to_bool() const {
-        return true;   
-    }
+        //--------------StringMemcell--------------//
+        std::string
+        StringMemcell::str_val() const {
+            return str_val_;    
+        }
 
-    std::string 
-    LibfuncMemcell::lib_func_val() const {
-        return lib_func_val_;    
-    }
+        void        
+        StringMemcell::set_str_val(const std::string str_val) {
+            str_val_ = str_val;    
+        }
 
-    void        
-    LibfuncMemcell::set_lib_func_val(const std::string _lib_func_val) {
-        lib_func_val_ = _lib_func_val;    
-    }
+        void
+        StringMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_string_memcell(this);
+        }
 
-    void
-    LibfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_libfunc_memcell(this);
-    }
+        bool
+        StringMemcell::to_bool() const {
+            return !str_val_.empty();    
+        }
 
-    bool        
-    LibfuncMemcell::equals(AvmMemcell const& other) const {
-        if (auto libfunc_memcell = libfunc_memcell_cast(other))
-            return lib_func_val_ == libfunc_memcell->lib_func_val();
-        else
-            return to_bool() == other.to_bool();
-    }
+        AvmMemcell*    
+        StringMemcell::equals(AvmMemcell const& other) const {
+            if (auto str_memcell = str_memcell_cast(other))
+                return new BoolMemcell(str_val_ == str_memcell->str_val());
+            else
+                return new BoolMemcell(to_bool() == other.to_bool());
+        }
 
-    bool
-    LibfuncMemcell::to_bool() const {
-        return true;   
-    }
+        AvmMemcell*
+        StringMemcell::add(AvmMemcell const& other) const {
+            StringMemcell* ret = new StringMemcell("");
+            if (auto str = str_memcell_cast(other)) {
+                ret->str_val_ += str_val_ + str->str_val_;
+                return ret;
+            }
+            else if (auto num = num_memcell_cast(other)) {
+                std::string tmp = str_val_;
+                tmp += num->num_val();
+                ret->str_val_ += tmp;
+                return ret;
+            }
+            else {
+                std::cerr << "Invalid operation \'+\'" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    void
-    NilMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_nill_memcell(this);
-    }
+        AvmMemcell*
+        StringMemcell::sub(AvmMemcell const& other) const {
+            std::cerr << "Invalid '-' with string operand" << std::endl;
+        }
 
-    bool        
-    NilMemcell::equals(AvmMemcell const& other) const {
-        return to_bool() == other.to_bool();  
-    }
+        AvmMemcell*
+        StringMemcell::mul(AvmMemcell const& other) const {
+            std::cerr << "Invalid '*' with string operand" << std::endl;
+        }
 
-    bool
-    NilMemcell::to_bool() const {
-        return false;   
-    }
+        AvmMemcell*
+        StringMemcell::div(AvmMemcell const& other) const {
+            std::cerr << "Invalid '/' with string operand" << std::endl;
+        }
 
-    void
-    UndefMemcell::accept(const AvmMemcellVisitor* visitor) {
-        PRECONDITION(visitor != nullptr);
-        visitor->visit_undef_memcell(this);
-    }
+        AvmMemcell*
+        StringMemcell::mod(AvmMemcell const& other) const {
+            std::cerr << "Invalid '%' with string operand" << std::endl;
+        }
 
-    bool        
-    UndefMemcell::equals(AvmMemcell const& other) const {
-        return to_bool() == other.to_bool();    
-    }
+        AvmMemcell*
+        StringMemcell::gt(AvmMemcell const& other) const {
+            std::cerr << "Invalid '>' with string operand" << std::endl;
+        }
 
-    bool
-    UndefMemcell::to_bool() const {
-        return false;   
-    }
-    }
-}
+        AvmMemcell*
+        StringMemcell::geq(AvmMemcell const& other) const {
+            std::cerr << "Invalid '>=' with string operand" << std::endl;
+        }
+
+        AvmMemcell*
+        StringMemcell::lt(AvmMemcell const& other) const {
+            std::cerr << "Invalid '<' with string operand" << std::endl;
+        }
+
+        AvmMemcell*
+        StringMemcell::leq(AvmMemcell const& other) const {
+            std::cerr << "Invalid '<=' with string operand" << std::endl;
+        }
+        //--------------StringMemcell--------------//
+
+        //--------------BoolMemcell--------------//
+        bool    
+        BoolMemcell::bool_val() const {
+            return bool_val_;    
+        }
+
+        void    
+        BoolMemcell::set_bool_val(const bool val) {
+            bool_val_ = val;    
+        }
+
+        void
+        BoolMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_bool_memcell(this);
+        }
+
+        bool
+        BoolMemcell::to_bool() const {
+            return bool_val_;   
+        }
+
+        AvmMemcell*    
+        BoolMemcell::equals(AvmMemcell const& other) const {
+        return new BoolMemcell(to_bool() == other.to_bool());
+        }
+
+        AvmMemcell*
+        BoolMemcell::add(AvmMemcell const& other) const {
+            std::cerr << "Invalid '+' with bool operand" << std::endl;
+        }
+
+        AvmMemcell*
+        BoolMemcell::sub(AvmMemcell const& other) const {
+            std::cerr << "Invalid '-' with bool operand" << std::endl;
+        }
+
+        AvmMemcell*
+        BoolMemcell::mul(AvmMemcell const& other) const {
+            std::cerr << "Invalid '*' with bool operand" << std::endl;
+        }
+
+        AvmMemcell*
+        BoolMemcell::div(AvmMemcell const& other) const {
+            std::cerr << "Invalid '/' with bool operand" << std::endl;
+        }
+
+        AvmMemcell*
+        BoolMemcell::mod(AvmMemcell const& other) const {
+            std::cerr << "Invalid '%' with bool operand" << std::endl;
+        }
+        //--------------BoolMemcell--------------//
+
+        //--------------TableMemcell--------------//
+        AvmTable*   
+        TableMemcell::table_val() const {
+            POSTCONDITION(table_val_ != nullptr);
+            return table_val_;    
+        }
+
+        void        
+        TableMemcell::set_table_val(AvmTable* table) {
+            INVARIANT(table_val_ != nullptr);
+            PRECONDITION(table != nullptr);
+            table_val_ = table;  
+            INVARIANT(table_val_ != nullptr); 
+        }
+
+        void
+        TableMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_table_memcell(this);
+        }
+
+        AvmTable*   
+        TableMemcell::verify_avm_table(AvmTable* table) const {
+            PRECONDITION(table != nullptr);
+            return table;    
+        }
+
+        AvmMemcell*        
+        TableMemcell::equals(AvmMemcell const& other) const {
+            if (auto table_memcell = table_memcell_cast(other))
+                return new BoolMemcell(table_val_ == table_memcell->table_val());
+            else    
+                return new BoolMemcell(to_bool() == other.to_bool()); 
+        }
+
+        bool
+        TableMemcell::to_bool() const {
+            return true;   
+        }
+
+        AvmMemcell*
+        TableMemcell::add(AvmMemcell const& other) const {
+            std::cerr << "Invalid '+' with table operand" << std::endl;
+        }
+
+        AvmMemcell*
+        TableMemcell::sub(AvmMemcell const& other) const {
+            std::cerr << "Invalid '-' with table operand" << std::endl;
+        }
+
+        AvmMemcell*
+        TableMemcell::mul(AvmMemcell const& other) const {
+            std::cerr << "Invalid '*' with table operand" << std::endl;
+        }
+
+        AvmMemcell*
+        TableMemcell::div(AvmMemcell const& other) const {
+            std::cerr << "Invalid '/' with table operand" << std::endl;
+        }
+
+        AvmMemcell*
+        TableMemcell::mod(AvmMemcell const& other) const {
+            std::cerr << "Invalid '%' with table operand" << std::endl;
+        }
+        //--------------TableMemcell--------------//
+
+        //--------------UserfuncMemcell--------------//
+        unsigned int    
+        UserfuncMemcell::func_val() const {
+            return func_val_;    
+        }
+
+        void            
+        UserfuncMemcell::set_func_val(const unsigned int _func_val) {
+            func_val_ = _func_val;    
+        }
+
+        void
+        UserfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_userfunc_memcell(this);
+        }
+
+        AvmMemcell*            
+        UserfuncMemcell::equals(AvmMemcell const& other) const {
+        if (auto userfunc_memcell = userfunc_memcell_cast(other))
+                return new BoolMemcell(func_val_ == userfunc_memcell->func_val());
+            else
+                return new BoolMemcell(to_bool() == other.to_bool());
+        }
+
+        bool
+        UserfuncMemcell::to_bool() const {
+            return true;   
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::add(AvmMemcell const& other) const {
+            std::cerr << "Invalid '+' with user function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::sub(AvmMemcell const& other) const {
+            std::cerr << "Invalid '-' with user function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::mul(AvmMemcell const& other) const {
+            std::cerr << "Invalid '*' with user function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::div(AvmMemcell const& other) const {
+            std::cerr << "Invalid '/' with user function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::mod(AvmMemcell const& other) const {
+            std::cerr << "Invalid '%' with user function operand" << std::endl;
+        }
+        //--------------UserfuncMemcell--------------//
+
+        //--------------LibfuncMemcell--------------//
+        std::string 
+        LibfuncMemcell::lib_func_val() const {
+            return lib_func_val_;    
+        }
+
+        void        
+        LibfuncMemcell::set_lib_func_val(const std::string _lib_func_val) {
+            lib_func_val_ = _lib_func_val;    
+        }
+
+        void
+        LibfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_libfunc_memcell(this);
+        }
+
+        AvmMemcell*        
+        LibfuncMemcell::equals(AvmMemcell const& other) const {
+            if (auto libfunc_memcell = libfunc_memcell_cast(other))
+                return new BoolMemcell(lib_func_val_ == libfunc_memcell->lib_func_val());
+            else
+                return new BoolMemcell(to_bool() == other.to_bool());
+        }
+
+        bool
+        LibfuncMemcell::to_bool() const {
+            return true;   
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::add(AvmMemcell const& other) const {
+            std::cerr << "Invalid '+' with library function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::sub(AvmMemcell const& other) const {
+            std::cerr << "Invalid '-' with library function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::mul(AvmMemcell const& other) const {
+            std::cerr << "Invalid '*' with library function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::div(AvmMemcell const& other) const {
+            std::cerr << "Invalid '/' with library function operand" << std::endl;
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::mod(AvmMemcell const& other) const {
+            std::cerr << "Invalid '%' with library function operand" << std::endl;
+        }
+        //--------------LibfuncMemcell--------------//
+
+        //--------------NilMemcell--------------//
+        void
+        NilMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_nill_memcell(this);
+        }
+
+        AvmMemcell*
+        NilMemcell::equals(AvmMemcell const& other) const {
+            return new BoolMemcell(to_bool() == other.to_bool());  
+        }
+
+        bool
+        NilMemcell::to_bool() const {
+            return false;   
+        }
+
+        AvmMemcell*
+        NilMemcell::add(AvmMemcell const& other) const {
+            std::cerr << "Invalid '+' with nil operand" << std::endl;
+        }
+
+        AvmMemcell*
+        NilMemcell::sub(AvmMemcell const& other) const {
+            std::cerr << "Invalid '-' with nil operand" << std::endl;
+        }
+
+        AvmMemcell*
+        NilMemcell::mul(AvmMemcell const& other) const {
+            std::cerr << "Invalid '*' with nil operand" << std::endl;
+        }
+
+        AvmMemcell*
+        NilMemcell::div(AvmMemcell const& other) const {
+            std::cerr << "Invalid '/' with nil operand" << std::endl;
+        }
+
+        AvmMemcell*
+        NilMemcell::mod(AvmMemcell const& other) const {
+            std::cerr << "Invalid '%' with nil operand" << std::endl;
+        }
+        //--------------NilMemcell--------------//
+
+        //--------------UndefMemcell--------------//
+        void
+        UndefMemcell::accept(const AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_undef_memcell(this);
+        }
+
+        AvmMemcell*        
+        UndefMemcell::equals(AvmMemcell const& other) const {
+            return new BoolMemcell(to_bool() == other.to_bool());    
+        }
+
+        bool
+        UndefMemcell::to_bool() const {
+            return false;   
+        }
+        //--------------UndefMemcell--------------//
+
+        namespace 
+        {
+            NumMemcell const *num_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<NumMemcell const*>(&memcell);
+            }  
+
+            StringMemcell const *str_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<StringMemcell const*>(&memcell);
+            }
+
+            BoolMemcell const *bool_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<BoolMemcell const*>(&memcell);
+            }
+
+            TableMemcell const *table_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<TableMemcell const*>(&memcell);
+            }
+
+            UserfuncMemcell const *userfunc_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<UserfuncMemcell const*>(&memcell);
+            }
+
+            LibfuncMemcell const *libfunc_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<LibfuncMemcell const*>(&memcell);
+            }
+
+            NilMemcell const *nill_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<NilMemcell const*>(&memcell);
+            }
+
+            UndefMemcell const *undef_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<UndefMemcell const*>(&memcell);
+            }
+        } //namespace
+    } //namespace memcell
+} //namespace avm
