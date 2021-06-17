@@ -26,33 +26,30 @@ namespace avm
             MemcellCaller() = default;
             ~MemcellCaller() = default;
 
-            void visit_num_memcell(memcell::NumMemcell* memcell) const override
-            {
+            void visit_num_memcell(memcell::NumMemcell* memcell) override {
                 assert(memcell != nullptr);
                 signals::log_error("Cannot bind numerical value to function call",
                     std::cerr);
             }
 
-            void visit_string_memcell(memcell::StringMemcell* memcell) const
-            override {
+            void visit_string_memcell(memcell::StringMemcell* memcell) override
+            {
                 assert(memcell != nullptr);
                 library_functions::call_libfunc(memcell->str_val());
             }
 
-            void visit_bool_memcell(memcell::BoolMemcell* memcell) const
-            override {
+            void visit_bool_memcell(memcell::BoolMemcell* memcell) override {
                 assert(memcell != nullptr);
                 signals::log_error("Cannot bind bool value to function call", std::cerr);
             }
 
-            void visit_table_memcell(memcell::TableMemcell* memcell)
-            const override {
+            void visit_table_memcell(memcell::TableMemcell* memcell) override {
                 assert(memcell != nullptr);
                 signals::log_error("Cannot bind table value to function call",
                     std::cerr);
             }
 
-            void visit_userfunc_memcell(memcell::UserfuncMemcell* memcell) const
+            void visit_userfunc_memcell(memcell::UserfuncMemcell* memcell)
             override {
                 assert(memcell != nullptr);
                 registers::pc = memcell->func_val();
@@ -61,20 +58,18 @@ namespace avm
                     == target_code::ENTERFUNC_VM);
             }
 
-            void visit_libfunc_memcell(memcell::LibfuncMemcell* memcell) const
+            void visit_libfunc_memcell(memcell::LibfuncMemcell* memcell)
             override {
                 assert(memcell != nullptr);
                 library_functions::call_libfunc(memcell->lib_func_val());
             }
 
-            void visit_nill_memcell(memcell::NilMemcell* memcell) const
-            override {
+            void visit_nill_memcell(memcell::NilMemcell* memcell) override {
                 assert(memcell != nullptr);
                 signals::log_error("Cannot bind NIL to function call", std::cerr);
             }
 
-            void visit_undef_memcell(memcell::UndefMemcell* memcell) const
-            override {
+            void visit_undef_memcell(memcell::UndefMemcell* memcell) override {
                 assert(memcell != nullptr);
                 signals::log_error("Cannot bind undifined value to function call",
                     std::cerr);
@@ -93,7 +88,7 @@ namespace avm
         inline memcell::NumMemcell* num_memcell_cast(
             memcell::AvmMemcell* memcell) {
             auto result = dynamic_cast<memcell::NumMemcell*>(memcell);
-            assert (result != nullptr);
+            PRECONDITION (result != nullptr);
             return result;
         }
     }

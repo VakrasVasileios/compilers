@@ -1,6 +1,7 @@
 #include "execute.h"
 #include "translate.h"
 #include "execute_function.h"
+#include "execute_table.h"
 
 #define AVM_NUMACTUALS_OFFSET   +4
 #define AVM_SAVEDPC_OFFSET      +3
@@ -155,17 +156,27 @@ namespace avm
                 assert(inst != nullptr);
                 auto lv = translate_operand(inst->get_result(), nullptr);
 
-                lv = new memcell::TableMemcell(new memcell::AvmTable());
+                lv = new memcell::TableMemcell();
             }
 
             void VisitTableGetElem(target_code::TableGetElem* inst) const
             override {
                 assert(inst != nullptr);
+                auto lv = translate_operand(inst->get_result(), nullptr);
+                auto table = translate_operand(inst->get_arg1(), nullptr);
+                auto key = translate_operand(inst->get_arg2(), registers::ax);
+
+                tablegetelem_memcell(lv, table, key);
             }
 
             void VisitTableSetElem(target_code::TableSetElem* inst) const
             override {
                 assert(inst != nullptr);
+                auto table = translate_operand(inst->get_result(), nullptr);
+                auto key = translate_operand(inst->get_arg1(), registers::ax);
+                auto value = translate_operand(inst->get_arg1(), registers::bx);
+
+                tablesetelem_memcell(table, key, value);
             }
         };
         }

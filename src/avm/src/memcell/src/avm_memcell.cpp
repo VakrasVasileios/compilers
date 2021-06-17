@@ -21,7 +21,7 @@ namespace avm
     }
 
     void
-    NumMemcell::accept(const AvmMemcellVisitor* visitor) {
+    NumMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_num_memcell(this);
     }
@@ -130,7 +130,7 @@ namespace avm
     }
 
     void
-    StringMemcell::accept(const AvmMemcellVisitor* visitor) {
+    StringMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_string_memcell(this);
     }
@@ -167,7 +167,7 @@ namespace avm
     }
 
     void
-    BoolMemcell::accept(const AvmMemcellVisitor* visitor) {
+    BoolMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_bool_memcell(this);
     }
@@ -182,38 +182,38 @@ namespace avm
        return to_bool() == other.to_bool();
     }
 
-    AvmTable*   
-    TableMemcell::table_val() const {
-        POSTCONDITION(table_val_ != nullptr);
-        return table_val_;    
+    bool                
+    TableMemcell::contains(AvmMemcell* key) const {
+        PRECONDITION(key != nullptr);
+        return table_val_.count(key);
+    }
+
+    AvmMemcell* 
+    TableMemcell::get_elem(AvmMemcell* key) const {
+        PRECONDITION(contains(key));
+        return table_val_.at(key);
     }
 
     void        
-    TableMemcell::set_table_val(AvmTable* table) {
-        INVARIANT(table_val_ != nullptr);
-        PRECONDITION(table != nullptr);
-        table_val_ = table;  
-        INVARIANT(table_val_ != nullptr); 
+    TableMemcell::set_elem(AvmMemcell* key, AvmMemcell* value) {
+        PRECONDITION(key != nullptr);
+        PRECONDITION(value != nullptr);
+        table_val_.insert({key, value});
     }
 
     void
-    TableMemcell::accept(const AvmMemcellVisitor* visitor) {
+    TableMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_table_memcell(this);
-    }
-
-    AvmTable*   
-    TableMemcell::verify_avm_table(AvmTable* table) const {
-        PRECONDITION(table != nullptr);
-        return table;    
     }
 
     bool        
     TableMemcell::equals(AvmMemcell const& other) const {
         if (auto table_memcell = table_memcell_cast(other))
-            return table_val_ == table_memcell->table_val();
-        else    
-            return to_bool() == other.to_bool(); 
+            // return table_val_ == table_memcell->table_val(); TODO: check maps
+        // else    
+        //     return to_bool() == other.to_bool(); 
+        return to_bool() == other.to_bool(); //TOCHANGE
     }
 
     bool
@@ -232,7 +232,7 @@ namespace avm
     }
 
     void
-    UserfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
+    UserfuncMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_userfunc_memcell(this);
     }
@@ -261,7 +261,7 @@ namespace avm
     }
 
     void
-    LibfuncMemcell::accept(const AvmMemcellVisitor* visitor) {
+    LibfuncMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_libfunc_memcell(this);
     }
@@ -280,7 +280,7 @@ namespace avm
     }
 
     void
-    NilMemcell::accept(const AvmMemcellVisitor* visitor) {
+    NilMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_nill_memcell(this);
     }
@@ -296,7 +296,7 @@ namespace avm
     }
 
     void
-    UndefMemcell::accept(const AvmMemcellVisitor* visitor) {
+    UndefMemcell::accept(AvmMemcellVisitor* visitor) {
         PRECONDITION(visitor != nullptr);
         visitor->visit_undef_memcell(this);
     }
