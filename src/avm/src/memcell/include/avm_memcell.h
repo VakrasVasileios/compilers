@@ -37,17 +37,33 @@ namespace avm
          */
         virtual void    accept(const AvmMemcellVisitor* visitor) = 0;
 
-        friend bool     operator==(AvmMemcell const& lhs,
+        friend AvmMemcell*     operator==(AvmMemcell const& lhs,
                             AvmMemcell const& rhs);
-        AvmMemcell*     operator+(AvmMemcell*);
-        AvmMemcell*     operator-(AvmMemcell*);
-        AvmMemcell*     operator*(AvmMemcell*);
-        AvmMemcell*     operator/(AvmMemcell*);
-        AvmMemcell*     operator%(AvmMemcell*);
+        AvmMemcell*     operator+(AvmMemcell const&);
+        AvmMemcell*     operator-(AvmMemcell const&);
+        AvmMemcell*     operator*(AvmMemcell const&);
+        AvmMemcell*     operator/(AvmMemcell const&);
+        AvmMemcell*     operator%(AvmMemcell const&);
+
+        AvmMemcell*     operator>(AvmMemcell const&);
+        AvmMemcell*     operator>=(AvmMemcell const&);
+        AvmMemcell*     operator<(AvmMemcell const&);
+        AvmMemcell*     operator<=(AvmMemcell const&);
         
         virtual bool    to_bool() const = 0;                    
     protected:
-        virtual bool    equals(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     equals(AvmMemcell const& other) const = 0;
+        
+        virtual AvmMemcell*     add(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     sub(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     mul(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     div(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     mod(AvmMemcell const& other) const = 0;
+        
+        virtual AvmMemcell*     gt(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     geq(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     lt(AvmMemcell const& other) const = 0;
+        virtual AvmMemcell*     leq(AvmMemcell const& other) const = 0;
     };
 
     /**
@@ -88,14 +104,20 @@ namespace avm
         void    accept(const AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
 
-        NumMemcell* operator+(NumMemcell* _mem);
-        NumMemcell* operator-(NumMemcell* _mem);
-        NumMemcell* operator*(NumMemcell* _mem);
-        NumMemcell* operator/(NumMemcell* _mem);
-        NumMemcell* operator%(NumMemcell* _mem);
     private:
-        double  num_val_;
-        bool    equals(AvmMemcell const& other) const override;
+        double          num_val_;
+        AvmMemcell*     equals(AvmMemcell const& other) const override;
+        
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;
+        
+        AvmMemcell*     gt(AvmMemcell const& other) const override;
+        AvmMemcell*     geq(AvmMemcell const& other) const override;
+        AvmMemcell*     lt(AvmMemcell const& other) const override;
+        AvmMemcell*     leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -137,7 +159,18 @@ namespace avm
         StringMemcell*     operator+(StringMemcell*);
     private:
         std::string str_val_;
-        bool    equals(AvmMemcell const& other) const override;
+        AvmMemcell* equals(AvmMemcell const& other) const override;
+        
+        AvmMemcell* add(AvmMemcell const& other) const override;
+        AvmMemcell* sub(AvmMemcell const& other) const override;
+        AvmMemcell* mul(AvmMemcell const& other) const override;
+        AvmMemcell* div(AvmMemcell const& other) const override;
+        AvmMemcell* mod(AvmMemcell const& other) const override;
+        
+        AvmMemcell* gt(AvmMemcell const& other) const override;
+        AvmMemcell* geq(AvmMemcell const& other) const override;
+        AvmMemcell* lt(AvmMemcell const& other) const override;
+        AvmMemcell* leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -153,6 +186,7 @@ namespace avm
          * the boolean data of the new BoolMemcell object 
          */
         BoolMemcell(const bool _bool_val) : bool_val_(_bool_val) {}
+        BoolMemcell() = default;
         /**
          * @brief Destroys this BoolMemcell object.
          * 
@@ -176,8 +210,19 @@ namespace avm
         void    accept(const AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
     private:
-        bool    bool_val_;
-        bool    equals(AvmMemcell const& other) const override;
+        bool        bool_val_;
+        AvmMemcell* equals(AvmMemcell const& other) const override;
+
+        AvmMemcell* add(AvmMemcell const& other) const override;
+        AvmMemcell* sub(AvmMemcell const& other) const override;
+        AvmMemcell* mul(AvmMemcell const& other) const override;
+        AvmMemcell* div(AvmMemcell const& other) const override;
+        AvmMemcell* mod(AvmMemcell const& other) const override;
+
+        AvmMemcell* gt(AvmMemcell const& other) const override;
+        AvmMemcell* geq(AvmMemcell const& other) const override;
+        AvmMemcell* lt(AvmMemcell const& other) const override;
+        AvmMemcell* leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -220,7 +265,19 @@ namespace avm
     private:
         AvmTable*   table_val_;
         AvmTable*   verify_avm_table(AvmTable* table) const;
-        bool        equals(AvmMemcell const& other) const override;
+
+        AvmMemcell* equals(AvmMemcell const& other) const override;
+        
+        AvmMemcell* add(AvmMemcell const& other) const override;
+        AvmMemcell* sub(AvmMemcell const& other) const override;
+        AvmMemcell* mul(AvmMemcell const& other) const override;
+        AvmMemcell* div(AvmMemcell const& other) const override;
+        AvmMemcell* mod(AvmMemcell const& other) const override;
+
+        AvmMemcell* gt(AvmMemcell const& other) const override;
+        AvmMemcell* geq(AvmMemcell const& other) const override;
+        AvmMemcell* lt(AvmMemcell const& other) const override;
+        AvmMemcell* leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -264,7 +321,19 @@ namespace avm
         bool            to_bool() const override;     
     private:
         unsigned int    func_val_;
-        bool            equals(AvmMemcell const& other) const override;
+
+        AvmMemcell*     equals(AvmMemcell const& other) const override;
+
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;
+
+        AvmMemcell*     gt(AvmMemcell const& other) const override;
+        AvmMemcell*     geq(AvmMemcell const& other) const override;
+        AvmMemcell*     lt(AvmMemcell const& other) const override;
+        AvmMemcell*     leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -306,7 +375,19 @@ namespace avm
         bool        to_bool() const override;
     private:
         std::string lib_func_val_;
-        bool        equals(AvmMemcell const& other) const override;
+
+        AvmMemcell* equals(AvmMemcell const& other) const override;
+
+        AvmMemcell* add(AvmMemcell const& other) const override;
+        AvmMemcell* sub(AvmMemcell const& other) const override;
+        AvmMemcell* mul(AvmMemcell const& other) const override;
+        AvmMemcell* div(AvmMemcell const& other) const override;
+        AvmMemcell* mod(AvmMemcell const& other) const override;
+
+        AvmMemcell* gt(AvmMemcell const& other) const override;
+        AvmMemcell* geq(AvmMemcell const& other) const override;
+        AvmMemcell* lt(AvmMemcell const& other) const override;
+        AvmMemcell* leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -328,7 +409,18 @@ namespace avm
         void        accept(const AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
     private:
-        bool        equals(AvmMemcell const& other) const override;    
+        AvmMemcell* equals(AvmMemcell const& other) const override;
+
+        AvmMemcell* add(AvmMemcell const& other) const override;
+        AvmMemcell* sub(AvmMemcell const& other) const override;
+        AvmMemcell* mul(AvmMemcell const& other) const override;
+        AvmMemcell* div(AvmMemcell const& other) const override;
+        AvmMemcell* mod(AvmMemcell const& other) const override;
+        
+        AvmMemcell* gt(AvmMemcell const& other) const override;
+        AvmMemcell* geq(AvmMemcell const& other) const override;
+        AvmMemcell* lt(AvmMemcell const& other) const override;
+        AvmMemcell* leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -350,7 +442,7 @@ namespace avm
         void        accept(const AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
     private:
-        bool        equals(AvmMemcell const& other) const override;    
+        AvmMemcell* equals(AvmMemcell const& other) const override;
     };
 
     /**
