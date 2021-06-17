@@ -53,8 +53,7 @@ namespace avm
     memcell::AvmMemcell*
     StackSegment::operator[](int index) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        PRECONDITION(util::range::in_range<int>(index, 0, size() - 1));
-        return memcells[AVM_STACKSIZE - 1 - index];
+        return memcells[index];
     }
 
     memcell::AvmMemcell*

@@ -15,15 +15,25 @@ namespace avm
 
     namespace
     {
-        void libfunc_print(void){
-            // unsigned totalactuals = cpu::topsp+3;
-            // for(unsigned i=0; i <totalactuals; i++){
-            // std::string arg = std::to_string(cpu::topsp+4+i);
-            // std::cout << arg <<'\n';
-            // }
+        unsigned total_actuals() {
+            memory::stack_segment.get_envvalue(registers::topsp +
+                AVM_NUMACTUALS_OFFSET);
         }
 
-        void libfunc_typeof(void){
+        memcell::AvmMemcell* get_actual(unsigned i) {
+            assert(i <= total_actuals());
+            return memory::stack_segment[registers::topsp + AVM_STACKENV_SIZE +
+                1 + i];
+        }
+
+        void libfunc_print() {
+            unsigned n = total_actuals();
+            for (unsigned i = 0; i < n; i++) {
+                std::cout << get_actual(i) << std::endl;
+            }
+        }
+
+        void libfunc_typeof(){
             // unsigned totalactuals = cpu::topsp+3;
             // if(totalactuals!=1)
             //     std::cout << "one argument not 'n' expected in typeof!" << totalactuals;
@@ -34,31 +44,31 @@ namespace avm
             // }
         }
 
-        void libfunc_input(void){
+        void libfunc_input(){
 
         }
 
-        void libfunc_objectmemberkeys(void){
+        void libfunc_objectmemberkeys(){
 
         }
 
-        void libfunc_objecttotalmembers(void){
+        void libfunc_objecttotalmembers(){
 
         }
 
-        void libfunc_objectcopy(void){
+        void libfunc_objectcopy(){
 
         }
 
-        void libfunc_totalarguments(void){
-            
+        void libfunc_totalarguments(){
+           
         }
 
-        void libfunc_argument(void){
+        void libfunc_argument(){
 
         }
 
-        void libfunc_strtonum(void){
+        void libfunc_strtonum(){
             // unsigned totalactuals = cpu::topsp+3;
             // if(totalactuals!=1)
             //     std::cout << "one argument not 'totalactuals' expected in typeof!" << totalactuals;
@@ -69,7 +79,7 @@ namespace avm
             // }
         }
 
-        void libfunc_sqrt(void){
+        void libfunc_sqrt(){
             // unsigned totalactuals = cpu::topsp+3;
             // if(totalactuals!=1)
             //     std::cout << "one argument not 'totalactuals' expected in sqrt!" << totalactuals;
@@ -80,7 +90,7 @@ namespace avm
             // }
         }
 
-        void libfunc_cos(void){
+        void libfunc_cos(){
             // unsigned totalactuals = cpu::topsp+3;
             // if(totalactuals!=1)
             //     std::cout << "one argument not 'totalactuals' expected in sqrt!" << totalactuals;
@@ -91,7 +101,7 @@ namespace avm
             // }
         }
 
-        void libfunc_sin(void){
+        void libfunc_sin(){
             // unsigned totalactuals = cpu::topsp+3;
             // if(totalactuals!=1)
             //     std::cout << "one argument not 'totalactuals' expected in sqrt!" << totalactuals;

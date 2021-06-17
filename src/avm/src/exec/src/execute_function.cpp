@@ -4,11 +4,6 @@
 #include "../../signals/include/signals.h"
 #include "../../library_functions/include/library_functions.h"
 
-#define AVM_NUMACTUALS_OFFSET   +4
-#define AVM_SAVEDPC_OFFSET      +3
-#define AVM_SAVEDTOP_OFFSET     +2
-#define AVM_SAVEDTOPSP_OFFSET   +1
-
 namespace avm
 {
     namespace exec

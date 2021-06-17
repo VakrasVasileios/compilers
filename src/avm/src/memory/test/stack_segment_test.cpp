@@ -71,12 +71,6 @@ TEST_F(StackSegmentSuite, pop_after_n_pushes_returns_top_element) {
     GTEST_ASSERT_EQ(stack->pop(), memcell2);
 }
 
-TEST_F(StackSegmentSuite, overload_access_works_from_zero) {
-    stack->push(memcell);
-    stack->push(memcell2);
-    GTEST_ASSERT_EQ((*stack)[0], memcell);
-}
-
 TEST_F(StackSegmentSuite, vmarg_with_valid_offset_has_legal_index) {
     GTEST_ASSERT_FALSE(stack->illegal_index(stack->corresponding_index(
         *global_vmarg_0)));
