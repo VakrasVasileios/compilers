@@ -36,6 +36,10 @@ namespace avm
             NilMemcell const *nill_memcell_cast(AvmMemcell const& memcell) {
                 return dynamic_cast<NilMemcell const*>(&memcell);
             }
+
+            UndefMemcell const *undef_memcell_cast(AvmMemcell const& memcell) {
+                return dynamic_cast<UndefMemcell const*>(&memcell);
+            }
         } //namespace
         
         //--------------AvmMemcell--------------//
@@ -52,9 +56,13 @@ namespace avm
         AvmMemcell*
         AvmMemcell::operator!=(AvmMemcell const& other) {
             BoolMemcell* ret = (BoolMemcell*)equals(other);
-            bool tmp = !ret->bool_val();
-            ret->set_bool_val(tmp);
-            return ret;
+            if (ret == nullptr)
+                return ret;
+            else {
+                bool tmp = !ret->bool_val();
+                ret->set_bool_val(tmp);
+                return ret;
+            }    
         }
 
         AvmMemcell*
@@ -136,12 +144,33 @@ namespace avm
             return os << num_val_;    
         }
 
+        namespace
+        {
+            BoolMemcell* equals_heteroids(AvmMemcell const& _lhs,
+                AvmMemcell const& _rhs) {
+                if (auto nil_memcell = nill_memcell_cast(_rhs)) {
+                    return new BoolMemcell(false);
+                }
+                else if (auto bool_memcell = bool_memcell_cast(_rhs)) {
+                    return new BoolMemcell(_lhs.to_bool() ==
+                        bool_memcell->bool_val());
+                }
+                else {
+                    signals::log_error(
+                        "invalid operation with non matching types: " 
+                            + _lhs.get_type() + " and " + _rhs.get_type(),
+                                std::cerr);
+                    return nullptr; 
+                }
+            }   
+        }
+
         AvmMemcell*    
         NumMemcell::equals(AvmMemcell const& other) const {
             if (auto num_memcell = num_memcell_cast(other))
                 return new BoolMemcell(num_val_ == num_memcell->num_val());
             else    
-                return new BoolMemcell(to_bool() == other.to_bool());        
+                return equals_heteroids(*this, other);       
         }
 
         AvmMemcell*
@@ -154,7 +183,7 @@ namespace avm
             else if (auto str = str_memcell_cast(other)) {
                 StringMemcell* ret = new StringMemcell("");
                 std::string tmp(std::to_string(num_val_));
-                ret->set_str_val(tmp+str->str_val());
+                ret->set_str_val(tmp + str->str_val());
                 return ret;
             }
             else {
@@ -316,8 +345,8 @@ namespace avm
         StringMemcell::equals(AvmMemcell const& other) const {
             if (auto str_memcell = str_memcell_cast(other))
                 return new BoolMemcell(str_val_ == str_memcell->str_val());
-            else
-                return new BoolMemcell(to_bool() == other.to_bool());
+            else   
+                return equals_heteroids(*this, other);
         }
 
         AvmMemcell*
@@ -329,7 +358,7 @@ namespace avm
             }
             else if (auto num = num_memcell_cast(other)) {
                 std::string tmp = str_val_;
-                tmp += num->num_val();
+                tmp += std::to_string(num->num_val());
                 ret->str_val_ += tmp;
                 return ret;
             }
@@ -425,7 +454,17 @@ namespace avm
 
         AvmMemcell*    
         BoolMemcell::equals(AvmMemcell const& other) const {
-            return new BoolMemcell(to_bool() == other.to_bool());
+            if (auto undef_memcell = undef_memcell_cast(other)) {
+                signals::log_error("invalid comparison with undefined type",
+                    std::cerr);
+                return nullptr;
+            }
+            else
+            if (auto nil_memcell = nill_memcell_cast(other)) {
+                return new BoolMemcell(false);
+            }
+            else
+                return new BoolMemcell(bool_val_ == other.to_bool());
         }
 
         AvmMemcell*
@@ -511,11 +550,17 @@ namespace avm
 
         AvmMemcell*        
         TableMemcell::equals(AvmMemcell const& other) const {
-            if (auto table_memcell = table_memcell_cast(other))
-                // return table_val_ == table_memcell->table_val(); TODO: check maps
-            // else    
-            //     return to_bool() == other.to_bool(); 
-            return new BoolMemcell(to_bool() == other.to_bool());
+            if (auto table_memcell = table_memcell_cast(other)) 
+                return new BoolMemcell(true); // TOCHANGE
+                // return table_val_ == table_memcell->table_val();
+            else    
+                return equals_heteroids(*this, other);
+            // else
+            // if (auto table_memcell = table_memcell_cast(other))
+            //     // return table_val_ == table_memcell->table_val(); TODO: check maps
+            // // else    
+            // //     return to_bool() == other.to_bool(); 
+            // return new BoolMemcell(to_bool() == other.to_bool());
         }
 
         bool
@@ -607,10 +652,10 @@ namespace avm
 
         AvmMemcell*            
         UserfuncMemcell::equals(AvmMemcell const& other) const {
-        if (auto userfunc_memcell = userfunc_memcell_cast(other))
+            if (auto userfunc_memcell = userfunc_memcell_cast(other))
                 return new BoolMemcell(func_val_ == userfunc_memcell->func_val());
-            else
-                return new BoolMemcell(to_bool() == other.to_bool());
+            else    
+                return equals_heteroids(*this, other);
         }
 
         bool
@@ -704,8 +749,8 @@ namespace avm
         LibfuncMemcell::equals(AvmMemcell const& other) const {
             if (auto libfunc_memcell = libfunc_memcell_cast(other))
                 return new BoolMemcell(lib_func_val_ == libfunc_memcell->lib_func_val());
-            else
-                return new BoolMemcell(to_bool() == other.to_bool());
+            else    
+                return equals_heteroids(*this, other);
         }
 
         bool
@@ -787,7 +832,15 @@ namespace avm
 
         AvmMemcell*
         NilMemcell::equals(AvmMemcell const& other) const {
-            return new BoolMemcell(to_bool() == other.to_bool());  
+            if (auto undef_memcell = undef_memcell_cast(other)) {
+                signals::log_error("invalid comparison with undefined type",
+                    std::cerr);
+                return nullptr;
+            }
+            else if (auto nil_memcell = nill_memcell_cast(other))
+                return new BoolMemcell(true);
+            else
+                return new BoolMemcell(false);           
         }
 
         bool
