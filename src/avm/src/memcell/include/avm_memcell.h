@@ -37,8 +37,11 @@ namespace avm
          */
         virtual void    accept(AvmMemcellVisitor* visitor) = 0;
 
+        friend std::ostream& operator << (std::ostream& os, 
+            const AvmMemcell& memcell);
+
         friend AvmMemcell*     operator==(AvmMemcell const& lhs,
-                            AvmMemcell const& rhs);
+                            AvmMemcell const& rhs);                    
         AvmMemcell*     operator+(AvmMemcell const&);
         AvmMemcell*     operator-(AvmMemcell const&);
         AvmMemcell*     operator*(AvmMemcell const&);
@@ -52,6 +55,8 @@ namespace avm
         
         virtual bool    to_bool() const = 0;                    
     protected:
+        virtual std::ostream&   log(std::ostream& os) const = 0;
+
         virtual AvmMemcell*     equals(AvmMemcell const& other) const = 0;
         
         virtual AvmMemcell*     add(AvmMemcell const& other) const = 0;
@@ -106,6 +111,8 @@ namespace avm
 
     private:
         double          num_val_;
+        std::ostream&   log(std::ostream& os) const override;
+
         AvmMemcell*     equals(AvmMemcell const& other) const override;
         
         AvmMemcell*     add(AvmMemcell const& other) const override;
@@ -159,6 +166,8 @@ namespace avm
         StringMemcell*     operator+(StringMemcell*);
     private:
         std::string str_val_;
+        std::ostream&   log(std::ostream& os) const override;
+
         AvmMemcell* equals(AvmMemcell const& other) const override;
         
         AvmMemcell* add(AvmMemcell const& other) const override;
@@ -211,6 +220,8 @@ namespace avm
         bool    to_bool() const override;
     private:
         bool        bool_val_;
+        std::ostream&   log(std::ostream& os) const override;
+
         AvmMemcell* equals(AvmMemcell const& other) const override;
 
         AvmMemcell* add(AvmMemcell const& other) const override;
@@ -273,6 +284,8 @@ namespace avm
         void                accept(AvmMemcellVisitor* visitor) override;
         bool                to_bool() const override;
     private:
+        std::ostream&   log(std::ostream& os) const override;
+
         AvmMemcell* equals(AvmMemcell const& other) const override;
         
         AvmMemcell* add(AvmMemcell const& other) const override;
@@ -330,6 +343,7 @@ namespace avm
         bool            to_bool() const override;     
     private:
         unsigned int    func_val_;
+        std::ostream&   log(std::ostream& os) const override;
 
         AvmMemcell*     equals(AvmMemcell const& other) const override;
 
@@ -384,6 +398,7 @@ namespace avm
         bool        to_bool() const override;
     private:
         std::string lib_func_val_;
+        std::ostream&   log(std::ostream& os) const override;
 
         AvmMemcell* equals(AvmMemcell const& other) const override;
 
@@ -418,6 +433,8 @@ namespace avm
         void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
     private:
+        std::ostream& log(std::ostream& os) const override;
+
         AvmMemcell* equals(AvmMemcell const& other) const override;
 
         AvmMemcell* add(AvmMemcell const& other) const override;

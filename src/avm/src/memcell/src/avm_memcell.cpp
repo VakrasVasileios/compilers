@@ -6,7 +6,13 @@ namespace avm
 {
     namespace memcell
     {
+
         //--------------AvmMemcell--------------//
+        std::ostream& operator << (std::ostream& os,
+                const AvmMemcell& memcell) {
+            return memcell.log(os);    
+        }
+
         AvmMemcell*
         operator==(AvmMemcell const& lhs, AvmMemcell const& rhs) {
             return lhs.equals(rhs);
@@ -56,6 +62,7 @@ namespace avm
         AvmMemcell::operator<=(AvmMemcell const& other) {
             return leq(other);
         }
+
         //--------------AvmMemcell--------------//
 
         //--------------NumMemcell--------------//
@@ -78,6 +85,11 @@ namespace avm
         bool
         NumMemcell::to_bool() const {
             return num_val_ != 0;    
+        }
+
+        std::ostream&   
+        NumMemcell::log(std::ostream& os) const {
+            return os << num_val_;    
         }
 
         AvmMemcell*    
@@ -242,6 +254,11 @@ namespace avm
             return !str_val_.empty();    
         }
 
+        std::ostream&   
+        StringMemcell::log(std::ostream& os) const {
+            return os << str_val_;    
+        }
+
         AvmMemcell*    
         StringMemcell::equals(AvmMemcell const& other) const {
             if (auto str_memcell = str_memcell_cast(other))
@@ -332,6 +349,11 @@ namespace avm
             return bool_val_;   
         }
 
+        std::ostream&   
+        BoolMemcell::log(std::ostream& os) const {
+            return os << bool_val_;    
+        }
+
         AvmMemcell*    
         BoolMemcell::equals(AvmMemcell const& other) const {
         return new BoolMemcell(to_bool() == other.to_bool());
@@ -403,6 +425,11 @@ namespace avm
             return true;   
         }
 
+        std::ostream&   
+        TableMemcell::log(std::ostream& os) const {
+            return os; //TODO    
+        }
+
         AvmMemcell*
         TableMemcell::add(AvmMemcell const& other) const {
             std::cerr << "Invalid '+' with table operand" << std::endl;
@@ -457,6 +484,11 @@ namespace avm
         bool
         UserfuncMemcell::to_bool() const {
             return true;   
+        }
+
+        std::ostream&   
+        UserfuncMemcell::log(std::ostream& os) const {
+            return os << func_val_; //TODO???    
         }
 
         AvmMemcell*
@@ -515,6 +547,11 @@ namespace avm
             return true;   
         }
 
+        std::ostream&   
+        LibfuncMemcell::log(std::ostream& os) const {
+            return os << lib_func_val_; // TODO??    
+        }
+
         AvmMemcell*
         LibfuncMemcell::add(AvmMemcell const& other) const {
             std::cerr << "Invalid '+' with library function operand" << std::endl;
@@ -556,6 +593,11 @@ namespace avm
         bool
         NilMemcell::to_bool() const {
             return false;   
+        }
+
+        std::ostream& 
+        NilMemcell::log(std::ostream& os) const {
+            return os << "NIL";    
         }
 
         AvmMemcell*
