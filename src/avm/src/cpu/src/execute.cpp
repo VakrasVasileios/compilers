@@ -30,7 +30,7 @@ namespace avm
                 registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
 
                 delete registers::ax;
-                registers::ax = *registers::bx + registers::cx;
+                registers::ax = *registers::bx + *registers::cx;
             }
 
             void VisitSub(target_code::Sub* inst) const override {
@@ -40,7 +40,7 @@ namespace avm
                 registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
 
                 delete registers::ax;
-                registers::ax = *registers::bx - registers::cx;
+                registers::ax = *registers::bx - *registers::cx;
             }
 
             void VisitMul(target_code::Mul* inst) const override {
@@ -50,7 +50,7 @@ namespace avm
                 registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
 
                 delete registers::ax;
-                registers::ax = *registers::bx * registers::cx;
+                registers::ax = *registers::bx * *registers::cx;
             }
 
             void VisitDiv(target_code::Div* inst) const override {
@@ -60,7 +60,7 @@ namespace avm
                 registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
 
                 delete registers::ax;
-                registers::ax = *registers::bx / registers::cx;
+                registers::ax = *registers::bx / *registers::cx;
             }
 
             void VisitMod(target_code::Mod* inst) const override {
@@ -70,7 +70,7 @@ namespace avm
                 registers::cx = translate_operand(const_cast<target_code::Vmarg*>(inst->get_arg2()), registers::cx);
 
                 delete registers::ax;
-                registers::ax = *registers::bx % registers::cx;
+                registers::ax = *registers::bx % *registers::cx;
             }
 
             void VisitJeq(target_code::Jeq* inst) const override {
