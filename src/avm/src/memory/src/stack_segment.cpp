@@ -44,7 +44,8 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
         auto top = StackSegment::top();
-        delete memcells[registers::top++];
+        delete memcells[registers::top];
+        memcells[registers::top++] = new memcell::UndefMemcell();
         POSTCONDITION(!full());
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return top;
@@ -123,7 +124,7 @@ namespace avm
     StackSegment::get_envvalue(unsigned index) const {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(index >= 0);
-        auto memcell =memcells[index];
+        auto memcell = memcells[index];
         auto result = num_memcell_cast(memcell)->num_val();
         POSTCONDITION(result >= 0);
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
