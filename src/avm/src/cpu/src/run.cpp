@@ -16,18 +16,14 @@ namespace avm
             signals::execution_finished = true;
             return;
         }
-        else {
-            assert (registers::pc < AVM_ENDING_PC);
-            auto instruction = memory::code_segment[registers::pc];
-
-            signals::curr_line = instruction->get_src_line();
-            assert (signals::curr_line != 0);
-            
-            unsigned old_pc = registers::pc;
-            execute(instruction);
-            if (registers::pc == old_pc)
-                registers::pc++;
-        }    
+        assert (registers::pc < AVM_ENDING_PC);
+        auto instruction = memory::code_segment[registers::pc];
+        signals::curr_line = instruction->get_src_line();
+        assert (signals::curr_line != 0);
+        unsigned old_pc = registers::pc;
+        execute(instruction);
+        if (registers::pc == old_pc)
+            registers::pc++;
         }
         }
     
