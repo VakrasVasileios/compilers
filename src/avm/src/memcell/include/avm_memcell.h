@@ -457,7 +457,41 @@ namespace avm
         AvmMemcell* lt(AvmMemcell const& other) const override;
         AvmMemcell* leq(AvmMemcell const& other) const override;
     };
+    /**
+     * @brief A memcell with undefined data.
+     * 
+     */
+    class UndefMemcell final : public AvmMemcell {
+    public:
+        /**
+         * @brief Constructs a new UndefMemcell object.
+         * 
+         */
+        UndefMemcell() {}
+        /**
+         * @brief Destroys this UndefMemcell object.
+         * 
+         */
+        ~UndefMemcell() = default;
+        void        accept(AvmMemcellVisitor* visitor) override;
+        bool        to_bool() const override;
+        std::string get_type() const override;
+    private:
+        std::ostream& log(std::ostream& os) const override;
 
+        AvmMemcell* equals(AvmMemcell const& other) const override;
+
+        AvmMemcell* add(AvmMemcell const& other) const override;
+        AvmMemcell* sub(AvmMemcell const& other) const override;
+        AvmMemcell* mul(AvmMemcell const& other) const override;
+        AvmMemcell* div(AvmMemcell const& other) const override;
+        AvmMemcell* mod(AvmMemcell const& other) const override;
+        
+        AvmMemcell* gt(AvmMemcell const& other) const override;
+        AvmMemcell* geq(AvmMemcell const& other) const override;
+        AvmMemcell* lt(AvmMemcell const& other) const override;
+        AvmMemcell* leq(AvmMemcell const& other) const override;
+    };
     /**
      * @brief Interface for visiting concrete avm memcells.
      * 
@@ -512,6 +546,12 @@ namespace avm
          * @param memcell the memcell containing NIL data
          */
         virtual void    visit_nill_memcell(NilMemcell* memcell) = 0;
+        /**
+         * @brief Visits a memcell containing undefined data.
+         * 
+         * @param memcell the memcell containing undefined data
+         */
+        virtual void    visit_undef_memcell(UndefMemcell* memcell) = 0;
     };
     }
 }

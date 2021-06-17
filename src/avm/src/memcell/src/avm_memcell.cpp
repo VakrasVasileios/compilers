@@ -859,6 +859,99 @@ namespace avm
             return nullptr;
         }
         //--------------NilMemcell--------------//
+        //--------------UndefMemcell--------------//
+        void
+        UndefMemcell::accept(AvmMemcellVisitor* visitor) {
+            PRECONDITION(visitor != nullptr);
+            visitor->visit_undef_memcell(this);
+        }
+
+        bool
+        UndefMemcell::to_bool() const {
+            return false;   
+        }
+
+        std::string
+        UndefMemcell::get_type() const {
+            return "undefined";
+        }
+
+        std::ostream&
+        UndefMemcell::log(std::ostream& os) const {
+            signals::log_error("cannot output undefined type", std::cerr);
+            return os;    
+        }
+
+        AvmMemcell*
+        UndefMemcell::equals(AvmMemcell const& other) const {
+            signals::log_error("illegal comparison with undefined type",
+                std::cerr);
+            return nullptr;    
+        }
+
+        AvmMemcell*
+        UndefMemcell::add(AvmMemcell const& other) const {
+            signals::log_error(
+                "illegal arithmetic operation with undefined type", std::cerr);
+            return nullptr;
+        }
+
+        AvmMemcell*
+        UndefMemcell::sub(AvmMemcell const& other) const {
+             signals::log_error(
+                "illegal arithmetic operation with undefined type", std::cerr);
+            return nullptr;
+        }
+
+        AvmMemcell*
+        UndefMemcell::mul(AvmMemcell const& other) const {
+             signals::log_error(
+                "illegal arithmetic operation with undefined type", std::cerr);
+            return nullptr;
+        }
+
+        AvmMemcell*
+        UndefMemcell::div(AvmMemcell const& other) const {
+             signals::log_error(
+                "illegal arithmetic operation with undefined type", std::cerr);
+            return nullptr;
+        }
+        
+        AvmMemcell*
+        UndefMemcell::mod(AvmMemcell const& other) const {
+             signals::log_error(
+                "illegal arithmetic operation with undefined type", std::cerr);
+            return nullptr;
+        }
+        
+        AvmMemcell*
+        UndefMemcell::gt(AvmMemcell const& other) const {
+            signals::log_error("illegal comparison with undefined type",
+                std::cerr);
+            return nullptr;
+        }
+
+        AvmMemcell*
+        UndefMemcell::geq(AvmMemcell const& other) const {
+            signals::log_error("illegal comparison with undefined type",
+                std::cerr);
+            return nullptr;
+        }
+
+        AvmMemcell*
+        UndefMemcell::lt(AvmMemcell const& other) const {
+            signals::log_error("illegal comparison with undefined type",
+                std::cerr);
+            return nullptr;
+        }
+
+        AvmMemcell*
+        UndefMemcell::leq(AvmMemcell const& other) const {
+            signals::log_error("illegal comparison with undefined type",
+                std::cerr);
+            return nullptr;
+        }
+        //--------------UndefMemcell--------------//
 
     } //namespace memcell
 } //namespace avm

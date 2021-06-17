@@ -68,6 +68,11 @@ namespace avm
                 signals::log_error("Cannot bind NIL to function call",
                     std::cerr);
             }
+            void visit_undef_memcell(memcell::UndefMemcell* memcell) override {
+                assert(memcell != nullptr);
+                signals::log_error(
+                    "Cannot bind undifined value to function call", std::cerr);
+            }
         };
 
         void call_memcell(memcell::AvmMemcell* memcell) {
