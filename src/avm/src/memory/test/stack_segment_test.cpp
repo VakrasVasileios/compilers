@@ -18,7 +18,7 @@ protected:
     target_code::FormalVmarg*               formal_vmarg;
 
     void SetUp() override {
-        avm::registers::initialize();
+        avm::registers::initialize(0);
         stack = new avm::memory::StackSegment();
         memcell = new avm::memcell::NumMemcell(1);
         memcell2 = new avm::memcell::NumMemcell(2);

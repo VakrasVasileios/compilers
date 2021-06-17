@@ -86,6 +86,9 @@ namespace target_code
      * scope space 
      */
     expression::ScopeSpace  CurrScopeSpace(void);
+
+    unsigned int
+    GetProgramVarOffset(void);
     /**
      * @brief Returns a read/write access to the current
      * scope space offset.

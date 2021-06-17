@@ -99,6 +99,11 @@ namespace target_code
 
     std::stack<unsigned int> func_local_offset_stack;
 
+    unsigned int
+    GetProgramVarOffset(void) {
+        return program_var_offset;
+    }
+
     void
     StoreFuncLocalOffset(void) {
         func_local_offset_stack.push(function_local_offset);
