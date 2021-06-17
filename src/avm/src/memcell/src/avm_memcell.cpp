@@ -15,8 +15,8 @@ namespace avm
         }
 
         AvmMemcell*
-        operator==(AvmMemcell const& lhs, AvmMemcell const& rhs) {
-            return lhs.equals(rhs);
+        AvmMemcell::operator==(AvmMemcell const& other) {
+            return equals(other);
         }
 
         AvmMemcell*

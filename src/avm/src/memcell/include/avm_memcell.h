@@ -40,9 +40,9 @@ namespace avm
         friend std::ostream& operator << (std::ostream& os, 
             const AvmMemcell& memcell);
 
-        friend AvmMemcell*     operator==(AvmMemcell const& lhs,
-            AvmMemcell const& rhs);                    
+        AvmMemcell*     operator==(AvmMemcell const&);                    
         AvmMemcell*     operator!=(AvmMemcell const&);
+        
         AvmMemcell*     operator+(AvmMemcell const&);
         AvmMemcell*     operator-(AvmMemcell const&);
         AvmMemcell*     operator*(AvmMemcell const&);
