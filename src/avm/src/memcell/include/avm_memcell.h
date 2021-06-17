@@ -39,6 +39,7 @@ namespace avm
 
         friend AvmMemcell*     operator==(AvmMemcell const& lhs,
                             AvmMemcell const& rhs);
+        AvmMemcell*     operator!=(AvmMemcell const&);
         AvmMemcell*     operator+(AvmMemcell const&);
         AvmMemcell*     operator-(AvmMemcell const&);
         AvmMemcell*     operator*(AvmMemcell const&);
