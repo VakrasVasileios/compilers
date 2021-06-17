@@ -37,24 +37,25 @@ namespace avm
          */
         virtual void    accept(AvmMemcellVisitor* visitor) = 0;
 
-        friend std::ostream& operator << (std::ostream& os, 
+        friend std::ostream&    operator << (std::ostream& os, 
             const AvmMemcell& memcell);
 
-        friend AvmMemcell*     operator==(AvmMemcell const& lhs,
+        friend AvmMemcell*      operator==(AvmMemcell const& lhs,
             AvmMemcell const& rhs);                    
-        AvmMemcell*     operator!=(AvmMemcell const&);
-        AvmMemcell*     operator+(AvmMemcell const&);
-        AvmMemcell*     operator-(AvmMemcell const&);
-        AvmMemcell*     operator*(AvmMemcell const&);
-        AvmMemcell*     operator/(AvmMemcell const&);
-        AvmMemcell*     operator%(AvmMemcell const&);
+        AvmMemcell*             operator!=(AvmMemcell const&);
+        AvmMemcell*             operator+(AvmMemcell const&);
+        AvmMemcell*             operator-(AvmMemcell const&);
+        AvmMemcell*             operator*(AvmMemcell const&);
+        AvmMemcell*             operator/(AvmMemcell const&);
+        AvmMemcell*             operator%(AvmMemcell const&);
 
-        AvmMemcell*     operator>(AvmMemcell const&);
-        AvmMemcell*     operator>=(AvmMemcell const&);
-        AvmMemcell*     operator<(AvmMemcell const&);
-        AvmMemcell*     operator<=(AvmMemcell const&);
+        AvmMemcell*             operator>(AvmMemcell const&);
+        AvmMemcell*             operator>=(AvmMemcell const&);
+        AvmMemcell*             operator<(AvmMemcell const&);
+        AvmMemcell*             operator<=(AvmMemcell const&);
         
-        virtual bool    to_bool() const = 0;                    
+        virtual bool            to_bool() const = 0;    
+        virtual std::string     get_type() const = 0;                
     protected:
         virtual std::ostream&   log(std::ostream& os) const = 0;
 
@@ -108,6 +109,7 @@ namespace avm
          */
         void    set_num_val(const double _num_val); 
         void    accept(AvmMemcellVisitor* visitor) override;
+        std::string  get_type() const override;
         bool    to_bool() const override;
 
     private:
@@ -163,6 +165,7 @@ namespace avm
         void        set_str_val(const std::string str_val);
         void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
+        std::string  get_type() const override;
 
         StringMemcell*     operator+(StringMemcell*);
     private:
@@ -219,6 +222,7 @@ namespace avm
         void    set_bool_val(const bool val);
         void    accept(AvmMemcellVisitor* visitor) override;
         bool    to_bool() const override;
+        std::string  get_type() const override;
     private:
         bool        bool_val_;
         std::ostream&   log(std::ostream& os) const override;
@@ -284,6 +288,7 @@ namespace avm
         void                set_elem(AvmMemcell* key, AvmMemcell* value);
         void                accept(AvmMemcellVisitor* visitor) override;
         bool                to_bool() const override;
+        std::string         get_type() const override;
     private:
         std::ostream&   log(std::ostream& os) const override;
 
@@ -342,6 +347,7 @@ namespace avm
         void            set_func_val(const unsigned int _func_val);
         void            accept(AvmMemcellVisitor* visitor) override;  
         bool            to_bool() const override;     
+        std::string     get_type() const override;
     private:
         unsigned int    func_val_;
         std::ostream&   log(std::ostream& os) const override;
@@ -397,6 +403,7 @@ namespace avm
         void        set_lib_func_val(const std::string _lib_func_val);
         void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
+        std::string  get_type() const override;
     private:
         std::string lib_func_val_;
         std::ostream&   log(std::ostream& os) const override;
@@ -433,6 +440,7 @@ namespace avm
         ~NilMemcell() = default;
         void        accept(AvmMemcellVisitor* visitor) override;
         bool        to_bool() const override;
+        std::string  get_type() const override;
     private:
         std::ostream& log(std::ostream& os) const override;
 
