@@ -1,0 +1,4 @@
+add_executable(memcell_test memcell_test.cpp)
+target_link_libraries(memcell_test PRIVATE gtest)
+target_link_libraries(memcell_test PRIVATE memcell)
+target_compile_definitions(memcell_test PRIVATE TESTING=1)

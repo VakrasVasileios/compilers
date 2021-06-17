@@ -40,19 +40,19 @@ namespace avm
         friend std::ostream&    operator << (std::ostream& os, 
             const AvmMemcell& memcell);
 
-        AvmMemcell*     operator==(AvmMemcell const&);                    
-        AvmMemcell*     operator!=(AvmMemcell const&);
+        AvmMemcell*         operator==(AvmMemcell const&);                    
+        AvmMemcell*         operator!=(AvmMemcell const&);
         
-        AvmMemcell*     operator+(AvmMemcell const&);
-        AvmMemcell*     operator-(AvmMemcell const&);
-        AvmMemcell*     operator*(AvmMemcell const&);
-        AvmMemcell*     operator/(AvmMemcell const&);
-        AvmMemcell*     operator%(AvmMemcell const&);
+        AvmMemcell*         operator+(AvmMemcell const&);
+        AvmMemcell*         operator-(AvmMemcell const&);
+        AvmMemcell*         operator*(AvmMemcell const&);
+        AvmMemcell*         operator/(AvmMemcell const&);
+        AvmMemcell*         operator%(AvmMemcell const&);
 
-        AvmMemcell*     operator>(AvmMemcell const&);
-        AvmMemcell*     operator>=(AvmMemcell const&);
-        AvmMemcell*     operator<(AvmMemcell const&);
-        AvmMemcell*     operator<=(AvmMemcell const&);
+        AvmMemcell*         operator>(AvmMemcell const&);
+        AvmMemcell*         operator>=(AvmMemcell const&);
+        AvmMemcell*         operator<(AvmMemcell const&);
+        AvmMemcell*         operator<=(AvmMemcell const&);
         
         virtual bool            to_bool() const = 0;    
         virtual std::string     get_type() const = 0;                
@@ -432,7 +432,7 @@ namespace avm
          * @brief Constructs a new NilMemcell object.
          * 
          */
-        NilMemcell() {}
+        NilMemcell() = default;
         /**
          * @brief Destroys this NilMemcell object.
          * 
