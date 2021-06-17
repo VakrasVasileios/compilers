@@ -13,18 +13,15 @@ namespace avm
 {
     namespace exec
     {
+    unsigned total_actuals = 0;
     namespace
     {
         void call_saveenvironment() {
-            memory::stack_segment.push(
-                new memcell::NumMemcell(memory::total_actuals));
-            memory::stack_segment.push(
-                new memcell::NumMemcell(registers::pc + 1));
-            memory::stack_segment.push(
-                new memcell::NumMemcell( registers::top + memory::total_actuals
-                    + 2));
-            memory::stack_segment.push(
-                new memcell::NumMemcell(registers::topsp));
+            memory::stack_segment.push_envvalue(total_actuals);
+            memory::stack_segment.push_envvalue(registers::pc + 1);
+            memory::stack_segment.push_envvalue(registers::top + total_actuals 
+                + 2);
+            memory::stack_segment.push_envvalue(registers::topsp);   
         }
 
         class MemcellCaller final : public memcell::AvmMemcellVisitor {
@@ -119,7 +116,7 @@ namespace avm
     void execute_enterfunc(memcell::AvmMemcell* memcell) {
         PRECONDITION(memcell != nullptr);
         PRECONDITION(pc_is_legal(memcell));
-        memory::total_actuals = 0;
+        total_actuals = 0;
         auto func_info = memory::Constants::GetInstance().GetUserfunc(
             registers::pc);
         registers::topsp = registers::top;
@@ -128,28 +125,13 @@ namespace avm
 
     namespace
     {
-        inline memcell::NumMemcell* num_memcell_cast(
-            memcell::AvmMemcell* memcell) {
-            auto result = dynamic_cast<memcell::NumMemcell*>(memcell);
-            PRECONDITION (result != nullptr);
-            return result;
-        }
-
-        unsigned get_envvalue(unsigned index) {
-            PRECONDITION(index >= 0);
-            auto memcell = memory::stack_segment[index];
-            auto result = num_memcell_cast(memcell)->num_val();
-            POSTCONDITION(result >= 0);
-            return result;
-        }
-
         void restore_environment() {
-            registers::top = get_envvalue(registers::topsp +
-                AVM_SAVEDTOP_OFFSET);    
-            registers::pc = get_envvalue(registers::topsp + 
-                AVM_SAVEDPC_OFFSET);  
-            registers::topsp = get_envvalue(registers::topsp + 
-                AVM_SAVEDTOPSP_OFFSET); 
+            registers::top = memory::stack_segment.get_envvalue(
+                registers::topsp + AVM_SAVEDTOP_OFFSET);    
+            registers::pc = memory::stack_segment.get_envvalue(
+                registers::topsp + AVM_SAVEDPC_OFFSET);  
+            registers::topsp = memory::stack_segment.get_envvalue(
+                registers::topsp + AVM_SAVEDTOPSP_OFFSET); 
         }
 
         void garbage_collect(unsigned old_top) {
@@ -168,7 +150,7 @@ namespace avm
     void execute_pusharg(memcell::AvmMemcell* memcell) {
         PRECONDITION(memcell);
         memory::stack_segment.push(memcell);
-        ++memory::total_actuals;
+        ++total_actuals;
     }
     
     }

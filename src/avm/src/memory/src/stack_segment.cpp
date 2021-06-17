@@ -3,10 +3,7 @@
 namespace avm
 {
     namespace memory
-    {
-
-    unsigned total_actuals = 0;
-        
+    {        
     int
     StackSegment::size() const {
         INVARIANT(util::range::in_range<int>(AVM_STACKSIZE - registers::top,
@@ -106,6 +103,32 @@ namespace avm
     const {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return registers::topsp + AVM_STACKENV_SIZE + 1 + vmarg.get_value();
+    }
+
+    void                
+    StackSegment::push_envvalue(unsigned envvalue) {
+        push(new memcell::NumMemcell(envvalue));
+    }
+
+    namespace
+    {
+        memcell::NumMemcell* num_memcell_cast(
+            memcell::AvmMemcell* memcell) {
+            auto result = dynamic_cast<memcell::NumMemcell*>(memcell);
+            PRECONDITION (result != nullptr);
+            return result;
+        }
+    }
+
+    unsigned
+    StackSegment::get_envvalue(unsigned index) const {
+        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
+        PRECONDITION(index >= 0);
+        auto memcell =memcells[index];
+        auto result = num_memcell_cast(memcell)->num_val();
+        POSTCONDITION(result >= 0);
+        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
+        return result;
     }
     }
 }

@@ -9,6 +9,12 @@ namespace avm
     namespace exec
     {
     /**
+     * @brief The total space that a function
+     * call will tak up at the stack segment.
+     * 
+     */
+    extern unsigned total_actuals;
+    /**
      * @brief Executes a callfunc target code
      * instruction.
      * 
