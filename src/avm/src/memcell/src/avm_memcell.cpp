@@ -1,4 +1,5 @@
 #include "../include/avm_memcell.h"
+#include "../../signals/include/signals.h"
 #include <iostream>
 #include <math.h>
 
@@ -16,6 +17,14 @@ namespace avm
         AvmMemcell*
         operator==(AvmMemcell const& lhs, AvmMemcell const& rhs) {
             return lhs.equals(rhs);
+        }
+
+        AvmMemcell*
+        AvmMemcell::operator!=(AvmMemcell const& other) {
+            BoolMemcell* ret = (BoolMemcell*)equals(other);
+            bool tmp = !ret->bool_val();
+            ret->set_bool_val(tmp);
+            return ret;
         }
 
         AvmMemcell*
@@ -114,8 +123,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Invalid operation \'+\'" << std::endl;
-                exit(EXIT_FAILURE);
+                signals::log_error("Invalid operation \'+\'", std::cerr);
             }
         }
 
@@ -127,8 +135,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Second operand is not a number" << std::endl;
-                exit(EXIT_FAILURE);
+                signals::log_error("Second operand is not a number", std::cerr);
             }
         }
 
@@ -140,8 +147,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Second operand is not a number" << std::endl;
-                exit(EXIT_FAILURE);
+                signals::log_error("Second operand is not a number", std::cerr);
             }
         }
 
@@ -154,13 +160,11 @@ namespace avm
                     return ret;
                 }
                 else {
-                    std::cerr << "Division with zero" << std::endl;
-                    exit(EXIT_FAILURE);
+                    signals::log_error("Division with zero", std::cerr);
                 }
             }
             else {
-                std::cerr << "Second operand is not a number" << std::endl;
-                exit(EXIT_FAILURE);
+                signals::log_error("Second operand is not a number", std::cerr);
             }
         }
 
@@ -173,13 +177,11 @@ namespace avm
                     return ret;
                 }
                 else {
-                    std::cerr << "Modulation with zero" << std::endl;
-                    exit(EXIT_FAILURE);
+                    signals::log_error("Modulation with zero", std::cerr);
                 }
             }
             else {
-                std::cerr << "Second operand is not a number" << std::endl;
-                exit(EXIT_FAILURE);
+                signals::log_error("Second operand is not a number", std::cerr);
             }
         }
 
@@ -191,7 +193,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Invalid '>' operation with non-numeric rh operand" << std::endl;
+                signals::log_error("Invalid '>' operation with non-numeric rh operand", std::cerr);
             }
         }
 
@@ -203,7 +205,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Invalid '>=' operation with non-numeric rh operand" << std::endl;
+                signals::log_error("Invalid '>=' operation with non-numeric rh operand", std::cerr);
             }
         }
 
@@ -215,7 +217,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Invalid '<' operation with non-numeric rh operand" << std::endl;
+                signals::log_error("Invalid '<' operation with non-numeric rh operand", std::cerr);
             }
         }
 
@@ -227,7 +229,7 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Invalid '<=' operation with non-numeric rh operand" << std::endl;
+                signals::log_error("Invalid '<=' operation with non-numeric rh operand", std::cerr);
             }
         }
         //--------------NumMemcell--------------//
@@ -281,49 +283,48 @@ namespace avm
                 return ret;
             }
             else {
-                std::cerr << "Invalid operation \'+\'" << std::endl;
-                exit(EXIT_FAILURE);
+                signals::log_error("Invalid operation \'+\'", std::cerr);
             }
         }
 
         AvmMemcell*
         StringMemcell::sub(AvmMemcell const& other) const {
-            std::cerr << "Invalid '-' with string operand" << std::endl;
+            signals::log_error("Invalid '-' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::mul(AvmMemcell const& other) const {
-            std::cerr << "Invalid '*' with string operand" << std::endl;
+            signals::log_error("Invalid '*' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::div(AvmMemcell const& other) const {
-            std::cerr << "Invalid '/' with string operand" << std::endl;
+            signals::log_error("Invalid '/' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::mod(AvmMemcell const& other) const {
-            std::cerr << "Invalid '%' with string operand" << std::endl;
+            signals::log_error("Invalid '%' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::gt(AvmMemcell const& other) const {
-            std::cerr << "Invalid '>' with string operand" << std::endl;
+            signals::log_error("Invalid '>' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::geq(AvmMemcell const& other) const {
-            std::cerr << "Invalid '>=' with string operand" << std::endl;
+            signals::log_error("Invalid '>=' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::lt(AvmMemcell const& other) const {
-            std::cerr << "Invalid '<' with string operand" << std::endl;
+            signals::log_error("Invalid '<' with string operand", std::cerr);
         }
 
         AvmMemcell*
         StringMemcell::leq(AvmMemcell const& other) const {
-            std::cerr << "Invalid '<=' with string operand" << std::endl;
+            signals::log_error("Invalid '<=' with string operand", std::cerr);
         }
         //--------------StringMemcell--------------//
 
@@ -356,32 +357,52 @@ namespace avm
 
         AvmMemcell*    
         BoolMemcell::equals(AvmMemcell const& other) const {
-        return new BoolMemcell(to_bool() == other.to_bool());
+            return new BoolMemcell(to_bool() == other.to_bool());
         }
 
         AvmMemcell*
         BoolMemcell::add(AvmMemcell const& other) const {
-            std::cerr << "Invalid '+' with bool operand" << std::endl;
+            signals::log_error("Invalid '+' with bool operand", std::cerr);
         }
 
         AvmMemcell*
         BoolMemcell::sub(AvmMemcell const& other) const {
-            std::cerr << "Invalid '-' with bool operand" << std::endl;
+            signals::log_error("Invalid '-' with bool operand", std::cerr);
         }
 
         AvmMemcell*
         BoolMemcell::mul(AvmMemcell const& other) const {
-            std::cerr << "Invalid '*' with bool operand" << std::endl;
+            signals::log_error("Invalid '*' with bool operand", std::cerr);
         }
 
         AvmMemcell*
         BoolMemcell::div(AvmMemcell const& other) const {
-            std::cerr << "Invalid '/' with bool operand" << std::endl;
+            signals::log_error("Invalid '/' with bool operand", std::cerr);
         }
 
         AvmMemcell*
         BoolMemcell::mod(AvmMemcell const& other) const {
-            std::cerr << "Invalid '%' with bool operand" << std::endl;
+            signals::log_error("Invalid '%' with bool operand", std::cerr);
+        }
+
+        AvmMemcell*
+        BoolMemcell::gt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>' with bool operand", std::cerr);
+        }
+
+        AvmMemcell*
+        BoolMemcell::geq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>=' with bool operand", std::cerr);
+        }
+
+        AvmMemcell*
+        BoolMemcell::lt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<' with bool operand", std::cerr);
+        }
+
+        AvmMemcell*
+        BoolMemcell::leq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<=' with bool operand", std::cerr);
         }
         //--------------BoolMemcell--------------//
 
@@ -432,27 +453,47 @@ namespace avm
 
         AvmMemcell*
         TableMemcell::add(AvmMemcell const& other) const {
-            std::cerr << "Invalid '+' with table operand" << std::endl;
+            signals::log_error("Invalid '+' with table operand", std::cerr);
         }
 
         AvmMemcell*
         TableMemcell::sub(AvmMemcell const& other) const {
-            std::cerr << "Invalid '-' with table operand" << std::endl;
+            signals::log_error("Invalid '-' with table operand", std::cerr);
         }
 
         AvmMemcell*
         TableMemcell::mul(AvmMemcell const& other) const {
-            std::cerr << "Invalid '*' with table operand" << std::endl;
+            signals::log_error("Invalid '*' with table operand", std::cerr);
         }
 
         AvmMemcell*
         TableMemcell::div(AvmMemcell const& other) const {
-            std::cerr << "Invalid '/' with table operand" << std::endl;
+            signals::log_error("Invalid '/' with table operand", std::cerr);
         }
 
         AvmMemcell*
         TableMemcell::mod(AvmMemcell const& other) const {
-            std::cerr << "Invalid '%' with table operand" << std::endl;
+            signals::log_error("Invalid '%' with table operand", std::cerr);
+        }
+
+        AvmMemcell*
+        TableMemcell::gt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>' with table operand", std::cerr);
+        }
+
+        AvmMemcell*
+        TableMemcell::geq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>=' with table operand", std::cerr);
+        }
+
+        AvmMemcell*
+        TableMemcell::lt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<' with table operand", std::cerr);
+        }
+
+        AvmMemcell*
+        TableMemcell::leq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<=' with table operand", std::cerr);
         }
         //--------------TableMemcell--------------//
 
@@ -493,27 +534,47 @@ namespace avm
 
         AvmMemcell*
         UserfuncMemcell::add(AvmMemcell const& other) const {
-            std::cerr << "Invalid '+' with user function operand" << std::endl;
+            signals::log_error("Invalid '+' with user function operand", std::cerr);
         }
 
         AvmMemcell*
         UserfuncMemcell::sub(AvmMemcell const& other) const {
-            std::cerr << "Invalid '-' with user function operand" << std::endl;
+            signals::log_error("Invalid '-' with user function operand", std::cerr);
         }
 
         AvmMemcell*
         UserfuncMemcell::mul(AvmMemcell const& other) const {
-            std::cerr << "Invalid '*' with user function operand" << std::endl;
+            signals::log_error("Invalid '*' with user function operand", std::cerr);
         }
 
         AvmMemcell*
         UserfuncMemcell::div(AvmMemcell const& other) const {
-            std::cerr << "Invalid '/' with user function operand" << std::endl;
+            signals::log_error("Invalid '/' with user function operand", std::cerr);
         }
 
         AvmMemcell*
         UserfuncMemcell::mod(AvmMemcell const& other) const {
-            std::cerr << "Invalid '%' with user function operand" << std::endl;
+            signals::log_error("Invalid '%' with user function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::gt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>' with user function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::geq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>=' with user function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::lt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<' with user function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        UserfuncMemcell::leq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<=' with user function operand", std::cerr);
         }
         //--------------UserfuncMemcell--------------//
 
@@ -554,27 +615,47 @@ namespace avm
 
         AvmMemcell*
         LibfuncMemcell::add(AvmMemcell const& other) const {
-            std::cerr << "Invalid '+' with library function operand" << std::endl;
+            signals::log_error("Invalid '+' with library function operand", std::cerr);
         }
 
         AvmMemcell*
         LibfuncMemcell::sub(AvmMemcell const& other) const {
-            std::cerr << "Invalid '-' with library function operand" << std::endl;
+            signals::log_error("Invalid '-' with library function operand", std::cerr);
         }
 
         AvmMemcell*
         LibfuncMemcell::mul(AvmMemcell const& other) const {
-            std::cerr << "Invalid '*' with library function operand" << std::endl;
+            signals::log_error("Invalid '*' with library function operand", std::cerr);
         }
 
         AvmMemcell*
         LibfuncMemcell::div(AvmMemcell const& other) const {
-            std::cerr << "Invalid '/' with library function operand" << std::endl;
+            signals::log_error("Invalid '/' with library function operand", std::cerr);
         }
 
         AvmMemcell*
         LibfuncMemcell::mod(AvmMemcell const& other) const {
-            std::cerr << "Invalid '%' with library function operand" << std::endl;
+            signals::log_error("Invalid '%' with library function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::gt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>' with library function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::geq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>=' with library function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::lt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<' with library function operand", std::cerr);
+        }
+
+        AvmMemcell*
+        LibfuncMemcell::leq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<=' with library function operand", std::cerr);
         }
         //--------------LibfuncMemcell--------------//
 
@@ -602,27 +683,47 @@ namespace avm
 
         AvmMemcell*
         NilMemcell::add(AvmMemcell const& other) const {
-            std::cerr << "Invalid '+' with nil operand" << std::endl;
+            signals::log_error("Invalid '+' with nil operand", std::cerr);
         }
 
         AvmMemcell*
         NilMemcell::sub(AvmMemcell const& other) const {
-            std::cerr << "Invalid '-' with nil operand" << std::endl;
+            signals::log_error("Invalid '-' with nil operand", std::cerr);
         }
 
         AvmMemcell*
         NilMemcell::mul(AvmMemcell const& other) const {
-            std::cerr << "Invalid '*' with nil operand" << std::endl;
+            signals::log_error("Invalid '*' with nil operand", std::cerr);
         }
 
         AvmMemcell*
         NilMemcell::div(AvmMemcell const& other) const {
-            std::cerr << "Invalid '/' with nil operand" << std::endl;
+            signals::log_error("Invalid '/' with nil operand", std::cerr);
         }
 
         AvmMemcell*
         NilMemcell::mod(AvmMemcell const& other) const {
-            std::cerr << "Invalid '%' with nil operand" << std::endl;
+            signals::log_error("Invalid '%' with nil operand", std::cerr);
+        }
+
+        AvmMemcell*
+        NilMemcell::gt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>' with nil operand", std::cerr);
+        }
+
+        AvmMemcell*
+        NilMemcell::geq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '>=' with nil operand", std::cerr);
+        }
+
+        AvmMemcell*
+        NilMemcell::lt(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<' with nil operand", std::cerr);
+        }
+
+        AvmMemcell*
+        NilMemcell::leq(AvmMemcell const& other) const {
+            signals::log_error("Invalid '<=' with nil operand", std::cerr);
         }
         //--------------NilMemcell--------------//
 
