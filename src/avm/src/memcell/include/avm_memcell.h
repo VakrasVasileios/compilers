@@ -36,23 +36,31 @@ namespace avm
          * accepted, not null
          */
         virtual void    accept(AvmMemcellVisitor* visitor) = 0;
+        /**
+         * @brief Returns a read access to a deep copy
+         * of this AvmMemcell.
+         * 
+         * @return a read access to a deep copy
+         * of this AvmMemcell, not null 
+         */
+        virtual AvmMemcell* clone() const = 0;
 
         friend std::ostream&    operator << (std::ostream& os, 
             const AvmMemcell& memcell);
 
-        AvmMemcell*         operator==(AvmMemcell const&);                    
-        AvmMemcell*         operator!=(AvmMemcell const&);
+        AvmMemcell*         operator==(AvmMemcell const&) const;                    
+        AvmMemcell*         operator!=(AvmMemcell const&) const;
         
-        AvmMemcell*         operator+(AvmMemcell const&);
-        AvmMemcell*         operator-(AvmMemcell const&);
-        AvmMemcell*         operator*(AvmMemcell const&);
-        AvmMemcell*         operator/(AvmMemcell const&);
-        AvmMemcell*         operator%(AvmMemcell const&);
+        AvmMemcell*         operator+(AvmMemcell const&) const;
+        AvmMemcell*         operator-(AvmMemcell const&) const;
+        AvmMemcell*         operator*(AvmMemcell const&) const;
+        AvmMemcell*         operator/(AvmMemcell const&) const;
+        AvmMemcell*         operator%(AvmMemcell const&) const;
 
-        AvmMemcell*         operator>(AvmMemcell const&);
-        AvmMemcell*         operator>=(AvmMemcell const&);
-        AvmMemcell*         operator<(AvmMemcell const&);
-        AvmMemcell*         operator<=(AvmMemcell const&);
+        AvmMemcell*         operator>(AvmMemcell const&) const;
+        AvmMemcell*         operator>=(AvmMemcell const&) const;
+        AvmMemcell*         operator<(AvmMemcell const&) const;
+        AvmMemcell*         operator<=(AvmMemcell const&) const;
         
         virtual bool            to_bool() const = 0;    
         virtual std::string     get_type() const = 0;                
@@ -109,6 +117,7 @@ namespace avm
          */
         void    set_num_val(const double _num_val); 
         void    accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell* clone() const override;
         std::string  get_type() const override;
         bool    to_bool() const override;
 
@@ -164,6 +173,7 @@ namespace avm
          */
         void        set_str_val(const std::string str_val);
         void        accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell* clone() const override;
         bool        to_bool() const override;
         std::string  get_type() const override;
 
@@ -221,6 +231,7 @@ namespace avm
          */
         void    set_bool_val(const bool val);
         void    accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell* clone() const override;
         bool    to_bool() const override;
         std::string  get_type() const override;
     private:
@@ -287,6 +298,7 @@ namespace avm
          */
         void                set_elem(AvmMemcell* key, AvmMemcell* value);
         void                accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*         clone() const override;
         bool                to_bool() const override;
         std::string         get_type() const override;
     private:
@@ -346,6 +358,7 @@ namespace avm
          */
         void            set_func_val(const unsigned int _func_val);
         void            accept(AvmMemcellVisitor* visitor) override;  
+        AvmMemcell*     clone() const override;
         bool            to_bool() const override;     
         std::string     get_type() const override;
     private:
@@ -402,6 +415,7 @@ namespace avm
          */
         void        set_lib_func_val(const std::string _lib_func_val);
         void        accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell* clone() const override;
         bool        to_bool() const override;
         std::string  get_type() const override;
     private:
@@ -439,6 +453,7 @@ namespace avm
          */
         ~NilMemcell() = default;
         void        accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell* clone() const override;
         bool        to_bool() const override;
         std::string  get_type() const override;
     private:
@@ -474,6 +489,7 @@ namespace avm
          */
         ~UndefMemcell() = default;
         void        accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell* clone() const override;
         bool        to_bool() const override;
         std::string get_type() const override;
     private:

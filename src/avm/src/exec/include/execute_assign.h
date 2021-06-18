@@ -14,7 +14,8 @@ namespace avm
      * @param lv the lvalue memcell, not null
      * @param rv the rvalue memcell, not null
      */
-    void execute_assign(memcell::AvmMemcell* lv, memcell::AvmMemcell* rv);
+    void execute_assign(memcell::AvmMemcell** lv,
+        const memcell::AvmMemcell* rv);
     }
 }
 

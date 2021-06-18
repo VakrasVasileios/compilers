@@ -49,12 +49,12 @@ namespace avm
         }
 
         AvmMemcell*
-        AvmMemcell::operator==(AvmMemcell const& other) {
+        AvmMemcell::operator==(AvmMemcell const& other) const {
             return equals(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator!=(AvmMemcell const& other) {
+        AvmMemcell::operator!=(AvmMemcell const& other) const {
             BoolMemcell* ret = (BoolMemcell*)equals(other);
             if (ret == nullptr)
                 return ret;
@@ -66,47 +66,47 @@ namespace avm
         }
 
         AvmMemcell*
-        AvmMemcell::operator+(AvmMemcell const& other) {
+        AvmMemcell::operator+(AvmMemcell const& other) const {
             return add(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator-(AvmMemcell const& other) {
+        AvmMemcell::operator-(AvmMemcell const& other) const {
             return sub(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator*(AvmMemcell const& other) {
+        AvmMemcell::operator*(AvmMemcell const& other) const {
             return mul(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator/(AvmMemcell const& other) {
+        AvmMemcell::operator/(AvmMemcell const& other) const {
             return div(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator%(AvmMemcell const& other) {
+        AvmMemcell::operator%(AvmMemcell const& other) const {
             return mod(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator>(AvmMemcell const& other) {
+        AvmMemcell::operator>(AvmMemcell const& other) const {
             return gt(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator>=(AvmMemcell const& other) {
+        AvmMemcell::operator>=(AvmMemcell const& other) const {
             return geq(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator<(AvmMemcell const& other) {
+        AvmMemcell::operator<(AvmMemcell const& other) const {
             return lt(other);
         }
 
         AvmMemcell*
-        AvmMemcell::operator<=(AvmMemcell const& other) {
+        AvmMemcell::operator<=(AvmMemcell const& other) const {
             return leq(other);
         }
 
@@ -127,6 +127,11 @@ namespace avm
         NumMemcell::accept(AvmMemcellVisitor* visitor) {
             PRECONDITION(visitor != nullptr);
             visitor->visit_num_memcell(this);
+        }
+
+        AvmMemcell* 
+        NumMemcell::clone() const {
+            return new NumMemcell(*this);    
         }
 
         std::string  
@@ -326,6 +331,11 @@ namespace avm
             visitor->visit_string_memcell(this);
         }
 
+        AvmMemcell* 
+        StringMemcell::clone() const {
+            return new StringMemcell(*this);    
+        }
+
         bool
         StringMemcell::to_bool() const {
             return !str_val_.empty();    
@@ -432,6 +442,11 @@ namespace avm
         BoolMemcell::accept(AvmMemcellVisitor* visitor) {
             PRECONDITION(visitor != nullptr);
             visitor->visit_bool_memcell(this);
+        }
+
+        AvmMemcell* 
+        BoolMemcell::clone() const {
+            return new BoolMemcell(*this);    
         }
 
         bool
@@ -548,6 +563,11 @@ namespace avm
             visitor->visit_table_memcell(this);
         }
 
+        AvmMemcell*         
+        TableMemcell::clone() const {
+            return new TableMemcell(*this);    
+        }
+
         AvmMemcell*        
         TableMemcell::equals(AvmMemcell const& other) const {
             if (auto table_memcell = table_memcell_cast(other)) 
@@ -650,6 +670,11 @@ namespace avm
             visitor->visit_userfunc_memcell(this);
         }
 
+        AvmMemcell*     
+        UserfuncMemcell::clone() const {
+            return new UserfuncMemcell(*this);    
+        }
+
         AvmMemcell*            
         UserfuncMemcell::equals(AvmMemcell const& other) const {
             if (auto userfunc_memcell = userfunc_memcell_cast(other))
@@ -745,6 +770,11 @@ namespace avm
             visitor->visit_libfunc_memcell(this);
         }
 
+        AvmMemcell* 
+        LibfuncMemcell::clone() const {
+            return new LibfuncMemcell(*this);      
+        }
+
         AvmMemcell*        
         LibfuncMemcell::equals(AvmMemcell const& other) const {
             if (auto libfunc_memcell = libfunc_memcell_cast(other))
@@ -828,6 +858,11 @@ namespace avm
         NilMemcell::accept(AvmMemcellVisitor* visitor) {
             PRECONDITION(visitor != nullptr);
             visitor->visit_nill_memcell(this);
+        }
+
+        AvmMemcell* 
+        NilMemcell::clone() const {
+            return new NilMemcell(*this);      
         }
 
         AvmMemcell*
@@ -917,6 +952,11 @@ namespace avm
         UndefMemcell::accept(AvmMemcellVisitor* visitor) {
             PRECONDITION(visitor != nullptr);
             visitor->visit_undef_memcell(this);
+        }
+
+        AvmMemcell* 
+        UndefMemcell::clone() const {
+            return new UndefMemcell(*this);      
         }
 
         bool
