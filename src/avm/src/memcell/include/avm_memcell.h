@@ -35,7 +35,7 @@ namespace avm
          * @param visitor the avm memcell visitor to be
          * accepted, not null
          */
-        virtual void    accept(AvmMemcellVisitor* visitor) = 0;
+        virtual void            accept(AvmMemcellVisitor* visitor) = 0;
         /**
          * @brief Returns a read access to a deep copy
          * of this AvmMemcell.
@@ -43,48 +43,228 @@ namespace avm
          * @return a read access to a deep copy
          * of this AvmMemcell, not null 
          */
-        virtual AvmMemcell* clone() const = 0;
-
+        virtual AvmMemcell*     clone() const = 0;
         friend 
-        std::ostream&       operator << (std::ostream& os, 
-                                const AvmMemcell& memcell);
+        std::ostream&           operator << (std::ostream& os, 
+                                    const AvmMemcell& memcell);
         /**
-         * @brief Checks wether 
+         * @brief Equality operation between two AvmMemcells.
+         * A comparison between two memcells of the same type
+         * is reduced to a comparison between their values.
+         * A comparison with a boolean type casts the other
+         * operand to a boolean type. A comparison between two
+         * heteroids, or with a nil/undefined type is an avm error.
          * 
-         * @return  
+         * @return wether the memcell operands are equal
          */
-        bool                operator==(AvmMemcell const&) const;                    
-        bool                operator!=(AvmMemcell const&) const;
-        bool                operator>(AvmMemcell const&) const;
-        bool                operator>=(AvmMemcell const&) const;
-        bool                operator<(AvmMemcell const&) const;
-        bool                operator<=(AvmMemcell const&) const;
-        
-        AvmMemcell*         operator+(AvmMemcell const&) const;
-        AvmMemcell*         operator-(AvmMemcell const&) const;
-        AvmMemcell*         operator*(AvmMemcell const&) const;
-        AvmMemcell*         operator/(AvmMemcell const&) const;
-        AvmMemcell*         operator%(AvmMemcell const&) const;
-
-        
-        
-        virtual bool            to_bool() const = 0;    
+        bool                    operator==(AvmMemcell const&) const; 
+        /**
+         * @brief Inequality operation between two AvmMemcells.
+         * A comparison between two memcells of the same type
+         * is reduced to a comparison between their values.
+         * A comparison with a boolean type casts the other
+         * operand to a boolean type. A comparison between two
+         * heteroids, or with a nil/undefined type is an avm error.
+         * 
+         * @return wether the memcell operands are not equal
+         */                   
+        bool                    operator!=(AvmMemcell const&) const;
+        /**
+         * @brief Greater than operation between two AvmMemcells.
+         * A comparison between two memcells of the same type
+         * is reduced to a comparison between their values.
+         * A comparison with a boolean type casts the other
+         * operand to a boolean type. A comparison between two
+         * heteroids, or with a nil/undefined type is an avm error.
+         * 
+         * @return wether the first memcell operand is greater than
+         * the second memcell operand
+         */ 
+        bool                    operator>(AvmMemcell const&) const;
+        /**
+         * @brief Greater or equal operation between two AvmMemcells.
+         * A comparison between two memcells of the same type
+         * is reduced to a comparison between their values.
+         * A comparison with a boolean type casts the other
+         * operand to a boolean type. A comparison between two
+         * heteroids, or with a nil/undefined type is an avm error.
+         * 
+         * @return wether the first memcell operand is greater or equal
+         * to the second memcell operand
+         */ 
+        bool                    operator>=(AvmMemcell const&) const;
+        /**
+         * @brief Less than operation between two AvmMemcells.
+         * A comparison between two memcells of the same type
+         * is reduced to a comparison between their values.
+         * A comparison with a boolean type casts the other
+         * operand to a boolean type. A comparison between two
+         * heteroids, or with a nil/undefined type is an avm error.
+         * 
+         * @return wether the first memcell operand is less than
+         * the second memcell operand
+         */ 
+        bool                    operator<(AvmMemcell const&) const;
+        /**
+         * @brief Less or equal operation between two AvmMemcells.
+         * A comparison between two memcells of the same type
+         * is reduced to a comparison between their values.
+         * A comparison with a boolean type casts the other
+         * operand to a boolean type. A comparison between two
+         * heteroids, or with a nil/undefined type is an avm error.
+         * 
+         * @return wether the first memcell operand is less or equal
+         * to the second memcell operand
+         */ 
+        bool                    operator<=(AvmMemcell const&) const;
+        /**
+         * @brief Addition arithmetic operation bewtween two AvmMemcells.
+         * An arithmetic operation between two memcells is an avm error
+         * if they are not of numeric type.
+         * 
+         * @return the result of the addition operation,
+         * or this AvmMemcell in case of an avm error. 
+         */
+        AvmMemcell*             operator+(AvmMemcell const&) const;
+        /**
+         * @brief Subtractio arithmetic operation bewtween two AvmMemcells.
+         * An arithmetic operation between two memcells is an avm error
+         * if they are not of numeric type.
+         * 
+         * @return the result of the subtraction operation,
+         * or this AvmMemcell in case of an avm error. 
+         */
+        AvmMemcell*             operator-(AvmMemcell const&) const;
+        /**
+         * @brief Multiplication arithmetic operation bewtween two AvmMemcells.
+         * An arithmetic operation between two memcells is an avm error
+         * if they are not of numeric type.
+         * 
+         * @return the result of the multiplication operation,
+         * or this AvmMemcell in case of an avm error. 
+         */
+        AvmMemcell*             operator*(AvmMemcell const&) const;
+        /**
+         * @brief Division arithmetic operation bewtween two AvmMemcells.
+         * An arithmetic operation between two memcells is an avm error
+         * if they are not of numeric type.
+         * 
+         * @return the result of the division operation,
+         * or this AvmMemcell in case of an avm error. 
+         */
+        AvmMemcell*             operator/(AvmMemcell const&) const;
+        /**
+         * @brief Modulation arithmetic operation bewtween two AvmMemcells.
+         * An arithmetic operation between two memcells is an avm error
+         * if they are not of numeric type.
+         * 
+         * @return the result of the modulation operation,
+         * or this AvmMemcell in case of an avm error. 
+         */
+        AvmMemcell*             operator%(AvmMemcell const&) const;
+        /**
+         * @brief Converts this AvmMemcell to a boolean type.
+         * 
+         * @return a read access to this AvmMemcell as a
+         * boolean type
+         */
+        virtual bool            to_bool() const = 0;  
+        /**
+         * @brief Returns a read access to the type of this
+         * memcell AvmMemcell.
+         * 
+         * @return a read access to the type of this
+         * memcell AvmMemcell 
+         */
         virtual std::string     get_type() const = 0;                
     protected:
+        /**
+         * @brief Logs this instruction to an output.
+         * 
+         * @param os the output to log this AvmMemcell
+         * @return the output 
+         */
         virtual std::ostream&   log(std::ostream& os) const = 0;
-
-        virtual bool     equals(AvmMemcell const& other) const = 0;
-        
+        /**
+         * @brief Checks wether this AvmMemcell is equal with another
+         * memcell.
+         * 
+         * @param other the other memcell
+         * @return wether this AvmMemcell is equal with another
+         * memcell
+         */
+        virtual bool            eq(AvmMemcell const& other) const = 0;
+         /**
+         * @brief Checks wether this AvmMemcell is greater to another
+         * memcell.
+         * 
+         * @param other the other memcell
+         * @return wether this AvmMemcell is greater to another
+         * memcell
+         */
+        virtual bool            gt(AvmMemcell const& other) const = 0;
+         /**
+         * @brief Checks wether this AvmMemcell is greater or equal to
+         * another memcell.
+         * 
+         * @param other the other memcell
+         * @return wether this AvmMemcell is greater or equal to
+         * another memcell
+         */
+        virtual bool            geq(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Checks wether this AvmMemcell is less than another
+         * memcell.
+         * 
+         * @param other the other memcell
+         * @return wether this AvmMemcell is less than another
+         * memcell
+         */
+        virtual bool            lt(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Checks wether this AvmMemcell is less or equal to
+         * another memcell.
+         * 
+         * @param other the other memcell
+         * @return wether this AvmMemcell is less or equal to
+         * another memcell
+         */
+        virtual bool            leq(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Adds this AvmMemcell with another memcell.
+         * 
+         * @param other the other memcell
+         * @return the result of the arithmetic operation
+         */
         virtual AvmMemcell*     add(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Subtracts this AvmMemcell with another memcell.
+         * 
+         * @param other the other memcell
+         * @return the result of the arithmetic operation
+         */
         virtual AvmMemcell*     sub(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Multiplies this AvmMemcell with another memcell.
+         * 
+         * @param other the other memcell
+         * @return the result of the arithmetic operation
+         */
         virtual AvmMemcell*     mul(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Divides this AvmMemcell with another memcell.
+         * 
+         * @param other the other memcell
+         * @return the result of the arithmetic operation
+         */
         virtual AvmMemcell*     div(AvmMemcell const& other) const = 0;
+        /**
+         * @brief Mods this AvmMemcell with another memcell.
+         * 
+         * @param other the other memcell
+         * @return the result of the arithmetic operation
+         */
         virtual AvmMemcell*     mod(AvmMemcell const& other) const = 0;
-        
-        virtual bool     gt(AvmMemcell const& other) const = 0;
-        virtual bool     geq(AvmMemcell const& other) const = 0;
-        virtual bool     lt(AvmMemcell const& other) const = 0;
-        virtual bool     leq(AvmMemcell const& other) const = 0;
     };
 
     /**
@@ -113,7 +293,7 @@ namespace avm
          * @return a read access to the numerical data
          * of this NumMemcell 
          */
-        double  num_val() const;
+        double          num_val() const;
         /**
          * @brief Sets the numerical data
          * of this NumMemcell.
@@ -121,28 +301,25 @@ namespace avm
          * @param _num_val the numerical value to set 
          * the numerical data of this NumMemcell
          */
-        void    set_num_val(const double _num_val); 
-        void    accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell* clone() const override;
-        std::string  get_type() const override;
-        bool    to_bool() const override;
+        void            set_num_val(const double _num_val); 
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        std::string     get_type() const override;
+        bool            to_bool() const override;
 
     private:
         double          num_val_;
         std::ostream&   log(std::ostream& os) const override;
-
-        bool     equals(AvmMemcell const& other) const override;
-        
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
         AvmMemcell*     add(AvmMemcell const& other) const override;
         AvmMemcell*     sub(AvmMemcell const& other) const override;
         AvmMemcell*     mul(AvmMemcell const& other) const override;
         AvmMemcell*     div(AvmMemcell const& other) const override;
         AvmMemcell*     mod(AvmMemcell const& other) const override;
-        
-        bool            gt(AvmMemcell const& other) const override;
-        bool            geq(AvmMemcell const& other) const override;
-        bool            lt(AvmMemcell const& other) const override;
-        bool            leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -170,36 +347,33 @@ namespace avm
          * @return a read access to this StringMemCell 
          * string data  
          */
-        std::string str_val() const;
+        std::string     str_val() const;
         /**
          * @brief Sets the string data of this StringMemCell.
          * 
          * @param str_val the string value to set the string
          * data of this StringMemCell
          */
-        void        set_str_val(const std::string str_val);
-        void        accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell* clone() const override;
-        bool        to_bool() const override;
-        std::string  get_type() const override;
+        void            set_str_val(const std::string str_val);
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        bool            to_bool() const override;
+        std::string     get_type() const override;
 
-        StringMemcell*     operator+(StringMemcell*);
+        StringMemcell*  operator+(StringMemcell*);
     private:
-        std::string str_val_;
+        std::string     str_val_;
         std::ostream&   log(std::ostream& os) const override;
-
-        bool equals(AvmMemcell const& other) const override;
-        
-        AvmMemcell* add(AvmMemcell const& other) const override;
-        AvmMemcell* sub(AvmMemcell const& other) const override;
-        AvmMemcell* mul(AvmMemcell const& other) const override;
-        AvmMemcell* div(AvmMemcell const& other) const override;
-        AvmMemcell* mod(AvmMemcell const& other) const override;
-        
-        bool        gt(AvmMemcell const& other) const override;
-        bool        geq(AvmMemcell const& other) const override;
-        bool        lt(AvmMemcell const& other) const override;
-        bool        leq(AvmMemcell const& other) const override;
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;
     };
 
     /**
@@ -228,34 +402,31 @@ namespace avm
          * @return a read access to the boolean data
          * of this BoolMemcell 
          */
-        bool    bool_val() const;
+        bool            bool_val() const;
         /**
          * @brief Sets the boolean data of this BoolMemcell.
          * 
          * @param val the boolean value to set the
          * boolean data of this BoolMemcell.
          */
-        void    set_bool_val(const bool val);
-        void    accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell* clone() const override;
-        bool    to_bool() const override;
-        std::string  get_type() const override;
+        void            set_bool_val(const bool val);
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        bool            to_bool() const override;
+        std::string     get_type() const override;
     private:
-        bool        bool_val_;
+        bool            bool_val_;
         std::ostream&   log(std::ostream& os) const override;
-
-        bool equals(AvmMemcell const& other) const override;
-
-        AvmMemcell* add(AvmMemcell const& other) const override;
-        AvmMemcell* sub(AvmMemcell const& other) const override;
-        AvmMemcell* mul(AvmMemcell const& other) const override;
-        AvmMemcell* div(AvmMemcell const& other) const override;
-        AvmMemcell* mod(AvmMemcell const& other) const override;
-
-        bool        gt(AvmMemcell const& other) const override;
-        bool        geq(AvmMemcell const& other) const override;
-        bool        lt(AvmMemcell const& other) const override;
-        bool        leq(AvmMemcell const& other) const override;
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;
     };
 
     /**
@@ -283,7 +454,7 @@ namespace avm
          * @return wether this TableMemcell contains
          * a key memcell 
          */
-        bool                contains(AvmMemcell* key) const;
+        bool             contains(AvmMemcell* key) const;
         /**
          * @brief Returns a read/write access to the memcell value
          * that is mapped with a key memcell at this TableMemcell.
@@ -295,35 +466,32 @@ namespace avm
          * that is mapped with a key memcell at this TableMemcell, 
          * not null 
          */
-        AvmMemcell*         get_elem(AvmMemcell* key) const;
+        AvmMemcell*      get_elem(AvmMemcell* key) const;
         /**
          * @brief Inserts a key/value memcell pair to this TableMemcell.
          * 
          * @param key the key memcell, not null
          * @param value the value memcell, not null
          */
-        void                set_elem(AvmMemcell* key, AvmMemcell* value);
-        void                accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell*         clone() const override;
-        bool                to_bool() const override;
-        std::string         get_type() const override;
+        void            set_elem(AvmMemcell* key, AvmMemcell* value);
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        bool            to_bool() const override;
+        std::string     get_type() const override;
     private:
+        std::map<AvmMemcell*, AvmMemcell*>
+                        table_val_;
         std::ostream&   log(std::ostream& os) const override;
-
-        bool equals(AvmMemcell const& other) const override;
-        
-        AvmMemcell* add(AvmMemcell const& other) const override;
-        AvmMemcell* sub(AvmMemcell const& other) const override;
-        AvmMemcell* mul(AvmMemcell const& other) const override;
-        AvmMemcell* div(AvmMemcell const& other) const override;
-        AvmMemcell* mod(AvmMemcell const& other) const override;
-
-        bool        gt(AvmMemcell const& other) const override;
-        bool        geq(AvmMemcell const& other) const override;
-        bool        lt(AvmMemcell const& other) const override;
-        bool        leq(AvmMemcell const& other) const override;
-        
-        std::map<AvmMemcell*, AvmMemcell*> table_val_; // consts? by value or ref?????
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;
     };
 
     /**
@@ -370,19 +538,16 @@ namespace avm
     private:
         unsigned int    func_val_;
         std::ostream&   log(std::ostream& os) const override;
-
-        bool            equals(AvmMemcell const& other) const override;
-
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
         AvmMemcell*     add(AvmMemcell const& other) const override;
         AvmMemcell*     sub(AvmMemcell const& other) const override;
         AvmMemcell*     mul(AvmMemcell const& other) const override;
         AvmMemcell*     div(AvmMemcell const& other) const override;
         AvmMemcell*     mod(AvmMemcell const& other) const override;
-
-        bool            gt(AvmMemcell const& other) const override;
-        bool            geq(AvmMemcell const& other) const override;
-        bool            lt(AvmMemcell const& other) const override;
-        bool            leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -411,7 +576,7 @@ namespace avm
          * @return a read access to the id of a library function
          * that is set as the data of this LibfuncMemcell
          */
-        std::string lib_func_val() const;
+        std::string     lib_func_val() const;
         /**
          * @brief Sets the id of a library function as the data
          * of this LibfuncMemcell.
@@ -419,27 +584,24 @@ namespace avm
          * @param _lib_func_val the id of a library function to
          * be set as the data of this LibfuncMemcell
          */
-        void        set_lib_func_val(const std::string _lib_func_val);
-        void        accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell* clone() const override;
-        bool        to_bool() const override;
-        std::string  get_type() const override;
+        void            set_lib_func_val(const std::string _lib_func_val);
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        bool            to_bool() const override;
+        std::string     get_type() const override;
     private:
-        std::string lib_func_val_;
+        std::string     lib_func_val_;
         std::ostream&   log(std::ostream& os) const override;
-
-        bool equals(AvmMemcell const& other) const override;
-
-        AvmMemcell* add(AvmMemcell const& other) const override;
-        AvmMemcell* sub(AvmMemcell const& other) const override;
-        AvmMemcell* mul(AvmMemcell const& other) const override;
-        AvmMemcell* div(AvmMemcell const& other) const override;
-        AvmMemcell* mod(AvmMemcell const& other) const override;
-
-        bool        gt(AvmMemcell const& other) const override;
-        bool        geq(AvmMemcell const& other) const override;
-        bool        lt(AvmMemcell const& other) const override;
-        bool        leq(AvmMemcell const& other) const override;
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;     
     };
 
     /**
@@ -458,26 +620,24 @@ namespace avm
          * 
          */
         ~NilMemcell() = default;
-        void        accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell* clone() const override;
-        bool        to_bool() const override;
-        std::string  get_type() const override;
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        bool            to_bool() const override;
+        std::string     get_type() const override;
     private:
-        std::ostream& log(std::ostream& os) const override;
-
-        bool equals(AvmMemcell const& other) const override;
-
-        AvmMemcell* add(AvmMemcell const& other) const override;
-        AvmMemcell* sub(AvmMemcell const& other) const override;
-        AvmMemcell* mul(AvmMemcell const& other) const override;
-        AvmMemcell* div(AvmMemcell const& other) const override;
-        AvmMemcell* mod(AvmMemcell const& other) const override;
-        
-        bool        gt(AvmMemcell const& other) const override;
-        bool        geq(AvmMemcell const& other) const override;
-        bool        lt(AvmMemcell const& other) const override;
-        bool        leq(AvmMemcell const& other) const override;
+        std::ostream&   log(std::ostream& os) const override;
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;
     };
+
     /**
      * @brief A memcell with undefined data.
      * 
@@ -494,25 +654,22 @@ namespace avm
          * 
          */
         ~UndefMemcell() = default;
-        void        accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell* clone() const override;
-        bool        to_bool() const override;
-        std::string get_type() const override;
+        void            accept(AvmMemcellVisitor* visitor) override;
+        AvmMemcell*     clone() const override;
+        bool            to_bool() const override;
+        std::string     get_type() const override;
     private:
-        std::ostream& log(std::ostream& os) const override;
-
-        bool equals(AvmMemcell const& other) const override;
-
-        AvmMemcell* add(AvmMemcell const& other) const override;
-        AvmMemcell* sub(AvmMemcell const& other) const override;
-        AvmMemcell* mul(AvmMemcell const& other) const override;
-        AvmMemcell* div(AvmMemcell const& other) const override;
-        AvmMemcell* mod(AvmMemcell const& other) const override;
-        
-        bool        gt(AvmMemcell const& other) const override;
-        bool        geq(AvmMemcell const& other) const override;
-        bool        lt(AvmMemcell const& other) const override;
-        bool        leq(AvmMemcell const& other) const override;
+        std::ostream&   log(std::ostream& os) const override;
+        bool            eq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
+        AvmMemcell*     add(AvmMemcell const& other) const override;
+        AvmMemcell*     sub(AvmMemcell const& other) const override;
+        AvmMemcell*     mul(AvmMemcell const& other) const override;
+        AvmMemcell*     div(AvmMemcell const& other) const override;
+        AvmMemcell*     mod(AvmMemcell const& other) const override;  
     };
     /**
      * @brief Interface for visiting concrete avm memcells.
@@ -551,8 +708,7 @@ namespace avm
          * @param memcell the memcell containing the address of a user function
          * as data.
          */
-        virtual void    
-            visit_userfunc_memcell(UserfuncMemcell* memcell) = 0;
+        virtual void    visit_userfunc_memcell(UserfuncMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing the id of a library
          * function as data.
@@ -560,8 +716,7 @@ namespace avm
          * @param memcell the memcell containing the id of a library function
          * as data.
          */
-        virtual void    
-            visit_libfunc_memcell(LibfuncMemcell* memcell) = 0;
+        virtual void    visit_libfunc_memcell(LibfuncMemcell* memcell) = 0;
         /**
          * @brief Visits a memcell containing NIL data.
          * 
@@ -575,6 +730,7 @@ namespace avm
          */
         virtual void    visit_undef_memcell(UndefMemcell* memcell) = 0;
     };
+
     }
 }
 

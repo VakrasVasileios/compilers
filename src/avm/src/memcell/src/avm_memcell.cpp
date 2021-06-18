@@ -50,12 +50,12 @@ namespace avm
 
         bool
         AvmMemcell::operator==(AvmMemcell const& other) const {
-            return equals(other);
+            return eq(other);
         }
 
         bool
         AvmMemcell::operator!=(AvmMemcell const& other) const {
-            auto neq = !equals(other);
+            auto neq = !eq(other);
             if (signals::execution_finished)
                 return false;
             else
@@ -167,7 +167,7 @@ namespace avm
         }
 
         bool    
-        NumMemcell::equals(AvmMemcell const& other) const {
+        NumMemcell::eq(AvmMemcell const& other) const {
             if (auto num_memcell = num_memcell_cast(other))
                 return num_val_ == num_memcell->num_val();
             else    
@@ -340,7 +340,7 @@ namespace avm
         }
 
         bool    
-        StringMemcell::equals(AvmMemcell const& other) const {
+        StringMemcell::eq(AvmMemcell const& other) const {
             if (auto str_memcell = str_memcell_cast(other))
                 return str_val_ == str_memcell->str_val();
             else   
@@ -456,7 +456,7 @@ namespace avm
         }
 
         bool    
-        BoolMemcell::equals(AvmMemcell const& other) const {
+        BoolMemcell::eq(AvmMemcell const& other) const {
             if (auto undef_memcell = undef_memcell_cast(other)) {
                 signals::log_error("invalid comparison with undefined type",
                     std::cerr);
@@ -557,7 +557,7 @@ namespace avm
         }
 
         bool        
-        TableMemcell::equals(AvmMemcell const& other) const {
+        TableMemcell::eq(AvmMemcell const& other) const {
             if (auto table_memcell = table_memcell_cast(other)) 
                 return true; // TOCHANGE
                 // return table_val_ == table_memcell->table_val();
@@ -664,7 +664,7 @@ namespace avm
         }
 
         bool            
-        UserfuncMemcell::equals(AvmMemcell const& other) const {
+        UserfuncMemcell::eq(AvmMemcell const& other) const {
             if (auto userfunc_memcell = userfunc_memcell_cast(other))
                 return func_val_ == userfunc_memcell->func_val();
             else    
@@ -764,7 +764,7 @@ namespace avm
         }
 
         bool        
-        LibfuncMemcell::equals(AvmMemcell const& other) const {
+        LibfuncMemcell::eq(AvmMemcell const& other) const {
             if (auto libfunc_memcell = libfunc_memcell_cast(other))
                 return lib_func_val_ == libfunc_memcell->lib_func_val();
             else    
@@ -854,7 +854,7 @@ namespace avm
         }
 
         bool
-        NilMemcell::equals(AvmMemcell const& other) const {
+        NilMemcell::eq(AvmMemcell const& other) const {
             if (auto undef_memcell = undef_memcell_cast(other)) {
                 signals::log_error("invalid comparison with undefined type",
                     std::cerr);
@@ -964,7 +964,7 @@ namespace avm
         }
 
         bool
-        UndefMemcell::equals(AvmMemcell const& other) const {
+        UndefMemcell::eq(AvmMemcell const& other) const {
             signals::log_error("illegal comparison with undefined type",
                 std::cerr);
             return false;    
