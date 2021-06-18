@@ -4,10 +4,10 @@
 #include "../../../../../util/contract/include/contract.h"
 #include "../../memcell/include/avm_memcell.h"
 
-#define AVM_NUMACTUALS_OFFSET   +4
-#define AVM_SAVEDPC_OFFSET      +3
-#define AVM_SAVEDTOP_OFFSET     +2
-#define AVM_SAVEDTOPSP_OFFSET   +1
+#define AVM_NUMACTUALS_OFFSET   +3
+#define AVM_SAVEDPC_OFFSET      +2
+#define AVM_SAVEDTOP_OFFSET     +1
+#define AVM_SAVEDTOPSP_OFFSET   +0
 
 namespace avm
 {

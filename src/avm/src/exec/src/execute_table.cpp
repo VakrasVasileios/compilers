@@ -74,7 +74,7 @@ namespace avm
             memcell::AvmMemcell* key_;
             memcell::AvmMemcell* value_;  
         };
-    }
+    } // namespace
     void execute_tablesetelem(memcell::AvmMemcell* memcell,
         memcell::AvmMemcell* key, memcell::AvmMemcell* value) {
         PRECONDITION(memcell != nullptr);
@@ -147,7 +147,7 @@ namespace avm
             memcell::AvmMemcell* lv_;
             memcell::AvmMemcell* key_;
         };
-        }
+        } // namespace
 
    void execute_tablegetelem(memcell::AvmMemcell* lvalue,
         memcell::AvmMemcell* memcell, memcell::AvmMemcell* key) 
@@ -158,5 +158,5 @@ namespace avm
         auto visitor = new MemcellTableElemGetter(lvalue, key);
         memcell->accept(visitor);
     }
-    }
-}
+    } // namespace exec
+} // namespace avm

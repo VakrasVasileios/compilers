@@ -16,8 +16,8 @@ namespace avm
                 signals::execution_finished = true;
                 return;
             }
-            assert (registers::pc < AVM_ENDING_PC);
-            auto instruction = memory::code_segment[registers::pc];
+            assert (registers::pc > AVM_ENDING_PC);
+            auto instruction = memory::code_segment[registers::pc - 1];
             signals::curr_line = instruction->get_src_line();
             assert (signals::curr_line != 0);
             unsigned old_pc = registers::pc;
