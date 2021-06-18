@@ -33,7 +33,7 @@ namespace avm
             void visit_string_memcell(memcell::StringMemcell* memcell) override
             {
                 assert(memcell != nullptr);
-                library_functions::call_libfunc(memcell->str_val());
+                //library_functions::call_libfunc(memcell->str_val());
             }
 
             void visit_bool_memcell(memcell::BoolMemcell* memcell) override {
@@ -52,15 +52,16 @@ namespace avm
             override {
                 assert(memcell != nullptr);
                 registers::pc = memcell->func_val();
-                POSTCONDITION(registers::pc < AVM_ENDING_PC);
-                POSTCONDITION(memory::code_segment[registers::pc]->get_opcode()
-                    == target_code::ENTERFUNC_VM);
+                PRECONDITION(registers::pc > AVM_ENDING_PC);
+                PRECONDITION(
+                    memory::code_segment[registers::pc - 1]->get_opcode()
+                        == target_code::ENTERFUNC_VM);
             }
 
             void visit_libfunc_memcell(memcell::LibfuncMemcell* memcell)
             override {
                 assert(memcell != nullptr);
-                library_functions::call_libfunc(memcell->lib_func_val());
+                //library_functions::call_libfunc(memcell->lib_func_val());
             }
 
             void visit_nill_memcell(memcell::NilMemcell* memcell) override {

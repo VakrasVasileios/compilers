@@ -1,6 +1,8 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
 
+#include "../../../../../util/contract/include/contract.h"
+#include "../../../../../util/range/include/range.h"
 #include "../../memcell/include/avm_memcell.h"
 
 #define AVM_STACKSIZE       4096
@@ -35,8 +37,13 @@ namespace avm
     /**
      * @brief Initializes the avm registers.
      * 
+     * @param top_value the value to initialize the 
+     * top and topsp registers, in range of 0 and
+     * AVM_STACK_SIZE
+     * 
      */
-    void                                    initialize(unsigned int);
+    void                                    initialize_registers(
+                                                unsigned int top_value);
     }
 }
 

@@ -184,7 +184,12 @@ namespace avm
        * @return  a read access to a previosuly stored
        * environment value, greater or equal to zero
        */
-      unsigned            get_envvalue(unsigned index) const;                                          
+      unsigned            get_envvalue(unsigned index) const;    
+      /**
+       * @brief Clears this StackSegment.
+       * 
+       */
+      void                clear();                                      
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
     };

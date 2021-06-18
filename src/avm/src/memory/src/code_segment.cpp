@@ -4,6 +4,11 @@ namespace avm
 {
     namespace memory
     {
+    bool   
+    CodeSegment::empty() const {
+        return instrs.empty();    
+    }
+
     void 
     CodeSegment::push(target_code::Instruction* _instr) {
         PRECONDITION(_instr != nullptr);
@@ -18,6 +23,13 @@ namespace avm
         PRECONDITION(util::range::in_range<int>(index, 0, instrs.size() - 1));
         POSTCONDITION(instrs[index] != nullptr);
         return instrs[index];
+    }
+
+    void   
+    CodeSegment::clear() {
+        PRECONDITION(!empty());
+        instrs.clear();
+        POSTCONDITION(empty());    
     }
     }
 }

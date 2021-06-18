@@ -21,7 +21,7 @@ namespace avm
                 assert(inst != nullptr);
                 auto lv = translate_operand(inst->get_result(), nullptr);
                 auto rv = translate_operand(inst->get_arg1(), registers::ax);
-                exec::execute_assign(lv, rv);
+                exec::execute_assign(&lv, rv);
             }
 
             void VisitAdd(target_code::Add* inst) const override {
@@ -31,7 +31,7 @@ namespace avm
                     registers::bx);
                 registers::cx = translate_operand(inst->get_arg2(),
                     registers::cx);
-                exec::execute_add(registers::ax , registers::bx, registers::cx);
+                exec::execute_add(&registers::ax , registers::bx, registers::cx);
             }
 
             void VisitSub(target_code::Sub* inst) const override {
@@ -41,7 +41,7 @@ namespace avm
                     registers::bx);
                 registers::cx = translate_operand(inst->get_arg2(),
                     registers::cx);
-                exec::execute_sub(registers::ax , registers::bx, registers::cx);
+                exec::execute_sub(&registers::ax , registers::bx, registers::cx);
             }
 
             void VisitMul(target_code::Mul* inst) const override {
@@ -51,7 +51,7 @@ namespace avm
                     registers::bx);
                 registers::cx = translate_operand(inst->get_arg2(),
                     registers::cx);
-                exec::execute_mul(registers::ax , registers::bx, registers::cx);
+                exec::execute_mul(&registers::ax , registers::bx, registers::cx);
             }
 
             void VisitDiv(target_code::Div* inst) const override {
@@ -61,7 +61,7 @@ namespace avm
                     registers::bx);
                 registers::cx = translate_operand(inst->get_arg2(),
                     registers::cx);
-                exec::execute_div(registers::ax , registers::bx, registers::cx);
+                exec::execute_div(&registers::ax , registers::bx, registers::cx);
             }
 
             void VisitMod(target_code::Mod* inst) const override {
@@ -71,7 +71,7 @@ namespace avm
                     registers::bx);
                 registers::cx = translate_operand(inst->get_arg2(),
                     registers::cx);
-                exec::execute_mod(registers::ax , registers::bx, registers::cx);
+                exec::execute_mod(&registers::ax , registers::bx, registers::cx);
             }
 
             void VisitJeq(target_code::Jeq* inst) const override {

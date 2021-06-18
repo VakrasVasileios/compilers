@@ -28,6 +28,12 @@ namespace avm
          */
         ~CodeSegment() = default;
         /**
+         * @brief Checks wether this CodeSegment is empty.
+         * 
+         * @return wether this CodeSegment is empty 
+         */
+        bool   empty() const;
+        /**
          * @brief Pushes a target code instruction to this
          * CodeSegment.
          * 
@@ -46,6 +52,12 @@ namespace avm
          * target code instruction, not null
          */
         target_code::Instruction*  &operator[](int index);
+        /**
+         * @brief Clears this non empty
+         * CodeSegment.
+         * 
+         */
+        void   clear();   
     private:
         std::vector<target_code::Instruction*> instrs;    
     };

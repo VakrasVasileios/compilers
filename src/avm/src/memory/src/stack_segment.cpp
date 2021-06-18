@@ -130,5 +130,14 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         return result;
     }
+
+    void                
+    StackSegment::clear() {
+        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
+        while (!empty())
+            pop();
+        POSTCONDITION(empty());    
+        INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
+    }
     }
 }

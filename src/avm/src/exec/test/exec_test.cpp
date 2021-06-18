@@ -5,6 +5,8 @@
 #include "../include/execute_function.h"
 #include "../include/execute_table.h"
 #include "../../registers/include/registers.h"
+#include "../../memory/include/memory.h"
+#include "../../signals/include/signals.h"
 
 /**
  * @brief Test suite for the execute library.
@@ -13,15 +15,15 @@
 class ExecSuite : public ::testing::Test
 {
 protected:
-    avm::memcell::AvmMemcell*   fnum0;
-    avm::memcell::AvmMemcell*   fnum1;
-    avm::memcell::AvmMemcell*   fnum2;
-    avm::memcell::NumMemcell*   flabel;
+    avm::memcell::AvmMemcell*       fnum0;
+    avm::memcell::AvmMemcell*       fnum1;
+    avm::memcell::AvmMemcell*       fnum2;
+    avm::memcell::AvmMemcell*       flabel;
 
-    avm::memcell::NumMemcell*   num0;
-    avm::memcell::NumMemcell*   num1;
-    avm::memcell::NumMemcell*   num2;
-    avm::memcell::NumMemcell*   label;
+    avm::memcell::NumMemcell*       num0;
+    avm::memcell::NumMemcell*       num1;
+    avm::memcell::NumMemcell*       num2;
+    avm::memcell::NumMemcell*       label;
 
     void SetUp() override {
         num0 = new avm::memcell::NumMemcell(0);
@@ -32,8 +34,10 @@ protected:
         fnum1 = num1;
         fnum2 = num2;
         flabel = label;
-
-        avm::registers::initialize(1);
+    
+        avm::memory::initialize_code_segment();
+        avm::memory::initialize_stack_segment();
+        avm::registers::initialize_registers(1);
     }
 
     void TearDown() override {
@@ -186,6 +190,17 @@ TEST_F(ExecSuite, execute_jle_false) {
 TEST_F(ExecSuite, execute_jump) {
     avm::exec::execute_jmp(label);
     GTEST_ASSERT_TRUE(avm::registers::pc == 30069420);
+}
+
+TEST_F(ExecSuite, execute_callfunc_sets_pc_as_taddress) {
+    avm::memory::code_segment.push(new target_code::EnterFunc(1, new target_code::GlobalVmarg(2), 12));
+    avm::memory::code_segment.push(new target_code::ExitFunc(2, new target_code::GlobalVmarg(2), 17));
+    avm::memory::code_segment.push(new target_code::CallFunc(3, new target_code::GlobalVmarg(2), 130));
+    avm::memcell::UserfuncMemcell* userfunc = new avm::memcell::UserfuncMemcell(1);
+
+    avm::exec::execute_callfunc(userfunc);
+    GTEST_ASSERT_EQ(avm::registers::pc, 1);
+    delete userfunc;
 }
 
 #ifdef TESTING
