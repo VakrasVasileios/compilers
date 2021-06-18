@@ -1,4 +1,5 @@
 #include "../include/code_segment.h"
+#include <iostream>
 
 namespace avm
 {
@@ -20,6 +21,7 @@ namespace avm
 
     target_code::Instruction*&
     CodeSegment::operator[](int index) {
+        std::cout << index << std::endl;
         PRECONDITION(util::range::in_range<int>(index, 0, instrs.size() - 1));
         POSTCONDITION(instrs[index] != nullptr);
         return instrs[index];

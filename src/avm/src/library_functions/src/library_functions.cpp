@@ -37,24 +37,25 @@ namespace avm
         void libfunc_typeof() {
             unsigned n = total_actuals();
             if (n != 1) {
-                signals::log_error(
-                    "one argument (not " + n + ") expected in \'typeof\'!",
-                        std::cerr);
+                std::string msg("one argument (not ");
+                msg += std::to_string(n);
+                msg += ") expected in 'typeof'!";
+                signals::log_error(msg, std::cerr);
             } else {
-                exec::execute_assign(registers::retval,
-                    get_actual(0)->get_type());
+                exec::execute_assign(&registers::retval,
+                    new memcell::StringMemcell(get_actual(0)->get_type()));
             }
         }
 
         void libfunc_input() {
-            unsigned n = total_actuals();
+            /* unsigned n = total_actuals();
             if (n != 0) {
                 signals::log_error(
                     "no arguments (not " + n + ") expected in \'input\'!",
                         std::cerr);
             } else {
-                exec::execute_assign(registers::retval, std::cin >>);
-            }
+                exec::execute_assign(&registers::retval, std::cin >>);
+            } */
         }
 
         void libfunc_objectmemberkeys() {

@@ -10,7 +10,7 @@ namespace avm
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if ((*arg1 == *arg2)->to_bool()) {
+            if (*arg1 == *arg2) {
                 assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
@@ -21,7 +21,7 @@ namespace avm
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if ((*arg1 != *arg2)->to_bool()) {
+            if (*arg1 != *arg2) {
                 assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
@@ -32,7 +32,7 @@ namespace avm
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if ((*arg1 > *arg2)->to_bool()) {
+            if (*arg1 > *arg2) {
                 assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
@@ -43,7 +43,7 @@ namespace avm
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if ((*arg1 >= *arg2)->to_bool()) {
+            if (*arg1 >= *arg2) {
                 assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
@@ -54,7 +54,7 @@ namespace avm
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if ((*arg1 < *arg2)->to_bool()) {
+            if (*arg1 < *arg2) {
                 assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
@@ -65,7 +65,7 @@ namespace avm
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if ((*arg1 <= *arg2)->to_bool()) {
+            if (*arg1 <= *arg2) {
                 assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
                 registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }

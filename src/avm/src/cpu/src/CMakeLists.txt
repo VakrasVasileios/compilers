@@ -3,8 +3,7 @@ add_library(cpu
     execute_instruction.h
 )
 target_link_libraries(cpu target_code)
-target_link_libraries(cpu registers)
 target_link_libraries(cpu memory)
-target_link_libraries(cpu library_functions)
+# target_link_libraries(cpu library_functions)
 target_link_libraries(cpu signals)
 target_link_libraries(cpu execute)

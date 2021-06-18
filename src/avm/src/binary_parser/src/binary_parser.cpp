@@ -8,6 +8,7 @@ namespace avm
     namespace binary_parser
     {
     using namespace memory;
+
     unsigned int global_offset;
     void parse_binary(const char* _file) {
         PRECONDITION(_file != nullptr);
@@ -103,7 +104,9 @@ namespace avm
                 
             code_segment.push(instr);    
         }
+        // end of program flag
+        code_segment.push(new target_code::Jump(0, new target_code::LabelVmarg(0), 0));
         executable.close();
     }
-    }
-}
+    } // namespace binary_parser
+} // namespace avm

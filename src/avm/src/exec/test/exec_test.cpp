@@ -50,79 +50,79 @@ protected:
 
 TEST_F(ExecSuite, execute_assign_changes_father_val) {
     avm::exec::execute_assign(&fnum0, fnum1);
-    GTEST_ASSERT_TRUE((*fnum0 == *fnum1)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum0 == *fnum1);
 }
 
 TEST_F(ExecSuite, execute_assign_changes_child_val) {
     avm::exec::execute_assign(&fnum0, fnum1);
-    GTEST_ASSERT_TRUE((*num0 == *num1)->to_bool());
+    GTEST_ASSERT_TRUE(*num0 == *num1);
 }
 
 TEST_F(ExecSuite, execute_assign_after_assign_doesnt_change_first_rv) {
     avm::exec::execute_assign(&fnum0, fnum1);
     avm::exec::execute_assign(&fnum0, fnum2);
-    GTEST_ASSERT_FALSE((*fnum1 == *fnum2)->to_bool());
-    GTEST_ASSERT_FALSE((*num1 == *num2)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum1 == *fnum2);
+    GTEST_ASSERT_FALSE(*num1 == *num2);
 }
 
 TEST_F(ExecSuite, execute_add_changes_father_val) {
     avm::exec::execute_add(&fnum0, fnum1, fnum2);
     auto exp = new avm::memcell::NumMemcell(3);
-    GTEST_ASSERT_TRUE((*fnum0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_add_changes_child_val) {
     avm::exec::execute_add(&fnum0, fnum1, fnum2);
     auto exp = new avm::memcell::NumMemcell(3);
-    GTEST_ASSERT_TRUE((*num0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*num0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_sub_changes_father_val) {
     avm::exec::execute_sub(&fnum0, fnum2, fnum1);
     auto exp = new avm::memcell::NumMemcell(1);
-    GTEST_ASSERT_TRUE((*fnum0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_sub_changes_child_val) {
     avm::exec::execute_sub(&fnum0, fnum2, fnum1);
     auto exp = new avm::memcell::NumMemcell(1);
-    GTEST_ASSERT_TRUE((*num0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*num0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_mul_changes_father_val) {
     avm::exec::execute_mul(&fnum2, fnum1, fnum0);
     auto exp = new avm::memcell::NumMemcell(0);
-    GTEST_ASSERT_TRUE((*fnum2 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum2 == *exp);
 }
 
 TEST_F(ExecSuite, execute_mul_changes_child_val) {
     avm::exec::execute_mul(&fnum2, fnum1, fnum0);
     auto exp = new avm::memcell::NumMemcell(0);
-    GTEST_ASSERT_TRUE((*num2 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*num2 == *exp);
 }
 
 TEST_F(ExecSuite, execute_div_changes_father_val) {
     avm::exec::execute_div(&fnum0, fnum2, fnum1);
     auto exp = new avm::memcell::NumMemcell(2);
-    GTEST_ASSERT_TRUE((*fnum0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_div_changes_child_val) {
     avm::exec::execute_div(&fnum0, fnum2, fnum1);
     auto exp = new avm::memcell::NumMemcell(2);
-    GTEST_ASSERT_TRUE((*num0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*num0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_mod_changes_father_val) {
     avm::exec::execute_mod(&fnum0, fnum2, fnum1);
     auto exp = new avm::memcell::NumMemcell(0);
-    GTEST_ASSERT_TRUE((*fnum0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_mod_changes_child_val) {
     avm::exec::execute_mod(&fnum0, fnum2, fnum1);
     auto exp = new avm::memcell::NumMemcell(0);
-    GTEST_ASSERT_TRUE((*num0 == *exp)->to_bool());
+    GTEST_ASSERT_TRUE(*num0 == *exp);
 }
 
 TEST_F(ExecSuite, execute_jeq_true) {
@@ -201,6 +201,10 @@ TEST_F(ExecSuite, execute_callfunc_sets_pc_as_taddress) {
     avm::exec::execute_callfunc(userfunc);
     GTEST_ASSERT_EQ(avm::registers::pc, 1);
     delete userfunc;
+}
+
+TEST_F(ExecSuite, execute_new_table) {
+    
 }
 
 #ifdef TESTING

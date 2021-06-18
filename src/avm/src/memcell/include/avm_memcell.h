@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <memory>
 #include "../../../../../util/contract/include/contract.h"
 
 namespace avm
@@ -479,7 +480,7 @@ namespace avm
         bool            to_bool() const override;
         std::string     get_type() const override;
     private:
-        std::map<AvmMemcell*, AvmMemcell*>
+        std::shared_ptr<std::map<AvmMemcell*, AvmMemcell*> >
                         table_val_;
         std::ostream&   log(std::ostream& os) const override;
         bool            is_indexed() const;

@@ -25,7 +25,7 @@ namespace avm
      * @param value the value of the new element, not null
      */
     void execute_tablesetelem(memcell::AvmMemcell* memcell,
-        const memcell::AvmMemcell* key, const memcell::AvmMemcell* value);
+        memcell::AvmMemcell* key, memcell::AvmMemcell* value);
     /**
      * @brief Executes the tablegetelem instruction for a memcell.
      * 
@@ -36,7 +36,7 @@ namespace avm
      * @param key the key of the element, not null
      */
     void execute_tablegetelem(memcell::AvmMemcell* lvalue, 
-        memcell::AvmMemcell* memcell, const memcell::AvmMemcell* key) ;   
+       memcell::AvmMemcell* memcell, memcell::AvmMemcell* key) ;   
     }
 }
 

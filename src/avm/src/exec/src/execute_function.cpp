@@ -33,7 +33,7 @@ namespace avm
             void visit_string_memcell(memcell::StringMemcell* memcell) override
             {
                 assert(memcell != nullptr);
-                //library_functions::call_libfunc(memcell->str_val());
+                // library_functions::call_libfunc(memcell->str_val());
             }
 
             void visit_bool_memcell(memcell::BoolMemcell* memcell) override {
@@ -61,7 +61,7 @@ namespace avm
             void visit_libfunc_memcell(memcell::LibfuncMemcell* memcell)
             override {
                 assert(memcell != nullptr);
-                //library_functions::call_libfunc(memcell->lib_func_val());
+                // library_functions::call_libfunc(memcell->lib_func_val());
             }
 
             void visit_nill_memcell(memcell::NilMemcell* memcell) override {
@@ -103,7 +103,9 @@ namespace avm
 
         bool pc_is_legal(memcell::AvmMemcell* memcell) {
             assert(memcell != nullptr);
-            return registers::pc == userfunc_memcell_cast(memcell)->func_val();
+            auto user_func =  userfunc_memcell_cast(memcell);
+            assert(user_func != nullptr);
+            return registers::pc == user_func->func_val();
         }
             
     }
@@ -132,7 +134,7 @@ namespace avm
         void garbage_collect(unsigned old_top) {
             assert (old_top >= 0);
             while(++old_top <= registers::top)
-                memory::stack_segment.pop(); 
+                memory::stack_segment.pop();
         }
     }
 
