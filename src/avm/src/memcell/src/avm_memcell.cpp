@@ -48,21 +48,18 @@ namespace avm
             return memcell.log(os);    
         }
 
-        AvmMemcell*
+        bool
         AvmMemcell::operator==(AvmMemcell const& other) const {
             return equals(other);
         }
 
-        AvmMemcell*
+        bool
         AvmMemcell::operator!=(AvmMemcell const& other) const {
-            BoolMemcell* ret = (BoolMemcell*)equals(other);
-            if (ret == nullptr)
-                return ret;
-            else {
-                bool tmp = !ret->bool_val();
-                ret->set_bool_val(tmp);
-                return ret;
-            }    
+            auto neq = !equals(other);
+            if (signals::execution_finished)
+                return false;
+            else
+                return neq;   
         }
 
         AvmMemcell*
@@ -90,22 +87,22 @@ namespace avm
             return mod(other);
         }
 
-        AvmMemcell*
+        bool
         AvmMemcell::operator>(AvmMemcell const& other) const {
             return gt(other);
         }
 
-        AvmMemcell*
+        bool
         AvmMemcell::operator>=(AvmMemcell const& other) const {
             return geq(other);
         }
 
-        AvmMemcell*
+        bool
         AvmMemcell::operator<(AvmMemcell const& other) const {
             return lt(other);
         }
 
-        AvmMemcell*
+        bool
         AvmMemcell::operator<=(AvmMemcell const& other) const {
             return leq(other);
         }
@@ -151,29 +148,28 @@ namespace avm
 
         namespace
         {
-            BoolMemcell* equals_heteroids(AvmMemcell const& _lhs,
+            bool equals_heteroids(AvmMemcell const& _lhs,
                 AvmMemcell const& _rhs) {
                 if (auto nil_memcell = nill_memcell_cast(_rhs)) {
-                    return new BoolMemcell(false);
+                    return false;
                 }
                 else if (auto bool_memcell = bool_memcell_cast(_rhs)) {
-                    return new BoolMemcell(_lhs.to_bool() ==
-                        bool_memcell->bool_val());
+                    return _lhs.to_bool() == bool_memcell->bool_val();
                 }
                 else {
                     signals::log_error(
                         "invalid operation with non matching types: " 
                             + _lhs.get_type() + " and " + _rhs.get_type(),
                                 std::cerr);
-                    return nullptr; 
+                    return false; 
                 }
             }   
         }
 
-        AvmMemcell*    
+        bool    
         NumMemcell::equals(AvmMemcell const& other) const {
             if (auto num_memcell = num_memcell_cast(other))
-                return new BoolMemcell(num_val_ == num_memcell->num_val());
+                return num_val_ == num_memcell->num_val();
             else    
                 return equals_heteroids(*this, other);       
         }
@@ -261,55 +257,47 @@ namespace avm
             }
         }
 
-        AvmMemcell*
+        bool
         NumMemcell::gt(AvmMemcell const& other) const {
-            BoolMemcell* ret = new BoolMemcell();
             if (auto num = num_memcell_cast(other)) {
-                ret->set_bool_val(num_val_ > num->num_val_);
-                return ret;
+                return num_val_ > num->num_val_;
             }
             else {
                 signals::log_error("Invalid '>' operation with non-numeric rh operand", std::cerr);
-                return nullptr;
+                return false;
             }
         }
 
-        AvmMemcell*
+        bool
         NumMemcell::geq(AvmMemcell const& other) const {
-            BoolMemcell* ret = new BoolMemcell();
             if (auto num = num_memcell_cast(other)) {
-                ret->set_bool_val(num_val_ >= num->num_val_);
-                return ret;
+                return num_val_ >= num->num_val_;
             }
             else {
                 signals::log_error("Invalid '>=' operation with non-numeric rh operand", std::cerr);
-                return nullptr;
+                return false;
             }
         }
 
-        AvmMemcell*
+        bool
         NumMemcell::lt(AvmMemcell const& other) const {
-            BoolMemcell* ret = new BoolMemcell();
             if (auto num = num_memcell_cast(other)) {
-                ret->set_bool_val(num_val_ < num->num_val_);
-                return ret;
+                return num_val_ < num->num_val_;
             }
             else {
                 signals::log_error("Invalid '<' operation with non-numeric rh operand", std::cerr);
-                return nullptr;
+                return false;
             }
         }
 
-        AvmMemcell*
+        bool
         NumMemcell::leq(AvmMemcell const& other) const {
-            BoolMemcell* ret = new BoolMemcell();
             if (auto num = num_memcell_cast(other)) {
-                ret->set_bool_val(num_val_ <= num->num_val_);
-                return ret;
+                return num_val_ <= num->num_val_;
             }
             else {
                 signals::log_error("Invalid '<=' operation with non-numeric rh operand", std::cerr);
-                return nullptr;
+                return false;
             }
         }
         //--------------NumMemcell--------------//
@@ -351,10 +339,10 @@ namespace avm
             return os << str_val_;    
         }
 
-        AvmMemcell*    
+        bool    
         StringMemcell::equals(AvmMemcell const& other) const {
             if (auto str_memcell = str_memcell_cast(other))
-                return new BoolMemcell(str_val_ == str_memcell->str_val());
+                return str_val_ == str_memcell->str_val();
             else   
                 return equals_heteroids(*this, other);
         }
@@ -402,28 +390,28 @@ namespace avm
             return nullptr;
         }
 
-        AvmMemcell*
+        bool
         StringMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("Invalid '>' with string operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         StringMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("Invalid '>=' with string operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         StringMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("Invalid '<' with string operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         StringMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("Invalid '<=' with string operand", std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------StringMemcell--------------//
 
@@ -467,19 +455,19 @@ namespace avm
                 return os << "false";   
         }
 
-        AvmMemcell*    
+        bool    
         BoolMemcell::equals(AvmMemcell const& other) const {
             if (auto undef_memcell = undef_memcell_cast(other)) {
                 signals::log_error("invalid comparison with undefined type",
                     std::cerr);
-                return nullptr;
+                return false;
             }
             else
             if (auto nil_memcell = nill_memcell_cast(other)) {
-                return new BoolMemcell(false);
+                return false;
             }
             else
-                return new BoolMemcell(bool_val_ == other.to_bool());
+                return bool_val_ == other.to_bool();
         }
 
         AvmMemcell*
@@ -512,28 +500,28 @@ namespace avm
             return nullptr;
         }
 
-        AvmMemcell*
+        bool
         BoolMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("Invalid '>' with bool operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         BoolMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("Invalid '>=' with bool operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         BoolMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("Invalid '<' with bool operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         BoolMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("Invalid '<=' with bool operand", std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------BoolMemcell--------------//
 
@@ -568,10 +556,10 @@ namespace avm
             return new TableMemcell(*this);    
         }
 
-        AvmMemcell*        
+        bool        
         TableMemcell::equals(AvmMemcell const& other) const {
             if (auto table_memcell = table_memcell_cast(other)) 
-                return new BoolMemcell(true); // TOCHANGE
+                return true; // TOCHANGE
                 // return table_val_ == table_memcell->table_val();
             else    
                 return equals_heteroids(*this, other);
@@ -628,28 +616,28 @@ namespace avm
             return nullptr;
         }
 
-        AvmMemcell*
+        bool
         TableMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("Invalid '>' with table operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         TableMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("Invalid '>=' with table operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         TableMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("Invalid '<' with table operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         TableMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("Invalid '<=' with table operand", std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------TableMemcell--------------//
 
@@ -675,10 +663,10 @@ namespace avm
             return new UserfuncMemcell(*this);    
         }
 
-        AvmMemcell*            
+        bool            
         UserfuncMemcell::equals(AvmMemcell const& other) const {
             if (auto userfunc_memcell = userfunc_memcell_cast(other))
-                return new BoolMemcell(func_val_ == userfunc_memcell->func_val());
+                return func_val_ == userfunc_memcell->func_val();
             else    
                 return equals_heteroids(*this, other);
         }
@@ -728,28 +716,28 @@ namespace avm
             return nullptr;
         }
 
-        AvmMemcell*
+        bool
         UserfuncMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("Invalid '>' with user function operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         UserfuncMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("Invalid '>=' with user function operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         UserfuncMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("Invalid '<' with user function operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         UserfuncMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("Invalid '<=' with user function operand", std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------UserfuncMemcell--------------//
 
@@ -775,10 +763,10 @@ namespace avm
             return new LibfuncMemcell(*this);      
         }
 
-        AvmMemcell*        
+        bool        
         LibfuncMemcell::equals(AvmMemcell const& other) const {
             if (auto libfunc_memcell = libfunc_memcell_cast(other))
-                return new BoolMemcell(lib_func_val_ == libfunc_memcell->lib_func_val());
+                return lib_func_val_ == libfunc_memcell->lib_func_val();
             else    
                 return equals_heteroids(*this, other);
         }
@@ -828,28 +816,28 @@ namespace avm
             return nullptr;
         }
 
-        AvmMemcell*
+        bool
         LibfuncMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("Invalid '>' with library function operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         LibfuncMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("Invalid '>=' with library function operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         LibfuncMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("Invalid '<' with library function operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         LibfuncMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("Invalid '<=' with library function operand", std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------LibfuncMemcell--------------//
 
@@ -865,17 +853,17 @@ namespace avm
             return new NilMemcell(*this);      
         }
 
-        AvmMemcell*
+        bool
         NilMemcell::equals(AvmMemcell const& other) const {
             if (auto undef_memcell = undef_memcell_cast(other)) {
                 signals::log_error("invalid comparison with undefined type",
                     std::cerr);
-                return nullptr;
+                return false;
             }
             else if (auto nil_memcell = nill_memcell_cast(other))
-                return new BoolMemcell(true);
+                return true;
             else
-                return new BoolMemcell(false);           
+                return false;           
         }
 
         bool
@@ -923,28 +911,28 @@ namespace avm
             return nullptr;
         }
 
-        AvmMemcell*
+        bool
         NilMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("Invalid '>' with nil operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         NilMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("Invalid '>=' with nil operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         NilMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("Invalid '<' with nil operand", std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         NilMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("Invalid '<=' with nil operand", std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------NilMemcell--------------//
         //--------------UndefMemcell--------------//
@@ -975,11 +963,11 @@ namespace avm
             return os;    
         }
 
-        AvmMemcell*
+        bool
         UndefMemcell::equals(AvmMemcell const& other) const {
             signals::log_error("illegal comparison with undefined type",
                 std::cerr);
-            return nullptr;    
+            return false;    
         }
 
         AvmMemcell*
@@ -1017,32 +1005,32 @@ namespace avm
             return nullptr;
         }
         
-        AvmMemcell*
+        bool
         UndefMemcell::gt(AvmMemcell const& other) const {
             signals::log_error("illegal comparison with undefined type",
                 std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         UndefMemcell::geq(AvmMemcell const& other) const {
             signals::log_error("illegal comparison with undefined type",
                 std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         UndefMemcell::lt(AvmMemcell const& other) const {
             signals::log_error("illegal comparison with undefined type",
                 std::cerr);
-            return nullptr;
+            return false;
         }
 
-        AvmMemcell*
+        bool
         UndefMemcell::leq(AvmMemcell const& other) const {
             signals::log_error("illegal comparison with undefined type",
                 std::cerr);
-            return nullptr;
+            return false;
         }
         //--------------UndefMemcell--------------//
 

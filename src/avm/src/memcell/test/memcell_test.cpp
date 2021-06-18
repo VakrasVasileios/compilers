@@ -203,60 +203,60 @@ TEST_F(MemcellSuite, out_op_libfunc_is_library_function) {
 
 TEST_F(MemcellSuite, eq_op_num_wth_num_wth_same_val_is_true) {
     cnum2_->set_num_val(cnum_->num_val());
-    GTEST_ASSERT_TRUE((*fnum_ == *fnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum_ == *fnum2_);
 }
 
 TEST_F(MemcellSuite, eq_op_num_wth_num_wth_dif_val_is_false) {
     cnum2_->set_num_val(90);
-    GTEST_ASSERT_FALSE((*fnum_ == *fnum2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum_ == *fnum2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nonzero_num_wth_nonempty_str_is_error) {
-    GTEST_ASSERT_EQ(*fnum_ == *fstr_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum_ == *fstr_);
 }
 
 TEST_F(MemcellSuite, eq_op_nonzero_num_wth_empty_str_is_error) {
-     GTEST_ASSERT_EQ(*fnum_ == *fstr2_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum_ == *fstr2_);
 }
 
 TEST_F(MemcellSuite, eq_op_zero_num_wth_nonempty_str_is_error) {
-    GTEST_ASSERT_EQ(*fnum2_ == *fstr_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum2_ == *fstr_);
 }
 
 TEST_F(MemcellSuite, eq_op_zero_num_wth_empty_str_is_error) {
-    GTEST_ASSERT_EQ(*fnum2_ == *fstr2_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum2_ == *fstr2_);
 }
 
 TEST_F(MemcellSuite, eq_op_truebool_wth_nonzeronum_is_true) {
-    GTEST_ASSERT_TRUE((*fnum_ == *fbool_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum_ == *fbool_);
 }
 
 TEST_F(MemcellSuite, eq_op_truebool_wth_zeronum_is_true) {
-    GTEST_ASSERT_FALSE((*fnum2_ == *fbool_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum2_ == *fbool_);
 }
 
 TEST_F(MemcellSuite, eq_op_falsebool_wth_nonzeronum_is_false) {
-    GTEST_ASSERT_FALSE((*fnum_ == *fbool2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum_ == *fbool2_);
 }
 
 TEST_F(MemcellSuite, eq_op_falsebool_wth_zeronum_is_true) {
-    GTEST_ASSERT_TRUE((*fnum2_ == *fbool2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum2_ == *fbool2_);
 }
 
 TEST_F(MemcellSuite, eq_op_falsebool_wth_userfunc_is_false) {
-    GTEST_ASSERT_FALSE((*fbool2_ == *fuserfunc_)->to_bool());
+    GTEST_ASSERT_FALSE(*fbool2_ == *fuserfunc_);
 }
 
 TEST_F(MemcellSuite, eq_op_truebool_wth_userfunc_is_true) {
-    GTEST_ASSERT_TRUE((*fbool_ == *fuserfunc_)->to_bool());
+    GTEST_ASSERT_TRUE(*fbool_ == *fuserfunc_);
 }
 
 TEST_F(MemcellSuite, eq_op_falsebool_wth_libfunc_is_false) {
-    GTEST_ASSERT_FALSE((*fbool2_ == *flibfunc_)->to_bool());
+    GTEST_ASSERT_FALSE(*fbool2_ == *flibfunc_);
 }
 
 TEST_F(MemcellSuite, eq_op_truebool_wth_libfunc_is_true) {
-    GTEST_ASSERT_TRUE((*fbool_ == *flibfunc_)->to_bool());
+    GTEST_ASSERT_TRUE(*fbool_ == *flibfunc_);
 }
 
 TEST_F(MemcellSuite, eq_op_num_wth_undefined_is_error) {
@@ -335,162 +335,162 @@ TEST_F(MemcellSuite, eq_op_undefined_wth_undefined_is_error) {
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_nill_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ == *fnil2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ == *fnil2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_num_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fnum_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fnum_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_num2_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fnum2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fnum2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_str_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fstr_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fstr_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_str2_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fstr2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fstr2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_bool_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fbool_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fbool_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_bool2_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fbool2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fbool2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_table_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *ftable_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *ftable_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_table2_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *ftable2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *ftable2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_userfunc_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fuserfunc_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fuserfunc_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_userfunc2_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *fuserfunc2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *fuserfunc2_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_libfunc_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *flibfunc_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *flibfunc_);
 }
 
 TEST_F(MemcellSuite, eq_op_nill_with_libfunc2_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ == *flibfunc2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ == *flibfunc2_);
 }
 
 TEST_F(MemcellSuite, eq_op_num_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*fnum_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_num2_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*fnum2_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum2_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_str_with_nill_is_false) {
-    GTEST_ASSERT_FALSE((*fstr_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fstr_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_str2_with_nill_is_false) {
-    GTEST_ASSERT_FALSE((*fstr2_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fstr2_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_bool_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*fbool_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fbool_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_bool2_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*fbool2_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fbool2_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_table_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*ftable_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*ftable_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_table2_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*ftable2_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*ftable2_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_userfunc_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*fuserfunc_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fuserfunc_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_userfunc2_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*fuserfunc2_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*fuserfunc2_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_libfunc_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*flibfunc_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*flibfunc_ == *fnil_);
 }
 
 TEST_F(MemcellSuite, eq_op_libfunc2_with_nil_is_false) {
-    GTEST_ASSERT_FALSE((*flibfunc2_ == *fnil_)->to_bool());
+    GTEST_ASSERT_FALSE(*flibfunc2_ == *fnil_);
 }
 
 
 TEST_F(MemcellSuite, neq_op_num_wth_num_wth_same_val_is_false) {
     cnum2_->set_num_val(cnum_->num_val());
-    GTEST_ASSERT_FALSE((*fnum_ != *fnum2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum_ != *fnum2_);
 }
 
 TEST_F(MemcellSuite, neq_op_num_wth_num_wth_dif_val_is_true) {
     cnum2_->set_num_val(90);
-    GTEST_ASSERT_TRUE((*fnum_ != *fnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum_ != *fnum2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nonzero_num_wth_nonempty_str_is_error) {
-    GTEST_ASSERT_EQ(*fnum_ != *fstr_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum_ != *fstr_);
 }
 
 TEST_F(MemcellSuite, neq_op_nonzero_num_wth_empty_str_is_error) {
-     GTEST_ASSERT_EQ(*fnum_ != *fstr2_, nullptr);
+     GTEST_ASSERT_FALSE(*fnum_ != *fstr2_);
 }
 
 TEST_F(MemcellSuite, neq_op_zero_num_wth_nonempty_str_is_error) {
-    GTEST_ASSERT_EQ(*fnum2_ != *fstr_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum2_ != *fstr_);
 }
 
 TEST_F(MemcellSuite, neq_op_zero_num_wth_empty_str_is_error) {
-    GTEST_ASSERT_EQ(*fnum2_ != *fstr2_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum2_ != *fstr2_);
 }
 
 TEST_F(MemcellSuite, neq_op_truebool_wth_nonzeronum_is_false) {
-    GTEST_ASSERT_FALSE((*fnum_ != *fbool_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum_ != *fbool_);
 }
 
 TEST_F(MemcellSuite, neq_op_truebool_wth_zeronum_is_false) {
-    GTEST_ASSERT_TRUE((*fnum2_ != *fbool_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum2_ != *fbool_);
 }
 
 TEST_F(MemcellSuite, neq_op_falsebool_wth_nonzeronum_is_true) {
-    GTEST_ASSERT_TRUE((*fnum_ != *fbool2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum_ != *fbool2_);
 }
 
 TEST_F(MemcellSuite, neq_op_falsebool_wth_zeronum_is_false) {
-    GTEST_ASSERT_FALSE((*fnum2_ != *fbool2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnum2_ != *fbool2_);
 }
 
 TEST_F(MemcellSuite, neq_op_falsebool_wth_userfunc_is_true) {
-    GTEST_ASSERT_TRUE((*fbool2_ != *fuserfunc_)->to_bool());
+    GTEST_ASSERT_TRUE(*fbool2_ != *fuserfunc_);
 }
 
 TEST_F(MemcellSuite, neq_op_truebool_wth_userfunc_is_false) {
-    GTEST_ASSERT_FALSE((*fbool_ != *fuserfunc_)->to_bool());
+    GTEST_ASSERT_FALSE(*fbool_ != *fuserfunc_);
 }
 
 TEST_F(MemcellSuite, neq_op_falsebool_wth_libfunc_is_true) {
-    GTEST_ASSERT_TRUE((*fbool2_ != *flibfunc_)->to_bool());
+    GTEST_ASSERT_TRUE(*fbool2_ != *flibfunc_);
 }
 
 TEST_F(MemcellSuite, neq_op_truebool_wth_libfunc_is_false) {
-    GTEST_ASSERT_FALSE((*fbool_ != *flibfunc_)->to_bool());
+    GTEST_ASSERT_FALSE(*fbool_ != *flibfunc_);
 }
 
 TEST_F(MemcellSuite, neq_op_num_wth_undefined_is_error) {
@@ -569,121 +569,121 @@ TEST_F(MemcellSuite, neq_op_undefined_wth_undefined_is_error) {
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_nill_is_false) {
-    GTEST_ASSERT_FALSE((*fnil_ != *fnil2_)->to_bool());
+    GTEST_ASSERT_FALSE(*fnil_ != *fnil2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_num_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fnum_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fnum_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_num2_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fnum2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_str_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fstr_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fstr_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_str2_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fstr2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fstr2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_bool_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fbool_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fbool_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_bool2_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fbool2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fbool2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_table_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *ftable_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *ftable_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_table2_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *ftable2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *ftable2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_userfunc_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fuserfunc_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fuserfunc_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_userfunc2_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *fuserfunc2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *fuserfunc2_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_libfunc_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *flibfunc_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *flibfunc_);
 }
 
 TEST_F(MemcellSuite, neq_op_nill_with_libfunc2_is_true) {
-    GTEST_ASSERT_TRUE((*fnil_ != *flibfunc2_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnil_ != *flibfunc2_);
 }
 
 TEST_F(MemcellSuite, neq_op_num_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*fnum_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_num2_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*fnum2_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fnum2_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_str_with_nill_is_true) {
-    GTEST_ASSERT_TRUE((*fstr_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fstr_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_str2_with_nill_is_true) {
-    GTEST_ASSERT_TRUE((*fstr2_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fstr2_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_bool_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*fbool_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fbool_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_bool2_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*fbool2_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fbool2_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_table_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*ftable_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*ftable_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_table2_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*ftable2_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*ftable2_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_userfunc_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*fuserfunc_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fuserfunc_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_userfunc2_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*fuserfunc2_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*fuserfunc2_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_libfunc_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*flibfunc_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*flibfunc_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, neq_op_libfunc2_with_nil_is_true) {
-    GTEST_ASSERT_TRUE((*flibfunc2_ != *fnil_)->to_bool());
+    GTEST_ASSERT_TRUE(*flibfunc2_ != *fnil_);
 }
 
 TEST_F(MemcellSuite, arithmetic_op_non_numerics_exc_strs_is_error) {
-    GTEST_ASSERT_EQ(*fnum_ - *fbool_, nullptr);
-    GTEST_ASSERT_EQ(*fbool_ - *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ * *ftable_, nullptr);
-    GTEST_ASSERT_EQ(*ftable_ + *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ * *flibfunc_, nullptr);
-    GTEST_ASSERT_EQ(*flibfunc_ * *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ / *fuserfunc_, nullptr);
-    GTEST_ASSERT_EQ(*fuserfunc_ / *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ * *fundef_, nullptr);
-    GTEST_ASSERT_EQ(*fundef_ - *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ % *fnil_, nullptr);
-    GTEST_ASSERT_EQ(*fnil_ % *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*flibfunc_ / *fuserfunc_, nullptr);
-    GTEST_ASSERT_EQ(*fnil_ % *ftable_, nullptr);
-    GTEST_ASSERT_EQ(*fundef_ % *ftable_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum_ - *fbool_);
+    GTEST_ASSERT_FALSE(*fbool_ - *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ * *ftable_);
+    GTEST_ASSERT_FALSE(*ftable_ + *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ * *flibfunc_);
+    GTEST_ASSERT_FALSE(*flibfunc_ * *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ / *fuserfunc_);
+    GTEST_ASSERT_FALSE(*fuserfunc_ / *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ * *fundef_);
+    GTEST_ASSERT_FALSE(*fundef_ - *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ % *fnil_);
+    GTEST_ASSERT_FALSE(*fnil_ % *fnum_);
+    GTEST_ASSERT_FALSE(*flibfunc_ / *fuserfunc_);
+    GTEST_ASSERT_FALSE(*fnil_ % *ftable_);
+    GTEST_ASSERT_FALSE(*fundef_ % *ftable_);
 }
 
 TEST_F(MemcellSuite, add_op_one_plus_one_is_two) {
@@ -729,45 +729,45 @@ TEST_F(MemcellSuite, add_op_str_wth_num_appends_at_end) {
 }
 
 TEST_F(MemcellSuite, branch_op_non_numerics_is_error) {
-    GTEST_ASSERT_EQ(*fnum_ > *fbool_, nullptr);
-    GTEST_ASSERT_EQ(*fbool_ < *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ >= *ftable_, nullptr);
-    GTEST_ASSERT_EQ(*ftable_ <= *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ < *flibfunc_, nullptr);
-    GTEST_ASSERT_EQ(*flibfunc_ < *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ < *fuserfunc_, nullptr);
-    GTEST_ASSERT_EQ(*fuserfunc_ > *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ <= *fundef_, nullptr);
-    GTEST_ASSERT_EQ(*fundef_ >= *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*fnum_ < *fnil_, nullptr);
-    GTEST_ASSERT_EQ(*fnil_ > *fnum_, nullptr);
-    GTEST_ASSERT_EQ(*flibfunc_ < *fuserfunc_, nullptr);
-    GTEST_ASSERT_EQ(*fnil_ >= *ftable_, nullptr);
-    GTEST_ASSERT_EQ(*fundef_ > *ftable_, nullptr);
+    GTEST_ASSERT_FALSE(*fnum_ > *fbool_);
+    GTEST_ASSERT_FALSE(*fbool_ < *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ >= *ftable_);
+    GTEST_ASSERT_FALSE(*ftable_ <= *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ < *flibfunc_);
+    GTEST_ASSERT_FALSE(*flibfunc_ < *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ < *fuserfunc_);
+    GTEST_ASSERT_FALSE(*fuserfunc_ > *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ <= *fundef_);
+    GTEST_ASSERT_FALSE(*fundef_ >= *fnum_);
+    GTEST_ASSERT_FALSE(*fnum_ < *fnil_);
+    GTEST_ASSERT_FALSE(*fnil_ > *fnum_);
+    GTEST_ASSERT_FALSE(*flibfunc_ < *fuserfunc_);
+    GTEST_ASSERT_FALSE(*fnil_ >= *ftable_);
+    GTEST_ASSERT_FALSE(*fundef_ > *ftable_);
 }
 
 TEST_F(MemcellSuite, branch_op_one_lt_two) {
     cnum_->set_num_val(1);
     cnum2_->set_num_val(2);
-    GTEST_ASSERT_TRUE((*cnum_ < *cnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*cnum_ < *cnum2_);
 }
 
 TEST_F(MemcellSuite, branch_op_one_leq_one) {
     cnum_->set_num_val(1);
     cnum2_->set_num_val(1);
-    GTEST_ASSERT_TRUE((*cnum_ <= *cnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*cnum_ <= *cnum2_);
 }
 
 TEST_F(MemcellSuite, branch_op_two_gt_one) {
     cnum_->set_num_val(2);
     cnum2_->set_num_val(1);
-    GTEST_ASSERT_TRUE((*cnum_ > *cnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*cnum_ > *cnum2_);
 }
 
 TEST_F(MemcellSuite, branch_op_five_geq_two) {
     cnum_->set_num_val(5);
     cnum2_->set_num_val(2);
-    GTEST_ASSERT_TRUE((*cnum_ >= *cnum2_)->to_bool());
+    GTEST_ASSERT_TRUE(*cnum_ >= *cnum2_);
 }
 
 #ifdef TESTING

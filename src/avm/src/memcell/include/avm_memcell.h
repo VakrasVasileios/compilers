@@ -45,11 +45,20 @@ namespace avm
          */
         virtual AvmMemcell* clone() const = 0;
 
-        friend std::ostream&    operator << (std::ostream& os, 
-            const AvmMemcell& memcell);
-
-        AvmMemcell*         operator==(AvmMemcell const&) const;                    
-        AvmMemcell*         operator!=(AvmMemcell const&) const;
+        friend 
+        std::ostream&       operator << (std::ostream& os, 
+                                const AvmMemcell& memcell);
+        /**
+         * @brief Checks wether 
+         * 
+         * @return  
+         */
+        bool                operator==(AvmMemcell const&) const;                    
+        bool                operator!=(AvmMemcell const&) const;
+        bool                operator>(AvmMemcell const&) const;
+        bool                operator>=(AvmMemcell const&) const;
+        bool                operator<(AvmMemcell const&) const;
+        bool                operator<=(AvmMemcell const&) const;
         
         AvmMemcell*         operator+(AvmMemcell const&) const;
         AvmMemcell*         operator-(AvmMemcell const&) const;
@@ -57,17 +66,14 @@ namespace avm
         AvmMemcell*         operator/(AvmMemcell const&) const;
         AvmMemcell*         operator%(AvmMemcell const&) const;
 
-        AvmMemcell*         operator>(AvmMemcell const&) const;
-        AvmMemcell*         operator>=(AvmMemcell const&) const;
-        AvmMemcell*         operator<(AvmMemcell const&) const;
-        AvmMemcell*         operator<=(AvmMemcell const&) const;
+        
         
         virtual bool            to_bool() const = 0;    
         virtual std::string     get_type() const = 0;                
     protected:
         virtual std::ostream&   log(std::ostream& os) const = 0;
 
-        virtual AvmMemcell*     equals(AvmMemcell const& other) const = 0;
+        virtual bool     equals(AvmMemcell const& other) const = 0;
         
         virtual AvmMemcell*     add(AvmMemcell const& other) const = 0;
         virtual AvmMemcell*     sub(AvmMemcell const& other) const = 0;
@@ -75,10 +81,10 @@ namespace avm
         virtual AvmMemcell*     div(AvmMemcell const& other) const = 0;
         virtual AvmMemcell*     mod(AvmMemcell const& other) const = 0;
         
-        virtual AvmMemcell*     gt(AvmMemcell const& other) const = 0;
-        virtual AvmMemcell*     geq(AvmMemcell const& other) const = 0;
-        virtual AvmMemcell*     lt(AvmMemcell const& other) const = 0;
-        virtual AvmMemcell*     leq(AvmMemcell const& other) const = 0;
+        virtual bool     gt(AvmMemcell const& other) const = 0;
+        virtual bool     geq(AvmMemcell const& other) const = 0;
+        virtual bool     lt(AvmMemcell const& other) const = 0;
+        virtual bool     leq(AvmMemcell const& other) const = 0;
     };
 
     /**
@@ -125,7 +131,7 @@ namespace avm
         double          num_val_;
         std::ostream&   log(std::ostream& os) const override;
 
-        AvmMemcell*     equals(AvmMemcell const& other) const override;
+        bool     equals(AvmMemcell const& other) const override;
         
         AvmMemcell*     add(AvmMemcell const& other) const override;
         AvmMemcell*     sub(AvmMemcell const& other) const override;
@@ -133,10 +139,10 @@ namespace avm
         AvmMemcell*     div(AvmMemcell const& other) const override;
         AvmMemcell*     mod(AvmMemcell const& other) const override;
         
-        AvmMemcell*     gt(AvmMemcell const& other) const override;
-        AvmMemcell*     geq(AvmMemcell const& other) const override;
-        AvmMemcell*     lt(AvmMemcell const& other) const override;
-        AvmMemcell*     leq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -182,7 +188,7 @@ namespace avm
         std::string str_val_;
         std::ostream&   log(std::ostream& os) const override;
 
-        AvmMemcell* equals(AvmMemcell const& other) const override;
+        bool equals(AvmMemcell const& other) const override;
         
         AvmMemcell* add(AvmMemcell const& other) const override;
         AvmMemcell* sub(AvmMemcell const& other) const override;
@@ -190,10 +196,10 @@ namespace avm
         AvmMemcell* div(AvmMemcell const& other) const override;
         AvmMemcell* mod(AvmMemcell const& other) const override;
         
-        AvmMemcell* gt(AvmMemcell const& other) const override;
-        AvmMemcell* geq(AvmMemcell const& other) const override;
-        AvmMemcell* lt(AvmMemcell const& other) const override;
-        AvmMemcell* leq(AvmMemcell const& other) const override;
+        bool        gt(AvmMemcell const& other) const override;
+        bool        geq(AvmMemcell const& other) const override;
+        bool        lt(AvmMemcell const& other) const override;
+        bool        leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -238,7 +244,7 @@ namespace avm
         bool        bool_val_;
         std::ostream&   log(std::ostream& os) const override;
 
-        AvmMemcell* equals(AvmMemcell const& other) const override;
+        bool equals(AvmMemcell const& other) const override;
 
         AvmMemcell* add(AvmMemcell const& other) const override;
         AvmMemcell* sub(AvmMemcell const& other) const override;
@@ -246,10 +252,10 @@ namespace avm
         AvmMemcell* div(AvmMemcell const& other) const override;
         AvmMemcell* mod(AvmMemcell const& other) const override;
 
-        AvmMemcell* gt(AvmMemcell const& other) const override;
-        AvmMemcell* geq(AvmMemcell const& other) const override;
-        AvmMemcell* lt(AvmMemcell const& other) const override;
-        AvmMemcell* leq(AvmMemcell const& other) const override;
+        bool        gt(AvmMemcell const& other) const override;
+        bool        geq(AvmMemcell const& other) const override;
+        bool        lt(AvmMemcell const& other) const override;
+        bool        leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -304,7 +310,7 @@ namespace avm
     private:
         std::ostream&   log(std::ostream& os) const override;
 
-        AvmMemcell* equals(AvmMemcell const& other) const override;
+        bool equals(AvmMemcell const& other) const override;
         
         AvmMemcell* add(AvmMemcell const& other) const override;
         AvmMemcell* sub(AvmMemcell const& other) const override;
@@ -312,10 +318,10 @@ namespace avm
         AvmMemcell* div(AvmMemcell const& other) const override;
         AvmMemcell* mod(AvmMemcell const& other) const override;
 
-        AvmMemcell* gt(AvmMemcell const& other) const override;
-        AvmMemcell* geq(AvmMemcell const& other) const override;
-        AvmMemcell* lt(AvmMemcell const& other) const override;
-        AvmMemcell* leq(AvmMemcell const& other) const override;
+        bool        gt(AvmMemcell const& other) const override;
+        bool        geq(AvmMemcell const& other) const override;
+        bool        lt(AvmMemcell const& other) const override;
+        bool        leq(AvmMemcell const& other) const override;
         
         std::map<AvmMemcell*, AvmMemcell*> table_val_; // consts? by value or ref?????
     };
@@ -365,7 +371,7 @@ namespace avm
         unsigned int    func_val_;
         std::ostream&   log(std::ostream& os) const override;
 
-        AvmMemcell*     equals(AvmMemcell const& other) const override;
+        bool            equals(AvmMemcell const& other) const override;
 
         AvmMemcell*     add(AvmMemcell const& other) const override;
         AvmMemcell*     sub(AvmMemcell const& other) const override;
@@ -373,10 +379,10 @@ namespace avm
         AvmMemcell*     div(AvmMemcell const& other) const override;
         AvmMemcell*     mod(AvmMemcell const& other) const override;
 
-        AvmMemcell*     gt(AvmMemcell const& other) const override;
-        AvmMemcell*     geq(AvmMemcell const& other) const override;
-        AvmMemcell*     lt(AvmMemcell const& other) const override;
-        AvmMemcell*     leq(AvmMemcell const& other) const override;
+        bool            gt(AvmMemcell const& other) const override;
+        bool            geq(AvmMemcell const& other) const override;
+        bool            lt(AvmMemcell const& other) const override;
+        bool            leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -422,7 +428,7 @@ namespace avm
         std::string lib_func_val_;
         std::ostream&   log(std::ostream& os) const override;
 
-        AvmMemcell* equals(AvmMemcell const& other) const override;
+        bool equals(AvmMemcell const& other) const override;
 
         AvmMemcell* add(AvmMemcell const& other) const override;
         AvmMemcell* sub(AvmMemcell const& other) const override;
@@ -430,10 +436,10 @@ namespace avm
         AvmMemcell* div(AvmMemcell const& other) const override;
         AvmMemcell* mod(AvmMemcell const& other) const override;
 
-        AvmMemcell* gt(AvmMemcell const& other) const override;
-        AvmMemcell* geq(AvmMemcell const& other) const override;
-        AvmMemcell* lt(AvmMemcell const& other) const override;
-        AvmMemcell* leq(AvmMemcell const& other) const override;
+        bool        gt(AvmMemcell const& other) const override;
+        bool        geq(AvmMemcell const& other) const override;
+        bool        lt(AvmMemcell const& other) const override;
+        bool        leq(AvmMemcell const& other) const override;
     };
 
     /**
@@ -459,7 +465,7 @@ namespace avm
     private:
         std::ostream& log(std::ostream& os) const override;
 
-        AvmMemcell* equals(AvmMemcell const& other) const override;
+        bool equals(AvmMemcell const& other) const override;
 
         AvmMemcell* add(AvmMemcell const& other) const override;
         AvmMemcell* sub(AvmMemcell const& other) const override;
@@ -467,10 +473,10 @@ namespace avm
         AvmMemcell* div(AvmMemcell const& other) const override;
         AvmMemcell* mod(AvmMemcell const& other) const override;
         
-        AvmMemcell* gt(AvmMemcell const& other) const override;
-        AvmMemcell* geq(AvmMemcell const& other) const override;
-        AvmMemcell* lt(AvmMemcell const& other) const override;
-        AvmMemcell* leq(AvmMemcell const& other) const override;
+        bool        gt(AvmMemcell const& other) const override;
+        bool        geq(AvmMemcell const& other) const override;
+        bool        lt(AvmMemcell const& other) const override;
+        bool        leq(AvmMemcell const& other) const override;
     };
     /**
      * @brief A memcell with undefined data.
@@ -495,7 +501,7 @@ namespace avm
     private:
         std::ostream& log(std::ostream& os) const override;
 
-        AvmMemcell* equals(AvmMemcell const& other) const override;
+        bool equals(AvmMemcell const& other) const override;
 
         AvmMemcell* add(AvmMemcell const& other) const override;
         AvmMemcell* sub(AvmMemcell const& other) const override;
@@ -503,10 +509,10 @@ namespace avm
         AvmMemcell* div(AvmMemcell const& other) const override;
         AvmMemcell* mod(AvmMemcell const& other) const override;
         
-        AvmMemcell* gt(AvmMemcell const& other) const override;
-        AvmMemcell* geq(AvmMemcell const& other) const override;
-        AvmMemcell* lt(AvmMemcell const& other) const override;
-        AvmMemcell* leq(AvmMemcell const& other) const override;
+        bool        gt(AvmMemcell const& other) const override;
+        bool        geq(AvmMemcell const& other) const override;
+        bool        lt(AvmMemcell const& other) const override;
+        bool        leq(AvmMemcell const& other) const override;
     };
     /**
      * @brief Interface for visiting concrete avm memcells.
