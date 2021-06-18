@@ -25,11 +25,13 @@ namespace avm
                 return dynamic_cast<TableMemcell const*>(&memcell);
             }
 
-            UserfuncMemcell const *userfunc_memcell_cast(AvmMemcell const& memcell) {
+            UserfuncMemcell const *userfunc_memcell_cast(AvmMemcell const&
+                memcell) {
                 return dynamic_cast<UserfuncMemcell const*>(&memcell);
             }
 
-            LibfuncMemcell const *libfunc_memcell_cast(AvmMemcell const& memcell) {
+            LibfuncMemcell const *libfunc_memcell_cast(AvmMemcell const&
+                memcell) {
                 return dynamic_cast<LibfuncMemcell const*>(&memcell);
             }
 
@@ -569,7 +571,7 @@ namespace avm
             // // else    
             // //     return to_bool() == other.to_bool(); 
             // return new BoolMemcell(to_bool() == other.to_bool());
-        }
+        } 
 
         bool
         TableMemcell::to_bool() const {
@@ -581,9 +583,57 @@ namespace avm
             return "table";
         }
 
+        namespace
+        {
+            bool in_last_iteration(
+                    const std::map<AvmMemcell*, AvmMemcell*> _map,
+                        std::map<AvmMemcell*,  AvmMemcell*>::const_iterator _it)
+            {
+                auto dup = _it;
+                dup++;
+                return dup == _map.end(); 
+            }
+        }
+
+        void
+        TableMemcell::log_indexed(std::ostream& os) const {
+            assert (is_indexed());
+            std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
+            os << "[ ";
+            for (it = table_val_.begin(); it != table_val_.end(); it++) {
+                os << it->second;
+                if (!in_last_iteration(table_val_, it))
+                    os << ", ";
+            }
+            os << " ]";
+        } 
+
+        void
+        TableMemcell::log_paired(std::ostream& os) const {
+            assert (!is_indexed());
+            std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
+            os << "[ ";
+            for (it = table_val_.begin(); it != table_val_.end(); it++) {
+                os << "{ " << it->first << ", " << it->second << "}";
+                if (!in_last_iteration(table_val_, it))
+                    os << ", ";
+            }
+            os << " ]";
+        }
+
+        bool
+        TableMemcell::is_indexed() const {
+            return table_val_.at(0)->get_type() == "number";
+        }
+
         std::ostream&   
         TableMemcell::log(std::ostream& os) const {
-            return os; //TODO    
+            if (is_indexed())
+                log_indexed(os);
+            else
+                log_paired(os);
+
+            return os;
         }
 
         AvmMemcell*

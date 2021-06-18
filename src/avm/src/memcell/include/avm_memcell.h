@@ -482,6 +482,9 @@ namespace avm
         std::map<AvmMemcell*, AvmMemcell*>
                         table_val_;
         std::ostream&   log(std::ostream& os) const override;
+        bool            is_indexed() const;
+        void            log_indexed(std::ostream& os) const;
+        void            log_paired(std::ostream& os) const;        
         bool            eq(AvmMemcell const& other) const override;
         bool            gt(AvmMemcell const& other) const override;
         bool            geq(AvmMemcell const& other) const override;
