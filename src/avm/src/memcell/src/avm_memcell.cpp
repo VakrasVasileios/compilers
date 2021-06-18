@@ -527,24 +527,36 @@ namespace avm
         }
         //--------------BoolMemcell--------------//
 
+
         //--------------TableMemcell--------------//
+
+        Table*          
+        TableMemcell::table_val() const {
+            POSTCONDITION(table_val_ != nullptr);
+            return table_val_;
+        }
+
         bool                
         TableMemcell::contains(AvmMemcell* key) const {
             PRECONDITION(key != nullptr);
-            return table_val_->count(key);
+            for (auto i : table_val_->_map)
+                if (*i.first == *key)
+                    return true;
+            return false;        
         }
 
         AvmMemcell* 
         TableMemcell::get_elem(AvmMemcell* key) const {
             PRECONDITION(contains(key));
-            return table_val_->at(key);
+            return table_val_->_map.at(key);
         }
 
         void        
-        TableMemcell::set_elem(AvmMemcell* key, AvmMemcell* value) {
+        TableMemcell::set_elem(AvmMemcell& key, AvmMemcell& value) {
             PRECONDITION(key != nullptr);
             PRECONDITION(value != nullptr);
-            table_val_->insert({key, value});
+            table_val_->_map.insert({key, value});
+            POSTCONDITION(!table_val_->_map.empty());
         }
 
         void
@@ -555,6 +567,7 @@ namespace avm
 
         AvmMemcell*         
         TableMemcell::clone() const {
+            table_val_->ref_count++;
             return new TableMemcell(*this);    
         }
 
@@ -589,9 +602,9 @@ namespace avm
                     const std::map<AvmMemcell*, AvmMemcell*> _map,
                         std::map<AvmMemcell*,  AvmMemcell*>::const_iterator _it)
             {
-                auto dup = _it;
-                dup++;
-                return dup == _map.end(); 
+                // auto dup = _it;
+                // dup++;
+                return true; 
             }
         }
 
@@ -600,9 +613,10 @@ namespace avm
             assert (is_indexed());
             std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
             os << "[ ";
-            for (it = table_val_->begin(); it != table_val_->end(); it++) {
+            for (it = table_val_->_map.begin(); it != table_val_->_map.end();
+                it++) {
                 os << it->second;
-                if (!in_last_iteration(*table_val_, it))
+                if (!in_last_iteration(table_val_->_map, it))
                     os << ", ";
             }
             os << " ]";
@@ -613,9 +627,10 @@ namespace avm
             assert (!is_indexed());
             std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
             os << "[ ";
-            for (it = table_val_->begin(); it != table_val_->end(); it++) {
-                os << "{ " << it->first << ", " << it->second << "}";
-                if (!in_last_iteration(*table_val_, it))
+            for (it = table_val_->_map.begin(); it != table_val_->_map.end();
+                it++) {
+                os << "{ " << it->first << " : " << it->second << " }";
+                if (!in_last_iteration(table_val_->_map, it))
                     os << ", ";
             }
             os << " ]";
@@ -623,7 +638,7 @@ namespace avm
 
         bool
         TableMemcell::is_indexed() const {
-            return table_val_->at(0)->get_type() == "number";
+            return table_val_->_map.at(0)->get_type() == "number";
         }
 
         std::ostream&   

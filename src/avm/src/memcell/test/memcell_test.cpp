@@ -103,6 +103,16 @@ protected:
     }
 };
 
+TEST_F(MemcellSuite, table_set_elem_now_table_contains_key) {
+    ctable_->set_elem(fnum_, fnum2_);
+    GTEST_ASSERT_TRUE(ctable_->contains(fnum_));
+}
+
+TEST_F(MemcellSuite, table_set_elem_inserts_a_key_val_pair) {
+    ctable_->set_elem(fnum_, fnum2_);
+    GTEST_ASSERT_TRUE(ctable_->table_val()->_map.size() == 1);
+}
+
 TEST_F(MemcellSuite, to_bool_nonzero_num_is_true) {
     GTEST_ASSERT_TRUE(fnum_->to_bool());
 }
@@ -199,6 +209,20 @@ TEST_F(MemcellSuite, out_op_userfunc_is_user_function) {
 TEST_F(MemcellSuite, out_op_libfunc_is_library_function) {
     out << *flibfunc_;
     GTEST_ASSERT_EQ(out.str(), "library function");
+}
+
+TEST_F(MemcellSuite, out_op_indexed_map_is_formatted) {
+    ctable_->set_elem( fnum_, fstr_);
+    ctable_->set_elem( fnum2_, flibfunc_);
+    out << *ftable_;
+    GTEST_ASSERT_EQ(out.str(), "[ aaa,   ]");
+}
+
+TEST_F(MemcellSuite, out_op_paired_map_is_formatted) {
+    ctable_->set_elem( fstr_, fnum_);
+    ctable_->set_elem( flibfunc_, fstr_);
+    out << *ftable_;
+    GTEST_ASSERT_EQ(out.str(), "[ { aaa : 6 }, { library function, aaa } ]");
 }
 
 TEST_F(MemcellSuite, eq_op_num_wth_num_wth_same_val_is_true) {

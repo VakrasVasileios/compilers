@@ -430,6 +430,21 @@ namespace avm
         AvmMemcell*     mod(AvmMemcell const& other) const override;
     };
 
+    typedef
+    struct table {
+        int ref_count = 0;
+        std::map<AvmMemcell*, AvmMemcell*> _map;
+
+        table() = default;
+        ~table() {
+            assert(ref_count <= 0);
+            for (auto i : _map) {
+                delete i.second;
+                delete i.first;
+            }
+        }
+    } Table;
+
     /**
      * @brief A memcell containing table data.
      * 
@@ -440,12 +455,24 @@ namespace avm
          * @brief Constructs a new TableMemcell object.
          * 
          */
-        TableMemcell() = default;
+        TableMemcell() : table_val_(new Table()) {}
         /**
          * @brief Destroys this TableMemcell object.
          * 
          */
-        ~TableMemcell() = default;
+        ~TableMemcell() {
+            table_val_->ref_count--;
+            if (table_val_->ref_count <= 0)
+                delete table_val_;
+        }
+        /**
+         * @brief Returns a read access to this TableMemcell
+         * table value
+         * 
+         * @return a read access to this TableMemcell
+         * table value, not null
+         */
+        Table*          table_val() const;
         /**
          * @brief Checks wether this TableMemcell contains
          * a key memcell.
@@ -480,8 +507,7 @@ namespace avm
         bool            to_bool() const override;
         std::string     get_type() const override;
     private:
-        std::shared_ptr<std::map<AvmMemcell*, AvmMemcell*> >
-                        table_val_;
+        Table*          table_val_;
         std::ostream&   log(std::ostream& os) const override;
         bool            is_indexed() const;
         void            log_indexed(std::ostream& os) const;
