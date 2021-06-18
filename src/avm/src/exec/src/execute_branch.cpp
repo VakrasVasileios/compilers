@@ -5,76 +5,76 @@ namespace avm
 {
     namespace exec
     {
-        void execute_jeq(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
-            memcell::AvmMemcell* arg2) {
+        void execute_jeq(const memcell::AvmMemcell* res, 
+            const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if (arg1 == arg2) {
-                assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-                registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            if ((*arg1 == *arg2)->to_bool()) {
+                assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+                registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
         }
 
-        void execute_jne(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
-            memcell::AvmMemcell* arg2) {
+        void execute_jne(const memcell::AvmMemcell* res,
+            const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if (arg1 != arg2) {
-                assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-                registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            if ((*arg1 != *arg2)->to_bool()) {
+                assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+                registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
         }
 
-        void execute_jgt(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
-            memcell::AvmMemcell* arg2) {
+        void execute_jgt(const memcell::AvmMemcell* res,
+            const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if (arg1 > arg2) {
-                assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-                registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            if ((*arg1 > *arg2)->to_bool()) {
+                assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+                registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
         }
 
-        void execute_jge(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
-            memcell::AvmMemcell* arg2) {
+        void execute_jge(const memcell::AvmMemcell* res, 
+            const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if (arg1 >= arg2) {
-                assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-                registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            if ((*arg1 >= *arg2)->to_bool()) {
+                assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+                registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
         }
 
-        void execute_jlt(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
-            memcell::AvmMemcell* arg2) {
+        void execute_jlt(const memcell::AvmMemcell* res,
+            const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if (arg1 < arg2) {
-                assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-                registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            if ((*arg1 < *arg2)->to_bool()) {
+                assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+                registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
         }
 
-        void execute_jle(memcell::AvmMemcell* res, memcell::AvmMemcell* arg1, 
-            memcell::AvmMemcell* arg2) {
+        void execute_jle(const memcell::AvmMemcell* res, 
+            const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2) {
             PRECONDITION(res != nullptr);
             PRECONDITION(arg1 != nullptr);
             PRECONDITION(arg2 != nullptr);
-            if (arg1 <= arg2) {
-                assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-                registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            if ((*arg1 <= *arg2)->to_bool()) {
+                assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+                registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
             }
         }
 
-        void execute_jmp(memcell::AvmMemcell* res) {
+        void execute_jmp(const memcell::AvmMemcell* res) {
             PRECONDITION(res != nullptr);
-            assert(dynamic_cast<memcell::NumMemcell*>(res) != nullptr);
-            registers::pc = dynamic_cast<memcell::NumMemcell*>(res)->num_val();
+            assert(dynamic_cast<const memcell::NumMemcell*>(res) != nullptr);
+            registers::pc = dynamic_cast<const memcell::NumMemcell*>(res)->num_val();
         }
     }
 }
