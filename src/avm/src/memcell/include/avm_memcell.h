@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <memory>
 #include "../../../../../util/contract/include/contract.h"
 
 namespace avm
@@ -323,7 +324,7 @@ namespace avm
         bool        lt(AvmMemcell const& other) const override;
         bool        leq(AvmMemcell const& other) const override;
         
-        std::map<AvmMemcell*, AvmMemcell*> table_val_; // consts? by value or ref?????
+        std::shared_ptr<std::map<AvmMemcell*, AvmMemcell*> > table_val_;
     };
 
     /**
