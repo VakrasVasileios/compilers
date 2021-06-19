@@ -5,7 +5,6 @@ add_subdirectory(memory)
 add_subdirectory(binary_parser)
 add_subdirectory(exec)
 add_subdirectory(cpu)
-add_subdirectory(library_functions)
 
 add_executable(avm 
     main.cpp

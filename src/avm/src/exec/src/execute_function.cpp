@@ -2,7 +2,7 @@
 #include "../../memory/include/memory.h"
 #include "../../registers/include/registers.h"
 #include "../../signals/include/signals.h"
-#include "../../library_functions/include/library_functions.h"
+#include "library_functions.h"
 
 namespace avm
 {
@@ -33,7 +33,7 @@ namespace avm
             void visit_string_memcell(memcell::StringMemcell* memcell) override
             {
                 assert(memcell != nullptr);
-                // library_functions::call_libfunc(memcell->str_val());
+                call_libfunc(memcell->str_val());
             }
 
             void visit_bool_memcell(memcell::BoolMemcell* memcell) override {
@@ -61,7 +61,7 @@ namespace avm
             void visit_libfunc_memcell(memcell::LibfuncMemcell* memcell)
             override {
                 assert(memcell != nullptr);
-                // library_functions::call_libfunc(memcell->lib_func_val());
+                call_libfunc(memcell->lib_func_val());
             }
 
             void visit_nill_memcell(memcell::NilMemcell* memcell) override {

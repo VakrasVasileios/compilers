@@ -9,7 +9,7 @@ namespace avm
         unsigned                        pc;
         memcell::AvmMemcell             *ax, *bx, *cx;
         memcell::AvmMemcell             *retval;
-        unsigned                        top, topsp;
+        unsigned                        top = AVM_STACKSIZE, topsp;
 
         void initialize_registers(unsigned int top_value) {
             PRECONDITION(util::range::in_range<unsigned>(top_value, 0,

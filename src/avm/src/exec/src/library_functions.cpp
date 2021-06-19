@@ -1,4 +1,4 @@
-#include "../include/library_functions.h"
+#include "library_functions.h"
 #include "math.h"
 #include <map>
 #include <iostream>
@@ -6,12 +6,12 @@
 #include "../../signals/include/signals.h"
 #include "../../registers/include/registers.h"
 #include "../../memory/include/memory.h"
-#include "../../exec/include/execute_function.h"
-#include "../../exec/include/execute_assign.h"
+#include "../include/execute_function.h"
+#include "../include/execute_assign.h"
 
 namespace avm
 {
-    namespace library_functions
+    namespace exec
     {
 
     namespace
@@ -133,21 +133,21 @@ namespace avm
         typedef void (*libfunc) ();
 
         std::map<std::string, libfunc> libfuncs_by_id = {
-            {"print", libfunc_print},
-            {"typeof", libfunc_typeof},
-            {"input", libfunc_input},
-            {"objectmemberkeys", libfunc_objectmemberkeys},
-            {"objectcopy", libfunc_objectcopy},
-            {"totalarguments", libfunc_totalarguments},
-            {"argument", libfunc_argument},
-            {"strtonum", libfunc_strtonum},
-            {"sqrt", libfunc_sqrt},
-            {"cos", libfunc_cos},
-            {"sin", libfunc_sin}
+            {"print", &libfunc_print},
+            {"typeof", &libfunc_typeof},
+            {"input", &libfunc_input},
+            {"objectmemberkeys", &libfunc_objectmemberkeys},
+            {"objectcopy", &libfunc_objectcopy},
+            {"totalarguments", &libfunc_totalarguments},
+            {"argument", &libfunc_argument},
+            {"strtonum", &libfunc_strtonum},
+            {"sqrt", &libfunc_sqrt},
+            {"cos", &libfunc_cos},
+            {"sin", &libfunc_sin}
         };
 
         bool unsupported_libfunc(std::string libfunc_id) {
-            return !libfuncs_by_id.count(libfunc_id);
+            return libfuncs_by_id.find(libfunc_id) != libfuncs_by_id.end();
         }
 
         void execute_enterlibfunc() {
@@ -169,7 +169,7 @@ namespace avm
     void call_libfunc(const std::string libfunc_id) {
         if (unsupported_libfunc(libfunc_id)) {
             signals::log_error(
-                "unsupported lib func" + libfunc_id + " is called", std::cerr);
+                "unsupported library function " + libfunc_id + " is called", std::cerr);
         } else {
             auto lib_func = libfuncs_by_id[libfunc_id];
             execute_enterlibfunc();

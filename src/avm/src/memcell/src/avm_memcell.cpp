@@ -552,7 +552,7 @@ namespace avm
         }
 
         void        
-        TableMemcell::set_elem(AvmMemcell& key, AvmMemcell& value) {
+        TableMemcell::set_elem(AvmMemcell* key, AvmMemcell* value) {
             PRECONDITION(key != nullptr);
             PRECONDITION(value != nullptr);
             table_val_->_map.insert({key, value});

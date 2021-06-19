@@ -95,7 +95,7 @@ namespace avm
     StackSegment::corresponding_index(const target_code::LocalVmarg vmarg)
     const {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        return registers::topsp - vmarg.get_value();;
+        return registers::topsp - vmarg.get_value();
     }
 
     unsigned            
