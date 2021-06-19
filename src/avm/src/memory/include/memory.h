@@ -32,7 +32,7 @@ namespace avm
      * At this segment all of the target code variables
      * are loaded.
      */
-    void                initialize_stack_segment();     
+    void                initialize_stack_segment(unsigned int);     
     } 
 }
 

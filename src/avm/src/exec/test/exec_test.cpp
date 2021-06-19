@@ -36,8 +36,8 @@ protected:
         flabel = label;
     
         avm::memory::initialize_code_segment();
-        avm::memory::initialize_stack_segment();
-        avm::registers::initialize_registers(1);
+        avm::memory::initialize_stack_segment(0);
+        avm::registers::initialize_registers();
     }
 
     void TearDown() override {

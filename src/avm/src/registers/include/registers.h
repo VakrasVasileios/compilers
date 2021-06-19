@@ -42,8 +42,7 @@ namespace avm
      * AVM_STACK_SIZE
      * 
      */
-    void                                    initialize_registers(
-                                                unsigned int top_value);
+    void                                    initialize_registers();
     }
 }
 

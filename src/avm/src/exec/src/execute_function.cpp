@@ -14,9 +14,9 @@ namespace avm
         void call_saveenvironment() {
             memory::stack_segment.push_envvalue(total_actuals);
             memory::stack_segment.push_envvalue(registers::pc + 1);
-            memory::stack_segment.push_envvalue(registers::top + total_actuals 
+            memory::stack_segment.push_envvalue(registers::top + total_actuals
                 + 2);
-            memory::stack_segment.push_envvalue(registers::topsp);   
+            memory::stack_segment.push_envvalue(registers::topsp);
         }
 
         class MemcellCaller final : public memcell::AvmMemcellVisitor {
@@ -82,7 +82,7 @@ namespace avm
             memcell->accept(caller);
         }
 
-    }
+    } // namespace
 
     void execute_callfunc(memcell::AvmMemcell* memcell) {
         PRECONDITION(memcell != nullptr);
@@ -117,14 +117,16 @@ namespace avm
         auto func_info = memory::Constants::GetInstance().GetUserfunc(
             registers::pc);
         registers::topsp = registers::top;
-        registers::top = registers::top - func_info.local_count;
+        for (int i = 0; i < func_info.local_count; i++)
+            memory::stack_segment.push(new memcell::UndefMemcell());
     }
 
     namespace
     {
         void restore_environment() {
             registers::top = memory::stack_segment.get_envvalue(
-                registers::topsp + AVM_SAVEDTOP_OFFSET);    
+                registers::topsp + AVM_SAVEDTOP_OFFSET);   
+                // std::cout << "recov top: " << registers::top << std::endl;
             registers::pc = memory::stack_segment.get_envvalue(
                 registers::topsp + AVM_SAVEDPC_OFFSET);  
             registers::topsp = memory::stack_segment.get_envvalue(
@@ -133,22 +135,26 @@ namespace avm
 
         void garbage_collect(unsigned old_top) {
             assert (old_top >= 0);
-            while(++old_top <= registers::top)
+            auto i = 0;
+            int top = registers::top;
+            while(++old_top <= top) {
                 memory::stack_segment.pop();
+            }
         }
-    }
+    } // namespace
 
     void execute_exitfunc() {
         auto old_top = registers::top;
         restore_environment();
-        garbage_collect(old_top);      
+        // std::cout << "old top: " << old_top << std::endl;
+        garbage_collect(old_top);
     }
 
-    void execute_pusharg(memcell::AvmMemcell* memcell) {
+    void execute_pusharg(memcell::AvmMemcell** memcell) {
         PRECONDITION(memcell);
-        memory::stack_segment.push(memcell);
+        memory::stack_segment.push(*memcell);
         ++total_actuals;
     }
     
-    }
-}
+    } // namespace exec
+} // namespace avm

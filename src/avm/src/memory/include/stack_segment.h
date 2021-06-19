@@ -189,7 +189,12 @@ namespace avm
        * @brief Clears this StackSegment.
        * 
        */
-      void                clear();                                      
+      void                clear();
+      friend std::ostream& operator<<(std::ostream& os, const StackSegment& st) {
+          for (int i = AVM_STACKSIZE-st.size(); i < AVM_STACKSIZE; i++)
+            os << *(st.memcells[i]) << std::endl;
+        return os;
+      }
     private:
       memcell::AvmMemcell*  memcells[AVM_STACKSIZE];
     };

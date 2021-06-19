@@ -1,5 +1,6 @@
 #include "../include/registers.h"
 #include "../../binary_parser/include/binary_parser.h"
+#include "../../memory/include/stack_segment.h"
 
 namespace avm
 {
@@ -11,12 +12,8 @@ namespace avm
         memcell::AvmMemcell             *retval;
         unsigned                        top = AVM_STACKSIZE, topsp;
 
-        void initialize_registers(unsigned int top_value) {
-            PRECONDITION(util::range::in_range<unsigned>(top_value, 0,
-                AVM_STACKSIZE));
-                
+        void initialize_registers() {
             pc = 1;
-            top = AVM_STACKSIZE - top_value;
             topsp = top;
         }
     }

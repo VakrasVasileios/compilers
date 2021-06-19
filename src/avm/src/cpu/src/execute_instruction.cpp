@@ -5,6 +5,7 @@
 #include "../../exec/include/execute_function.h"
 #include "../../exec/include/execute_table.h"
 #include "../../exec/include/execute_branch.h"
+#include <iostream>
 
 namespace avm
 {
@@ -138,7 +139,7 @@ namespace avm
             void VisitPushArg(target_code::PushArg* inst) const override {
                 assert(inst != nullptr);
                 auto arg = translate_operand(inst->get_result(), registers::ax);
-                exec::execute_pusharg(arg);
+                exec::execute_pusharg(&arg);
             }
 
             void VisitEnterFunc(target_code::EnterFunc* inst) const override {
