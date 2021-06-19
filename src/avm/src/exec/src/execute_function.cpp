@@ -144,7 +144,7 @@ namespace avm
             assert (old_top >= 0);
             auto i = 0;
             int top = registers::top;
-            while(++old_top <= top) {
+            while(++old_top < top) {
                 delete memory::stack_segment[old_top];
                // std::cout << "poped " << registers::top << std::endl;
             }
