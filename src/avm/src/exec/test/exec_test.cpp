@@ -19,21 +19,25 @@ protected:
     avm::memcell::AvmMemcell*       fnum1;
     avm::memcell::AvmMemcell*       fnum2;
     avm::memcell::AvmMemcell*       flabel;
+    avm::memcell::AvmMemcell*       ftable;
 
     avm::memcell::NumMemcell*       num0;
     avm::memcell::NumMemcell*       num1;
     avm::memcell::NumMemcell*       num2;
     avm::memcell::NumMemcell*       label;
+    avm::memcell::TableMemcell*     table;
 
     void SetUp() override {
         num0 = new avm::memcell::NumMemcell(0);
         num1 = new avm::memcell::NumMemcell(1);
         num2 = new avm::memcell::NumMemcell(2);
         label = new avm::memcell::NumMemcell(30069420);
+        table = new avm::memcell::TableMemcell();
         fnum0 = num0;
         fnum1 = num1;
         fnum2 = num2;
         flabel = label;
+        ftable = table;
     
         avm::memory::initialize_code_segment();
         avm::memory::initialize_stack_segment(0);
@@ -45,6 +49,7 @@ protected:
         delete num1;
         delete num2;
         delete label;
+        delete table;
     }
 };
 
@@ -56,6 +61,49 @@ TEST_F(ExecSuite, execute_assign_changes_father_val) {
 TEST_F(ExecSuite, execute_assign_changes_child_val) {
     avm::exec::execute_assign(&fnum0, fnum1);
     GTEST_ASSERT_TRUE(*num0 == *num1);
+}
+
+TEST_F(ExecSuite, execute_assign_table_rv_carries_tableref) {
+    avm::exec::execute_assign(&fnum0, ftable);
+    table->set_elem(fnum1, label);
+    GTEST_ASSERT_TRUE(static_cast<avm::memcell::TableMemcell*>
+        (fnum0)->table_val() == table->table_val());
+    GTEST_ASSERT_TRUE(static_cast<avm::memcell::TableMemcell*>
+        (fnum0)->contains(fnum1));
+    GTEST_ASSERT_TRUE(*static_cast<avm::memcell::TableMemcell*>
+        (fnum0)->get_elem(fnum1) == *label);
+    GTEST_ASSERT_TRUE(table->contains(fnum1));
+    GTEST_ASSERT_TRUE(*table->get_elem(fnum1) == *label);
+    static_cast<avm::memcell::TableMemcell*>(fnum0)->set_elem(label, fnum1);
+    GTEST_ASSERT_TRUE(table->contains(label));
+    GTEST_ASSERT_TRUE(*table->get_elem(label) == *fnum1);
+    GTEST_ASSERT_TRUE(static_cast<avm::memcell::TableMemcell*>
+        (fnum0)->table_val() == table->table_val());
+    GTEST_ASSERT_TRUE(static_cast<avm::memcell::TableMemcell*>
+        (fnum0)->contains(label));
+    GTEST_ASSERT_TRUE(*static_cast<avm::memcell::TableMemcell*>
+        (fnum0)->get_elem(label) == *fnum1);
+}
+
+TEST_F(ExecSuite, execute_assign_table_in_table) {
+    auto table2 = new avm::memcell::TableMemcell();
+    table->set_elem(table2, label);
+    GTEST_ASSERT_TRUE(table->contains(table2));
+    GTEST_ASSERT_TRUE(*table->get_elem(table2) == *label);
+    delete table2;
+}
+
+TEST_F(ExecSuite, execute_assign_table_macaroni_but_its_ok_king) {
+    table->set_elem(label, label);
+    avm::exec::execute_assign(&fnum0, ftable);
+    avm::exec::execute_assign(&fnum1, fnum0);
+    avm::exec::execute_assign(&fnum2, fnum1);
+    GTEST_ASSERT_TRUE(static_cast<avm::memcell::TableMemcell*>
+        (fnum2)->table_val() == table->table_val());
+    GTEST_ASSERT_TRUE(static_cast<avm::memcell::TableMemcell*>
+        (fnum2)->contains(label));
+    GTEST_ASSERT_TRUE(*static_cast<avm::memcell::TableMemcell*>
+        (fnum2)->get_elem(label) == *label);
 }
 
 TEST_F(ExecSuite, execute_assign_after_assign_doesnt_change_first_rv) {

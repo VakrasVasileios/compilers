@@ -619,12 +619,12 @@ namespace avm
         bool    is_indexed() const;
         void    log_paired(std::ostream& os) const;
         void    log_indexed(std::ostream& os) const;
-        void    log_num_map(std::ostream& os) const;
-        void    log_str_map(std::ostream& os) const;
-        void    log_bool_map(std::ostream& os) const;
-        void    log_table_map(std::ostream& os) const;
-        void    log_userfunc_map(std::ostream& os) const;
-        void    log_libfunc_map(std::ostream& os) const;
+        void    log_num_map(std::ostream& os, bool &first_log) const;
+        void    log_str_map(std::ostream& os, bool &first_log) const;
+        void    log_bool_map(std::ostream& os, bool &first_log) const;
+        void    log_table_map(std::ostream& os, bool &first_log) const;
+        void    log_userfunc_map(std::ostream& os, bool &first_log) const;
+        void    log_libfunc_map(std::ostream& os, bool &first_log) const;
     };
 
     /**
@@ -637,7 +637,8 @@ namespace avm
          * @brief Constructs a new TableMemcell object.
          * 
          */
-        TableMemcell() : table_val_(new Table()) {}
+        TableMemcell() : table_val_(std::make_shared<Table>()) {}
+        TableMemcell(const TableMemcell &obj) : table_val_(obj.table_val()) {} 
         /**
          * @brief Destroys this TableMemcell object.
          * 
@@ -681,7 +682,7 @@ namespace avm
          */
         void            set_elem(AvmMemcell* key, AvmMemcell* value);
         void            accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell*     clone() const override;
+        TableMemcell*   clone() const override;
         bool            to_bool() const override;
         std::string     get_type() const override;
     private:

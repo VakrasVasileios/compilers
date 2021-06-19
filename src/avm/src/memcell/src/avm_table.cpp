@@ -168,81 +168,89 @@ namespace avm
         Table::log_paired(std::ostream& os) const {
             assert (!is_indexed());
             std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
+            os << "[ ";
+            bool first_log = true;
             if (!num_map.empty())
-                log_num_map(os);
+                log_num_map(os, first_log);
             if (!str_map.empty())    
-                log_str_map(os);
+                log_str_map(os, first_log);
             if (!bool_map.empty())
-                log_bool_map(os);
+                log_bool_map(os, first_log);
             if (!tableref_map.empty())
-                log_table_map(os);
+                log_table_map(os, first_log);
             if (!userfunc_map.empty())
-                log_userfunc_map(os);
+                log_userfunc_map(os, first_log);
             if (!libfunc_map.empty())
-                log_libfunc_map(os);
+                log_libfunc_map(os, first_log);
+            os << " ]";
+        }
+
+        namespace
+        {
+            void out_comma_if_notfirstlog(std::ostream& os, bool &first_log) {
+                if (!first_log)
+                    os << ", ";
+                first_log = false;    
+            }
         }
 
         void    
-        Table::log_num_map(std::ostream& os) const {
+        Table::log_num_map(std::ostream& os, bool &first_log) const {
             std::map<double, AvmMemcell*>::const_iterator it;
+            out_comma_if_notfirstlog(os, first_log);
             auto first = true;
-            os << "[ ";
             for (it = num_map.begin(); it != num_map.end(); it++) {
                 if (!first)
                     os << ", ";
                 first = false;  
                 os << "{ " << it->first << " : " << *it->second << " }";
             }
-            os << " ]";
         }
 
         void    
-        Table::log_str_map(std::ostream& os) const {
+        Table::log_str_map(std::ostream& os, bool &first_log) const {
             std::map<std::string, AvmMemcell*>::const_iterator it;
+            out_comma_if_notfirstlog(os, first_log);
             auto first = true;
-            os << "[ ";
             for (it = str_map.begin(); it != str_map.end(); it++) {
                 if (!first)
                     os << ", ";
                 first = false;  
                 os << "{ " << it->first << " : " << *it->second << " }";
             }
-            os << " ]";
         }
 
         void    
-        Table::log_bool_map(std::ostream& os) const {
+        Table::log_bool_map(std::ostream& os, bool &first_log) const {
             std::map<bool, AvmMemcell*>::const_iterator it;
+            out_comma_if_notfirstlog(os, first_log);
             auto first = true;
-            os << "[ ";
             for (it = bool_map.begin(); it != bool_map.end(); it++) {
                 if (!first)
                     os << ", ";
                 first = false;  
                 os << "{ " << it->first << " : " << *it->second << " }";
             }
-            os << " ]";
         }
 
         void    
-        Table::log_table_map(std::ostream& os) const {
+        Table::log_table_map(std::ostream& os, bool &first_log) const {
             std::map<tableref, AvmMemcell*>::const_iterator it;
+            out_comma_if_notfirstlog(os, first_log);
             auto first = true;
-            os << "[ ";
             for (it = tableref_map.begin(); it != tableref_map.end(); it++) {
                 if (!first)
                     os << ", ";
                 first = false;  
                 os << "{ " << *it->first << " : " << *it->second << " }";
             }
-            os << " ]";
         }
 
         void    
-        Table::log_userfunc_map(std::ostream& os) const {
+        Table::log_userfunc_map(std::ostream& os, bool &first_log) const {
             std::map<unsigned, AvmMemcell*>::const_iterator it;
+            out_comma_if_notfirstlog(os, first_log);
             auto first = true;
-            os << "[ ";
             for (it = userfunc_map.begin(); it != userfunc_map.end(); it++) {
                 if (!first)
                     os << ", ";
@@ -250,14 +258,13 @@ namespace avm
                 os << "{ " << "user function " << it->first <<
                     " : " << *it->second << " }";
             }
-            os << " ]";
         }
 
         void    
-        Table::log_libfunc_map(std::ostream& os) const {
+        Table::log_libfunc_map(std::ostream& os, bool &first_log) const {
             std::map<std::string, AvmMemcell*>::const_iterator it;
+            out_comma_if_notfirstlog(os, first_log);
             auto first = true;
-            os << "[ ";
             for (it = libfunc_map.begin(); it != libfunc_map.end(); it++) {
                 if (!first)
                     os << ", ";
@@ -265,7 +272,6 @@ namespace avm
                 os << "{ " << "library function " << it->first << " : " << 
                 *it->second << " }";
             }
-            os << " ]";
         }
     }
 }
