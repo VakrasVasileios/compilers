@@ -75,7 +75,7 @@ namespace avm
             Constants:: GetInstance().InsertUserfunc(entry);
         }
 
-        std::cout << "CONSTANTS:\n" << Constants:: GetInstance() << std::endl;
+        //std::cout << "CONSTANTS:\n" << Constants:: GetInstance() << std::endl;
 
         // read instructions
         size = read_unsigned();

@@ -20,20 +20,19 @@ namespace avm
                 assert (registers::pc > AVM_ENDING_PC);
                 auto instruction = memory::code_segment[registers::pc - 1];
                 signals::curr_line = instruction->get_src_line();
-                assert (signals::curr_line != 0);
                 unsigned old_pc = registers::pc;
+                std::cout << "exec "<< instruction;
                 execute_instruction(instruction);
                 if (registers::pc == old_pc) {
                     registers::pc++;
                 }
-                else { std::cout << ", jmp pc: " << registers::pc; }
+                // else { std::cout << ", jmp pc: " << registers::pc; }
 
             }
         } // namespace
     
         void run() {
             do {
-                std::cout << "\ntop: " << registers::top << ", pc: " << registers::pc << ", line: " << (memory::code_segment[registers::pc - 1])->get_src_line() << std::endl;
                 execute_cycle();
             } while (!signals::execution_finished);
         }

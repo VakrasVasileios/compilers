@@ -13,10 +13,15 @@ namespace avm
     {
         void call_saveenvironment() {
             memory::stack_segment.push_envvalue(total_actuals);
+            // std::cout << *memory::stack_segment[registers::top] << std::endl;
             memory::stack_segment.push_envvalue(registers::pc + 1);
+            // std::cout << *memory::stack_segment[registers::top] << std::endl;
             memory::stack_segment.push_envvalue(registers::top + total_actuals
                 + 2);
+            // std::cout << *memory::stack_segment[registers::top] << std::endl;
             memory::stack_segment.push_envvalue(registers::topsp);
+            // std::cout << *memory::stack_segment[registers::top] << std::endl;
+
         }
 
         class MemcellCaller final : public memcell::AvmMemcellVisitor {
@@ -115,9 +120,9 @@ namespace avm
         PRECONDITION(pc_is_legal(memcell));
         total_actuals = 0;
         auto func_info = memory::Constants::GetInstance().GetUserfunc(
-            registers::pc);
+            0);
         registers::topsp = registers::top;
-        for (int i = 0; i < func_info.local_count; i++)
+        for (unsigned i = 0; i < func_info.local_count; i++) 
             memory::stack_segment.push(new memcell::UndefMemcell());
     }
 
@@ -126,11 +131,13 @@ namespace avm
         void restore_environment() {
             registers::top = memory::stack_segment.get_envvalue(
                 registers::topsp + AVM_SAVEDTOP_OFFSET);   
-                // std::cout << "recov top: " << registers::top << std::endl;
+               // std::cout << "recov top: " << registers::top << std::endl;
             registers::pc = memory::stack_segment.get_envvalue(
-                registers::topsp + AVM_SAVEDPC_OFFSET);  
+                registers::topsp + AVM_SAVEDPC_OFFSET);
+                //std::cout << "recov pc: " << registers::pc << std::endl;
             registers::topsp = memory::stack_segment.get_envvalue(
-                registers::topsp + AVM_SAVEDTOPSP_OFFSET); 
+                registers::topsp + AVM_SAVEDTOPSP_OFFSET);
+                //std::cout << "recov topsp: " << registers::topsp << std::endl;
         }
 
         void garbage_collect(unsigned old_top) {
@@ -138,7 +145,8 @@ namespace avm
             auto i = 0;
             int top = registers::top;
             while(++old_top <= top) {
-                memory::stack_segment.pop();
+                delete memory::stack_segment[old_top];
+               // std::cout << "poped " << registers::top << std::endl;
             }
         }
     } // namespace
@@ -146,7 +154,6 @@ namespace avm
     void execute_exitfunc() {
         auto old_top = registers::top;
         restore_environment();
-        // std::cout << "old top: " << old_top << std::endl;
         garbage_collect(old_top);
     }
 

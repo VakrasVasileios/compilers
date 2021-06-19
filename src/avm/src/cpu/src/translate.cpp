@@ -104,7 +104,7 @@ namespace avm
 
             auto result = translator->result();
             POSTCONDITION(result != nullptr);
-
+            delete translator;
             return result;
         }
     } // namespace cpu
