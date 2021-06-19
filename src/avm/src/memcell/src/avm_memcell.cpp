@@ -592,7 +592,7 @@ namespace avm
         }
 
         void        
-        TableMemcell::set_elem(AvmMemcell& key, AvmMemcell& value) {
+        TableMemcell::set_elem(AvmMemcell* key, AvmMemcell* value) {
             PRECONDITION(key != nullptr);
             PRECONDITION(value != nullptr);
             if (auto num_memcell = num_memcell_cast(*key))
@@ -630,7 +630,6 @@ namespace avm
 
         AvmMemcell*         
         TableMemcell::clone() const {
-            table_val_->ref_count++;
             return new TableMemcell(*this);    
         }
 
