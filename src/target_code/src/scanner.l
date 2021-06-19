@@ -30,7 +30,7 @@ SPACE           [\r \t\v]
 NEWLINE         [\n]
 OPERATOR        \+|\-|\*|\/|\=|\>|\<|\%|\^|\(|\)
 SINGLELCOMMENT  \/\/
-MULTILCOMMENT   [\/\*]
+MULTILCOMMENT   "/*"
 ILLEGALCHARS    [\$|\_|\!|\~|\?|\#]
 
 /*Flex rules*/
