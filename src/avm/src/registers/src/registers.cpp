@@ -13,6 +13,9 @@ namespace avm
         unsigned                        top = AVM_STACKSIZE, topsp;
 
         void initialize_registers() {
+            ax = new memcell::UndefMemcell();
+            bx = new memcell::UndefMemcell();
+            cx = new memcell::UndefMemcell();
             pc = 1;
             topsp = top;
         }

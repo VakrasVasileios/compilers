@@ -20,9 +20,12 @@ namespace avm
 
             void VisitAssign(target_code::Assign* inst) const override {
                 assert(inst != nullptr);
-                auto lv = translate_operand(inst->get_result(), nullptr);
-                auto rv = translate_operand(inst->get_arg1(), registers::ax);
-                exec::execute_assign(&lv, rv);
+                registers::ax = translate_operand(inst->get_result(), nullptr);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                if (inst->get_result()->get_type() == target_code::RETVAL_a)
+                    exec::execute_assign(&registers::retval, registers::ax);
+                else if (inst->get_arg1()->get_type() != target_code::RETVAL_a)
+                    exec::execute_assign(&registers::ax, registers::bx);
             }
 
             void VisitAdd(target_code::Add* inst) const override {
@@ -131,9 +134,9 @@ namespace avm
 
             void VisitCallFunc(target_code::CallFunc* inst) const override {
                 assert(inst != nullptr);
-                auto func = translate_operand(inst->get_result(),
+                registers::ax = translate_operand(inst->get_result(),
                     registers::ax);
-                exec::execute_callfunc(func);
+                exec::execute_callfunc(registers::ax);
             }
 
             void VisitPushArg(target_code::PushArg* inst) const override {
@@ -144,9 +147,9 @@ namespace avm
 
             void VisitEnterFunc(target_code::EnterFunc* inst) const override {
                 assert(inst != nullptr);
-                auto func = translate_operand(inst->get_result(),
+                registers::ax = translate_operand(inst->get_result(),
                     registers::ax);
-                exec::execute_enterfunc(func);
+                exec::execute_enterfunc(registers::ax);
             }
 
             void VisitExitFunc(target_code::ExitFunc* inst) const override {
@@ -173,9 +176,9 @@ namespace avm
             override {
                 assert(inst != nullptr);
                 auto table = translate_operand(inst->get_result(), nullptr);
-                auto key = translate_operand(inst->get_arg1(), registers::ax);
-                auto value = translate_operand(inst->get_arg1(), registers::bx);
-                exec::execute_tablesetelem(table, key, value);
+                registers::ax = translate_operand(inst->get_arg1(), registers::ax);
+                registers::bx = translate_operand(inst->get_arg1(), registers::bx);
+                exec::execute_tablesetelem(table, registers::ax, registers::bx);
             }
         };
     }

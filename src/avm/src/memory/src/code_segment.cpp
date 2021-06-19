@@ -10,6 +10,11 @@ namespace avm
         return instrs.empty();    
     }
 
+    unsigned
+    CodeSegment::size() const {
+        return instrs.size(); 
+    }
+
     void 
     CodeSegment::push(target_code::Instruction* _instr) {
         PRECONDITION(_instr != nullptr);

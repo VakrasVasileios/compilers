@@ -10,6 +10,7 @@ namespace avm
                 const memcell::AvmMemcell* rv) {
                 assert(lv != nullptr);
                 assert(rv != nullptr);
+                
                 if (auto trv = dynamic_cast<const memcell::TableMemcell*>(rv)) {
                     auto tlv = new memcell::TableMemcell();
                     delete *lv;

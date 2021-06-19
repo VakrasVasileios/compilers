@@ -32,7 +32,15 @@ namespace avm
          * 
          * @return wether this CodeSegment is empty 
          */
-        bool   empty() const;
+        bool        empty() const;
+        /**
+         * @brief Returns a read access to this
+         * CodeSegment size.
+         * 
+         * @return a read access to this
+         * CodeSegment size 
+         */
+        unsigned    size() const;
         /**
          * @brief Pushes a target code instruction to this
          * CodeSegment.
@@ -40,7 +48,7 @@ namespace avm
          * @param _instr the target code instruction to be
          * pushed to this CodeSegment, not null
          */
-        void  push(target_code::Instruction* _instr);
+        void        push(target_code::Instruction* _instr);
         /**
          * @brief Returns an O(1) access to an inserted 
          * target code instruction.
@@ -57,7 +65,7 @@ namespace avm
          * CodeSegment.
          * 
          */
-        void   clear();   
+        void        clear();   
     private:
         std::vector<target_code::Instruction*> instrs;    
     };
