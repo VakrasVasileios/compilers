@@ -632,7 +632,19 @@ namespace avm
          * @brief Destroys this TableMemcell object.
          * 
          */
-        ~TableMemcell() = default;
+        ~TableMemcell() {
+            table_val_->ref_count--;
+            if (table_val_->ref_count <= 0)
+                delete table_val_;
+        }
+        /**
+         * @brief Returns a read access to this TableMemcell
+         * table value
+         * 
+         * @return a read access to this TableMemcell
+         * table value, not null
+         */
+        Table*          table_val() const;
         /**
          * @brief Returns a read access to this TableMemcell
          * table value.

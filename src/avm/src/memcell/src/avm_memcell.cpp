@@ -527,6 +527,7 @@ namespace avm
         }
         //--------------BoolMemcell--------------//
 
+
         //--------------TableMemcell--------------//
         tableref 
         TableMemcell::table_val() const {
@@ -591,7 +592,7 @@ namespace avm
         }
 
         void        
-        TableMemcell::set_elem(AvmMemcell* key, AvmMemcell* value) {
+        TableMemcell::set_elem(AvmMemcell& key, AvmMemcell& value) {
             PRECONDITION(key != nullptr);
             PRECONDITION(value != nullptr);
             if (auto num_memcell = num_memcell_cast(*key))
@@ -629,6 +630,7 @@ namespace avm
 
         AvmMemcell*         
         TableMemcell::clone() const {
+            table_val_->ref_count++;
             return new TableMemcell(*this);    
         }
 
@@ -656,9 +658,9 @@ namespace avm
                     const std::map<AvmMemcell*, AvmMemcell*> _map,
                         std::map<AvmMemcell*,  AvmMemcell*>::const_iterator _it)
             {
-                auto dup = _it;
-                dup++;
-                return dup == _map.end(); 
+                // auto dup = _it;
+                // dup++;
+                return true; 
             }
         }
 
