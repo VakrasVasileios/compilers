@@ -628,7 +628,7 @@ namespace avm
             visitor->visit_table_memcell(this);
         }
 
-        AvmMemcell*         
+        TableMemcell*         
         TableMemcell::clone() const {
             return new TableMemcell(*this);    
         }
@@ -1102,6 +1102,7 @@ namespace avm
                 std::cerr);
             return false;
         }
+
         //--------------UndefMemcell--------------//
 
     } //namespace memcell

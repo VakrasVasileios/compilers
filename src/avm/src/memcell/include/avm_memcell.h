@@ -637,7 +637,8 @@ namespace avm
          * @brief Constructs a new TableMemcell object.
          * 
          */
-        TableMemcell() : table_val_(new Table()) {}
+        TableMemcell() : table_val_(std::make_shared<Table>()) {}
+        TableMemcell(const TableMemcell &obj) : table_val_(obj.table_val()) {} 
         /**
          * @brief Destroys this TableMemcell object.
          * 
@@ -681,7 +682,7 @@ namespace avm
          */
         void            set_elem(AvmMemcell* key, AvmMemcell* value);
         void            accept(AvmMemcellVisitor* visitor) override;
-        AvmMemcell*     clone() const override;
+        TableMemcell*   clone() const override;
         bool            to_bool() const override;
         std::string     get_type() const override;
     private:
