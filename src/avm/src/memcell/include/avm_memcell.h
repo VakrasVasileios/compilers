@@ -430,20 +430,202 @@ namespace avm
         AvmMemcell*     mod(AvmMemcell const& other) const override;
     };
 
-    typedef
-    struct table {
-        int ref_count = 0;
-        std::map<AvmMemcell*, AvmMemcell*> _map;
+    class Table;
+    typedef std::shared_ptr<Table> tableref;
 
-        table() = default;
-        ~table() {
-            assert(ref_count <= 0);
-            for (auto i : _map) {
-                delete i.second;
-                delete i.first;
-            }
-        }
-    } Table;
+    /**
+     * @brief Avm table data.
+     * 
+     */
+    class Table final {
+    public:
+        /**
+         * @brief Constructs a new Table object.
+         * 
+         */
+        Table() = default;
+        /**
+         * @brief Destroys this Table object.
+         * 
+         */
+        ~Table() = default;
+        /**
+         * @brief Checks wether this Table contains
+         * a number type key.
+         * 
+         * @param _key the number type key
+         * @return wether this Table contains
+         * a number type key 
+         */
+        bool        contains_num_elem(double _key) const;
+        /**
+         * @brief Checks wether this Table contains
+         * a string type key.
+         * 
+         * @param _key the string type key
+         * @return wether this Table contains
+         * a string type key 
+         */
+        bool        contains_str_elem(std::string _key) const;
+         /**
+         * @brief Checks wether this Table contains
+         * a bool type key.
+         * 
+         * @param _key the bool type key
+         * @return wether this Table contains
+         * a bool type key 
+         */
+        bool        contains_bool_elem(bool _key) const;
+        /**
+         * @brief Checks wether this Table contains
+         * a typeref type key.
+         * 
+         * @param _key the typeref type key, not null
+         * @return wether this Table contains
+         * a typeref type key 
+         */
+        bool        contains_tableref_elem(tableref _key) const;
+         /**
+         * @brief Checks wether this Table contains
+         * a userfunc type key.
+         * 
+         * @param _key the userfunc type key
+         * @return wether this Table contains
+         * a userfunc type key 
+         */
+        bool        contains_userfunc_elem(unsigned _key) const;
+        /**
+         * @brief Checks wether this Table contains
+         * a libfunc type key.
+         * 
+         * @param _key the libfunc type key
+         * @return wether this Table contains
+         * a libfunc type key 
+         */
+        bool        contains_libfunc_elem(std::string _key) const;
+        /**
+         * @brief Returns a read access to the mapped
+         * memcell value of a double type key.
+         * 
+         * @param _key the double type key
+         * @return a read access to the mapped
+         * memcell value of a double type key
+         */
+        AvmMemcell* get_num_elem(double _key) const;
+         /**
+         * @brief Returns a read access to the mapped
+         * memcell value of a string type key.
+         * 
+         * @param _key the string type key
+         * @return a read access to the mapped
+         * memcell value of a string type key
+         */
+        AvmMemcell* get_str_elem(std::string _key) const;
+        /**
+         * @brief Returns a read access to the mapped
+         * memcell value of a bool type key.
+         * 
+         * @param _key the bool type key
+         * @return a read access to the mapped
+         * memcell value of a bool type key
+         */
+        AvmMemcell* get_bool_elem(bool _key) const;
+        /**
+         * @brief Returns a read access to the mapped
+         * memcell value of a tableref type key.
+         * 
+         * @param _key the tableref type key
+         * @return a read access to the mapped
+         * memcell value of a tableref type key
+         */
+        AvmMemcell* get_tableref_elem(tableref _key) const;
+        /**
+         * @brief Returns a read access to the mapped
+         * memcell value of a userfunc type key.
+         * 
+         * @param _key the userfunc type key
+         * @return a read access to the mapped
+         * memcell value of a userfunc type key
+         */
+        AvmMemcell* get_userfunc_elem(unsigned _key) const;
+        /**
+         * @brief Returns a read access to the mapped
+         * memcell value of a libfunc type key.
+         * 
+         * @param _key the libfunc type key
+         * @return a read access to the mapped
+         * memcell value of a libfunc type key
+         */
+        AvmMemcell* get_libfunc_elem(std::string _key) const;
+        /**
+         * @brief Inserts a pair of a double type and a
+         * memcell.
+         * 
+         * @param _key the double type key
+         * @param _value the memcell value, not null
+         */
+        void        set_num_elem(double _key, AvmMemcell* _value);
+         /**
+         * @brief Inserts a pair of a string type and a
+         * memcell.
+         * 
+         * @param _key the string type key
+         * @param _value the memcell value, not null
+         */
+        void        set_str_elem(std::string _key, AvmMemcell* _value);
+         /**
+         * @brief Inserts a pair of a bool type and a
+         * memcell.
+         * 
+         * @param _key the bool type key
+         * @param _value the memcell value, not null
+         */
+        void        set_bool_elem(bool _key, AvmMemcell* _value);
+         /**
+         * @brief Inserts a pair of a tableref type and a
+         * memcell.
+         * 
+         * @param _key the tableref type key, not null
+         * @param _value the memcell value, not null
+         */
+        void        set_tableref_elem(tableref _key, AvmMemcell* _value);
+        /**
+         * @brief Inserts a pair of a userfunc type and a
+         * memcell.
+         * 
+         * @param _key the userfunc type key
+         * @param _value the memcell value, not null
+         */
+        void        set_userfunc_elem(unsigned _key, AvmMemcell* _value);
+        /**
+         * @brief Inserts a pair of a libfunc type and a
+         * memcell.
+         * 
+         * @param _key the libfunc type key
+         * @param _value the memcell value, not null
+         */
+        void        set_libfunc_elem(std::string _key, AvmMemcell* _value);
+        friend 
+        std::ostream&           operator << (std::ostream& os, 
+                                    const Table& table);
+    private:
+        std::map<double, AvmMemcell*> num_map;
+        std::map<std::string, AvmMemcell*> str_map;
+        std::map<bool, AvmMemcell*> bool_map;
+        std::map<tableref, AvmMemcell*> tableref_map;
+        std::map<unsigned, AvmMemcell*> userfunc_map;
+        std::map<std::string, AvmMemcell*> libfunc_map;
+
+        bool    is_indexed() const;
+        void    log_paired(std::ostream& os) const;
+        void    log_indexed(std::ostream& os) const;
+        void    log_num_map(std::ostream& os) const;
+        void    log_str_map(std::ostream& os) const;
+        void    log_bool_map(std::ostream& os) const;
+        void    log_table_map(std::ostream& os) const;
+        void    log_userfunc_map(std::ostream& os) const;
+        void    log_libfunc_map(std::ostream& os) const;
+    };
 
     /**
      * @brief A memcell containing table data.
@@ -460,19 +642,15 @@ namespace avm
          * @brief Destroys this TableMemcell object.
          * 
          */
-        ~TableMemcell() {
-            table_val_->ref_count--;
-            if (table_val_->ref_count <= 0)
-                delete table_val_;
-        }
+        ~TableMemcell() = default;
         /**
          * @brief Returns a read access to this TableMemcell
-         * table value
+         * table value.
          * 
          * @return a read access to this TableMemcell
-         * table value, not null
+         * table value 
          */
-        Table*          table_val() const;
+        tableref        table_val() const;
         /**
          * @brief Checks wether this TableMemcell contains
          * a key memcell.
@@ -507,11 +685,8 @@ namespace avm
         bool            to_bool() const override;
         std::string     get_type() const override;
     private:
-        Table*          table_val_;
-        std::ostream&   log(std::ostream& os) const override;
-        bool            is_indexed() const;
-        void            log_indexed(std::ostream& os) const;
-        void            log_paired(std::ostream& os) const;        
+        tableref        table_val_;
+        std::ostream&   log(std::ostream& os) const override;     
         bool            eq(AvmMemcell const& other) const override;
         bool            gt(AvmMemcell const& other) const override;
         bool            geq(AvmMemcell const& other) const override;
