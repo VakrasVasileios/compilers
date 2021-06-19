@@ -246,7 +246,7 @@ TEST_F(MemcellSuite, out_op_paired_map_is_formatted) {
     ctable_->set_elem( fstr_, fnum_);
     ctable_->set_elem( flibfunc_, fstr_);
     out << *ftable_;
-    GTEST_ASSERT_EQ(out.str(), "[ { aaa : 6 } ][ { library function print : aaa } ]");
+    GTEST_ASSERT_EQ(out.str(), "[ { aaa : 6 }, { library function print : aaa } ]");
 }
 
 TEST_F(MemcellSuite, eq_op_num_wth_num_wth_same_val_is_true) {
