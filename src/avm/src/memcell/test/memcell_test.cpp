@@ -225,29 +225,29 @@ TEST_F(MemcellSuite, out_op_nil_is_nil) {
     GTEST_ASSERT_EQ(out.str(), "nil");
 }
 
-TEST_F(MemcellSuite, out_op_userfunc_is_user_function) {
+TEST_F(MemcellSuite, out_op_userfunc_is_user_function_plus_address) {
     out << *fuserfunc_;
-    GTEST_ASSERT_EQ(out.str(), "user function");
+    GTEST_ASSERT_EQ(out.str(), "user function 40");
 }
 
-TEST_F(MemcellSuite, out_op_libfunc_is_library_function) {
+TEST_F(MemcellSuite, out_op_libfunc_is_library_function_plus_id) {
     out << *flibfunc_;
-    GTEST_ASSERT_EQ(out.str(), "library function");
+    GTEST_ASSERT_EQ(out.str(), "library function print");
 }
 
-// TEST_F(MemcellSuite, out_op_indexed_map_is_formatted) {
-//     ctable_->set_elem( fnum_, fstr_);
-//     ctable_->set_elem( fnum2_, flibfunc_);
-//     out << *ftable_;
-//     GTEST_ASSERT_EQ(out.str(), "[ aaa,   ]");
-// }
+TEST_F(MemcellSuite, out_op_indexed_map_is_formatted) {
+    ctable_->set_elem( fnum_, fstr_);
+    ctable_->set_elem( fnum2_, flibfunc_);
+    out << *ftable_;
+    GTEST_ASSERT_EQ(out.str(), "[ library function print, aaa ]");
+}
 
-// TEST_F(MemcellSuite, out_op_paired_map_is_formatted) {
-//     ctable_->set_elem( fstr_, fnum_);
-//     ctable_->set_elem( flibfunc_, fstr_);
-//     out << *ftable_;
-//     GTEST_ASSERT_EQ(out.str(), "[ { aaa : 6 }, { library function, aaa } ]");
-// }
+TEST_F(MemcellSuite, out_op_paired_map_is_formatted) {
+    ctable_->set_elem( fstr_, fnum_);
+    ctable_->set_elem( flibfunc_, fstr_);
+    out << *ftable_;
+    GTEST_ASSERT_EQ(out.str(), "[ { aaa : 6 } ][ { library function print : aaa } ]");
+}
 
 TEST_F(MemcellSuite, eq_op_num_wth_num_wth_same_val_is_true) {
     cnum2_->set_num_val(cnum_->num_val());

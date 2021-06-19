@@ -615,6 +615,16 @@ namespace avm
         std::map<tableref, AvmMemcell*> tableref_map;
         std::map<unsigned, AvmMemcell*> userfunc_map;
         std::map<std::string, AvmMemcell*> libfunc_map;
+
+        bool    is_indexed() const;
+        void    log_paired(std::ostream& os) const;
+        void    log_indexed(std::ostream& os) const;
+        void    log_num_map(std::ostream& os) const;
+        void    log_str_map(std::ostream& os) const;
+        void    log_bool_map(std::ostream& os) const;
+        void    log_table_map(std::ostream& os) const;
+        void    log_userfunc_map(std::ostream& os) const;
+        void    log_libfunc_map(std::ostream& os) const;
     };
 
     /**
@@ -676,10 +686,7 @@ namespace avm
         std::string     get_type() const override;
     private:
         tableref        table_val_;
-        std::ostream&   log(std::ostream& os) const override;
-        bool            is_indexed() const;
-        void            log_indexed(std::ostream& os) const;
-        void            log_paired(std::ostream& os) const;        
+        std::ostream&   log(std::ostream& os) const override;     
         bool            eq(AvmMemcell const& other) const override;
         bool            gt(AvmMemcell const& other) const override;
         bool            geq(AvmMemcell const& other) const override;

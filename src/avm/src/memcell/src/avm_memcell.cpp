@@ -651,57 +651,9 @@ namespace avm
             return "table";
         }
 
-        namespace
-        {
-            bool in_last_iteration(
-                    const std::map<AvmMemcell*, AvmMemcell*> _map,
-                        std::map<AvmMemcell*,  AvmMemcell*>::const_iterator _it)
-            {
-                // auto dup = _it;
-                // dup++;
-                return true; 
-            }
-        }
-
-        // void
-        // TableMemcell::log_indexed(std::ostream& os) const {
-        //     assert (is_indexed());
-        //     std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
-        //     os << "[ ";
-        //     for (it = table_val_->begin(); it != table_val_->end(); it++) {
-        //         os << it->second;
-        //         if (!in_last_iteration(*table_val_, it))
-        //             os << ", ";
-        //     }
-        //     os << " ]";
-        // } 
-
-        // void
-        // TableMemcell::log_paired(std::ostream& os) const {
-        //     assert (!is_indexed());
-        //     std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
-        //     os << "[ ";
-        //     for (it = table_val_->begin(); it != table_val_->end(); it++) {
-        //         os << "{ " << it->first << ", " << it->second << "}";
-        //         if (!in_last_iteration(*table_val_, it))
-        //             os << ", ";
-        //     }
-        //     os << " ]";
-        // }
-
-        // bool
-        // TableMemcell::is_indexed() const {
-        //     return table_val_->at(0)->get_type() == "number";
-        // }
-
         std::ostream&   
         TableMemcell::log(std::ostream& os) const {
-            // if (is_indexed())
-            //     log_indexed(os);
-            // else
-            //     log_paired(os);
-
-            return os;
+            return os << *table_val_;
         }
 
         AvmMemcell*
@@ -801,7 +753,7 @@ namespace avm
 
         std::ostream&   
         UserfuncMemcell::log(std::ostream& os) const {
-            return os << "user function"; 
+            return os << "user function " << func_val_; 
         }
 
         AvmMemcell*
@@ -901,7 +853,7 @@ namespace avm
 
         std::ostream&   
         LibfuncMemcell::log(std::ostream& os) const {
-            return os << "library function";  
+            return os << "library function " << lib_func_val_;  
         }
 
         AvmMemcell*
