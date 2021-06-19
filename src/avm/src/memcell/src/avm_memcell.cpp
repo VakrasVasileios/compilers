@@ -528,23 +528,97 @@ namespace avm
         //--------------BoolMemcell--------------//
 
         //--------------TableMemcell--------------//
+        tableref 
+        TableMemcell::table_val() const {
+            POSTCONDITION(table_val_ != nullptr);
+            return table_val_;
+        }
+
         bool                
         TableMemcell::contains(AvmMemcell* key) const {
             PRECONDITION(key != nullptr);
-            return table_val_->count(key);
+            if (auto num_memcell = num_memcell_cast(*key))
+                return table_val_->contains_num_elem(num_memcell->num_val());
+            else    
+            if (auto str_memcell = str_memcell_cast(*key))
+                return table_val_->contains_str_elem(str_memcell->str_val()); 
+            else       
+            if (auto bool_memcell = bool_memcell_cast(*key))
+                return table_val_->contains_bool_elem(bool_memcell->bool_val());
+            else    
+            if (auto table_memcell = table_memcell_cast(*key))
+                return table_val_->contains_tableref_elem(
+                    table_memcell->table_val());  
+            else        
+            if (auto userfunc_memcell = userfunc_memcell_cast(*key))
+                return table_val_->contains_userfunc_elem(
+                    userfunc_memcell->func_val());  
+            else
+            if (auto lib_func_memcell = libfunc_memcell_cast(*key))        
+                return table_val_->contains_libfunc_elem(
+                    lib_func_memcell->lib_func_val());
+            else 
+                return false;
         }
 
         AvmMemcell* 
         TableMemcell::get_elem(AvmMemcell* key) const {
             PRECONDITION(contains(key));
-            return table_val_->at(key);
+            if (auto num_memcell = num_memcell_cast(*key))
+                return table_val_->get_num_elem(num_memcell->num_val());
+            else    
+            if (auto str_memcell = str_memcell_cast(*key))
+                return table_val_->get_str_elem(str_memcell->str_val());
+            else       
+            if (auto bool_memcell = bool_memcell_cast(*key))
+                return table_val_->get_bool_elem(bool_memcell->bool_val());
+            else    
+            if (auto table_memcell = table_memcell_cast(*key))
+                return table_val_->get_tableref_elem(
+                    table_memcell->table_val()); 
+            else        
+            if (auto userfunc_memcell = userfunc_memcell_cast(*key))
+                return table_val_->get_userfunc_elem(
+                    userfunc_memcell->func_val());  
+            else
+            if (auto lib_func_memcell = libfunc_memcell_cast(*key))        
+                return table_val_->get_libfunc_elem(
+                    lib_func_memcell->lib_func_val());
+            else {
+                assert (false);
+                return nullptr;
+            }
         }
 
         void        
         TableMemcell::set_elem(AvmMemcell* key, AvmMemcell* value) {
             PRECONDITION(key != nullptr);
             PRECONDITION(value != nullptr);
-            table_val_->insert({key, value});
+            if (auto num_memcell = num_memcell_cast(*key))
+                table_val_->set_num_elem(num_memcell->num_val(), value);
+            else    
+            if (auto str_memcell = str_memcell_cast(*key))
+                table_val_->set_str_elem(str_memcell->str_val(), value);
+            else       
+            if (auto bool_memcell = bool_memcell_cast(*key))
+                table_val_->set_bool_elem(bool_memcell->bool_val(),
+                    value);
+            else    
+            if (auto table_memcell = table_memcell_cast(*key))
+                table_val_->set_tableref_elem(table_memcell->table_val(),
+                    value);
+            else        
+            if (auto userfunc_memcell = userfunc_memcell_cast(*key))
+                table_val_->set_userfunc_elem(userfunc_memcell->func_val(),
+                    value);
+            else
+            if (auto lib_func_memcell = libfunc_memcell_cast(*key))        
+                table_val_->set_libfunc_elem(lib_func_memcell->lib_func_val(),
+                    value);
+            else {
+                signals::log_error("cannot insert " + key->get_type() + " type"
+                " to table", std::cerr);
+            }
         }
 
         void
@@ -561,16 +635,9 @@ namespace avm
         bool        
         TableMemcell::eq(AvmMemcell const& other) const {
             if (auto table_memcell = table_memcell_cast(other)) 
-                return true; // TOCHANGE
-                // return table_val_ == table_memcell->table_val();
+                return table_val_ == table_memcell->table_val();
             else    
                 return equals_heteroids(*this, other);
-            // else
-            // if (auto table_memcell = table_memcell_cast(other))
-            //     // return table_val_ == table_memcell->table_val(); TODO: check maps
-            // // else    
-            // //     return to_bool() == other.to_bool(); 
-            // return new BoolMemcell(to_bool() == other.to_bool());
         } 
 
         bool
@@ -595,43 +662,43 @@ namespace avm
             }
         }
 
-        void
-        TableMemcell::log_indexed(std::ostream& os) const {
-            assert (is_indexed());
-            std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
-            os << "[ ";
-            for (it = table_val_->begin(); it != table_val_->end(); it++) {
-                os << it->second;
-                if (!in_last_iteration(*table_val_, it))
-                    os << ", ";
-            }
-            os << " ]";
-        } 
+        // void
+        // TableMemcell::log_indexed(std::ostream& os) const {
+        //     assert (is_indexed());
+        //     std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
+        //     os << "[ ";
+        //     for (it = table_val_->begin(); it != table_val_->end(); it++) {
+        //         os << it->second;
+        //         if (!in_last_iteration(*table_val_, it))
+        //             os << ", ";
+        //     }
+        //     os << " ]";
+        // } 
 
-        void
-        TableMemcell::log_paired(std::ostream& os) const {
-            assert (!is_indexed());
-            std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
-            os << "[ ";
-            for (it = table_val_->begin(); it != table_val_->end(); it++) {
-                os << "{ " << it->first << ", " << it->second << "}";
-                if (!in_last_iteration(*table_val_, it))
-                    os << ", ";
-            }
-            os << " ]";
-        }
+        // void
+        // TableMemcell::log_paired(std::ostream& os) const {
+        //     assert (!is_indexed());
+        //     std::map<AvmMemcell*, AvmMemcell*>::const_iterator it;
+        //     os << "[ ";
+        //     for (it = table_val_->begin(); it != table_val_->end(); it++) {
+        //         os << "{ " << it->first << ", " << it->second << "}";
+        //         if (!in_last_iteration(*table_val_, it))
+        //             os << ", ";
+        //     }
+        //     os << " ]";
+        // }
 
-        bool
-        TableMemcell::is_indexed() const {
-            return table_val_->at(0)->get_type() == "number";
-        }
+        // bool
+        // TableMemcell::is_indexed() const {
+        //     return table_val_->at(0)->get_type() == "number";
+        // }
 
         std::ostream&   
         TableMemcell::log(std::ostream& os) const {
-            if (is_indexed())
-                log_indexed(os);
-            else
-                log_paired(os);
+            // if (is_indexed())
+            //     log_indexed(os);
+            // else
+            //     log_paired(os);
 
             return os;
         }

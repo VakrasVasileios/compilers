@@ -103,6 +103,40 @@ protected:
     }
 };
 
+TEST_F(MemcellSuite, table_set_elem_now_table_contains_key) {
+    ctable_->set_elem(fnum_, fnum2_);
+    GTEST_ASSERT_TRUE(ctable_->contains(fnum_));
+}
+
+TEST_F(MemcellSuite, table_get_elem_returns_inserted_key) {
+    ctable_->set_elem(fnum2_, fnum_);
+    GTEST_ASSERT_TRUE(*fnum_ == *ctable_->get_elem(fnum2_));
+}
+
+TEST_F(MemcellSuite, table_delete_doesnt_delete_shared_ptr) {
+    auto t = new avm::memcell::TableMemcell();
+    avm::memcell::AvmMemcell* ft = t;
+    ft = ctable2_->clone();
+    delete t;
+    GTEST_ASSERT_FALSE(ctable2_ == nullptr);
+    GTEST_ASSERT_FALSE(ctable2_->table_val() == nullptr);
+}
+
+TEST_F(MemcellSuite, table_set_values_and_get_them) {
+    ctable_->set_elem(fnum_, fnum2_);
+    ctable_->set_elem(fstr_, fstr2_);
+    ctable_->set_elem(fbool_, fbool2_);
+    ctable_->set_elem(ftable2_, fnum2_);
+    ctable_->set_elem(fuserfunc_, fuserfunc2_);
+    ctable_->set_elem(flibfunc_, flibfunc2_);
+    GTEST_ASSERT_TRUE(*ctable_->get_elem(fnum_) == *fnum2_);
+    GTEST_ASSERT_TRUE(*ctable_->get_elem(fstr_) == *fstr2_);
+    GTEST_ASSERT_TRUE(*ctable_->get_elem(fbool_) == *fbool2_);
+    GTEST_ASSERT_TRUE(*ctable_->get_elem(ftable2_) == *fnum2_);
+    GTEST_ASSERT_TRUE(*ctable_->get_elem(fuserfunc_) == *fuserfunc2_);
+    GTEST_ASSERT_TRUE(*ctable_->get_elem(flibfunc_) == *flibfunc2_);
+}
+
 TEST_F(MemcellSuite, to_bool_nonzero_num_is_true) {
     GTEST_ASSERT_TRUE(fnum_->to_bool());
 }
