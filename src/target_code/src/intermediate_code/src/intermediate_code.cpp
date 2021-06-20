@@ -90,8 +90,9 @@ namespace target_code
         sym = EmitIfTableItem(sym, line);
         auto index = new expression::StringConstant(std::string(id));
 
-        return syntax_analysis::DefineNewSymbol(expression::TABLE_ITEM,
-            sym->get_id().c_str(), index, line);
+        return new expression::Symbol(expression::TABLE_ITEM, sym->get_id().c_str(),
+            line, syntax_analysis::CurrScope(), syntax_analysis::CurrScopeSpace(),
+                sym->get_offset(), index);    
     }
 
     void checkValidCall(expression::Symbol* called_symbol, 

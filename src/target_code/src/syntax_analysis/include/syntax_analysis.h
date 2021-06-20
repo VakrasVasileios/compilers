@@ -159,6 +159,9 @@ namespace target_code
      */
     expression::Symbol*     DefineNewSymbol(expression::ExprType type,
         const char* id, expression::Expression* index, unsigned int line);
+
+    expression::Symbol* NewSymbol(expression::ExprType type, const char* id,
+    expression::Expression* index, unsigned int line);
     /**
      * @brief Inserts a new anonymous function, parsed at a src line,
      * to the symbol table.
