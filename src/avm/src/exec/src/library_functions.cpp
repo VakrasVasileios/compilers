@@ -22,6 +22,11 @@ namespace avm
                     AVM_NUMACTUALS_OFFSET);
             }
 
+            unsigned total_actuals(unsigned topsp) {
+                return memory::stack_segment.get_envvalue(topsp +
+                    AVM_NUMACTUALS_OFFSET);
+            }
+
             const memcell::AvmMemcell* get_actual(unsigned i) {
                 assert(i <= total_actuals());
                 return memory::stack_segment[registers::topsp + AVM_STACKENV_SIZE + i];
@@ -94,12 +99,15 @@ namespace avm
             }
 
             void libfunc_totalarguments() {
-                if (exec::scope_depth == 0)
+                if (exec::scope_depth == 1)
                      exec::execute_assign(&registers::retval,
                         new memcell::NilMemcell());
-                else
+                else {
+                    auto mem = memory::stack_segment[registers::topsp+AVM_SAVEDTOPSP_OFFSET];
+                    unsigned topsp = dynamic_cast<memcell::NumMemcell*>(mem)->num_val();
                     exec::execute_assign(&registers::retval,
-                            new memcell::NumMemcell(total_actuals()));
+                            new memcell::NumMemcell(total_actuals(topsp)));
+                }
             }
 
             void libfunc_argument() {
