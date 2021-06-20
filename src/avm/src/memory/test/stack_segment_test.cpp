@@ -68,7 +68,7 @@ TEST_F(StackSegmentSuite, pop_after_n_pushes_returns_top_element) {
     stack->push(memcell);
     stack->push(memcell);
     stack->push(memcell2);
-    GTEST_ASSERT_EQ(stack->pop(), memcell2);
+    GTEST_ASSERT_EQ(*stack->pop(), memcell2);
 }
 
 TEST_F(StackSegmentSuite, vmarg_with_valid_offset_has_legal_index) {

@@ -1,4 +1,5 @@
 #include "execute_function.h"
+#include "../include/execute_assign.h"
 #include "../../memory/include/memory.h"
 #include "../../registers/include/registers.h"
 #include "../../signals/include/signals.h"
@@ -157,9 +158,13 @@ namespace avm
         // garbage_collect(old_top);
     }
 
-    void execute_pusharg(memcell::AvmMemcell* memcell) {
+    void execute_pusharg(memcell::AvmMemcell** memcell) {
         PRECONDITION(memcell);
-        memory::stack_segment.push(memcell);
+        //memory::stack_segment.push(memcell);
+        // std::cout << "top is this ma nigga " << registers::top << std::endl;
+        memory::stack_segment.push(new memcell::UndefMemcell());
+        execute_assign(memory::stack_segment.top(), *memcell);
+        POSTCONDITION(memory::stack_segment[registers::top] != nullptr);
         ++total_actuals;
     }
     

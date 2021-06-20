@@ -23,6 +23,7 @@ namespace avm
 
             void VisitFormalVmarg(const target_code::FormalVmarg* arg) override {
                 assert(arg != nullptr);
+                std::cout << "you dropped this king" << std::endl;
                 result_ = memory::stack_segment.environment(*arg);
             }
 

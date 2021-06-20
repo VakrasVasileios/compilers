@@ -1,4 +1,5 @@
 #include "../include/stack_segment.h"
+#include <iostream>
 
 namespace avm
 {
@@ -23,11 +24,11 @@ namespace avm
         return size() == AVM_STACKSIZE;
     }
 
-    memcell::AvmMemcell*
+    memcell::AvmMemcell**
     StackSegment::top() {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
-        return memcells[registers::top];
+        return &memcells[registers::top];
     }
 
     void
@@ -39,7 +40,7 @@ namespace avm
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
     }
 
-    memcell::AvmMemcell*
+    memcell::AvmMemcell**
     StackSegment::pop() {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!empty());
@@ -75,6 +76,7 @@ namespace avm
     StackSegment::environment(const target_code::FormalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!illegal_index(corresponding_index(vmarg)));
+        std::cout << "heres your index king " << corresponding_index(vmarg) << std::endl;
         return &memcells[corresponding_index(vmarg)];
     }
     bool
@@ -102,7 +104,7 @@ namespace avm
     StackSegment::corresponding_index(const target_code::FormalVmarg vmarg)
     const {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        return registers::topsp + AVM_STACKENV_SIZE + 1 + vmarg.get_value();
+        return registers::topsp + AVM_STACKENV_SIZE + vmarg.get_value();
     }
 
     void                

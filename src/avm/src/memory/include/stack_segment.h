@@ -59,7 +59,7 @@ namespace avm
        * @return a read/write access to the top
        * avm memcell of non empty this StackSegment 
        */
-      memcell::AvmMemcell*  top();
+      memcell::AvmMemcell**  top();
       /**
        * @brief Pushes a memcell at the top of this
        * StackSegment.
@@ -75,7 +75,7 @@ namespace avm
        * @return a read/write access to the popped avm memcell
        * from the top of this non empty StackSegment
        */
-      memcell::AvmMemcell*  pop();
+      memcell::AvmMemcell**  pop();
       /**
        * @brief Returns an O(1) access to an inserted 
        * avm memcell.

@@ -32,7 +32,7 @@ namespace avm
                 auto lv = translate_operand(inst->get_result(), &registers::ax);
                 auto rv = *translate_operand(inst->get_arg1(), &registers::bx);
                 if (inst->get_result()->get_type() == target_code::RETVAL_a)
-                    exec::execute_assign(&registers::retval, *lv);
+                    exec::execute_assign(&registers::retval, rv);
                 else if (inst->get_arg1()->get_type() != target_code::RETVAL_a)
                     exec::execute_assign(lv, rv);
             }
@@ -143,7 +143,7 @@ namespace avm
 
             void VisitPushArg(target_code::PushArg* inst) const override {
                 assert(inst != nullptr);
-                auto arg = *translate_operand(inst->get_result(), &registers::ax);
+                auto arg = translate_operand(inst->get_result(), &registers::ax);
                 exec::execute_pusharg(arg);
             }
 

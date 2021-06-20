@@ -188,8 +188,8 @@ namespace target_code
                     << " \"" << symbol->get_id() << "\""
                     << " (line " << symbol->get_line() << ")" 
                     << " (scope " << symbol->get_scope() << ")"
-                    /* << " (space " << symbol->space_to_string() << ")"
-                    << " (offset " << symbol->get_offset() << ")" */;
+                    << " (space " << symbol->space_to_string() << ")"
+                    << " (offset " << symbol->get_offset() << ")";
     }
 
     unsigned int 
