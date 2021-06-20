@@ -33,7 +33,9 @@ namespace avm
                 auto rv = *translate_operand(inst->get_arg1(), &registers::bx);
                 if (inst->get_result()->get_type() == target_code::RETVAL_a)
                     exec::execute_assign(&registers::retval, rv);
-                else if (inst->get_arg1()->get_type() != target_code::RETVAL_a)
+                else if (inst->get_arg1()->get_type() == target_code::RETVAL_a)
+                    exec::execute_assign(lv, registers::retval);
+                else
                     exec::execute_assign(lv, rv);
             }
 

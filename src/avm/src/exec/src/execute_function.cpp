@@ -14,14 +14,14 @@ namespace avm
     {
         void call_saveenvironment() {
             memory::stack_segment.push_envvalue(total_actuals);
-            // std::cout << *memory::stack_segment[registers::top] << std::endl;
+            std::cout << registers::top << std::endl;
             memory::stack_segment.push_envvalue(registers::pc + 1);
-            // std::cout << *memory::stack_segment[registers::top] << std::endl;
+            std::cout << registers::top << std::endl;
             memory::stack_segment.push_envvalue(registers::top + total_actuals
                 + 2);
-            // std::cout << *memory::stack_segment[registers::top] << std::endl;
+            std::cout << registers::top << std::endl;
             memory::stack_segment.push_envvalue(registers::topsp);
-            // std::cout << *memory::stack_segment[registers::top] << std::endl;
+            std::cout << registers::top << std::endl;
 
         }
 
@@ -132,13 +132,13 @@ namespace avm
         void restore_environment() {
             registers::top = memory::stack_segment.get_envvalue(
                 registers::topsp + AVM_SAVEDTOP_OFFSET);   
-               // std::cout << "recov top: " << registers::top << std::endl;
+               std::cout << "recov top: " << registers::top << std::endl;
             registers::pc = memory::stack_segment.get_envvalue(
                 registers::topsp + AVM_SAVEDPC_OFFSET);
-                //std::cout << "recov pc: " << registers::pc << std::endl;
+                std::cout << "recov pc: " << registers::pc << std::endl;
             registers::topsp = memory::stack_segment.get_envvalue(
                 registers::topsp + AVM_SAVEDTOPSP_OFFSET);
-                //std::cout << "recov topsp: " << registers::topsp << std::endl;
+                std::cout << "recov topsp: " << registers::topsp << std::endl;
         }
 
         void garbage_collect(unsigned old_top) {
@@ -160,8 +160,6 @@ namespace avm
 
     void execute_pusharg(memcell::AvmMemcell** memcell) {
         PRECONDITION(memcell);
-        //memory::stack_segment.push(memcell);
-        // std::cout << "top is this ma nigga " << registers::top << std::endl;
         memory::stack_segment.push(new memcell::UndefMemcell());
         execute_assign(memory::stack_segment.top(), *memcell);
         POSTCONDITION(memory::stack_segment[registers::top] != nullptr);

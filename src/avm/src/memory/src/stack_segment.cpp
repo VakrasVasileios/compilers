@@ -76,7 +76,7 @@ namespace avm
     StackSegment::environment(const target_code::FormalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!illegal_index(corresponding_index(vmarg)));
-        std::cout << "heres your index king " << corresponding_index(vmarg) << std::endl;
+        std::cout << "arg offset " << corresponding_index(vmarg) << std::endl;
         return &memcells[corresponding_index(vmarg)];
     }
     bool
@@ -97,7 +97,7 @@ namespace avm
     StackSegment::corresponding_index(const target_code::LocalVmarg vmarg)
     const {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
-        return registers::topsp - vmarg.get_value();
+        return registers::topsp - 1 - vmarg.get_value();
     }
 
     unsigned            
