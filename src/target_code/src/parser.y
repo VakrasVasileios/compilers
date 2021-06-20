@@ -641,7 +641,9 @@ member:     lvalue '.' ID           {
                                         auto item = $1;
                                         auto index = $3;
                                         auto sym = EmitIfTableItem(item, yylineno);
-                                        $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index, yylineno);
+                                        // $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index, yylineno);
+                                        $$ = new Symbol(TABLE_ITEM, sym->get_id().c_str(), yylineno,
+                                            CurrScope(), CurrScopeSpace(), sym->get_offset(), index);
                                         DLOG("member -> lvalue[expr]");
                                     }
             | call '.' ID           {
@@ -654,7 +656,9 @@ member:     lvalue '.' ID           {
                                         auto item = ($1)->get_ret_val();
                                         auto index = $3;
                                         auto sym = EmitIfTableItem(item, yylineno);
-                                        $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index, yylineno);
+                                        $$ = new Symbol(TABLE_ITEM, sym->get_id().c_str(), yylineno,
+                                            CurrScope(), CurrScopeSpace(), sym->get_offset(), index);
+                                        // $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index, yylineno);
                                         DLOG("member -> call[expr]");
                                     }
             ;

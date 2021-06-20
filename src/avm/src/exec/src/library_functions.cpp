@@ -21,7 +21,7 @@ namespace avm
                     AVM_NUMACTUALS_OFFSET);
             }
 
-            memcell::AvmMemcell* get_actual(unsigned i) {
+            const memcell::AvmMemcell* get_actual(unsigned i) {
                 assert(i <= total_actuals());
                 return memory::stack_segment[registers::topsp + AVM_STACKENV_SIZE + i];
             }
@@ -29,8 +29,10 @@ namespace avm
             void libfunc_print() {
                 unsigned n = total_actuals();
                 for (unsigned i = 0; i < n; i++) {
-                    std::cout << *get_actual(i) ;
+                    std::cout << *get_actual(i);
                 }
+                exec::execute_assign(&registers::retval,
+                    new memcell::UndefMemcell());
             }
 
             void libfunc_typeof() {
@@ -82,11 +84,11 @@ namespace avm
                 unsigned totalactuals = total_actuals();
                 if (totalactuals < 1)
                     signals::log_error("Too few arguments for 'argument'", std::cerr);
-                else if (dynamic_cast<memcell::NumMemcell*>(get_actual(0)) == nullptr) {
+                else if (dynamic_cast<const memcell::NumMemcell*>(get_actual(0)) == nullptr) {
                     signals::log_error("Argument expected to be number", std::cerr);
                 }
                 else {
-                    unsigned offset = dynamic_cast<memcell::NumMemcell*>(get_actual(0))->num_val();
+                    unsigned offset = dynamic_cast<const memcell::NumMemcell*>(get_actual(0))->num_val();
                     
                     auto old_topsp_mem = memory::stack_segment[registers::topsp + AVM_SAVEDTOPSP_OFFSET];
                     unsigned old_topsp = ((memcell::NumMemcell*)old_topsp_mem)->num_val();
@@ -109,10 +111,10 @@ namespace avm
                 unsigned totalactuals = total_actuals();
                 if (totalactuals < 1)
                     signals::log_error("Too few arguments", std::cerr);
-                else if (dynamic_cast<memcell::StringMemcell*>(get_actual(0)) == nullptr)
+                else if (dynamic_cast<const memcell::StringMemcell*>(get_actual(0)) == nullptr)
                     signals::log_error("Argument expected to be string", std::cerr);
                 else{
-                    std::string str = dynamic_cast<memcell::StringMemcell*>(get_actual(0))->str_val();
+                    std::string str = dynamic_cast<const memcell::StringMemcell*>(get_actual(0))->str_val();
                     double num = std::stod(str);
                     exec::execute_assign(&registers::retval, new memcell::NumMemcell(num));
                 }
@@ -122,10 +124,10 @@ namespace avm
                 unsigned totalactuals = total_actuals();
                 if (totalactuals < 1)
                     signals::log_error("Too few arguments", std::cerr);
-                else if (dynamic_cast<memcell::NumMemcell*>(get_actual(0)) == nullptr)
+                else if (dynamic_cast<const memcell::NumMemcell*>(get_actual(0)) == nullptr)
                     signals::log_error("Argument expected to be number", std::cerr);
                 else{
-                    double arg = dynamic_cast<memcell::NumMemcell*>(get_actual(0))->num_val();
+                    double arg = dynamic_cast<const memcell::NumMemcell*>(get_actual(0))->num_val();
                     double sqrt_out = std::sqrt(arg);
                     exec::execute_assign(&registers::retval, new memcell::NumMemcell(sqrt_out));
                 }
@@ -135,10 +137,10 @@ namespace avm
                 unsigned totalactuals = total_actuals();
                 if (totalactuals < 1)
                     signals::log_error("Too few arguments", std::cerr);
-                else if (dynamic_cast<memcell::NumMemcell*>(get_actual(0)) == nullptr)
+                else if (dynamic_cast<const memcell::NumMemcell*>(get_actual(0)) == nullptr)
                     signals::log_error("Argument expected to be number", std::cerr);
                 else{
-                    double arg = dynamic_cast<memcell::NumMemcell*>(get_actual(0))->num_val();
+                    double arg = dynamic_cast<const memcell::NumMemcell*>(get_actual(0))->num_val();
                     double cos_out = std::cos(arg);
                     exec::execute_assign(&registers::retval, new memcell::NumMemcell(cos_out));
                 }
@@ -148,10 +150,10 @@ namespace avm
                 unsigned totalactuals = total_actuals();
                 if (totalactuals < 1)
                     signals::log_error("Too few arguments", std::cerr);
-                else if (dynamic_cast<memcell::NumMemcell*>(get_actual(0)) == nullptr)
+                else if (dynamic_cast<const memcell::NumMemcell*>(get_actual(0)) == nullptr)
                     signals::log_error("Argument expected to be number", std::cerr);
                 else{
-                    double arg = dynamic_cast<memcell::NumMemcell*>(get_actual(0))->num_val();
+                    double arg = dynamic_cast<const memcell::NumMemcell*>(get_actual(0))->num_val();
                     double sin_out = std::sin(arg);
                     exec::execute_assign(&registers::retval, new memcell::NumMemcell(sin_out));
                 }

@@ -181,7 +181,7 @@ namespace avm
                 assert(inst != nullptr);
                 auto table = translate_operand(inst->get_result(), &registers::ax);
                 auto key = *translate_operand(inst->get_arg1(), &registers::bx);
-                auto item = *translate_operand(inst->get_arg1(), &registers::cx);
+                auto item = *translate_operand(inst->get_arg2(), &registers::cx);
                 exec::execute_tablesetelem(table, key, item);
             }
         };

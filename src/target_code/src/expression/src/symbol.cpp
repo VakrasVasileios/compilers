@@ -80,7 +80,7 @@ namespace target_code
 
     Expression* 
     Symbol:: get_index() const {
-        PRECONDITION(get_type() == TABLE_ITEM);
+       // PRECONDITION(get_type() == TABLE_ITEM);
         return index;
     }
 

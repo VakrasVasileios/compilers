@@ -155,11 +155,11 @@ namespace avm
             auto first = true;
             std::map<double, AvmMemcell*>::const_iterator it;
             os << "[ ";
-            for (it = num_map.begin(); it != num_map.end(); it++) {
+            for (double i = 0; i < num_map.size(); i++) {
                 if (!first)
                     os << ", ";
-                first = false;    
-                os << *it->second;
+                first = false;
+                os << *num_map.at(i);
             }
             os << " ]";
         } 

@@ -717,21 +717,21 @@ TEST_F(MemcellSuite, neq_op_libfunc2_with_nil_is_true) {
 }
 
 TEST_F(MemcellSuite, arithmetic_op_non_numerics_exc_strs_is_error) {
-    GTEST_ASSERT_FALSE(*fnum_ - *fbool_);
-    GTEST_ASSERT_FALSE(*fbool_ - *fnum_);
-    GTEST_ASSERT_FALSE(*fnum_ * *ftable_);
-    GTEST_ASSERT_FALSE(*ftable_ + *fnum_);
-    GTEST_ASSERT_FALSE(*fnum_ * *flibfunc_);
-    GTEST_ASSERT_FALSE(*flibfunc_ * *fnum_);
-    GTEST_ASSERT_FALSE(*fnum_ / *fuserfunc_);
-    GTEST_ASSERT_FALSE(*fuserfunc_ / *fnum_);
-    GTEST_ASSERT_FALSE(*fnum_ * *fundef_);
-    GTEST_ASSERT_FALSE(*fundef_ - *fnum_);
-    GTEST_ASSERT_FALSE(*fnum_ % *fnil_);
-    GTEST_ASSERT_FALSE(*fnil_ % *fnum_);
-    GTEST_ASSERT_FALSE(*flibfunc_ / *fuserfunc_);
-    GTEST_ASSERT_FALSE(*fnil_ % *ftable_);
-    GTEST_ASSERT_FALSE(*fundef_ % *ftable_);
+    GTEST_ASSERT_EQ(*fnum_ - *fbool_, nullptr);
+    GTEST_ASSERT_EQ(*fbool_ - *fnum_, nullptr);
+    GTEST_ASSERT_EQ(*fnum_ * *ftable_, nullptr);
+    GTEST_ASSERT_EQ(*ftable_ + *fnum_, nullptr);
+    GTEST_ASSERT_EQ(*fnum_ * *flibfunc_, nullptr);
+    GTEST_ASSERT_EQ(*flibfunc_ * *fnum_, nullptr);
+    GTEST_ASSERT_EQ(*fnum_ / *fuserfunc_, nullptr);
+    GTEST_ASSERT_EQ(*fuserfunc_ / *fnum_, nullptr);
+    GTEST_ASSERT_EQ(*fnum_ * *fundef_, nullptr);
+    GTEST_ASSERT_EQ(*fundef_ - *fnum_, nullptr);
+    GTEST_ASSERT_EQ(*fnum_ % *fnil_, nullptr);
+    GTEST_ASSERT_EQ(*fnil_ % *fnum_, nullptr);
+    GTEST_ASSERT_EQ(*flibfunc_ / *fuserfunc_, nullptr);
+    GTEST_ASSERT_EQ(*fnil_ % *ftable_, nullptr);
+    GTEST_ASSERT_EQ(*fundef_ % *ftable_, nullptr);
 }
 
 TEST_F(MemcellSuite, add_op_one_plus_one_is_two) {

@@ -22,7 +22,6 @@ namespace avm
             //std::cout << registers::top << std::endl;
             memory::stack_segment.push_envvalue(registers::topsp);
             //std::cout << registers::top << std::endl;
-
         }
 
         class MemcellCaller final : public memcell::AvmMemcellVisitor {
