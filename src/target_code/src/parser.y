@@ -639,6 +639,9 @@ member:     lvalue '.' ID           {
                                     }
             | lvalue '[' expr ']'   {
                                         auto item = $1;
+                                        if ($3->get_type() == BOOL) {
+                                            $3 = ConcludeShortCircuit(BOOL_EXPR_CAST($3), yylineno);
+                                        }
                                         auto index = $3;
                                         auto sym = EmitIfTableItem(item, yylineno);
                                         $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index, yylineno);
@@ -652,6 +655,9 @@ member:     lvalue '.' ID           {
                                     }
             | call '[' expr ']'     {
                                         auto item = ($1)->get_ret_val();
+                                        if ($3->get_type() == BOOL) {
+                                            $3 = ConcludeShortCircuit(BOOL_EXPR_CAST($3), yylineno);
+                                        }
                                         auto index = $3;
                                         auto sym = EmitIfTableItem(item, yylineno);
                                         $$ = DefineNewSymbol(TABLE_ITEM, sym->get_id().c_str(), index, yylineno);
