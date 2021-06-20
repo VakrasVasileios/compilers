@@ -21,7 +21,7 @@ namespace avm
                 auto instruction = memory::code_segment[registers::pc - 1];
                 signals::curr_line = instruction->get_src_line();
                 unsigned old_pc = registers::pc;
-                std::cout << "executing "<< instruction;
+                //std::cout << "executing "<< instruction;
                 execute_instruction(instruction);
                 if (registers::pc == old_pc) {
                     registers::pc++;

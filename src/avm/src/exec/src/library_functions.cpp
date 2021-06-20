@@ -1,14 +1,14 @@
 #include "library_functions.h"
-#include "math.h"
-#include <map>
-#include <iostream>
-#include <functional>
 #include "../../memcell/include/avm_memcell.h"
 #include "../../signals/include/signals.h"
 #include "../../registers/include/registers.h"
 #include "../../memory/include/memory.h"
 #include "../include/execute_function.h"
 #include "../include/execute_assign.h"
+#include "math.h"
+#include <map>
+#include <string>
+#include <iostream>
 
 namespace avm
 {
@@ -29,7 +29,7 @@ namespace avm
             void libfunc_print() {
                 unsigned n = total_actuals();
                 for (unsigned i = 0; i < n; i++) {
-                    std::cout << *get_actual(i);
+                    std::cout << *get_actual(i) ;
                 }
             }
 
@@ -48,6 +48,7 @@ namespace avm
 
             void libfunc_input() {
                 std::string inp;
+                std::cout << "cin king" << std::endl;
                 std::cin >> inp;
                 exec::execute_assign(&registers::retval, new memcell::StringMemcell(inp));
             }
@@ -171,17 +172,17 @@ namespace avm
             };
 
             void init_libfuncs() {
-                libs.insert( {std::string("print"), 0} );
-                libs.insert( {std::string("typeof"), 1} );
-                libs.insert( {std::string("input"), 2} );
-                libs.insert( {std::string("objectmemberkeys"), 3} );
-                libs.insert( {std::string("objectcopy"), 4} );
-                libs.insert( {std::string("totalarguments"), 5} );
-                libs.insert( {std::string("argument"), 6} );
-                libs.insert( {std::string("strtonum"), 7} );
-                libs.insert( {std::string("sqrt"), 8} );
-                libs.insert( {std::string("cos"), 9} );
-                libs.insert( {std::string("sin"), 10} );
+                libs.insert( {"print", 0} );
+                libs.insert( {"typeof", 1} );
+                libs.insert( {"input", 2} );
+                libs.insert( {"objectmemberkeys", 3} );
+                libs.insert( {"objectcopy", 4} );
+                libs.insert( {"totalarguments", 5} );
+                libs.insert( {"argument", 6} );
+                libs.insert( {"strtonum", 7} );
+                libs.insert( {"sqrt", 8} );
+                libs.insert( {"cos", 9} );
+                libs.insert( {"sin", 10} );
             }
 
             bool unsupported_libfunc(std::string libfunc_id) {
@@ -194,7 +195,6 @@ namespace avm
             }
 
             void execute_libfunc(unsigned i) {
-                std::cout << i << std::endl;
                 assert (i < 11);
                 libfuncs[i]();
             }
@@ -205,18 +205,65 @@ namespace avm
             }
         } // namespace
 
-        void call_libfunc(const std::string libfunc_id) {
-            if (libs.empty())
-                init_libfuncs();
-            if (unsupported_libfunc(libfunc_id)) {
-                signals::log_error(
-                    "Unsupported library function " + libfunc_id + " is called", std::cerr);
-            } else {
-                unsigned index = libs[libfunc_id];
+        void call_libfunc(const std::string& libfunc_id) {
+            if (std::string("print").compare(libfunc_id)) {
                 execute_enterlibfunc();
-                execute_libfunc(index);
+                libfunc_print();
                 execute_exitlibfunc();
             }
+            else if (std::string("typeof").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_typeof();
+                execute_exitlibfunc();
+            }
+            else if (std::string("input").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_input();
+                execute_exitlibfunc();
+            }
+            else if (std::string("objectmemberkeys").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_objectmemberkeys();
+                execute_exitlibfunc();
+            }
+            else if (std::string("objectcopy").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_objectcopy();
+                execute_exitlibfunc();
+            }
+            else if (std::string("totalarguments").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_totalarguments();
+                execute_exitlibfunc();
+            }
+            else if (std::string("argument").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_argument();
+                execute_exitlibfunc();
+            }
+            else if (std::string("strtonum").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_strtonum();
+                execute_exitlibfunc();
+            }
+            else if (std::string("sqrt").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_sqrt();
+                execute_exitlibfunc();
+            }
+            else if (std::string("cos").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_cos();
+                execute_exitlibfunc();
+            }
+            else if (std::string("sin").compare(libfunc_id)) {
+                execute_enterlibfunc();
+                libfunc_sin();
+                execute_exitlibfunc();
+            }
+            else
+                signals::log_error(
+                    "Unsupported library function " + libfunc_id + " is called", std::cerr);
         }
     } // namespace exec
 } // namespace avm

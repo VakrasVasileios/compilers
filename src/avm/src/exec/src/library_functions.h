@@ -7,7 +7,7 @@ namespace avm
 {
     namespace exec
     {
-        void call_libfunc(const std::string libfunc_id);
+        void call_libfunc(const std::string& libfunc_id);
     }
 }
 
