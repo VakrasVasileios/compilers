@@ -16,11 +16,11 @@ namespace avm
         executable.open(_file, std::ios::in | std::ios::binary);
         unsigned int size;
 
-        auto read_string = [size, &executable]() -> std::string {
+        auto read_string = [&executable]() -> std::string {
             std::string str;
             char c;
             do {
-                executable >> c;
+                executable.read((char*)&c, sizeof(char));
                 str += c;
             } while (c != '\0');
             return str;

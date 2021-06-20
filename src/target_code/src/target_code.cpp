@@ -44,7 +44,8 @@ namespace target_code {
             bin_file.write((char*)&target, sizeof(double));
         };
         auto write_string = [&bin_file](std::string& target) {
-            bin_file.write(target.c_str(), target.size()+1);
+            std::streamsize siz(target.size()+1);
+            bin_file.write(target.c_str(), siz);
         };
 
         write_unsigned(magic_num);
