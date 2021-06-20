@@ -8,6 +8,7 @@
 #include "math.h"
 #include <map>
 #include <string>
+#include <cstring>
 #include <iostream>
 
 namespace avm
@@ -50,9 +51,26 @@ namespace avm
 
             void libfunc_input() {
                 std::string inp;
-                std::cout << "cin king" << std::endl;
                 std::cin >> inp;
-                exec::execute_assign(&registers::retval, new memcell::StringMemcell(inp));
+                /* if (*inp.begin() == '\"' && inp.back() == '\"') {
+                    inp.pop_back();
+                    inp.erase(inp.begin());
+                    exec::execute_assign(&registers::retval, new memcell::StringMemcell(inp));
+                } */
+                /* else {
+                    exec::execute_assign(&registers::retval, new memcell::NumMemcell(std::stod(inp)));
+                } */
+                if (!std::strcmp("true", inp.c_str())) {
+                    exec::execute_assign(&registers::retval, new memcell::BoolMemcell(true));
+                }
+                else if (!std::strcmp("false", inp.c_str())) {
+                    exec::execute_assign(&registers::retval, new memcell::BoolMemcell(false));
+                }
+                else if (!std::strcmp("nil", inp.c_str())) {
+                    exec::execute_assign(&registers::retval, new memcell::NilMemcell());
+                }
+                else
+                    exec::execute_assign(&registers::retval, new memcell::StringMemcell(inp));
             }
 
             void libfunc_objectmemberkeys() {
@@ -208,58 +226,61 @@ namespace avm
         } // namespace
 
         void call_libfunc(const std::string& libfunc_id) {
-            if (std::string("print").compare(libfunc_id)) {
+            if (!std::strcmp("print", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_print();
                 execute_exitlibfunc();
             }
-            else if (std::string("typeof").compare(libfunc_id)) {
+            else if (!std::strcmp("typeof", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_typeof();
                 execute_exitlibfunc();
             }
-            else if (std::string("input").compare(libfunc_id)) {
+            else if (!std::strcmp("input", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_input();
                 execute_exitlibfunc();
             }
-            else if (std::string("objectmemberkeys").compare(libfunc_id)) {
+            else if (!std::strcmp("objectmemberkeys", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_objectmemberkeys();
                 execute_exitlibfunc();
             }
-            else if (std::string("objectcopy").compare(libfunc_id)) {
+            else if (!std::strcmp("objectcopy", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_objectcopy();
                 execute_exitlibfunc();
             }
-            else if (std::string("totalarguments").compare(libfunc_id)) {
+            else if (!std::strcmp("totalarguments", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_totalarguments();
                 execute_exitlibfunc();
             }
-            else if (std::string("argument").compare(libfunc_id)) {
+            else if (!std::strcmp("argument", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_argument();
                 execute_exitlibfunc();
             }
-            else if (std::string("strtonum").compare(libfunc_id)) {
+            else if (!std::strcmp("strtonum", libfunc_id.c_str())) {
                 execute_enterlibfunc();
                 libfunc_strtonum();
                 execute_exitlibfunc();
             }
-            else if (std::string("sqrt").compare(libfunc_id)) {
+            else if (!std::strcmp("sqrt", libfunc_id.c_str())) {
                 execute_enterlibfunc();
+                
                 libfunc_sqrt();
                 execute_exitlibfunc();
             }
-            else if (std::string("cos").compare(libfunc_id)) {
+            else if (!std::strcmp("cos", libfunc_id.c_str())) {
                 execute_enterlibfunc();
+                
                 libfunc_cos();
                 execute_exitlibfunc();
             }
-            else if (std::string("sin").compare(libfunc_id)) {
+            else if (!std::strcmp("sin", libfunc_id.c_str())) {
                 execute_enterlibfunc();
+                
                 libfunc_sin();
                 execute_exitlibfunc();
             }
