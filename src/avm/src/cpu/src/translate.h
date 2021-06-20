@@ -22,8 +22,8 @@ namespace avm
      * @return a read/write access to the translated memcell,
      * not null 
      */
-    memcell::AvmMemcell* translate_operand(const target_code::Vmarg* vmarg,
-         memcell::AvmMemcell* _register);
+    memcell::AvmMemcell** translate_operand(const target_code::Vmarg* vmarg,
+         memcell::AvmMemcell** _register);
     }
 }
 

@@ -52,7 +52,7 @@ namespace avm
      * from the result vmarg to execute the pusharg on,
      * not null 
      */
-    void execute_pusharg(memcell::AvmMemcell** memcell);
+    void execute_pusharg(memcell::AvmMemcell* memcell);
     }
 }
 

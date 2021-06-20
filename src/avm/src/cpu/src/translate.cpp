@@ -28,86 +28,75 @@ namespace avm
 
             void VisitBoolVmarg(const target_code::BoolVmarg* arg) override {
                 assert(arg != nullptr);
-                delete *register_;
                 *register_ = new memcell::BoolMemcell(arg->get_value());
-                result_ = *register_;
+                result_ = register_;
             }
 
             void VisitStringVmarg(const target_code::StringVmarg* arg) override {
                 assert(arg != nullptr);
-                delete *register_;
                 *register_ = 
                 new memcell::StringMemcell(
                     memory::Constants::GetInstance().GetString(arg->get_value()));
-                result_ = *register_;
+                result_ = register_;
             }
 
             void VisitNumberVmarg(const target_code::NumberVmarg* arg) override {
                 assert(arg != nullptr);
-                delete *register_;
                 *register_ = new memcell::NumMemcell(
                     memory::Constants::GetInstance().GetNumber(arg->get_value()));
-                result_ = *register_;
+                result_ = register_;
             }
 
             void VisitNilVmarg(const target_code::NilVmarg* arg) override {
                 assert(arg != nullptr);
-                delete *register_;
                 *register_ = new memcell::NilMemcell();
-                result_ = *register_;
+                result_ = register_;
             }
 
             void VisitLibFuncVmarg(const target_code::LibFuncVmarg* arg) override {
                 assert(arg != nullptr); 
-                delete *register_;
                 *register_ = 
                     new memcell::LibfuncMemcell(
                     memory::Constants::GetInstance().GetLibfunc(arg->get_value()));
-                result_ = *register_;
+                result_ = register_;
             }
 
             void VisitUserFuncVmarg(const target_code::UserFuncVmarg* arg)
             override {
                 assert(arg != nullptr);
-                delete *register_;
                 *register_ = 
                     new memcell::UserfuncMemcell(
                         memory::Constants::GetInstance()
                             .GetUserfunc(arg->get_value()).taddress);
-                result_ = *register_;  
+                result_ = register_;  
             }
 
             void VisitLabelVmarg(const target_code::LabelVmarg* arg) override {
-                assert(arg != nullptr);
-                delete *register_;
-                *register_ = new memcell::NumMemcell(arg->get_value());
-                assert (*register_ != nullptr);
-                result_ = *register_;
+                assert(false); // how did we get here?
             }
 
             void VisitRetValVmarg(const target_code::RetValVmarg* arg) override {
                 assert(arg != nullptr);
-                delete *register_;
-                result_ = registers::retval;
+                result_ = &registers::retval;
             }
 
-            memcell::AvmMemcell* result() const {
+            memcell::AvmMemcell** result() const {
 //                assert(result_ != nullptr);
                 return result_;
             }
         private:
-            memcell::AvmMemcell* result_;
+            memcell::AvmMemcell** result_;
             memcell::AvmMemcell** register_;
         };
     } // namespace
 
     namespace cpu
     {
-        memcell::AvmMemcell* translate_operand(const target_code::Vmarg* vmarg,
-            memcell::AvmMemcell* _register)
+        memcell::AvmMemcell** translate_operand(const target_code::Vmarg* vmarg,
+            memcell::AvmMemcell** _register)
         {
             PRECONDITION(vmarg != nullptr);
-            OperandTranslator* translator = new OperandTranslator(&_register);
+            OperandTranslator* translator = new OperandTranslator(_register);
             vmarg->Accept(translator);
 
             auto result = translator->result();

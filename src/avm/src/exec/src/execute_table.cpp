@@ -7,9 +7,9 @@ namespace avm
     namespace exec
     {
 
-    void execute_newtable(memcell::AvmMemcell* memcell) {
+    void execute_newtable(memcell::AvmMemcell** memcell) {
         PRECONDITION(memcell != nullptr);
-        memcell = new memcell::TableMemcell();
+        *memcell = new memcell::TableMemcell();
     }
 
     namespace
@@ -75,20 +75,20 @@ namespace avm
             memcell::AvmMemcell* value_;  
         };
     } // namespace
-    void execute_tablesetelem(memcell::AvmMemcell* memcell,
+    void execute_tablesetelem(memcell::AvmMemcell** memcell,
         memcell::AvmMemcell* key, memcell::AvmMemcell* value) {
         PRECONDITION(memcell != nullptr);
         PRECONDITION(key != nullptr);
         PRECONDITION(value != nullptr);
         auto visitor = new MemcellTableElemSetter(key, value);
-        memcell->accept(visitor);
+        (*memcell)->accept(visitor);
     }
 
     namespace
     {
         class MemcellTableElemGetter final : public memcell::AvmMemcellVisitor {
         public:
-            MemcellTableElemGetter(memcell::AvmMemcell* _lv,
+            MemcellTableElemGetter(memcell::AvmMemcell** _lv,
                 memcell::AvmMemcell* _key) : lv_(_lv), key_(_key) {}
             ~MemcellTableElemGetter() = default;
 
@@ -114,7 +114,7 @@ namespace avm
             void visit_table_memcell(memcell::TableMemcell* memcell) override {
                 assert(memcell != nullptr);
                 if (memcell->contains(key_))
-                    execute_assign(&lv_, memcell->get_elem(key_));
+                    execute_assign(lv_, memcell->get_elem(key_));
                 else
                     signals::log_warning("Key not found", std::cerr);
             }
@@ -144,12 +144,12 @@ namespace avm
                     std::cerr);
             }
         private:
-            memcell::AvmMemcell* lv_;
-            memcell::AvmMemcell* key_;
+            memcell::AvmMemcell**   lv_;
+            memcell::AvmMemcell*    key_;
         };
         } // namespace
 
-   void execute_tablegetelem(memcell::AvmMemcell* lvalue,
+   void execute_tablegetelem(memcell::AvmMemcell** lvalue,
         memcell::AvmMemcell* memcell, memcell::AvmMemcell* key) 
         {
         PRECONDITION(lvalue != nullptr);

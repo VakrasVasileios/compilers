@@ -157,9 +157,9 @@ namespace avm
         // garbage_collect(old_top);
     }
 
-    void execute_pusharg(memcell::AvmMemcell** memcell) {
+    void execute_pusharg(memcell::AvmMemcell* memcell) {
         PRECONDITION(memcell);
-        memory::stack_segment.push(*memcell);
+        memory::stack_segment.push(memcell);
         ++total_actuals;
     }
     

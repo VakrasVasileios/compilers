@@ -8,25 +8,25 @@ namespace avm
 {
     namespace exec
     {
-        void execute_jeq(const memcell::AvmMemcell* res,
+        void execute_jeq(const unsigned res,
             const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2);
 
-        void execute_jne(const memcell::AvmMemcell* res,
+        void execute_jne(const unsigned res,
             const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2);
 
-        void execute_jgt(const memcell::AvmMemcell* res, 
+        void execute_jgt(const unsigned res, 
             const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2);
 
-        void execute_jge(const memcell::AvmMemcell* res,
+        void execute_jge(const unsigned res,
             const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2);
 
-        void execute_jlt(const memcell::AvmMemcell* res,
+        void execute_jlt(const unsigned res,
             const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2);
 
-        void execute_jle(const memcell::AvmMemcell* res,
+        void execute_jle(const unsigned res,
             const memcell::AvmMemcell* arg1, const memcell::AvmMemcell* arg2);
 
-        void execute_jmp(const memcell::AvmMemcell* res);
+        void execute_jmp(const unsigned res);
     }
 }
 

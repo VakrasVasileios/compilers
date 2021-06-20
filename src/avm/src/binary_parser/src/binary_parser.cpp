@@ -109,9 +109,9 @@ namespace avm
         // end of program flag
         code_segment.push(new target_code::Jump(0, new target_code::LabelVmarg(0), 0));
         executable.close();
-        for (unsigned i = 0; i < memory::code_segment.size(); i++) {
-            std::cout << memory::code_segment[i] << std::endl;
-        }
+        // for (unsigned i = 0; i < memory::code_segment.size(); i++) {
+        //     std::cout << memory::code_segment[i] << std::endl;
+        // }
     }
     } // namespace binary_parser
 } // namespace avm

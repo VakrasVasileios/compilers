@@ -83,14 +83,14 @@ TEST_F(StackSegmentSuite, vmarg_with_invalid_offset_has_illegal_index) {
 
 TEST_F(StackSegmentSuite, environment_pushed_vmarg_leaves_size_intact) {
     auto new_memcell = stack->environment(*global_vmarg_0);
-    stack->push(new_memcell);
+    stack->push(*new_memcell);
     stack->environment(*global_vmarg_0);
     GTEST_ASSERT_EQ(stack->size(), 1);
 }
 
 TEST_F(StackSegmentSuite, environment_pushed_vmarg_returns_it) {
     auto new_memcell = stack->environment(*global_vmarg_0);
-    stack->push(new_memcell);
+    stack->push(*new_memcell);
     GTEST_ASSERT_EQ(new_memcell, stack->environment(*global_vmarg_0));
 }
 

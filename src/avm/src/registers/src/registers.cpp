@@ -6,7 +6,6 @@ namespace avm
 {
     namespace registers
     {
-        unsigned int global_offset;
         unsigned                        pc;
         memcell::AvmMemcell             *ax, *bx, *cx;
         memcell::AvmMemcell             *retval;
