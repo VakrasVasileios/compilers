@@ -145,8 +145,8 @@ namespace avm
             auto i = 0;
             int top = registers::top;
             while(++old_top < top) {
+                std::cout << "popping " << old_top << std::endl;
                 delete memory::stack_segment[old_top];
-               // std::cout << "poped " << registers::top << std::endl;
             }
         }
     } // namespace
@@ -154,7 +154,7 @@ namespace avm
     void execute_exitfunc() {
         auto old_top = registers::top;
         restore_environment();
-        garbage_collect(old_top);
+        // garbage_collect(old_top);
     }
 
     void execute_pusharg(memcell::AvmMemcell** memcell) {
