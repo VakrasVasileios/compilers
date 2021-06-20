@@ -16,6 +16,8 @@ protected:
 
 TEST_F(AvmSuite, assign_simple)
 {
+    util::exec::exec("../src/target_code/src/phase4 ../test/files/assign/calls_nested.asc");
+    actual = util::exec::exec("../src/avm/src/avm ../src/target_code/src/alpha.out");
     GTEST_ASSERT_EQ(expected, actual);
 }
 

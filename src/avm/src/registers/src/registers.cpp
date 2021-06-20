@@ -15,6 +15,7 @@ namespace avm
             ax = new memcell::UndefMemcell();
             bx = new memcell::UndefMemcell();
             cx = new memcell::UndefMemcell();
+            retval = new memcell::UndefMemcell();
             pc = 1;
             topsp = top;
         }
