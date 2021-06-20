@@ -107,7 +107,7 @@ namespace avm
             code_segment.push(instr);    
         }
         // end of program flag
-        code_segment.push(new target_code::Jump(0, new target_code::LabelVmarg(0), 0));
+        code_segment.push(new target_code::Jump(memory::code_segment.size() + 1, new target_code::LabelVmarg(0), 0));
         executable.close();
         // for (unsigned i = 0; i < memory::code_segment.size(); i++) {
         //     std::cout << memory::code_segment[i] << std::endl;
