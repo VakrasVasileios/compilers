@@ -98,7 +98,7 @@ namespace avm
        * @return a read/write access to the avm memcell
        * of a global vmarg, at this StackSegment
        */
-      memcell::AvmMemcell* environment(const target_code::GlobalVmarg vmarg);
+      memcell::AvmMemcell** environment(const target_code::GlobalVmarg vmarg);
       /**
        * @brief Returns a read/write access to the avm memcell
        * of a local vmarg, at this StackSegment.
@@ -110,7 +110,7 @@ namespace avm
        * @return a read/write access to the avm memcell
        * of a local vmarg, at this StackSegment 
        */
-      memcell::AvmMemcell* environment(const target_code::LocalVmarg vmarg);
+      memcell::AvmMemcell** environment(const target_code::LocalVmarg vmarg);
       /**
        * @brief Returns a read/write access to the avm memcell
        * of a formal vmarg, at this StackSegment.
@@ -122,7 +122,7 @@ namespace avm
        * @return a read/write access to the avm memcell
        * of a formal vmarg, at this StackSegment 
        */
-      memcell::AvmMemcell* environment(const target_code::FormalVmarg vmarg);
+      memcell::AvmMemcell** environment(const target_code::FormalVmarg vmarg);
       /**
        * @brief Checks wether a given index is 2 or more 
        * positions out of bounds of this StackSegment.

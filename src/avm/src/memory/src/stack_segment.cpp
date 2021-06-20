@@ -57,25 +57,25 @@ namespace avm
         return memcells[index];
     }
 
-    memcell::AvmMemcell*
+    memcell::AvmMemcell**
     StackSegment::environment(const target_code::GlobalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!illegal_index(corresponding_index(vmarg)));
-        return memcells[corresponding_index(vmarg)];
+        return &memcells[corresponding_index(vmarg)];
     }
 
-    memcell::AvmMemcell*
+    memcell::AvmMemcell**
     StackSegment::environment(const target_code::LocalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!illegal_index(corresponding_index(vmarg)));
-        return memcells[corresponding_index(vmarg)];
+        return &memcells[corresponding_index(vmarg)];
     }
 
-    memcell::AvmMemcell*
+    memcell::AvmMemcell**
     StackSegment::environment(const target_code::FormalVmarg vmarg) {
         INVARIANT(util::range::in_range<int>(size(), 0, AVM_STACKSIZE));
         PRECONDITION(!illegal_index(corresponding_index(vmarg)));
-        return memcells[corresponding_index(vmarg)];
+        return &memcells[corresponding_index(vmarg)];
     }
     bool
     StackSegment::illegal_index(const unsigned int index) const {
