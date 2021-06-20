@@ -94,8 +94,12 @@ namespace avm
             }
 
             void libfunc_totalarguments() {
-                exec::execute_assign(&registers::retval,
-                        new memcell::NumMemcell(total_actuals()));
+                if (exec::scope_depth == 0)
+                     exec::execute_assign(&registers::retval,
+                        new memcell::NilMemcell());
+                else
+                    exec::execute_assign(&registers::retval,
+                            new memcell::NumMemcell(total_actuals()));
             }
 
             void libfunc_argument() {

@@ -9,10 +9,12 @@ namespace avm
 {
     namespace exec
     {
+    unsigned scope_depth = 0;
     unsigned total_actuals = 0;
     namespace
     {
         void call_saveenvironment() {
+            scope_depth++;
             memory::stack_segment.push_envvalue(total_actuals);
             //std::cout << registers::top << std::endl;
             memory::stack_segment.push_envvalue(registers::pc + 1);
@@ -129,6 +131,7 @@ namespace avm
     namespace
     {
         void restore_environment() {
+            scope_depth--;
             registers::top = memory::stack_segment.get_envvalue(
                 registers::topsp + AVM_SAVEDTOP_OFFSET);   
                //std::cout << "recov top: " << registers::top << std::endl;

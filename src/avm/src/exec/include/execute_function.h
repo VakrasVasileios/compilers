@@ -53,6 +53,8 @@ namespace avm
      * not null 
      */
     void execute_pusharg(memcell::AvmMemcell** memcell);
+
+    extern unsigned scope_depth;
     }
 }
 
