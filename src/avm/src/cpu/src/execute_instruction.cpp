@@ -144,7 +144,7 @@ namespace avm
             void VisitPushArg(target_code::PushArg* inst) const override {
                 assert(inst != nullptr);
                 auto arg = *translate_operand(inst->get_result(), &registers::ax);
-                exec::execute_pusharg(registers::ax);
+                exec::execute_pusharg(arg);
             }
 
             void VisitEnterFunc(target_code::EnterFunc* inst) const override {

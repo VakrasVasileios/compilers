@@ -17,8 +17,8 @@ namespace avm
             stack_segment.clear();
 
         for (int i = 0; i < global_off; i++) {
-                memory::stack_segment.push(new memcell::UndefMemcell());
-            }
+            memory::stack_segment.push(new memcell::UndefMemcell());
+        }
     }
     
     }

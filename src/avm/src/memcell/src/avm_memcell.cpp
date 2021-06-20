@@ -191,7 +191,7 @@ namespace avm
             }
             else {
                 signals::log_error("Invalid operation \'+\'", std::cerr);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
@@ -204,7 +204,7 @@ namespace avm
             }
             else {
                 signals::log_error("Second operand is not a number", std::cerr);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
@@ -217,7 +217,7 @@ namespace avm
             }
             else {
                 signals::log_error("Second operand is not a number", std::cerr);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
@@ -231,12 +231,12 @@ namespace avm
                 }
                 else {
                     signals::log_error("Division with zero", std::cerr);
-                    return nullptr;
+                    return new UndefMemcell();
                 }
             }
             else {
                 signals::log_error("Second operand is not a number", std::cerr);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
@@ -250,12 +250,12 @@ namespace avm
                 }
                 else {
                     signals::log_error("Modulation with zero", std::cerr);
-                    return nullptr;
+                    return new UndefMemcell();
                 }
             }
             else {
                 signals::log_error("Second operand is not a number", std::cerr);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
@@ -364,32 +364,32 @@ namespace avm
             }
             else {
                 signals::log_error("Invalid operation \'+\'", std::cerr);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
         AvmMemcell*
         StringMemcell::sub(AvmMemcell const& other) const {
             signals::log_error("Invalid '-' with string operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         StringMemcell::mul(AvmMemcell const& other) const {
             signals::log_error("Invalid '*' with string operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         StringMemcell::div(AvmMemcell const& other) const {
             signals::log_error("Invalid '/' with string operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         StringMemcell::mod(AvmMemcell const& other) const {
             signals::log_error("Invalid '%' with string operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         bool
@@ -475,31 +475,31 @@ namespace avm
         AvmMemcell*
         BoolMemcell::add(AvmMemcell const& other) const {
             signals::log_error("Invalid '+' with bool operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         BoolMemcell::sub(AvmMemcell const& other) const {
             signals::log_error("Invalid '-' with bool operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         BoolMemcell::mul(AvmMemcell const& other) const {
             signals::log_error("Invalid '*' with bool operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         BoolMemcell::div(AvmMemcell const& other) const {
             signals::log_error("Invalid '/' with bool operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         BoolMemcell::mod(AvmMemcell const& other) const {
             signals::log_error("Invalid '%' with bool operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         bool
@@ -587,7 +587,7 @@ namespace avm
                     lib_func_memcell->lib_func_val());
             else {
                 assert (false);
-                return nullptr;
+                return new UndefMemcell();
             }
         }
 
@@ -659,31 +659,31 @@ namespace avm
         AvmMemcell*
         TableMemcell::add(AvmMemcell const& other) const {
             signals::log_error("Invalid '+' with table operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         TableMemcell::sub(AvmMemcell const& other) const {
             signals::log_error("Invalid '-' with table operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         TableMemcell::mul(AvmMemcell const& other) const {
             signals::log_error("Invalid '*' with table operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         TableMemcell::div(AvmMemcell const& other) const {
             signals::log_error("Invalid '/' with table operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         TableMemcell::mod(AvmMemcell const& other) const {
             signals::log_error("Invalid '%' with table operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         bool
@@ -759,31 +759,31 @@ namespace avm
         AvmMemcell*
         UserfuncMemcell::add(AvmMemcell const& other) const {
             signals::log_error("Invalid '+' with user function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UserfuncMemcell::sub(AvmMemcell const& other) const {
             signals::log_error("Invalid '-' with user function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UserfuncMemcell::mul(AvmMemcell const& other) const {
             signals::log_error("Invalid '*' with user function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UserfuncMemcell::div(AvmMemcell const& other) const {
             signals::log_error("Invalid '/' with user function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UserfuncMemcell::mod(AvmMemcell const& other) const {
             signals::log_error("Invalid '%' with user function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         bool
@@ -859,31 +859,31 @@ namespace avm
         AvmMemcell*
         LibfuncMemcell::add(AvmMemcell const& other) const {
             signals::log_error("Invalid '+' with library function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         LibfuncMemcell::sub(AvmMemcell const& other) const {
             signals::log_error("Invalid '-' with library function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         LibfuncMemcell::mul(AvmMemcell const& other) const {
             signals::log_error("Invalid '*' with library function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         LibfuncMemcell::div(AvmMemcell const& other) const {
             signals::log_error("Invalid '/' with library function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         LibfuncMemcell::mod(AvmMemcell const& other) const {
             signals::log_error("Invalid '%' with library function operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         bool
@@ -954,31 +954,31 @@ namespace avm
         AvmMemcell*
         NilMemcell::add(AvmMemcell const& other) const {
             signals::log_error("Invalid '+' with nil operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         NilMemcell::sub(AvmMemcell const& other) const {
             signals::log_error("Invalid '-' with nil operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         NilMemcell::mul(AvmMemcell const& other) const {
             signals::log_error("Invalid '*' with nil operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         NilMemcell::div(AvmMemcell const& other) const {
             signals::log_error("Invalid '/' with nil operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         NilMemcell::mod(AvmMemcell const& other) const {
             signals::log_error("Invalid '%' with nil operand", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         bool
@@ -1044,35 +1044,35 @@ namespace avm
         UndefMemcell::add(AvmMemcell const& other) const {
             signals::log_error(
                 "illegal arithmetic operation with undefined type", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UndefMemcell::sub(AvmMemcell const& other) const {
              signals::log_error(
                 "illegal arithmetic operation with undefined type", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UndefMemcell::mul(AvmMemcell const& other) const {
              signals::log_error(
                 "illegal arithmetic operation with undefined type", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
 
         AvmMemcell*
         UndefMemcell::div(AvmMemcell const& other) const {
              signals::log_error(
                 "illegal arithmetic operation with undefined type", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
         
         AvmMemcell*
         UndefMemcell::mod(AvmMemcell const& other) const {
              signals::log_error(
                 "illegal arithmetic operation with undefined type", std::cerr);
-            return nullptr;
+            return new UndefMemcell();
         }
         
         bool
